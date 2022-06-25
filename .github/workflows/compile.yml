@@ -9,13 +9,16 @@ on:
 
 jobs:
   build-windows:
+    strategy:
+      matrix:
+        arch: [x86, x64]
     name: Build (Windows)
     runs-on: windows-2019
     steps:
     - name: Install jom
       run: choco install -y jom
     - name: Download Qt SDK
-      run: Invoke-WebRequest -Uri "https://github.com/puyonexus/qt-sdk-builder/releases/download/v2/qt-windows-5.15.2-x86-msvc-static-release.7z" -OutFile "C:\qt.7z"
+      run: Invoke-WebRequest -Uri "https://github.com/puyonexus/qt-sdk-builder/releases/download/v2/qt-windows-5.15.2-${{ matrix.arch }}-msvc-static-release.7z" -OutFile "C:\qt.7z"
     - name: Extract Qt SDK
       run: 7z x C:\qt.7z -oC:\Qt\
     - name: Add Qt SDK to path
@@ -25,18 +28,18 @@ jobs:
     - name: Set up Visual Studio shell
       uses: egor-tensin/vs-shell@v2
       with:
-        arch: Win32
+        arch: ${{ matrix.arch }}
     - name: Configure PuyoVS
       run: qmake ${{ github.workspace }} CONFIG+=release CONFIG+=force_debug_info
     - name: Build PuyoVS
       run: jom
     - name: Package Build Artifact
-      run: 7z a puyovs-windows-x86.7z "${{ github.workspace }}\Build\Release\*"
+      run: 7z a puyovs-windows-${{ matrix.arch }}.7z "${{ github.workspace }}\Build\Release\*"
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: puyovs-windows-x86
-        path: puyovs-windows-x86.7z
+        name: puyovs-windows-${{ matrix.arch }}
+        path: puyovs-windows-${{ matrix.arch }}.7z
 
   build-macos:
     name: Build (macOS)
