@@ -1,0 +1,56 @@
+{
+   "settings" : {
+      "characters" : [
+         "[PP20] Ms. Accord",
+         "[PP20] Amitie",
+         "[PP20] Arle",
+         "[PP20] Dongurigaeru",
+         "[PP20] Draco Centauros",
+         "[PP20] Carbuncle",
+         "[PP20] Ecolo",
+         "[PP20] Feli",
+         "[PP20] Klug",
+         "[PP20] Lemres",
+         "[PP20] Maguro",
+         "[PP20] Ocean Prince",
+         "[PP20] Onion Pixy",
+         "[PP20] Raffine",
+         "[PP20] Rider",
+         "[PP20] Risukuma",
+         "[PP20] Ringo",
+         "[PP20] Rulue",
+         "[PP20] Satan",
+         "[PP20] Schezo",
+         "[PP20] Sig",
+         "[PP20] Suketoudara",
+         "[PP20] Witch",
+         "[PP20] Yu & Rei"
+      ],
+      "controlsp1" : {
+         "start" : "enter",
+         "right" : "right",
+         "a" : "x",
+         "down" : "down",
+         "up" : "up",
+         "b" : "z",
+         "left" : "left"
+      },
+      "custom" : {
+         "puyo" : "Default",
+         "sound" : "Default",
+         "background" : "Forest"
+      },
+      "account" : {
+         "defaultcharacter" : 1,
+         "server" : "ds-net.jp",
+         "name" : ""
+      },
+      "launcher" : {
+         "alertname" : true,
+         "autoreject" : false,
+         "language" : "English.json",
+         "savereplays" : true,
+         "savechat" : true
+      }
+   }
+}

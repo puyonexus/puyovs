@@ -1,0 +1,19 @@
+app-id: com.puyovs.client
+runtime: org.kde.Platform
+runtime-version: '5.15-21.08'
+sdk: org.kde.Sdk
+command: puyovs
+finish-args:
+  - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  - --filesystem=host
+  - --device=dri
+modules:
+  - name: PuyoVS
+    buildsystem: qmake
+    config-opts:
+      - "PACKAGED='true'"
+    sources:
+      - type: dir
+        path: .

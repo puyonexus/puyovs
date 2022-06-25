@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>redpuyo.ico</file>
+        <file>red.png</file>
+        <file>blue.png</file>
+        <file>gray.png</file>
+    </qresource>
+</RCC>

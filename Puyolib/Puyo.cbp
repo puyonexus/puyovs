@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Puyo" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug-Windows">
+				<Option platforms="Windows;" />
+				<Option output="lib\libPuyo" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj\Debug\" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-DGLEW_STATIC" />
+					<Add directory="..\Externals-w32\include" />
+					<Add directory="..\zlib" />
+				</Compiler>
+				<Linker>
+					<Add library="winmm" />
+					<Add library="sfml" />
+					<Add library="..\zlib\zlib.a" />
+					<Add directory="..\External-w32\lib" />
+				</Linker>
+			</Target>
+			<Target title="Release-Windows">
+				<Option platforms="Windows;" />
+				<Option output="lib\libPuyo" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj\Release\" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-Os" />
+					<Add option="-O2" />
+					<Add option="-DGLEW_STATIC" />
+					<Add directory="..\Externals-w32\include" />
+					<Add directory="..\zlib" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="..\PVS_ENet\libPVS_ENet.a" />
+					<Add library="..\enet\libenet.a" />
+					<Add library="winmm" />
+					<Add library="ws2_32" />
+					<Add library="sfml" />
+					<Add library="..\zlib\zlib.a" />
+					<Add directory="..\External-w32\lib" />
+				</Linker>
+			</Target>
+			<Target title="Debug-Linux">
+				<Option platforms="Unix;" />
+				<Option output="lib\libPuyo" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj\Debug\" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+				<Linker>
+					<Add library="sfml-audio-s" />
+					<Add library="sfml-graphics-s" />
+					<Add library="sfml-window-s" />
+					<Add library="sfml-system" />
+				</Linker>
+			</Target>
+			<Target title="Release-Linux">
+				<Option platforms="Unix;" />
+				<Option output="lib\libPuyo" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj\Release\" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="sfml-audio-s" />
+					<Add library="sfml-graphics-s" />
+					<Add library="sfml-window-s" />
+					<Add library="sfml-system" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+			<Add option="-DSFML_STATIC" />
+			<Add directory="..\SFML\include" />
+			<Add directory="..\enet\include" />
+			<Add directory="..\PVS_ENet" />
+		</Compiler>
+		<Linker>
+			<Add option="-static-libgcc" />
+			<Add directory="..\SFML" />
+			<Add directory="..\enet" />
+			<Add directory="..\PVS_ENet" />
+		</Linker>
+		<Unit filename="AI.cpp" />
+		<Unit filename="AI.h" />
+		<Unit filename="ImageManager.cpp" />
+		<Unit filename="ImageManager.h" />
+		<Unit filename="ResourceManager.h" />
+		<Unit filename="SoundBufferManager.cpp" />
+		<Unit filename="SoundBufferManager.h" />
+		<Unit filename="animation.cpp" />
+		<Unit filename="animation.h" />
+		<Unit filename="characterSelect.cpp" />
+		<Unit filename="characterSelect.h" />
+		<Unit filename="controller.cpp" />
+		<Unit filename="controller.h" />
+		<Unit filename="dropPattern.cpp" />
+		<Unit filename="dropPattern.h" />
+		<Unit filename="feverCounter.cpp" />
+		<Unit filename="feverCounter.h" />
+		<Unit filename="field.cpp" />
+		<Unit filename="field.h" />
+		<Unit filename="fieldProp.h" />
+		<Unit filename="game.cpp" />
+		<Unit filename="game.h" />
+		<Unit filename="gameSettings.cpp" />
+		<Unit filename="gameSettings.h" />
+		<Unit filename="global.cpp" />
+		<Unit filename="global.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="menu.cpp" />
+		<Unit filename="menu.h" />
+		<Unit filename="movePuyo.cpp" />
+		<Unit filename="movePuyo.h" />
+		<Unit filename="mt.cc" />
+		<Unit filename="mt.h" />
+		<Unit filename="nextPuyo.cpp" />
+		<Unit filename="nextPuyo.h" />
+		<Unit filename="otherObjects.cpp" />
+		<Unit filename="otherObjects.h" />
+		<Unit filename="player.cpp" />
+		<Unit filename="player.h" />
+		<Unit filename="puyo.cpp" />
+		<Unit filename="puyo.h" />
+		<Unit filename="ruleset.cpp" />
+		<Unit filename="ruleset.h" />
+		<Unit filename="sound.cpp" />
+		<Unit filename="sound.h" />
+		<Unit filename="sprite.cpp" />
+		<Unit filename="sprite.h" />
+		<Unit filename="tinystr.cpp" />
+		<Unit filename="tinystr.h" />
+		<Unit filename="tinyxml.cpp" />
+		<Unit filename="tinyxml.h" />
+		<Unit filename="tinyxmlerror.cpp" />
+		<Unit filename="tinyxmlparser.cpp" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

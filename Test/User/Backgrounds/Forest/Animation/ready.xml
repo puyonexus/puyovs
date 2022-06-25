@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+<!--Ready go animation is 180 frames, "go" mark is on t=120-->
+<animations>
+	<init>
+		<sprite name="ready">
+			<image>ready.png</image>
+			<rect x="0" y="0" width="280" height="148"/>
+			<center x="140" y="74"/>
+		</sprite>
+		<sprite name="go">
+			<image>go.png</image>
+			<rect x="0" y="0" width="197" height="112"/>
+			<center x="100" y="56"/>
+		</sprite>
+		<path name="movedown">
+			<node x="0" y="-240"/>
+			<node x="0" y="0"/>
+		</path>
+		<sound name="ready">
+			<file>ready.wav</file>
+		</sound>
+		<sound name="go">
+			<file>go.wav</file>
+		</sound>
+	</init>
+	<readygo>
+		<event start="0">
+			<playSound name="ready"/>
+			<transparency name="ready" duration="10" type="linear" startVal="0" endVal="1"/>
+			<move name="ready" path="movedown" duration="40" type="elastic" startVal="0" endVal="1" alpha="-4" beta="1"/>
+		</event>
+		<event start="80">
+			<scaleX name="ready" duration="20" type="cubic" startVal="1" endVal="2"/>
+			<scaleY name="ready" duration="20" type="cubic" startVal="1" endVal="0"/>
+		</event>
+		<event start="100">
+			<playSound name="go"/>
+			<transparency name="ready" duration="1" type="linear" startVal="1" endVal="0"/>
+			<transparency name="go" duration="10" type="linear" startVal="0" endVal="1"/>
+			<scaleX name="go" duration="60" type="elastic" startVal="2" endVal="1" alpha="-3" beta="2"/>
+			<scaleY name="go" duration="60" type="elastic" startVal="0" endVal="1" alpha="-3" beta="2"/>
+		</event>
+		<event start="170">
+			<transparency name="go" duration="10" type="linear" startVal="1" endVal="0"/>
+		</event>
+	</readygo>
+</animations>

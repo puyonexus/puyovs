@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AdminDialog</class>
+ <widget class="QDialog" name="AdminDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>360</width>
+    <height>460</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Admin Console</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Server response</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTextEdit" name="AdminTextEdit">
+     <property name="font">
+      <font>
+       <family>System</family>
+      </font>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::WinPanel</enum>
+     </property>
+     <property name="lineWidth">
+      <number>2</number>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+     <property name="html">
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'System'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;Send a moderator/admin command to the server. The command may need to be accompanied by arguments. Seperate arguments with the pipe &amp;quot;|&amp;quot; character.&lt;/span&gt;&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="CommandLabel">
+     <property name="text">
+      <string>Command</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="CommandComboBox">
+     <property name="accessibleName">
+      <string notr="true"/>
+     </property>
+     <property name="accessibleDescription">
+      <string notr="true"/>
+     </property>
+     <property name="editable">
+      <bool>true</bool>
+     </property>
+     <item>
+      <property name="text">
+       <string>getip</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>maxwins</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string notr="true">motd</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>getmotd</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>kick</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ban</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>banip</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>unban</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>lock</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>unlock</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>banlist</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>adminlist</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>lockedlist</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>newmod</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>newadmin</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>demote</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>delete</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="ArgumentLabel">
+     <property name="text">
+      <string>Arguments</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTextEdit" name="ArgumentsEdit"/>
+   </item>
+   <item>
+    <widget class="QPushButton" name="SendButton">
+     <property name="text">
+      <string>Send</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

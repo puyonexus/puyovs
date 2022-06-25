@@ -1,0 +1,1209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SettingsDialog</class>
+ <widget class="QDialog" name="SettingsDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>341</width>
+    <height>502</height>
+   </rect>
+  </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
+  <property name="windowTitle">
+   <string comment="TitleSettings">Settings</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="client.qrc">
+    <normaloff>:/icons/red.png</normaloff>:/icons/red.png</iconset>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTabWidget" name="SettingsTabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="GeneralTab">
+      <attribute name="title">
+       <string comment="TitleGeneral">General</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <layout class="QFormLayout" name="LanguageForm">
+         <item row="0" column="0">
+          <widget class="QLabel" name="LanguageLabel">
+           <property name="text">
+            <string>Language</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="LanguageComboBox"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="LobbyGroupBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string comment="TitleLobby">Lobby</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QCheckBox" name="AutorejectCheckBox">
+            <property name="text">
+             <string comment="Autoreject">Autoreject after starting game</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="AlertNameCheckBox">
+            <property name="text">
+             <string comment="AlertName">Alert when name is mentioned</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="SaveLogsCheckBox">
+            <property name="text">
+             <string comment="SaveChat">Save chat logs</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="GameGroupBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string comment="TitleGame">Game</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <layout class="QFormLayout" name="formLayout_5">
+            <property name="fieldGrowthPolicy">
+             <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+            </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="DefaultCharacterLabel">
+              <property name="text">
+               <string comment="DefaultCharacter">Default character</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="DefaultCharacterComboBox">
+              <item>
+               <property name="text">
+                <string>Ms. Accord</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Amitie</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Arle</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Dongurigaeru</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Draco</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Carbuncle</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Ecolo</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Feli</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Klug</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Lemres</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Maguro</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Ocean Prince</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Onion Pixy</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Raffine</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Rider</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Risukuma</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Ringo</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Rulue</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Satan</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Schezo</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Sig</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Suketoudara</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Witch</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Yu &amp; Rei</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="PasswordLabel">
+              <property name="text">
+               <string comment="RoomPassword">Room Password</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="RoomPasswordLineEdit"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="AutosaveReplaysCheckBox">
+            <property name="text">
+             <string comment="AutosaveReplay">Autosave replay files</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="EnableMusicCheckBox">
+            <property name="text">
+             <string comment="PlayMusic">Enable Music</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="EnableSoundCheckBox">
+            <property name="text">
+             <string comment="PlaySound">Enable Sound</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="VolumeControlGroupBox">
+         <property name="title">
+          <string comment="TitleVolumeControl">Volume Control</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_6">
+          <item row="0" column="0">
+           <widget class="QLabel" name="MusicVolumeLabel">
+            <property name="text">
+             <string comment="MusicVolume">Music Volume</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSlider" name="MusicVolumeHorizontalSlider">
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>100</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="invertedAppearance">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="SoundVolumeLabel">
+            <property name="text">
+             <string comment="SoundVolume">Sound Volume</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSlider" name="SoundVolumeHorizontalSlider">
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>100</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="RulesTab">
+      <attribute name="title">
+       <string comment="TitleRules">Rules</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout">
+       <property name="fieldGrowthPolicy">
+        <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+       </property>
+       <property name="labelAlignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+       <item row="0" column="0">
+        <widget class="QLabel" name="BaseRulesLabel">
+         <property name="text">
+          <string comment="BaseRules">Base rules</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="BaseRulesComboBox">
+         <item>
+          <property name="text">
+           <string>Tsu</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Fever</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Fever (15th)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Endless Fever VS</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QCheckBox" name="DefaultRulesCheckbox">
+         <property name="text">
+          <string comment="DefaultRules">Default rules</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="MarginTimeLabel">
+         <property name="text">
+          <string comment="MarginTime">Margin time</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QSpinBox" name="MarginTimeSpinBox">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="maximum">
+          <number>999</number>
+         </property>
+         <property name="value">
+          <number>192</number>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="TargetPointsLabel">
+         <property name="text">
+          <string comment="TargetPoints">Target points</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QSpinBox" name="TargetPointsSpinBox">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>999</number>
+         </property>
+         <property name="value">
+          <number>70</number>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string comment="RequiredChain">Required chain</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QSpinBox" name="RequiredChainSpinBox">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="PuyoToClearLabel">
+         <property name="text">
+          <string comment="PuyoToClear">Puyo to clear</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QSpinBox" name="PuyoToClearSpinBox">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="value">
+          <number>4</number>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="InitialFeverCountLabel">
+         <property name="text">
+          <string comment="InitialFeverCount">Initial Fever Count</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QSpinBox" name="InitialFeverCountSpinBox">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="maximum">
+          <number>6</number>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="FeverPowerLabel">
+         <property name="text">
+          <string comment="FeverPower">Fever power</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QSpinBox" name="FeverPowerSpinBox">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="maximum">
+          <number>999</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QCheckBox" name="NumberOfColorsSelectCheckBox">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string comment="SelectColors">Select colors</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QSpinBox" name="NumberOfColorsSpinBox">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="minimum">
+          <number>3</number>
+         </property>
+         <property name="maximum">
+          <number>5</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>4</number>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <widget class="QLabel" name="NumberOfPlayersLabel">
+         <property name="text">
+          <string comment="NumberOfPlayers">Number of players</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="1">
+        <widget class="QSpinBox" name="NumberOfPlayersSpinBox">
+         <property name="minimum">
+          <number>2</number>
+         </property>
+         <property name="maximum">
+          <number>50</number>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="1">
+        <widget class="QCheckBox" name="QuickDropCheckBox">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string comment="QuickDrop">Quick Drop</string>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="1">
+        <widget class="QPushButton" name="DefaultButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string comment="ButtonDefault">Default</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="ControlsTab">
+      <attribute name="title">
+       <string comment="TitleControls">Controls</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout_2">
+       <property name="fieldGrowthPolicy">
+        <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+       </property>
+       <item row="0" column="0">
+        <widget class="QLabel" name="UpLabel">
+         <property name="text">
+          <string comment="Up">Up</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="DownLabel">
+         <property name="text">
+          <string comment="Down">Down</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="LeftLabel">
+         <property name="text">
+          <string comment="Left">Left</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="RightLabel">
+         <property name="text">
+          <string comment="Right">Right</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="ALabel">
+         <property name="text">
+          <string comment="A">A</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="BLabel">
+         <property name="text">
+          <string comment="B">B</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="InputWidget" name="UpInput" native="true"/>
+       </item>
+       <item row="1" column="1">
+        <widget class="InputWidget" name="DownInput" native="true"/>
+       </item>
+       <item row="2" column="1">
+        <widget class="InputWidget" name="LeftInput" native="true"/>
+       </item>
+       <item row="3" column="1">
+        <widget class="InputWidget" name="RightInput" native="true"/>
+       </item>
+       <item row="4" column="1">
+        <widget class="InputWidget" name="AInput" native="true"/>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="StartLavel">
+         <property name="text">
+          <string>Start</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="InputWidget" name="BInput" native="true"/>
+       </item>
+       <item row="6" column="1">
+        <widget class="InputWidget" name="StartInput" native="true"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="CustomizationTab">
+      <attribute name="title">
+       <string comment="TitleCustomization">Customization</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="QGroupBox" name="GraphicsBox">
+         <property name="title">
+          <string comment="TitleGraphicsAndSound">Graphics and Sound</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_4">
+          <property name="fieldGrowthPolicy">
+           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+          </property>
+          <item row="0" column="0">
+           <widget class="QLabel" name="BackgroundLabel">
+            <property name="text">
+             <string>Background</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="BackgroundComboBox"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="PuyoLabel">
+            <property name="text">
+             <string>Puyo</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="PuyoComboBox"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="SoundLabel">
+            <property name="text">
+             <string comment="SoundEffects">Sound Effects</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QComboBox" name="SoundComboBox"/>
+          </item>
+          <item row="3" column="1">
+           <widget class="QCheckBox" name="ApplyCharacterCheckBox">
+            <property name="text">
+             <string comment="CharacterBackground">Apply character image to field</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="CharacterBox">
+         <property name="title">
+          <string comment="TitleCharacters">Characters</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QScrollArea" name="CharactersScrollArea">
+            <property name="horizontalScrollBarPolicy">
+             <enum>Qt::ScrollBarAsNeeded</enum>
+            </property>
+            <property name="widgetResizable">
+             <bool>true</bool>
+            </property>
+            <widget class="QWidget" name="scrollAreaWidgetContents">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>261</width>
+               <height>684</height>
+              </rect>
+             </property>
+             <layout class="QFormLayout" name="formLayout_3">
+              <property name="fieldGrowthPolicy">
+               <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="Char0Label">
+                <property name="text">
+                 <string comment="Char1">Ms. Accord</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="Char0ComboBox"/>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="Char1Label">
+                <property name="text">
+                 <string comment="Char2">Amitie</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QComboBox" name="Char1ComboBox"/>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="Char2Label">
+                <property name="text">
+                 <string comment="Char3">Arle</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QComboBox" name="Char2ComboBox"/>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="Char3Label">
+                <property name="text">
+                 <string comment="Char4">Dongurigaeru</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QComboBox" name="Char3ComboBox"/>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="Char4Label">
+                <property name="text">
+                 <string comment="Char5">Draco</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QComboBox" name="Char4ComboBox"/>
+              </item>
+              <item row="5" column="1">
+               <widget class="QComboBox" name="Char5ComboBox"/>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="Char6Label">
+                <property name="text">
+                 <string comment="Char7">Ecolo</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="1">
+               <widget class="QComboBox" name="Char6ComboBox"/>
+              </item>
+              <item row="7" column="0">
+               <widget class="QLabel" name="Char7Label">
+                <property name="text">
+                 <string comment="Char8">Feli</string>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="1">
+               <widget class="QComboBox" name="Char7ComboBox"/>
+              </item>
+              <item row="8" column="0">
+               <widget class="QLabel" name="Char8Label">
+                <property name="text">
+                 <string comment="Char9">Klug</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="1">
+               <widget class="QComboBox" name="Char8ComboBox"/>
+              </item>
+              <item row="9" column="0">
+               <widget class="QLabel" name="Char9Label">
+                <property name="text">
+                 <string comment="Char10">Lemres</string>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="1">
+               <widget class="QComboBox" name="Char9ComboBox"/>
+              </item>
+              <item row="10" column="0">
+               <widget class="QLabel" name="Char10Label">
+                <property name="text">
+                 <string comment="Char11">Maguro</string>
+                </property>
+               </widget>
+              </item>
+              <item row="10" column="1">
+               <widget class="QComboBox" name="Char10ComboBox"/>
+              </item>
+              <item row="11" column="0">
+               <widget class="QLabel" name="Char11Label">
+                <property name="text">
+                 <string comment="Char12">Ocean Prince</string>
+                </property>
+               </widget>
+              </item>
+              <item row="11" column="1">
+               <widget class="QComboBox" name="Char11ComboBox"/>
+              </item>
+              <item row="12" column="0">
+               <widget class="QLabel" name="Char12Label">
+                <property name="text">
+                 <string comment="Char13">Oshare Bones</string>
+                </property>
+               </widget>
+              </item>
+              <item row="12" column="1">
+               <widget class="QComboBox" name="Char12ComboBox"/>
+              </item>
+              <item row="13" column="0">
+               <widget class="QLabel" name="Char13Label">
+                <property name="text">
+                 <string comment="Char14">Raffine</string>
+                </property>
+               </widget>
+              </item>
+              <item row="13" column="1">
+               <widget class="QComboBox" name="Char13ComboBox"/>
+              </item>
+              <item row="14" column="0">
+               <widget class="QLabel" name="Char14Label">
+                <property name="text">
+                 <string comment="Char15">Rider</string>
+                </property>
+               </widget>
+              </item>
+              <item row="14" column="1">
+               <widget class="QComboBox" name="Char14ComboBox"/>
+              </item>
+              <item row="15" column="0">
+               <widget class="QLabel" name="Char15Label">
+                <property name="text">
+                 <string comment="Char16">Risukuma</string>
+                </property>
+               </widget>
+              </item>
+              <item row="15" column="1">
+               <widget class="QComboBox" name="Char15ComboBox"/>
+              </item>
+              <item row="16" column="0">
+               <widget class="QLabel" name="Char16Label">
+                <property name="text">
+                 <string comment="Char17">Ringo</string>
+                </property>
+               </widget>
+              </item>
+              <item row="16" column="1">
+               <widget class="QComboBox" name="Char16ComboBox"/>
+              </item>
+              <item row="17" column="0">
+               <widget class="QLabel" name="Char17Label">
+                <property name="text">
+                 <string comment="Char18">Rulue</string>
+                </property>
+               </widget>
+              </item>
+              <item row="17" column="1">
+               <widget class="QComboBox" name="Char17ComboBox"/>
+              </item>
+              <item row="18" column="0">
+               <widget class="QLabel" name="Char18Label">
+                <property name="text">
+                 <string comment="Char19">Satan</string>
+                </property>
+               </widget>
+              </item>
+              <item row="18" column="1">
+               <widget class="QComboBox" name="Char18ComboBox"/>
+              </item>
+              <item row="19" column="0">
+               <widget class="QLabel" name="Char19Label">
+                <property name="text">
+                 <string comment="Char20">Schezo</string>
+                </property>
+               </widget>
+              </item>
+              <item row="19" column="1">
+               <widget class="QComboBox" name="Char19ComboBox"/>
+              </item>
+              <item row="20" column="0">
+               <widget class="QLabel" name="Char20Label">
+                <property name="text">
+                 <string comment="Char21">Sig</string>
+                </property>
+               </widget>
+              </item>
+              <item row="20" column="1">
+               <widget class="QComboBox" name="Char20ComboBox"/>
+              </item>
+              <item row="21" column="0">
+               <widget class="QLabel" name="Char21Label">
+                <property name="text">
+                 <string comment="Char22">Suketoudara</string>
+                </property>
+               </widget>
+              </item>
+              <item row="21" column="1">
+               <widget class="QComboBox" name="Char21ComboBox"/>
+              </item>
+              <item row="22" column="0">
+               <widget class="QLabel" name="Char22Label">
+                <property name="text">
+                 <string comment="Char23">Witch</string>
+                </property>
+               </widget>
+              </item>
+              <item row="22" column="1">
+               <widget class="QComboBox" name="Char22ComboBox"/>
+              </item>
+              <item row="23" column="0">
+               <widget class="QLabel" name="Char23Label">
+                <property name="text">
+                 <string comment="Char24">Yu &amp; Rei</string>
+                </property>
+               </widget>
+              </item>
+              <item row="23" column="1">
+               <widget class="QComboBox" name="Char23ComboBox"/>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="Char5Label">
+                <property name="text">
+                 <string comment="Char6">Carbuncle</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="MusicTab">
+      <attribute name="title">
+       <string comment="TitleMusic">Music</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QGroupBox" name="PlaylistGroupBox">
+         <property name="title">
+          <string comment="MusicPlayList">Playlist</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_8">
+          <item>
+           <widget class="QComboBox" name="PlaylistComboBox">
+            <item>
+             <property name="text">
+              <string comment="MusicNormal">Normal</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string comment="MusicFever">Fever</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTreeView" name="PlaylistView">
+            <property name="dragDropMode">
+             <enum>QAbstractItemView::DragDrop</enum>
+            </property>
+            <property name="defaultDropAction">
+             <enum>Qt::MoveAction</enum>
+            </property>
+            <property name="selectionMode">
+             <enum>QAbstractItemView::ExtendedSelection</enum>
+            </property>
+            <property name="rootIsDecorated">
+             <bool>false</bool>
+            </property>
+            <property name="headerHidden">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="PlaylistButtonLayout">
+            <property name="spacing">
+             <number>5</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="PlaylistAddButton">
+              <property name="text">
+               <string comment="MusicAdd">Add</string>
+              </property>
+              <property name="icon">
+               <iconset theme="list-add">
+                <normaloff>.</normaloff>.</iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="PlaylistRemoveButton">
+              <property name="text">
+               <string comment="MusicRemove">Remove</string>
+              </property>
+              <property name="icon">
+               <iconset theme="list-remove">
+                <normaloff>.</normaloff>.</iconset>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="BehaviorPlaylist">
+         <property name="title">
+          <string comment="MusicBehavior">Behavior</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <item>
+           <widget class="QCheckBox" name="MusicStopAfterRoundCheckBox">
+            <property name="text">
+             <string comment="MusicCheckStop">Stop music after round</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="MusicAdvanceAtRoundStartCheckbox">
+            <property name="text">
+             <string comment="MusicCheckAdvance">Advance music at round start</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="MusicAtLeastOnceCheckBox">
+            <property name="text">
+             <string comment="MusicCheckAtLeastOnce">Loop music at least once before advancing</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="MusicRandomizeOrder">
+            <property name="text">
+             <string comment="MusicCheckRandomize">Randomize order</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="MusicLoopModeComboBox">
+            <item>
+             <property name="text">
+              <string comment="MusicLoopSingle">Loop Single</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string comment="MusicLoopAll">Loop All</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="SettingsButtonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>InputWidget</class>
+   <extends>QWidget</extends>
+   <header>inputwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="client.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>SettingsButtonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>SettingsDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>257</x>
+     <y>473</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SettingsButtonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>SettingsDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>473</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
