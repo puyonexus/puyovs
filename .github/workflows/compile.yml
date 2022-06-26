@@ -162,3 +162,4 @@ jobs:
         files: puyovs-*/puyovs-*.7z
         tag_name: ${{ env.RELEASE_TAG }}
         fail_on_unmatched_files: true
+        prerelease: true
