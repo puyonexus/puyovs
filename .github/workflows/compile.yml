@@ -80,9 +80,11 @@ jobs:
     - name: Make build directory
       run: mkdir ../build
     - name: Build
-      run: flatpak-builder ../build com.puyovs.client.yaml
+      run: flatpak-builder --repo ../repo ../build com.puyovs.client.yaml
+    - name: Export
+      run: flatpak build-bundle ../repo puyovs.flatpak com.puyovs.client --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo
     - name: Package Build Artifact
-      run: 7z a puyovs-linux-amd64-flatpak.7z "../build"
+      run: 7z a puyovs-linux-amd64-flatpak.7z "puyovs.flatpak"
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
