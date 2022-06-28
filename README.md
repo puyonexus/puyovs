@@ -1,4 +1,4 @@
-# Puyo Puyo VS
+# Puyo Puyo VS [![Build](https://github.com/puyonexus/puyovs/actions/workflows/compile.yml/badge.svg)](https://github.com/puyonexus/puyovs/actions/workflows/compile.yml) [![Chat](https://img.shields.io/discord/991434636657971323?label=Chat)](https://discord.gg/cnUzgbFEXX)
 
 Welcome to the Puyo Puyo VS 2 source code.
 
