@@ -11,9 +11,9 @@ finish-args:
   - --device=dri
 modules:
   - name: PuyoVS
-    buildsystem: qmake
+    buildsystem: cmake
     config-opts:
-      - "PACKAGED='true'"
+      - "-DENABLE_UPDATER=Off",
     sources:
       - type: dir
         path: .
