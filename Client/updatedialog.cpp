@@ -44,17 +44,17 @@ bool isElevated()
 bool elevateProcess()
 {
     wchar_t szPath[MAX_PATH];
-    if (!GetModuleFileName(NULL, szPath, ARRAYSIZE(szPath))) {
+    if (!GetModuleFileNameW(NULL, szPath, ARRAYSIZE(szPath))) {
         return false;
     }
 
-    SHELLEXECUTEINFO sei = { sizeof(sei) };
+    SHELLEXECUTEINFOW sei = { sizeof(sei) };
     sei.lpVerb = L"runas";
     sei.lpFile = szPath;
     sei.hwnd = NULL;
     sei.nShow = SW_NORMAL;
 
-    if (!ShellExecuteEx(&sei)) {
+    if (!ShellExecuteExW(&sei)) {
         DWORD dwError = GetLastError();
         if (dwError == ERROR_CANCELLED) {
             return false;
