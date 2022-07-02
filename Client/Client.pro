@@ -156,5 +156,5 @@ defined(${{PREFIX}}) {
 }
 
 equals(${{PACKAGED}}, "true") {
-    DEFINES += "PACKAGED"
+    DEFINES += "PUYOVS_PACKAGED"
 }

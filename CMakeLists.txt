@@ -1,15 +1,20 @@
 cmake_minimum_required(VERSION 3.10)
 project(puyovs)
 
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MD")
-
 # Improves IDE support.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Path setup.
 set(bindir  ${CMAKE_INSTALL_PREFIX}/bin          CACHE PATH "bindir")
 set(datadir ${CMAKE_INSTALL_PREFIX}/share/puyovs CACHE PATH "datadir")
+
+# Options
+option(ENABLE_UPDATER "Enables the Puyo VS auto-updater" OFF)
+
+if(ENABLE_UPDATER)
+  message(STATUS "Enabling Puyo VS auto-updater")
+  add_definitions(-DPUYOVS_UPDATER_ENABLED=1)
+endif()
 
 # Add sub-projects.
 add_subdirectory(Audiolib)

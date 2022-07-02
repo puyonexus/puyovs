@@ -3,7 +3,7 @@ find_package(Qt5 COMPONENTS Widgets OpenGL Network REQUIRED)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 
-add_executable(PuyoVS 
+add_executable(PuyoVS WIN32
     main.cpp
 	mainwindow.cpp
 	chatroomform.cpp
@@ -43,6 +43,14 @@ add_executable(PuyoVS
     chatroomtextedit.cpp
     searchdialog.cpp
     passworddialog.cpp
+)
+
+if(WIN32)
+    target_sources(PuyoVS PRIVATE client.rc)
+endif()
+
+set_target_properties(PuyoVS PROPERTIES
+    MACOSX_BUNDLE TRUE
 )
 
 target_link_libraries(PuyoVS

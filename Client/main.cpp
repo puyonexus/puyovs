@@ -54,10 +54,11 @@ int main(int argc, char *argv[])
 #endif
     QApplication::setApplicationName("PuyoVS");
     PVSApplication a(argc, argv);
+    QStringList args = a.arguments();
 
-#ifdef PACKAGED
+#ifdef PUYOVS_PACKAGED
     QDir::setCurrent(defaultAssetPath);
-    QDebug() << "Packaged mode.";
+    QDebug() << "Running in packaged mode. puyovs.conf will be ignored.";
 #else
     QString applicationPath = QCoreApplication::applicationDirPath();
     QDir applicationDir(applicationPath);
@@ -84,9 +85,9 @@ int main(int argc, char *argv[])
 
     qDebug() << "Bin Path: " << binPath;
     qDebug() << "Asset Path: " << assetsPath;
+#endif
 
-    QStringList args = a.arguments();
-
+#ifdef PUYOVS_UPDATER_ENABLED
     if (!args.contains("--no-update")) {
         if (args.contains("--remove-cruft")) {
             qSleep(500);
@@ -112,11 +113,11 @@ int main(int argc, char *argv[])
             d.exec();
         }
     }
+#endif
 
     if (args.contains("--update-only")) {
         return 0;
     }
-#endif
 
     MainWindow *w = new MainWindow();
     w->show();
