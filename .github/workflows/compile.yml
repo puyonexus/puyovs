@@ -15,8 +15,6 @@ jobs:
     name: Build (Windows)
     runs-on: windows-2019
     steps:
-    - name: Install jom
-      run: choco install -y jom
     - name: Download Qt SDK
       run: Invoke-WebRequest -Uri "https://github.com/puyonexus/qt-sdk-builder/releases/download/v2/qt-windows-5.15.2-${{ matrix.arch }}-msvc-static-release.7z" -OutFile "C:\qt.7z"
     - name: Extract Qt SDK
@@ -25,14 +23,20 @@ jobs:
       run: echo "C:\Qt\Qt-5.15.2\bin" | Out-File -FilePath $Env:GITHUB_PATH -Encoding utf8 -Append
     - name: Checkout
       uses: actions/checkout@v3
-    - name: Set up Visual Studio shell
-      uses: egor-tensin/vs-shell@v2
-      with:
-        arch: ${{ matrix.arch }}
     - name: Configure PuyoVS
-      run: qmake ${{ github.workspace }} CONFIG+=release CONFIG+=force_debug_info
+      run: |
+        mkdir .build
+        cd .build
+        cmake ${{ github.workspace }}
     - name: Build PuyoVS
-      run: jom
+      run: cmake --build . --config Release
+      working-directory: .build
+    - name: Setup Build Folder
+      run: |
+        mkdir Build
+        mkdir Build\Release
+        xcopy /D/Y/S/I Test Build\Release
+        cp .build\Client\Release\PuyoVS.exe Build\Release
     - name: Package Build Artifact
       run: 7z a puyovs-windows-${{ matrix.arch }}.7z "${{ github.workspace }}\Build\Release\*"
     - name: Upload Artifacts
