@@ -13,7 +13,7 @@ modules:
   - name: PuyoVS
     buildsystem: cmake
     config-opts:
-      - "-DENABLE_UPDATER=Off",
+      - "-DENABLE_UPDATER=Off"
     sources:
       - type: dir
         path: .
