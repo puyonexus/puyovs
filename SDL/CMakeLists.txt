@@ -57,7 +57,7 @@ elseif(APPLE)
         src/thread/pthread/*.c
         src/timer/unix/*.c
     )
-elseif(LINUX)
+else()
     file(GLOB PLATFORM_SOURCES
         src/audio/alsa/*.c
         src/audio/bsd/*.c
@@ -66,16 +66,6 @@ elseif(LINUX)
         src/joystick/linux/*.c
         src/power/linux/*.c
         src/haptic/linux/*.c
-        src/loadso/dlopen/*.c
-        src/thread/pthread/*.c
-        src/timer/unix/*.c
-        src/video/x11/*.c
-    )
-else()
-    file(GLOB PLATFORM_SOURCES
-        src/audio/bsd/*.c
-        src/audio/dsp/*.c
-        src/audio/pulseaudio/*.c
         src/loadso/dlopen/*.c
         src/thread/pthread/*.c
         src/timer/unix/*.c
