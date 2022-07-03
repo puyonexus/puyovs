@@ -73,6 +73,4 @@ target_link_libraries(PuyoVS
 target_include_directories(PuyoVS PRIVATE .)
 
 install(TARGETS PuyoVS DESTINATION ${bindir})
-
-file(GLOB_RECURSE DATAFILES ../Test/*)
-install(FILES ${DATAFILES} DESTINATION ${datadir})
+install(DIRECTORY ../Test/ DESTINATION ${datadir})
