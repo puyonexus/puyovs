@@ -47,6 +47,9 @@ add_executable(PuyoVS WIN32
 
 if(WIN32)
     target_sources(PuyoVS PRIVATE client.rc)
+elseif(APPLE)
+else()
+    target_link_libraries(PuyoVS gl)
 endif()
 
 set_target_properties(PuyoVS PROPERTIES
