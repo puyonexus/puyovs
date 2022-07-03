@@ -65,3 +65,6 @@ target_link_libraries(PuyoVS
     Qt5::OpenGL
     Qt5::Network
 )
+
+# Try to work around UIC issue on Linux.
+target_include_directories(PuyoVS PRIVATE .)
