@@ -34,6 +34,7 @@ if(WIN32)
         src/audio/directsound/*.c
         src/audio/winmm/*.c
         src/haptic/windows/*.c
+        src/joystick/*.c
         src/joystick/dummy/*.c
         src/loadso/windows/*.c
         src/power/windows/*.c
@@ -91,6 +92,25 @@ add_library(SDL
 
 if(WIN32)
     target_link_libraries(SDL Imm32)
+elseif(APPLE)
+    target_link_libraries(SDL
+        "-framework Foundation"
+        "-framework Carbon"
+        "-framework AGL"
+        "-framework OpenGL"
+        "-framework ForceFeedback"
+        "-framework AudioUnit"
+        "-framework CoreAudio"
+        "-framework IOKit"
+        "-framework AppKit"
+        "dl"
+        "pthread"
+    )
+else()
+    target_link_libraries(SDL
+        "dl"
+        "pthread"
+    )
 endif()
 
 target_include_directories(SDL PUBLIC include)
