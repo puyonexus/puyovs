@@ -23,11 +23,18 @@ jobs:
       run: echo "C:\Qt\Qt-5.15.2\bin" | Out-File -FilePath $Env:GITHUB_PATH -Encoding utf8 -Append
     - name: Checkout
       uses: actions/checkout@v3
-    - name: Configure PuyoVS
+    - name: Make CMake Build Dir
       run: |
         mkdir .build
         cd .build
-        cmake ${{ github.workspace }}
+    - name: Configure PuyoVS (32-bit)
+      if: matrix.arch == 'x86'
+      run: cmake -A Win32 ${{ github.workspace }}
+      working-directory: .build
+    - name: Configure PuyoVS (64-bit)
+      if: matrix.arch == 'x64'
+      run: cmake -A x64 ${{ github.workspace }}
+      working-directory: .build
     - name: Build PuyoVS
       run: cmake --build . --config Release
       working-directory: .build
