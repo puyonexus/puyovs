@@ -5,9 +5,9 @@ set(CMAKE_AUTOUIC ON)
 
 add_executable(PuyoVS WIN32
     main.cpp
-	mainwindow.cpp
-	chatroomform.cpp
-	settingsdialog.cpp
+    mainwindow.cpp
+    chatroomform.cpp
+    settingsdialog.cpp
     chattextentry.cpp
     language.cpp
     netclient.cpp
@@ -49,7 +49,7 @@ if(WIN32)
     target_sources(PuyoVS PRIVATE client.rc)
 elseif(APPLE)
 else()
-    target_link_libraries(PuyoVS gl)
+    target_link_libraries(PuyoVS GL)
 endif()
 
 set_target_properties(PuyoVS PROPERTIES
