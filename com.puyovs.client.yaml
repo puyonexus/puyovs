@@ -2,7 +2,7 @@ app-id: com.puyovs.client
 runtime: org.kde.Platform
 runtime-version: '5.15-21.08'
 sdk: org.kde.Sdk
-command: puyovs
+command: PuyoVS
 finish-args:
   - --share=ipc
   - --socket=x11
