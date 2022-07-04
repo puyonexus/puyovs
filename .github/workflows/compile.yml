@@ -64,12 +64,19 @@ jobs:
       run: echo "$HOME/Qt-5.15.2/bin" >> $GITHUB_PATH
     - name: Checkout
       uses: actions/checkout@v3
+    - name: Make CMake Build Dir
+      run: mkdir .build
     - name: Configure PuyoVS
-      run: qmake ${{ github.workspace }} CONFIG+=release CONFIG+=force_debug_info
+      run: cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ${{ github.workspace }}
+      working-directory: .build
     - name: Build PuyoVS
-      run: make -j4
+      run: cmake --build . --parallel 4
+      working-directory: .build
+    - name: Copy Assets To Bundle
+      run: cp -r "${{ github.workspace }}/Test/*" "./Client/PuyoVS.app/Contents/MacOS/"
+      working-directory: .build
     - name: Package Build Artifact
-      run: 7z a puyovs-macos-amd64.7z "${{ github.workspace }}/Build/Release/PuyoVS.dmg"
+      run: 7z a puyovs-macos-amd64.7z "./.build/Client/PuyoVS.app"
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
