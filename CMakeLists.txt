@@ -8,6 +8,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(bindir  ${CMAKE_INSTALL_PREFIX}/bin          CACHE PATH "bindir")
 set(datadir ${CMAKE_INSTALL_PREFIX}/share/puyovs CACHE PATH "datadir")
 
+add_definitions("-DPREFIX=\"${CMAKE_INSTALL_PREFIX}\"")
+
 # Options
 option(ENABLE_UPDATER "Enables the Puyo VS auto-updater" OFF)
 
