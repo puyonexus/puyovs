@@ -133,12 +133,12 @@ include(../Zlib/Zlib.pri)
 
 OTHER_FILES += \
     client.rc \
-    puyovs.icns
+    PuyoVS.icns
 
 win32:RC_FILE = client.rc
 
 macx {
-    ICON = puyovs.icns
+    ICON = PuyoVS.icns
 }
 
 RESOURCES += \

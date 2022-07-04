@@ -48,12 +48,15 @@ add_executable(PuyoVS WIN32
 if(WIN32)
     target_sources(PuyoVS PRIVATE client.rc)
 elseif(APPLE)
+    target_sources(PuyoVS PRIVATE puyovs.icns)
+    set_source_files_properties(puyovs.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 else()
     target_link_libraries(PuyoVS GL)
 endif()
 
 set_target_properties(PuyoVS PROPERTIES
     MACOSX_BUNDLE TRUE
+    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in
 )
 
 target_link_libraries(PuyoVS
