@@ -73,7 +73,7 @@ jobs:
       run: cmake --build . --parallel 4
       working-directory: .build
     - name: Copy Assets To Bundle
-      run: cp -r "${{ github.workspace }}/Test/*" "./Client/PuyoVS.app/Contents/MacOS/"
+      run: cp -r ${{ github.workspace }}/Test/* "./Client/PuyoVS.app/Contents/MacOS/"
       working-directory: .build
     - name: Package Build Artifact
       run: 7z a puyovs-macos-amd64.7z "./.build/Client/PuyoVS.app"
