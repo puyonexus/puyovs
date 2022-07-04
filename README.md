@@ -39,6 +39,12 @@ cmake ../puyovs
 #          This is because the MSVC CRT linking may conflict.
 cmake --build . --parallel 4
 
+# Install. You need to do this once so the assets will be globally installed.
+# You do not need to use the globally installed binary.
+# On Windows, you need gsudo installed for this command to work.
+# Without sudo, you can run it in an administrator command prompt.
+sudo cmake --build . --install
+
 # Assuming all is well, you can run your new shiny PuyoVS executable.
 ./Client/PuyoVS
 
@@ -46,11 +52,6 @@ cmake --build . --parallel 4
 # $ open ./Client/PuyoVS.app
 # And on Windows, something like
 # $ .\Client\Release\PuyoVS.exe
-
-# TODO: Currently the build will not find its own assets.
-# You can copy the contents of the Test folder next to the binary.
-# In the case of macOS, copy it into the app bundle next to the PuyoVS executable.
-# This should be resolved in the future. Please be patient :)
 ```
 
 **Want code completion?** You can use any IDE with CMake support, like Qt Creator, Visual Studio, or CLion. In addition, on UNIX-like platforms, you can [generate a `compile_commands.json` database](https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html) and use it with clangd.

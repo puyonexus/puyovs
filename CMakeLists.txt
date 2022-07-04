@@ -5,8 +5,13 @@ project(puyovs)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Path setup.
-set(bindir  ${CMAKE_INSTALL_PREFIX}/bin          CACHE PATH "bindir")
-set(datadir ${CMAKE_INSTALL_PREFIX}/share/puyovs CACHE PATH "datadir")
+if(WIN32)
+  set(bindir  ${CMAKE_INSTALL_PREFIX} CACHE PATH "bindir")
+  set(datadir ${CMAKE_INSTALL_PREFIX} CACHE PATH "datadir")
+else()
+  set(bindir  ${CMAKE_INSTALL_PREFIX}/bin          CACHE PATH "bindir")
+  set(datadir ${CMAKE_INSTALL_PREFIX}/share/puyovs CACHE PATH "datadir")
+endif()
 
 add_definitions("-DPREFIX=\"${CMAKE_INSTALL_PREFIX}\"")
 
