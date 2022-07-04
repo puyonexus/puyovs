@@ -11,7 +11,7 @@ We hope that the community can benefit from this release and build a robust futu
 
 ## Setup Qt
 
-Puyo Puyo VS 2 is written in C++ using the Qt framework. You'll need some form of the Qt SDK to run it. Currently, we're using Qt 5 to compile Puyo Puyo VS 2, although Qt 4 will still work for now. (Qt 6 is not supported yet.) We're also using qmake rather than CMake for the time being.
+Puyo Puyo VS 2 is written in C++ using the Qt framework. You'll need some form of the Qt SDK to run it. Currently, we're using Qt 5 to compile Puyo Puyo VS 2. (Qt 6 is not supported yet.)
 
 For Linux users, it is generally advised to consult your package manager. For example, on Ubuntu, you can install `qt5-default` and `qtcreator` to get a basic Qt development environment. Exactly how to configure the Qt SDK for Linux is out of the scope of this README.
 
