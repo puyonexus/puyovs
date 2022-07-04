@@ -2,7 +2,7 @@ app-id: com.puyovs.client
 runtime: org.kde.Platform
 runtime-version: '5.15-21.08'
 sdk: org.kde.Sdk
-command: puyovs
+command: PuyoVS
 finish-args:
   - --share=ipc
   - --socket=x11
@@ -11,9 +11,9 @@ finish-args:
   - --device=dri
 modules:
   - name: PuyoVS
-    buildsystem: qmake
+    buildsystem: cmake
     config-opts:
-      - "PACKAGED='true'"
+      - "-DENABLE_UPDATER=Off"
     sources:
       - type: dir
         path: .

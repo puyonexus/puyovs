@@ -1,0 +1,20 @@
+include_directories(include)
+
+add_library(ENet
+    callbacks.c
+    compress.c
+    host.c
+    list.c
+    packet.c
+    peer.c
+    protocol.c
+)
+
+if(WIN32)
+    target_sources(ENet PRIVATE win32.c)
+else()
+    target_sources(ENet PRIVATE unix.c)
+    add_compile_definitions(HAS_SOCKLEN_T)
+endif()
+
+target_include_directories(ENet PUBLIC include)

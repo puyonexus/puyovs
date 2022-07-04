@@ -1,0 +1,33 @@
+include_directories(../Zlib)
+add_library(Puyolib
+    tinyxmlparser.cpp
+    tinyxmlerror.cpp
+    tinyxml.cpp
+    tinystr.cpp
+    sprite.cpp
+    sound.cpp
+    ruleset.cpp
+    puyo.cpp
+    player.cpp
+    otherObjects.cpp
+    nextPuyo.cpp
+    mt.cc
+    movePuyo.cpp
+    menu.cpp
+    main.cpp
+    global.cpp
+    gameSettings.cpp
+    game.cpp
+    field.cpp
+    feverCounter.cpp
+    dropPattern.cpp
+    controller.cpp
+    characterSelect.cpp
+    animation.cpp
+    AI.cpp
+    classicpool.cpp
+    classicpuyorng.cpp
+    classicrng.cpp
+    legacypuyorng.cpp
+    puyorng.cpp
+)
