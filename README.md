@@ -21,7 +21,7 @@ For macOS and Windows users, you have several options to get a copy of the Qt SD
 
 ## Building
 
-Once you have a Qt SDK setup, you can build a copy of Puyo VS by building the Client subproject.
+Once you have a Qt SDK setup, you can build a copy of Puyo VS by building the Client target.
 
 If you prefer the terminal, you can setup a quick build like so:
 
@@ -29,29 +29,31 @@ If you prefer the terminal, you can setup a quick build like so:
 # Set up build directory outside of the source code
 mkdir ../build && cd ../build
 
-# Run qmake to configure a build for this build dir. You can also specify debug.
-qmake ../puyovs CONFIG+=release
+# Run CMake to configure a build for this build dir. You can also specify debug.
+cmake ../puyovs
 
-# Run make. The value you specify for -j specifies maximum parallel processes to compile with.
-make -j8
-
-# On Windows, if you are using MSVC, you should use nmake or jom.
-# You can install jom via chocolately. It is recommended.
-# MinGW is not recommended, but if you use msys2 you should be able to run `make` normally.
-# Make sure you are using a shell setup for MinGW!
-# MSys has multiple shell options and some of them are NOT for use with MinGW!
+# Run make. Use higher values for parallel if you have a lot of cores.
+#
+# WARNING: On Windows you may need to add --config Release or --config RelWithDebInfo
+#          if your Qt SDK build is only release mode, like the ones from qt-sdk-builder.
+#          This is because the MSVC CRT linking may conflict.
+cmake --build . --parallel 4
 
 # Assuming all is well, you can run your new shiny PuyoVS executable.
-cd ../puyovs/Build/Release
-./PuyoVS
+./Client/PuyoVS
 
 # On macOS, you'll need to do something like
-# $ open ./PuyoVS.app
+# $ open ./Client/PuyoVS.app
 # And on Windows, something like
-# $ .\PuyoVS.exe
+# $ .\Client\Release\PuyoVS.exe
+
+# TODO: Currently the build will not find its own assets.
+# You can copy the contents of the Test folder next to the binary.
+# In the case of macOS, copy it into the app bundle next to the PuyoVS executable.
+# This should be resolved in the future. Please be patient :)
 ```
 
-**Want code completion?** Use Qt Creator for easy code completion. If you want code completion in other code editors, like Vim or VSCode, it is recommended to use `clangd` with a program that can generate a compile commands metadata file, like [bear](https://github.com/rizsotto/Bear). In the future, CMake should make this easier. Some day! Maybe...
+**Want code completion?** You can use any IDE with CMake support, like Qt Creator, Visual Studio, or CLion. In addition, on UNIX-like platforms, you can [generate a `compile_commands.json` database](https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html) and use it with clangd.
 
 ## Source Organization
 
