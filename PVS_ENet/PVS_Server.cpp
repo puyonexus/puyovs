@@ -134,7 +134,7 @@ int PVS_Server::receive(ENetEvent &event)
             std::string mes;
             if (!pr.getString(mes)) return ERROR_PACKET;
 
-            printf(mes.c_str());
+            puts(mes.c_str());
             fflush(stdout);
             break;
         }
