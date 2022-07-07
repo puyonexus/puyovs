@@ -5,3 +5,7 @@ Build/Release/
 Build/**/
 PuyoVS.pro.*
 .flatpak-builder/
+
+# Visual Studio
+.vs/
+.build/

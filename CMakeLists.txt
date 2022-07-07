@@ -6,6 +6,9 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Path setup.
 if(WIN32)
+  if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "C:\\PuyoVS" CACHE PATH "default install path" FORCE)
+  endif()
   set(bindir  ${CMAKE_INSTALL_PREFIX} CACHE PATH "bindir")
   set(datadir ${CMAKE_INSTALL_PREFIX} CACHE PATH "datadir")
 else()
