@@ -139,7 +139,9 @@ public:
         else return mManager->translate("Launcher", QString(disambiguation));
     }
 
-    QString translate(const char */*context*/, const char *sourceText, const char *disambiguation) const
+
+    QString translate(const char* /*context*/, const char* sourceText,
+        const char* disambiguation = nullptr, int n = -1) const override
     {
         if(disambiguation != 0 && strlen(disambiguation) != 0)
         {
