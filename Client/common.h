@@ -11,7 +11,7 @@
 // Protocol version (usually matches build str)
 #define PVSVERSION 32
 // Build string (displayed in title bar and other places)
-#define PUYOVS_BUILD_STR "b32"
+#define PUYOVS_BUILD_STR "v32"
 // Default username
 #define PUYOVS_DEFAULT_USERNAME "Name"
 // Default server
