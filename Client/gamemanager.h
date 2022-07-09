@@ -21,8 +21,8 @@ public:
     GameManager(NetClient *network, QObject *parent = 0);
     ~GameManager();
 
-    void run();
     bool closeAll();
+    void exec();
 
 public slots:
     void addGame(GameWidget *game);
@@ -47,7 +47,6 @@ signals:
     void exiting();
 
 protected:
-    Q_INVOKABLE void doRun();
     void process();
     bool getGame(const QString &channel, ppvs::game *&game, GameWidget *&widget);
 

@@ -5,6 +5,7 @@
 #include <QTabBar>
 #include <QTabWidget>
 #include <QTreeWidgetItem>
+#include <QPointer>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -120,7 +121,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Testing.
     //QMetaObject::invokeMethod(this, "on_EndlessToolButton_clicked", Qt::QueuedConnection);
-    gameManager->run();
 }
 
 MainWindow::~MainWindow()
@@ -133,6 +133,12 @@ MainWindow::~MainWindow()
     delete client;
     delete ui;
     delete languageManager;
+}
+
+void MainWindow::exec()
+{
+    show();
+    gameManager->exec();
 }
 
 void MainWindow::connectToServer()

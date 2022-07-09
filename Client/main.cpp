@@ -121,6 +121,6 @@ int main(int argc, char *argv[])
 
     MainWindow *w = new MainWindow();
     w->show();
-
-    return a.exec();
+    w->exec();
+    return 0;
 }

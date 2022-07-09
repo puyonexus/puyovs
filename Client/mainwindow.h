@@ -34,6 +34,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void exec();
     void connectToServer();
     void logIn();
     void logOut();

@@ -45,12 +45,6 @@ GameManager::~GameManager()
     emit exiting();
 }
 
-void GameManager::run()
-{
-    loopEnabled = true;
-    QMetaObject::invokeMethod(this, "doRun", Qt::QueuedConnection);
-}
-
 bool GameManager::closeAll()
 {
     if (games.empty())
@@ -764,12 +758,13 @@ bool GameManager::getGame(const QString &channel, ppvs::game *&game, GameWidget 
 }
 
 
-void GameManager::doRun()
+void GameManager::exec()
 {
     static int iteration_max = 1;
     unsigned long iteration = 0;
     unsigned long nextTime = timeGetTime();
 
+    loopEnabled = true;
     while(loopEnabled)
     {
         process();
