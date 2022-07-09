@@ -2,6 +2,7 @@ find_package(Qt5 COMPONENTS Widgets OpenGL Network REQUIRED)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
 
 add_executable(PuyoVS WIN32
     main.cpp
@@ -43,6 +44,7 @@ add_executable(PuyoVS WIN32
     chatroomtextedit.cpp
     searchdialog.cpp
     passworddialog.cpp
+    client.qrc
 )
 
 if(WIN32)
