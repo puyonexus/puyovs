@@ -44,8 +44,69 @@ add_executable(PuyoVS WIN32
     chatroomtextedit.cpp
     searchdialog.cpp
     passworddialog.cpp
+
+    mainwindow.h
+    chatroomform.h
+    settingsdialog.h
+    chattextentry.h
+    language.h
+    netclient.h
+    settings.h
+    userinfotextbox.h
+    createchatroomdialog.h
+    gamewidgetgl.h
+    offlinedialog.h
+    common.h
+    gamewidget.h
+    gamemanager.h
+    inputwidget.h
+    inputdialog.h
+    keynames.h
+    chatwindow.h
+    mixerwindow.h
+    glextensions.h
+    fshadergl.h
+    glmanager.h
+    fimagegl.h
+    fsoundalib.h
+    ffontgl.h
+    frontendgl.h
+    gameaudio.h
+    replaydialog.h
+    admindialog.h
+    startupdialog.h
+    playlist.h
+    musicplayer.h
+    pvsapplication.h
+    updatedialog.h
+    updaterldb.h
+    updaterudb.h
+    chatroomtextedit.h
+    searchdialog.h
+    passworddialog.h
+
+    mainwindow.ui
+    chatroomform.ui
+    settingsdialog.ui
+    createchatroomdialog.ui
+    offlinedialog.ui
+    inputwidget.ui
+    inputdialog.ui
+    chatwindow.ui
+    mixerwindow.ui
+    replaydialog.ui
+    admindialog.ui
+    startupdialog.ui
+    updatedialog.ui
+    searchdialog.ui
+    passworddialog.ui
+
     client.qrc
 )
+
+source_group("UI Files" REGULAR_EXPRESSION "\\.ui$")
+
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT PuyoVS)
 
 if(WIN32)
     target_sources(PuyoVS PRIVATE client.rc)
