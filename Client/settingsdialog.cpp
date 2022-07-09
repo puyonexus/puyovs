@@ -64,8 +64,10 @@ void SettingsDialog::load()
     ui->MusicVolumeHorizontalSlider->setSliderPosition(settings.integer("music","musicvolume", 100));
     ui->SoundVolumeHorizontalSlider->setSliderPosition(settings.integer("music","soundvolume", 100));
     ui->RoomPasswordLineEdit->setText(settings.string("launcher","roompassword",""));
+	ui->AllowCrashDumpsCheckBox->setChecked(settings.boolean("telemetry", "collectdebugdata", false));
+    ui->AllowUsageStatisticsCheckBox->setChecked(settings.boolean("telemetry", "collectusagedata", false));
 
-    // rules
+	// rules
     ui->BaseRulesComboBox->setCurrentIndex(settings.integer("rules", "baserules", 0));
     ui->DefaultRulesCheckbox->setChecked(settings.boolean("rules", "default", true));
     ui->MarginTimeSpinBox->setValue(settings.integer("rules", "margintime", 192));
@@ -131,6 +133,9 @@ void SettingsDialog::save()
     settings.setInteger("music","musicvolume",ui->MusicVolumeHorizontalSlider->sliderPosition());
     settings.setInteger("music","soundvolume",ui->SoundVolumeHorizontalSlider->sliderPosition());
     settings.setString("launcher","roompassword",ui->RoomPasswordLineEdit->text());
+
+    settings.setBoolean("telemetry", "collectdebugdata", ui->AllowCrashDumpsCheckBox->isChecked());
+    settings.setBoolean("telemetry", "collectusagedata", ui->AllowUsageStatisticsCheckBox->isChecked());
 
     // rules
     settings.setInteger("rules", "baserules", ui->BaseRulesComboBox->currentIndex());

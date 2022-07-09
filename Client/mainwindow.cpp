@@ -28,6 +28,7 @@
 #include "glmanager.h"
 #include "../Puyolib/gameSettings.h"
 #include "chatwindow.h"
+#include "telemetrydialog.h"
 
 const static Qt::ItemDataRole rulesRole = static_cast<Qt::ItemDataRole>(Qt::UserRole + 1);
 const static Qt::ItemDataRole scoreRole = static_cast<Qt::ItemDataRole>(Qt::UserRole + 2);
@@ -477,6 +478,17 @@ void MainWindow::showSettings()
         settingsDlg->show();
         showSettingsDlg=true;
     }
+}
+
+void MainWindow::showTelemetryPrompt()
+{
+    QPointer<TelemetryDialog> telemetryDialog = new TelemetryDialog(languageManager);
+    if (telemetryDialog->shouldShow()) {
+        if (telemetryDialog->exec() == QDialog::Accepted) {
+            telemetryDialog->save();
+        }
+    }
+    delete telemetryDialog;
 }
 
 void MainWindow::on_StartupDialog_Finished(int result)

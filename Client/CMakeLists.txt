@@ -35,6 +35,7 @@ add_executable(PuyoVS WIN32
     replaydialog.cpp
     admindialog.cpp
     startupdialog.cpp
+    telemetrydialog.cpp
     playlist.cpp
     musicplayer.cpp
     pvsapplication.cpp
@@ -84,6 +85,7 @@ add_executable(PuyoVS WIN32
     chatroomtextedit.h
     searchdialog.h
     passworddialog.h
+    telemetrydialog.h
 
     mainwindow.ui
     chatroomform.ui
@@ -100,6 +102,7 @@ add_executable(PuyoVS WIN32
     updatedialog.ui
     searchdialog.ui
     passworddialog.ui
+    telemetrydialog.ui
 
     client.qrc
 )

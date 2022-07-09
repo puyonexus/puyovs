@@ -56,6 +56,7 @@ SOURCES += main.cpp \
     replaydialog.cpp \
     admindialog.cpp \
     startupdialog.cpp \
+    telemetrydialog.cpp \
     playlist.cpp \
     musicplayer.cpp \
     pvsapplication.cpp \
@@ -95,7 +96,8 @@ HEADERS += mainwindow.h \
     gameaudio.h \
     replaydialog.h \
     admindialog.h \
-    startupdialog.h\
+    startupdialog.h \
+    telemetrydialog.h \
     playlist.h \
     musicplayer.h \
     pvsapplication.h \
@@ -118,6 +120,7 @@ FORMS += mainwindow.ui \
     replaydialog.ui \
     admindialog.ui \
     startupdialog.ui \
+    telemetrydialog.ui \
     updatedialog.ui \
     searchdialog.ui \
     passworddialog.ui

@@ -336,6 +336,29 @@
         </widget>
        </item>
        <item>
+        <widget class="QGroupBox" name="TelemetryGroupBox">
+         <property name="title">
+          <string>Telemetry</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_9">
+          <item>
+           <widget class="QCheckBox" name="AllowCrashDumpsCheckBox">
+            <property name="text">
+             <string>Allow sending crash dumps and error logs</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="AllowUsageStatisticsCheckBox">
+            <property name="text">
+             <string>Allow sending usage statistics and telemetry</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -749,8 +772,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>261</width>
-               <height>684</height>
+               <width>282</width>
+               <height>560</height>
               </rect>
              </property>
              <layout class="QFormLayout" name="formLayout_3">

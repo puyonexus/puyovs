@@ -3,7 +3,7 @@
 
 #ifndef PREFIX
 #   if defined(Q_OS_WIN)
-#       define PREFIX "C:\\Program Files\\PuyoVS"
+#       define PREFIX "C:\\PuyoVS"
 #   elif defined(Q_OS_MAC) && defined(__aarch64__)
 #       define PREFIX "/opt/homebrew"
 #   else

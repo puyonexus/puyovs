@@ -64,6 +64,7 @@ public slots:
     void updateActions();
     void updateJoinButton();
     void showSettings();
+    void showTelemetryPrompt();
     void on_StartupDialog_Finished(int result);
     void on_SettingsDialog_Finished(int result);
     void on_SearchDialog_Finished(int result);

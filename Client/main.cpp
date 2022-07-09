@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
     }
 
     MainWindow *w = new MainWindow();
-    w->show();
+    w->showTelemetryPrompt();
     w->exec();
     return 0;
 }
