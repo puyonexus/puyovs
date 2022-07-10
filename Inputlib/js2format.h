@@ -1,5 +1,4 @@
-#ifndef JS2FORMAT_H
-#define JS2FORMAT_H
+#pragma once
 
 static const DIOBJECTDATAFORMAT js2data[] =
 {
@@ -178,5 +177,3 @@ const DIDATAFORMAT js2format =
     numObjects(js2data),
     (LPDIOBJECTDATAFORMAT)js2data
 };
-
-#endif // JS2FORMAT_H

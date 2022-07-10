@@ -1,5 +1,4 @@
-#ifndef SPRITE_H
-#define SPRITE_H
+#pragma once
 
 #include "fieldProp.h"
 #include "frontend.h"
@@ -79,4 +78,3 @@ private:
 };
 
 }
-#endif // SPRITE_H

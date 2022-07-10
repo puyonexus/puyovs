@@ -1,5 +1,4 @@
-#ifndef ALIBINT_H
-#define ALIBINT_H
+#pragma once
 
 #if defined(_MSC_VER)
   typedef signed char int8_t;
@@ -39,5 +38,3 @@ namespace alib {
   static_assert(sizeof(uint64_t) == 8, "int64_t is not of the correct size");
 }
 */
-
-#endif // ALIBINT_H

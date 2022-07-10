@@ -1,5 +1,4 @@
-#ifndef CONTROLLER_H
-#define CONTROLLER_H
+#pragma once
 
 #include "global.h"
 #include <string>
@@ -62,4 +61,3 @@ class controller
         playerType m_type;
 };
 }
-#endif // CONTROLLER_H

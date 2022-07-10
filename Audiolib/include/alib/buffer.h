@@ -1,5 +1,4 @@
-#ifndef BUFFER_H
-#define BUFFER_H
+#pragma once
 
 #include "audiolib.h"
 #include <string>
@@ -116,5 +115,3 @@ public:
 };
 
 }
-
-#endif // BUFFER_H

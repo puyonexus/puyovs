@@ -1,5 +1,4 @@
-#ifndef RESAMPLER_H
-#define RESAMPLER_H
+#pragma once
 
 #include "audiolib.h"
 
@@ -18,5 +17,3 @@ public:
 };
 
 }
-
-#endif // RESAMPLER_H

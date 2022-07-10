@@ -1,5 +1,4 @@
-#ifndef COMMON_H
-#define COMMON_H
+#pragma once
 
 #include <QList>
 #include <QPair>
@@ -80,5 +79,3 @@ void msleep(unsigned long t) { Sleep(t); }
 static inline
 void msleep(unsigned long t) { usleep(t * 1000); }
 #endif
-
-#endif // COMMON_H

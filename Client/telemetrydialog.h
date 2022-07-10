@@ -1,5 +1,4 @@
-#ifndef TELEMETRYDIALOG_H
-#define TELEMETRYDIALOG_H
+#pragma once
 
 #include <QDialog>
 #include <QDesktopServices>
@@ -32,5 +31,3 @@ private:
 
     bool shouldShowDialog = true;
 };
-
-#endif // TELEMETRYDIALOG_H

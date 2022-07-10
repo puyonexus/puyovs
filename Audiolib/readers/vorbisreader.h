@@ -1,5 +1,4 @@
-#ifndef VORBISREADER_H
-#define VORBISREADER_H
+#pragma once
 
 #include "audiolib.h"
 #include "stream.h"
@@ -46,5 +45,3 @@ public:
 #endif
 
 }
-
-#endif // VORBISREADER_H

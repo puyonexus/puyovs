@@ -1,5 +1,4 @@
-#ifndef USERINFOTEXTBOX_H
-#define USERINFOTEXTBOX_H
+#pragma once
 
 #include <QTextEdit>
 
@@ -16,5 +15,3 @@ signals:
 public slots:
     
 };
-
-#endif // USERINFOTEXTBOX_H

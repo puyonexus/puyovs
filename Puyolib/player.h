@@ -1,5 +1,4 @@
-#ifndef PLAYER_H
-#define PLAYER_H
+#pragma once
 
 #include "controller.h"
 #include "movePuyo.h"
@@ -339,4 +338,3 @@ class player
         int debugCounter;
 };
 }
-#endif // PLAYER_H

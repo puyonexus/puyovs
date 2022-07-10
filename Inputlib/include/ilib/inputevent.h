@@ -1,5 +1,4 @@
-#ifndef INPUTEVENT_H
-#define INPUTEVENT_H
+#pragma once
 
 #include "inputlib.h"
 
@@ -72,5 +71,3 @@ struct InputEvent
 };
 
 }
-
-#endif // INPUTEVENT_H

@@ -1,5 +1,4 @@
-#ifndef CHATROOMFORM_H
-#define CHATROOMFORM_H
+#pragma once
 
 #include <QWidget>
 #include <QIcon>
@@ -106,5 +105,3 @@ private:
     NetChannelProxy *mProxy;
     GameManager *gameManager;
 };
-
-#endif // CHATROOMFORM_H

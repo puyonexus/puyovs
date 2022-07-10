@@ -1,5 +1,4 @@
-#ifndef CHATROOMTEXTEDIT_H
-#define CHATROOMTEXTEDIT_H
+#pragma once
 
 #include <QPlainTextEdit>
 #include <QMouseEvent>
@@ -19,5 +18,3 @@ protected:
     virtual void mousePressEvent( QMouseEvent * event );
     virtual void mouseMoveEvent( QMouseEvent * event );
 };
-
-#endif // CHATROOMTEXTEDIT_H

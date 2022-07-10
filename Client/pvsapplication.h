@@ -1,5 +1,4 @@
-#ifndef PVSAPPLICATION_H
-#define PVSAPPLICATION_H
+#pragma once
 
 #include <QApplication>
 #include "settings.h"
@@ -35,5 +34,3 @@ private slots:
 };
 
 extern PVSApplication *pvsApp;
-
-#endif // PVSAPPLICATION_H

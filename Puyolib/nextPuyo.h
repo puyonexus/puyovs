@@ -1,5 +1,4 @@
-#ifndef NEXTPUYO_H
-#define NEXTPUYO_H
+#pragma once
 
 #include "global.h"
 #include "sprite.h"
@@ -47,4 +46,3 @@ class nextPuyo
     movePuyoType m_type1,m_type2,m_type3;
 };
 }
-#endif // NEXTPUYO_H

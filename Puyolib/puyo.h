@@ -1,5 +1,4 @@
-#ifndef PUYO_H
-#define PUYO_H
+#pragma once
 
 #include "global.h"
 #include "fieldProp.h"
@@ -154,5 +153,3 @@ public:
 };
 
 }
-
-#endif // PUYO_H

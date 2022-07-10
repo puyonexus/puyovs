@@ -1,5 +1,4 @@
-#ifndef MIXERWINDOW_H
-#define MIXERWINDOW_H
+#pragma once
 
 #include <QDialog>
 
@@ -18,5 +17,3 @@ public:
 private:
     Ui::MixerWindow *ui;
 };
-
-#endif // MIXERWINDOW_H

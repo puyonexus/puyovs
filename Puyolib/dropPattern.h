@@ -1,5 +1,4 @@
-#ifndef DROPPATTERN_H
-#define DROPPATTERN_H
+#pragma once
 #include <vector>
 #include <string>
 #include "global.h"
@@ -56,4 +55,3 @@ void createNuisancePattern(int max,int *array);
 int getVoicePattern(int chain,int predicted,bool fever=true);
 
 }
-#endif // DROPPATTERN_H

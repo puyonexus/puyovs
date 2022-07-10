@@ -1,5 +1,4 @@
-#ifndef PCMREADER_H
-#define PCMREADER_H
+#pragma once
 
 #include "samplereader.h"
 #include "buffer.h"
@@ -29,5 +28,3 @@ public:
 };
 
 }
-
-#endif // PCMREADER_H

@@ -1,5 +1,4 @@
-#ifndef RULESET_H
-#define RULESET_H
+#pragma once
 
 #include "fieldProp.h"
 #include "global.h"
@@ -308,4 +307,3 @@ class ruleset_EXCAVATION : public ruleset
 };
 
 }
-#endif // RULESET_H

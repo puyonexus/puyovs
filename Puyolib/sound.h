@@ -1,5 +1,4 @@
-#ifndef SOUND_H
-#define SOUND_H
+#pragma once
 
 #include <string>
 
@@ -27,4 +26,3 @@ class sound
 };
 
 }
-#endif // SOUND_H

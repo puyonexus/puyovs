@@ -1,5 +1,4 @@
-#ifndef OTHEROBJECTS_H
-#define OTHEROBJECTS_H
+#pragma once
 
 #include "sprite.h"
 #include "global.h"
@@ -160,4 +159,3 @@ class scoreCounter
 };
 
 }
-#endif // OTHEROBJECTS_H

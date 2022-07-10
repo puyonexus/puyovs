@@ -1,5 +1,4 @@
-#ifndef UPDATERUDB_H
-#define UPDATERUDB_H
+#pragma once
 
 #include "updaterldb.h"
 class QIODevice;
@@ -64,5 +63,3 @@ public:
     UDBHeader header;
     UpdaterFiles files;
 };
-
-#endif // UPDATERUDB_H

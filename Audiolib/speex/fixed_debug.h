@@ -32,8 +32,7 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef FIXED_DEBUG_H
-#define FIXED_DEBUG_H
+#pragma once
 
 #include <stdio.h>
 
@@ -483,5 +482,3 @@ static inline int _DIV32(long long a, long long b, char *file, int line)
 }
 #define PDIV32(a,b) DIV32(ADD32((a),(b)>>1),b)
 #define PDIV32_16(a,b) DIV32_16(ADD32((a),(b)>>1),b)
-
-#endif

@@ -36,8 +36,7 @@
 */
 
 
-#ifndef SPEEX_RESAMPLER_H
-#define SPEEX_RESAMPLER_H
+#pragma once
 
 #ifdef OUTSIDE_SPEEX
 
@@ -335,6 +334,4 @@ const char *speex_resampler_strerror(int err);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

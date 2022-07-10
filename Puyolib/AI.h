@@ -1,5 +1,4 @@
-#ifndef AI_H
-#define AI_H
+#pragma once
 
 #include "fieldProp.h"
 #include "dropPattern.h"
@@ -34,4 +33,3 @@ class AI
         player *m_player;
 };
 }
-#endif // AI_H

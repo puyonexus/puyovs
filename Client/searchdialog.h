@@ -1,5 +1,4 @@
-#ifndef SEARCHDIALOG_H
-#define SEARCHDIALOG_H
+#pragma once
 
 #include <QDialog>
 #include <QTimer>
@@ -30,5 +29,3 @@ private:
     int searchState;
     void checkButton();
 };
-
-#endif // SEARCHDIALOG_H

@@ -1,5 +1,4 @@
-#ifndef SAMPLE_H
-#define SAMPLE_H
+#pragma once
 
 #include "audiolib.h"
 
@@ -11,5 +10,3 @@ public:
 private:
     ALIB_DECLARE_PRIV;
 };
-
-#endif // SAMPLE_H

@@ -1,5 +1,4 @@
-#ifndef ALIB_STREAM_H
-#define ALIB_STREAM_H
+#pragma once
 
 #include "audiolib.h"
 #include "buffer.h"
@@ -193,5 +192,3 @@ private:
 };
 
 }
-
-#endif // ALIB_STREAM_H

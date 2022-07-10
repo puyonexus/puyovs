@@ -1,5 +1,4 @@
-#ifndef LANGUAGE_H
-#define LANGUAGE_H
+#pragma once
 
 #include <QObject>
 #include <QMap>
@@ -72,5 +71,3 @@ private:
     QString mLostLanguage;
     Translator *mTranslator;
 };
-
-#endif // LANGUAGE_H

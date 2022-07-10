@@ -1,5 +1,4 @@
-#ifndef FEVERCOUNTER_H
-#define FEVERCOUNTER_H
+#pragma once
 
 #include "global.h"
 #include "sprite.h"
@@ -53,4 +52,3 @@ class feverCounter
         sprite m_secondsSprite[2];
 };
 }
-#endif // FEVERCOUNTER_H

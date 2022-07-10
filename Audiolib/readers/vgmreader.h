@@ -1,5 +1,4 @@
-#ifndef VGMREADER_H
-#define VGMREADER_H
+#pragma once
 
 #ifdef ALIB_VGMSTREAM_SUPPORT
 #include "samplereader.h"
@@ -45,7 +44,3 @@ public:
 #else
 #define ALIB_VGM_DETECT(out, stream, parameter)
 #endif
-
-
-
-#endif // VGMREADER_H

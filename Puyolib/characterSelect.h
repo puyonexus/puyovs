@@ -1,5 +1,4 @@
-#ifndef CHARACTERSELECT_H
-#define CHARACTERSELECT_H
+#pragma once
 
 #include "global.h"
 #include "sprite.h"
@@ -51,5 +50,3 @@ class characterSelect
         bool firstStart;
 };
 }
-
-#endif // CHARACTERSELECT_H

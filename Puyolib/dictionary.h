@@ -20,8 +20,7 @@
 	$Revision: 1.12 $
 */
 
-#ifndef _DICTIONARY_H_
-#define _DICTIONARY_H_
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -178,5 +177,3 @@ void dictionary_dump(dictionary * d, FILE * out);
 #ifdef __cplusplus
 }
 #endif 
-
-#endif

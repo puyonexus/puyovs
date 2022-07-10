@@ -1,5 +1,4 @@
-#ifndef PVS_SERVER_H
-#define PVS_SERVER_H
+#pragma once
 
 #include <enet/enet.h>
 #include "PVS_Channel.h"
@@ -62,5 +61,3 @@ struct PVS_Server
 
 
 };
-
-#endif // PVS_SERVER_H

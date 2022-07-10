@@ -1,5 +1,4 @@
-#ifndef SETTINGSDIALOG_H
-#define SETTINGSDIALOG_H
+#pragma once
 
 #include <QDialog>
 #include <QComboBox>
@@ -63,5 +62,3 @@ private:
     LanguageManager *languageManager;
     int oldLanguage;
 };
-
-#endif // SETTINGSDIALOG_H

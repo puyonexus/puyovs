@@ -1,5 +1,4 @@
-#ifndef CHATWINDOW_H
-#define CHATWINDOW_H
+#pragma once
 
 #include <QWidget>
 
@@ -54,5 +53,3 @@ private:
     bool quickchat;
     Ui::ChatWindow *ui;
 };
-
-#endif // CHATWINDOW_H

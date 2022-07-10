@@ -1,5 +1,4 @@
-#ifndef INPUTWIDGET_H
-#define INPUTWIDGET_H
+#pragma once
 
 #include <QWidget>
 
@@ -24,5 +23,3 @@ private slots:
 private:
     Ui::InputWidget *ui;
 };
-
-#endif // INPUTWIDGET_H

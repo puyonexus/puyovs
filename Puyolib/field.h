@@ -1,5 +1,4 @@
-#ifndef FIELD_H
-#define FIELD_H
+#pragma once
 
 #include "fieldProp.h"
 #include "puyo.h"
@@ -123,4 +122,3 @@ class field
 
 };
 }
-#endif // FIELD_H

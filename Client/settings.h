@@ -1,5 +1,4 @@
-#ifndef SETTINGS_H
-#define SETTINGS_H
+#pragma once
 
 #include <QStringList>
 #include <QObject>
@@ -45,5 +44,3 @@ private:
     bool mExists;
     bool mError;
 };
-
-#endif // SETTINGS_H

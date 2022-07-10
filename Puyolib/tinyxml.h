@@ -21,10 +21,10 @@ must not be misrepresented as being the original software.
 3. This notice may not be removed or altered from any source
 distribution.
 */
-#define TIXML_USE_STL
 
-#ifndef TINYXML_INCLUDED
-#define TINYXML_INCLUDED
+#pragma once
+
+#define TIXML_USE_STL
 
 #ifdef _MSC_VER
 #pragma warning( push )
@@ -1800,6 +1800,4 @@ private:
 
 #ifdef _MSC_VER
 #pragma warning( pop )
-#endif
-
 #endif

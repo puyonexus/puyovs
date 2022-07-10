@@ -1,5 +1,4 @@
-#ifndef MIXER_H
-#define MIXER_H
+#pragma once
 
 #include "audiolib.h"
 #include "stream.h"
@@ -44,5 +43,3 @@ public:
 };
 
 }
-
-#endif // MIXER_H

@@ -21,8 +21,7 @@ freely, subject to the following restrictions:
     distribution.
 */
 
-#ifndef _FAST_MUTEX_H_
-#define _FAST_MUTEX_H_
+#pragma once
 
 /// @file
 
@@ -243,6 +242,3 @@ class fast_mutex {
 };
 
 }
-
-#endif // _FAST_MUTEX_H_
-

@@ -1,5 +1,4 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <QMainWindow>
 #include <QNetworkAccessManager>
@@ -140,5 +139,3 @@ private:
     SearchDialog *searchDlg;
     ppvs::gameSettings *mGameSettings;
 };
-
-#endif // MAINWINDOW_H

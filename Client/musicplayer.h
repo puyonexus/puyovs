@@ -1,5 +1,4 @@
-#ifndef MUSICPLAYER_H
-#define MUSICPLAYER_H
+#pragma once
 
 #include <QObject>
 
@@ -35,5 +34,3 @@ public slots:
     void pause();
     void stop();
 };
-
-#endif // MUSICPLAYER_H

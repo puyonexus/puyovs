@@ -1,5 +1,4 @@
-#ifndef AUDIOLIB_H
-#define AUDIOLIB_H
+#pragma once
 
 #include <string>
 #include "common.h"
@@ -27,5 +26,3 @@ public:
 };
 
 }
-
-#endif // AUDIOLIB_H

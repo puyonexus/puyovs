@@ -1,5 +1,4 @@
-#ifndef MENU_H
-#define MENU_H
+#pragma once
 
 #include "global.h"
 #include "sprite.h"
@@ -26,4 +25,3 @@ class menu
         bool disableRematch;
 };
 }
-#endif // MENU_H

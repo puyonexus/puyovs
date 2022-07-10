@@ -1,5 +1,4 @@
-#ifndef FSOUNDALIB_H
-#define FSOUNDALIB_H
+#pragma once
 
 #include <QObject>
 #include "../Puyolib/frontend.h"
@@ -20,6 +19,3 @@ private:
     GameAudio *audio;
     bool error;
 };
-
-
-#endif // FSOUNDALIB_H

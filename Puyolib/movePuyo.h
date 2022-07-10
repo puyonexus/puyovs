@@ -1,5 +1,4 @@
-#ifndef MOVEPUYO_H
-#define MOVEPUYO_H
+#pragma once
 
 #include "global.h"
 #include "fieldProp.h"
@@ -128,7 +127,4 @@ class movePuyo
         void drawQuick();
 };
 
-
-
 }
-#endif // MOVEPUYO_H

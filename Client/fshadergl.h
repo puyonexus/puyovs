@@ -1,5 +1,4 @@
-#ifndef FSHADERGL_H
-#define FSHADERGL_H
+#pragma once
 
 #include <QObject>
 #include "glextensions.h"
@@ -28,5 +27,3 @@ private:
     GLuint program;
     GLint currentTex;
 };
-
-#endif // FSHADERGL_H

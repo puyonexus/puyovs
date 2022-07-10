@@ -1,5 +1,4 @@
-#ifndef GLOBAL_H
-#define GLOBAL_H
+#pragma once
 #include "mt.h"
 #include "sound.h"
 #include "sprite.h"
@@ -211,5 +210,3 @@ inline std::string to_string(const T& t)
 int to_int(const std::string &s);
 
 }
-
-#endif

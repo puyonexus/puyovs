@@ -1,5 +1,4 @@
-#ifndef PLAYLIST_H
-#define PLAYLIST_H
+#pragma once
 
 #include <QUrl>
 #include <QList>
@@ -126,5 +125,3 @@ private slots:
     void notifyAboutToMoveRows(int count, int from, int to);
     void notifyRowsMoved(int count, int from, int to);
 };
-
-#endif // PLAYLIST_H

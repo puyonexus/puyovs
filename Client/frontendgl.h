@@ -1,5 +1,4 @@
-#ifndef FRONTENDGL_H
-#define FRONTENDGL_H
+#pragma once
 
 #include <QtOpenGL>
 #include <QObject>
@@ -56,5 +55,3 @@ private:
     ppvs::finput &input;
     GLExtensions &ext;
 };
-
-#endif // FRONTENDGL_H

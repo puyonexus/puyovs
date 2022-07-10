@@ -1,5 +1,5 @@
-#ifndef GAME_H
-#define GAME_H
+#pragma once
+
 #include "sprite.h"
 #include "frontend.h"
 #include "player.h"
@@ -163,4 +163,3 @@ class game
         bool playNext; //helper variable for replays
 };
 }
-#endif // GAME_H lin

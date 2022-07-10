@@ -1,5 +1,4 @@
-#ifndef GLEXTENSIONS_H
-#define GLEXTENSIONS_H
+#pragma once
 
 #include <QtOpenGL>
 
@@ -47,5 +46,3 @@ struct GLExtensions
 	glGetUniform4fPtr glUniform4f;
 	glGetUniform1iPtr glUniform1i;
 };
-
-#endif // GLEXTENSIONS_H

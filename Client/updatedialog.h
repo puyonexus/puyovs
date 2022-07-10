@@ -1,5 +1,4 @@
-#ifndef UPDATEDIALOG_H
-#define UPDATEDIALOG_H
+#pragma once
 
 #include <qglobal.h>
 #include <QDialog>
@@ -72,5 +71,3 @@ private:
     QNetworkAccessManager *netMan;
     UpdaterLDB ldb;
 };
-
-#endif // UPDATEDIALOG_H

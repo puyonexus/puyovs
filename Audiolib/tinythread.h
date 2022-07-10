@@ -21,8 +21,7 @@ freely, subject to the following restrictions:
     distribution.
 */
 
-#ifndef _TINYTHREAD_H_
-#define _TINYTHREAD_H_
+#pragma once
 
 /// @file
 /// @mainpage TinyThread++ API Reference
@@ -710,5 +709,3 @@ namespace this_thread {
 
 // Define/macro cleanup
 #undef _TTHREAD_DISABLE_ASSIGNMENT
-
-#endif // _TINYTHREAD_H_

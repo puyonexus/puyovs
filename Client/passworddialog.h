@@ -1,5 +1,4 @@
-#ifndef PASSWORDDIALOG_H
-#define PASSWORDDIALOG_H
+#pragma once
 
 #include <QDialog>
 
@@ -40,5 +39,3 @@ private:
     NetChannel chan;
     bool isSpectating;
 };
-
-#endif // PASSWORDDIALOG_H

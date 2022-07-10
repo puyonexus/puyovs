@@ -5,8 +5,7 @@
  * Durham, March  7, 2007
  */
 
-#ifndef METRICS_MT_H
-#define METRICS_MT_H
+#pragma once
 
 /**
  * Mersenne Twister.
@@ -56,5 +55,3 @@ private:
     bool seeded_by_array_;               // Seeded by an array
     bool seeded_by_int_;                 // Seeded by an integer
 };
-
-#endif // METRICS_MT_H

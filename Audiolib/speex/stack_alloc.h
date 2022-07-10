@@ -32,8 +32,7 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef STACK_ALLOC_H
-#define STACK_ALLOC_H
+#pragma once
 
 #ifdef USE_ALLOCA
 # ifdef WIN32
@@ -109,7 +108,4 @@
 #else
 #define VARDECL(var) var
 #define ALLOC(var, size, type) var = PUSH(stack, size, type)
-#endif
-
-
 #endif

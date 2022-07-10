@@ -1,5 +1,4 @@
-#ifndef FFONTGL_H
-#define FFONTGL_H
+#pragma once
 
 #include <QtOpenGL>
 #include <QObject>
@@ -32,5 +31,3 @@ private:
     QGLWidget *gl;
     QFont font;
 };
-
-#endif // FFONTGL_H

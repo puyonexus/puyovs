@@ -1,5 +1,4 @@
-#ifndef FRONTEND_H
-#define FRONTEND_H
+#pragma once
 
 #include <string>
 
@@ -174,5 +173,3 @@ private:
 };
 
 }
-
-#endif // FRONTEND_H

@@ -1,5 +1,4 @@
-#ifndef NULLDRIVER_H
-#define NULLDRIVER_H
+#pragma once
 
 #include "inputlib.h"
 #include "driver.h"
@@ -21,5 +20,3 @@ public:
 };
 
 }
-
-#endif // NULLDRIVER_H

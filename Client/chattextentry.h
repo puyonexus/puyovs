@@ -1,5 +1,4 @@
-#ifndef CHATTEXTENTRY_H
-#define CHATTEXTENTRY_H
+#pragma once
 
 #include <QPlainTextEdit>
 
@@ -26,5 +25,3 @@ private:
     int documentHeight;
     int fontLineHeight;
 };
-
-#endif // CHATTEXTENTRY_H

@@ -1,5 +1,4 @@
-#ifndef ALIB_COMMON_H
-#define ALIB_COMMON_H
+#pragma once
 
 #include <stdio.h>
 
@@ -65,8 +64,6 @@ const char *copyString(const char *string)
 
 }
 
-#endif // ALIB_COMMON_H
-
 // fuck you microsoft, no seriously
 #ifdef min
 #undef min
@@ -75,4 +72,3 @@ const char *copyString(const char *string)
 #ifdef max
 #undef max
 #endif
-

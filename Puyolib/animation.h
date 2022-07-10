@@ -1,5 +1,4 @@
-#ifndef ANIMATION_H
-#define ANIMATION_H
+#pragma once
 
 #include "sprite.h"
 #include "fieldProp.h"
@@ -87,4 +86,3 @@ class animation
 };
 
 }
-#endif // ANIMATION_H

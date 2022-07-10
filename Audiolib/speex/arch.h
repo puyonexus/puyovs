@@ -32,8 +32,7 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef ARCH_H
-#define ARCH_H
+#pragma once
 
 #ifndef SPEEX_VERSION
 #define SPEEX_MAJOR_VERSION 1         /**< Major Speex version. */
@@ -231,7 +230,4 @@ typedef float spx_word32_t;
 
 #ifdef FIXED_DEBUG
 extern long long spx_mips;
-#endif
-
-
 #endif

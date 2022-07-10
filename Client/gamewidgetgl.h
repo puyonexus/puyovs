@@ -1,5 +1,4 @@
-#ifndef GAMEWIDGETGL_H
-#define GAMEWIDGETGL_H
+#pragma once
 
 #include "gameaudio.h"
 #include "gamewidget.h"
@@ -35,5 +34,3 @@ public slots:
 private:
     GameWidgetGLPriv *d;
 };
-
-#endif // GAMEWIDGETGL_H

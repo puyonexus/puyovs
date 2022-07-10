@@ -1,5 +1,4 @@
-#ifndef _IL_DRIVER_H
-#define _IL_DRIVER_H
+#pragma once
 
 #include "inputlib.h"
 #include "inputevent.h"
@@ -36,5 +35,3 @@ public:
 };
 
 }
-
-#endif // _IL_DRIVER_H

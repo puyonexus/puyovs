@@ -1,5 +1,4 @@
-#ifndef PVS_CLIENT_H
-#define PVS_CLIENT_H
+#pragma once
 
 #define N_CHANNELS 10
 
@@ -105,5 +104,3 @@ struct PVS_Client
     void disconnect();
     void receive(struct _ENetEvent &event);
 };
-
-#endif // PVS_CLIENT_H

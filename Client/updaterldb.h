@@ -1,5 +1,4 @@
-#ifndef UPDATERLDB_H
-#define UPDATERLDB_H
+#pragma once
 
 #include <qglobal.h>
 #include <QMap>
@@ -16,5 +15,3 @@ public:
 
     QMap<QString, quint32> fileVersions;
 };
-
-#endif // UPDATERLDB_H

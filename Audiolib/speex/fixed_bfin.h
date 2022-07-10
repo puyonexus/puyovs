@@ -33,8 +33,7 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef FIXED_BFIN_H
-#define FIXED_BFIN_H
+#pragma once
 
 #undef PDIV32_16
 static inline spx_word16_t PDIV32_16(spx_word32_t a, spx_word16_t b)
@@ -169,5 +168,3 @@ static inline spx_word32_t MAC16_32_Q14(spx_word32_t c, spx_word16_t a, spx_word
          );
    return res;
 }
-
-#endif

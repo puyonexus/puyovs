@@ -1,5 +1,4 @@
-#ifndef CREATECHATROOMDIALOG_H
-#define CREATECHATROOMDIALOG_H
+#pragma once
 
 #include <QDialog>
 
@@ -29,5 +28,3 @@ private:
     QString mName;
     QString mDescription;
 };
-
-#endif // CREATECHATROOMDIALOG_H

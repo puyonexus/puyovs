@@ -1,5 +1,4 @@
-#ifndef GLMANAGER_H
-#define GLMANAGER_H
+#pragma once
 
 #include <QtOpenGL>
 #include <QString>
@@ -33,5 +32,3 @@ private:
 
 void GlobalGLInit();
 void GlobalGLDeInit();
-
-#endif // GLMANAGER_H

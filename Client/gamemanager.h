@@ -1,5 +1,4 @@
-#ifndef GAMETIMER_H
-#define GAMETIMER_H
+#pragma once
 
 #include <QObject>
 #include <QList>
@@ -54,5 +53,3 @@ protected:
     NetClient *network;
     GameAudio *audio;
 };
-
-#endif // GAMETIMER_H

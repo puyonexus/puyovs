@@ -3,8 +3,7 @@
 //  HEADER BEGINS HERE
 //
 
-#ifndef STB_VORBIS_INCLUDE_STB_VORBIS_H
-#define STB_VORBIS_INCLUDE_STB_VORBIS_H
+#pragma once
 
 namespace alib {
 class BinaryStream;
@@ -270,6 +269,3 @@ enum STBVorbisError
 //     requires more memory and is very likely slower, so I don't think
 //     you'd ever want to do it except for debugging.
 // #define STB_VORBIS_NO_DEFER_FLOOR
-
-
-#endif // STB_VORBIS_INCLUDE_STB_VORBIS_H

@@ -1,5 +1,4 @@
-#ifndef GAMESETTINGS_H
-#define GAMESETTINGS_H
+#pragma once
 
 #include "ruleset.h"
 #include "dropPattern.h"
@@ -79,4 +78,3 @@ struct gameSettings
 };
 
 }
-#endif // GAMESETTINGS_H

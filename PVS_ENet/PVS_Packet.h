@@ -1,5 +1,4 @@
-#ifndef PVS_PACKET_H
-#define PVS_PACKET_H
+#pragma once
 
 #include <string>
 
@@ -112,5 +111,3 @@ public:
     bool getString(std::string &in);
     char* getChars(unsigned int n);
 };
-
-#endif // PVS_PACKET_H

@@ -1,5 +1,4 @@
-#ifndef FIMAGEGL_H
-#define FIMAGEGL_H
+#pragma once
 
 #include <QObject>
 #include <QImage>
@@ -31,5 +30,3 @@ private:
     QString fn;
     QImage alpha;
 };
-
-#endif // FIMAGEGL_H

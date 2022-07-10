@@ -1,5 +1,4 @@
-#ifndef INPUTDIALOG_H
-#define INPUTDIALOG_H
+#pragma once
 
 #include <QDialog>
 
@@ -33,5 +32,3 @@ private:
     ilib::Driver *drv;
     QString in;
 };
-
-#endif // INPUTDIALOG_H

@@ -1,5 +1,4 @@
-#ifndef OFFLINEDIALOG_H
-#define OFFLINEDIALOG_H
+#pragma once
 
 #include <QDialog>
 #include <QList>
@@ -35,5 +34,3 @@ private:
     const QList<QPair<int, QString> > mModeList;
     ppvs::gameSettings *mGameSettings;
 };
-
-#endif // OFFLINEDIALOG_H

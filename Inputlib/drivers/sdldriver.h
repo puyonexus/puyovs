@@ -1,5 +1,4 @@
-#ifndef SDLDRIVER_H
-#define SDLDRIVER_H
+#pragma once
 
 #include "inputlib.h"
 #include "driver.h"
@@ -25,5 +24,3 @@ public:
 };
 
 }
-
-#endif // SDLDRIVER_H

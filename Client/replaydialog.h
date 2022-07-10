@@ -1,5 +1,4 @@
-#ifndef REPLAYDIALOG_H
-#define REPLAYDIALOG_H
+#pragma once
 
 #include <QDialog>
 
@@ -30,5 +29,3 @@ private:
     Ui::ReplayDialog *ui;
     GameManager *gameManager;
 };
-
-#endif // REPLAYDIALOG_H

@@ -1,5 +1,4 @@
-#ifndef PVS_PEER_H
-#define PVS_PEER_H
+#pragma once
 
 #include <iostream>
 #include <cstdlib>
@@ -20,5 +19,3 @@ struct PVS_Peer
     std::string oldName;
     std::list<std::string> channels; //this list is maintained by the channel functions
 };
-
-#endif // PVS_PEER_H

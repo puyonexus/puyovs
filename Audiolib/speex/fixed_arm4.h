@@ -32,8 +32,7 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef FIXED_ARM4_H
-#define FIXED_ARM4_H
+#pragma once
 
 #undef MULT16_32_Q14
 static inline spx_word32_t MULT16_32_Q14(spx_word16_t x, spx_word32_t y) {
@@ -143,6 +142,3 @@ static inline short DIV32_16(int a, int b)
                         );
    return res;
 }
-
-
-#endif

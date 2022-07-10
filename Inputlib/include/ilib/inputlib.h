@@ -1,5 +1,4 @@
-#ifndef INPUTLIB_H
-#define INPUTLIB_H
+#pragma once
 
 #include <stdio.h>
 
@@ -28,5 +27,3 @@ class NonCopyable
 };
 
 }
-
-#endif // INPUTLIB_H

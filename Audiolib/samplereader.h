@@ -1,5 +1,4 @@
-#ifndef SAMPLEREADER_H
-#define SAMPLEREADER_H
+#pragma once
 
 #include "audiolib.h"
 
@@ -54,5 +53,3 @@ public:
 };
 
 }
-
-#endif // SAMPLEREADER_H

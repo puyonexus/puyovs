@@ -19,8 +19,7 @@
    @file speex_types.h
    @brief Speex types
 */
-#ifndef _SPEEX_TYPES_H
-#define _SPEEX_TYPES_H
+#pragma once
 
 #if defined(_WIN32) 
 
@@ -125,5 +124,3 @@
    typedef unsigned int spx_uint32_t;
 
 #endif
-
-#endif  /* _SPEEX_TYPES_H */

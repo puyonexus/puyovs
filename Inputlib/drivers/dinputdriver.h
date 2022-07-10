@@ -1,5 +1,4 @@
-#ifndef DINPUTDRIVER_H
-#define DINPUTDRIVER_H
+#pragma once
 
 #include "inputlib.h"
 #include "driver.h"
@@ -25,5 +24,3 @@ public:
 };
 
 }
-
-#endif // DINPUTDRIVER_H

@@ -1,5 +1,4 @@
-#ifndef FIELDPROP_H
-#define FIELDPROP_H
+#pragma once
 namespace ppvs
 {
 enum direction
@@ -39,4 +38,3 @@ struct fieldProp
     float angle;
 };
 }
-#endif // FIELDPROP_H

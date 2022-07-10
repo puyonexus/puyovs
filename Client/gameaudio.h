@@ -1,5 +1,4 @@
-#ifndef GAMEAUDIO_H
-#define GAMEAUDIO_H
+#pragma once
 
 #include <alib/audiolib.h>
 #include <alib/buffer.h>
@@ -27,5 +26,3 @@ private:
     alib::Device *audioDevice;
     SampleCache sampleCache;
 };
-
-#endif // GAMEAUDIO_H

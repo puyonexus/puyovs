@@ -1,5 +1,4 @@
-#ifndef GAMEWIDGET_H
-#define GAMEWIDGET_H
+#pragma once
 
 #include <QMainWindow>
 #include <QDockWidget>
@@ -61,5 +60,3 @@ protected:
     bool moveOnce;
     QPoint parentPos;
 };
-
-#endif // GAMEWIDGET_H

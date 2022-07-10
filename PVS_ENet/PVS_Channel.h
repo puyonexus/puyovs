@@ -1,5 +1,4 @@
-#ifndef PVS_CHANNEL_H
-#define PVS_CHANNEL_H
+#pragma once
 
 #include <map>
 #include <list>
@@ -74,5 +73,3 @@ struct PVS_ChannelManager
     void setStatus(std::string channelName,PVS_Peer *peer,unsigned char status);
     int getStatus(std::string channelName,PVS_Peer *peer);
 };
-
-#endif // PVS_CHANNEL_H

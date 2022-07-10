@@ -1,5 +1,4 @@
-#ifndef QPVSCLIENT_H
-#define QPVSCLIENT_H
+#pragma once
 
 #include <QObject>
 #include <QString>
@@ -208,5 +207,3 @@ private:
     QString mChannel;
     NetClient *mClient;
 };
-
-#endif // QPVSCLIENT_H

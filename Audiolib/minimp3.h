@@ -1,5 +1,4 @@
-#ifndef __MINIMP3_H_INCLUDED__
-#define __MINIMP3_H_INCLUDED__
+#pragma once
 
 #define MP3_MAX_SAMPLES_PER_FRAME (1152*2)
 
@@ -15,5 +14,3 @@ extern mp3_decoder_t mp3_create(void);
 extern int mp3_decode(mp3_decoder_t *dec, void *buf, int bytes, signed short *out, mp3_info_t *info);
 extern void mp3_done(mp3_decoder_t *dec);
 #define mp3_free(dec) do { mp3_done(dec); dec = NULL; } while(0)
-
-#endif//__MINIMP3_H_INCLUDED__

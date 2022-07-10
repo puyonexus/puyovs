@@ -1,5 +1,4 @@
-#ifndef RINGBUFFER_H
-#define RINGBUFFER_H
+#pragma once
 
 #include "audiolib.h"
 
@@ -25,5 +24,3 @@ public:
 };
 
 }
-
-#endif // RINGBUFFER_H

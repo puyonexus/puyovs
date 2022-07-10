@@ -1,5 +1,4 @@
-#ifndef ADMINDIALOG_H
-#define ADMINDIALOG_H
+#pragma once
 
 #include <QDialog>
 
@@ -27,5 +26,3 @@ private:
     NetClient *mClient;
     Ui::AdminDialog *ui;
 };
-
-#endif // ADMINDIALOG_H

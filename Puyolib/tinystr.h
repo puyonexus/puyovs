@@ -21,11 +21,9 @@ must not be misrepresented as being the original software.
 distribution.
 */
 
+#pragma once
 
 #ifndef TIXML_USE_STL
-
-#ifndef TIXML_STRING_INCLUDED
-#define TIXML_STRING_INCLUDED
 
 #include <assert.h>
 #include <string.h>
@@ -301,5 +299,4 @@ public :
 
 } ;
 
-#endif	// TIXML_STRING_INCLUDED
 #endif	// TIXML_USE_STL
