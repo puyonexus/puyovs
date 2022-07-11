@@ -10,13 +10,7 @@
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "variables": [
-        {
-          "name": "CMAKE_BUILD_TYPE",
-          "value": "RelWithDebInfo",
-          "type": "STRING"
-        }
-      ]
+      "variables": []
     }
   ]
 }
