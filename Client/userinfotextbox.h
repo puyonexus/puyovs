@@ -4,14 +4,10 @@
 
 class UserInfoTextBox : public QTextEdit
 {
-    Q_OBJECT
-public:
-    explicit UserInfoTextBox(QWidget *parent = 0);
+	Q_OBJECT
 
-    QSize sizeHint() const;
-    
-signals:
-    
-public slots:
-    
+public:
+	explicit UserInfoTextBox(QWidget* parent = nullptr);
+
+	QSize sizeHint() const override;
 };

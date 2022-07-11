@@ -4,81 +4,81 @@
 #include "settings.h"
 #include "pvsapplication.h"
 
-TelemetryDialog::TelemetryDialog(LanguageManager* lm, QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::TelemetryDialog),
+TelemetryDialog::TelemetryDialog(LanguageManager* lm, QWidget* parent) :
+	QDialog(parent),
+	ui(new Ui::TelemetryDialog),
 	languageManager(lm)
 {
-    ui->setupUi(this);
-    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+	ui->setupUi(this);
+	connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-    connect(ui->languageBox, SIGNAL(currentIndexChanged(int)), this, SLOT(languageChanged(int)));
-    connect(languageManager, SIGNAL(languagesModified()), this, SLOT(updateLanguagesBox()));
+	connect(ui->languageBox, SIGNAL(currentIndexChanged(int)), this, SLOT(languageChanged(int)));
+	connect(languageManager, SIGNAL(languagesModified()), this, SLOT(updateLanguagesBox()));
 
-    updateLanguagesBox();
-    load();
+	updateLanguagesBox();
+	load();
 }
 
 TelemetryDialog::~TelemetryDialog()
 {
-    delete ui;
+	delete ui;
 }
 
-bool TelemetryDialog::shouldShow()
+bool TelemetryDialog::shouldShow() const
 {
-    return shouldShowDialog;
+	return shouldShowDialog;
 }
 
 void TelemetryDialog::load()
 {
-    Settings& settings = pvsApp->settings();
-    ui->languageBox->setCurrentIndex(languageManager->currentLanguageIndex());
+	Settings& settings = pvsApp->settings();
+	ui->languageBox->setCurrentIndex(languageManager->currentLanguageIndex());
 
-    shouldShowDialog = settings.boolean("telemetry", "showdialog", true);
+	shouldShowDialog = settings.boolean("telemetry", "showdialog", true);
 	auto collectDebugData = settings.boolean("telemetry", "collectdebugdata", false);
 	auto collectUsageData = settings.boolean("telemetry", "collectusagedata", false);
 
-    ui->allowCrashDumpsCheckBox->setChecked(collectDebugData);
-    ui->allowUsageStatisticsCheckBox->setChecked(collectUsageData);
+	ui->allowCrashDumpsCheckBox->setChecked(collectDebugData);
+	ui->allowUsageStatisticsCheckBox->setChecked(collectUsageData);
 }
 
-void TelemetryDialog::save()
+void TelemetryDialog::save() const
 {
-    auto collectDebugData = ui->allowCrashDumpsCheckBox->isChecked();
-    auto collectUsageData = ui->allowUsageStatisticsCheckBox->isChecked();
+	auto collectDebugData = ui->allowCrashDumpsCheckBox->isChecked();
+	auto collectUsageData = ui->allowUsageStatisticsCheckBox->isChecked();
 
-    Settings& settings = pvsApp->settings();
+	Settings& settings = pvsApp->settings();
 
-    settings.setBoolean("telemetry", "showdialog", false);
-    settings.setBoolean("telemetry", "collectdebugdata", collectDebugData);
-    settings.setBoolean("telemetry", "collectusagedata", collectUsageData);
+	settings.setBoolean("telemetry", "showdialog", false);
+	settings.setBoolean("telemetry", "collectdebugdata", collectDebugData);
+	settings.setBoolean("telemetry", "collectusagedata", collectUsageData);
 
-    QString langFn = languageManager->currentLanguageFileName();
-    if(langFn.startsWith("Language/"))
-        langFn.remove(0, 9);
-    settings.setString("launcher", "language", langFn);
+	QString langFn = languageManager->currentLanguageFileName();
+	if (langFn.startsWith("Language/"))
+		langFn.remove(0, 9);
+	settings.setString("launcher", "language", langFn);
 
-    settings.save();
+	settings.save();
 }
 
-void TelemetryDialog::languageChanged(int index)
+void TelemetryDialog::languageChanged(int index) const
 {
-    if (languageManager->currentLanguageIndex() != index)
-        languageManager->setCurrentLanguageIndex(ui->languageBox->currentIndex());
+	if (languageManager->currentLanguageIndex() != index)
+		languageManager->setCurrentLanguageIndex(ui->languageBox->currentIndex());
 }
 
 void TelemetryDialog::updateLanguagesBox()
 {
-    ui->languageBox->blockSignals(true);
-    ui->languageBox->clear();
-    int languageCount = languageManager->languageCount();
+	ui->languageBox->blockSignals(true);
+	ui->languageBox->clear();
+	int languageCount = languageManager->languageCount();
 
-    for (int i = 0; i < languageCount; ++i)
-        ui->languageBox->addItem(languageManager->language(i)->realName(), i);
+	for (int i = 0; i < languageCount; ++i)
+		ui->languageBox->addItem(languageManager->language(i)->realName(), i);
 
-    int language = languageManager->currentLanguageIndex();
-    if (language != -1 && language != ui->languageBox->currentIndex())
-        ui->languageBox->setCurrentIndex(language);
-    ui->languageBox->blockSignals(false);
-    ui->retranslateUi(this);
+	int language = languageManager->currentLanguageIndex();
+	if (language != -1 && language != ui->languageBox->currentIndex())
+		ui->languageBox->setCurrentIndex(language);
+	ui->languageBox->blockSignals(false);
+	ui->retranslateUi(this);
 }

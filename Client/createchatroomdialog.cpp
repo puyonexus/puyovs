@@ -1,31 +1,31 @@
 #include "createchatroomdialog.h"
 #include "ui_createchatroomdialog.h"
 
-CreateChatroomDialog::CreateChatroomDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::CreateChatroomDialog)
+CreateChatroomDialog::CreateChatroomDialog(QWidget* parent) :
+	QDialog(parent),
+	ui(new Ui::CreateChatroomDialog)
 {
-    ui->setupUi(this);
+	ui->setupUi(this);
 }
 
 CreateChatroomDialog::~CreateChatroomDialog()
 {
-    delete ui;
+	delete ui;
 }
 
 QString CreateChatroomDialog::name()
 {
-    return mName;
+	return mName;
 }
 
 QString CreateChatroomDialog::description()
 {
-    return mDescription;
+	return mDescription;
 }
 
 void CreateChatroomDialog::on_buttonBox_accepted()
 {
-    mName = ui->CreateChatroomNameLineEdit->text();
-    mDescription = ui->CreateChatroomDescriptionTextEdit->toPlainText();
-    emit createChatroom(this);
+	mName = ui->CreateChatroomNameLineEdit->text();
+	mDescription = ui->CreateChatroomDescriptionTextEdit->toPlainText();
+	emit createChatroom(this);
 }

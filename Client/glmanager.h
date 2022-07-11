@@ -16,8 +16,8 @@ public:
     GLManager();
     ~GLManager();
 
-    QGLWidget *globalWidget();
-    bool sharing();
+    QGLWidget *globalWidget() const;
+    bool sharing() const;
     GLuint texID(QString tx);
     GLTexture loadTexture(QGLWidget *context, QString name);
 

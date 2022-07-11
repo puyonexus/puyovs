@@ -55,19 +55,19 @@ public:
     void setFlipX(bool f);
     void setFlipY(bool f);
 
-    void draw(frendertarget *t, fshader *s = 0);
+    void draw(frendertarget *t, fshader *s = nullptr);
     void redraw(frendertarget *t); //draw again with blendmode add
 
-    float getSizeX();
-    float getSizeY();
-    float getScaleX();
-    float getScaleY();
-    posVectorFloat getPosition();
-    float getX();
-    float getY();
-    float getAngle();
-    float getTransparency();
-    fimage *getImage();
+    float getSizeX() const;
+    float getSizeY() const;
+    float getScaleX() const;
+    float getScaleY() const;
+    posVectorFloat getPosition() const;
+    float getX() const;
+    float getY() const;
+    float getAngle() const;
+    float getTransparency() const;
+    fimage *getImage() const;
 protected:
 private:
     void properFlip(bool x,bool y);

@@ -6,7 +6,7 @@ namespace ppvs
 nextPuyo::nextPuyo()
 {
     //Nextpuyo window is 65 pixels wide, 124 pixels high
-    gamedata=0;
+    gamedata=nullptr;
     m_scale=1;
     m_goNext=16;
     m_color11=0; m_color12=0;
@@ -100,13 +100,13 @@ void nextPuyo::play()
         m_pair1Y-=4;
     if (m_goNext<16)
     {
-        m_pair1Y-=6;
-        m_pair3Y-=4;
-        m_pair2X-=22.0/16.0*m_sign;
-        m_pair2Y-=56.0/16.0;
+        m_pair1Y-=6.f;
+        m_pair3Y-=4.f;
+        m_pair2X-=22.0f/16.0f*static_cast<float>(m_sign);
+        m_pair2Y-=56.0f/16.0f;
 
-        m_sprite21.setScale((33.0+m_goNext)/48.0);
-        m_sprite22.setScale((33.0+m_goNext)/48.0);
+        m_sprite21.setScale((33.0f+static_cast<float>(m_goNext))/48.0f);
+        m_sprite22.setScale((33.0f+static_cast<float>(m_goNext))/48.0f);
 
         ++m_goNext;
     }
@@ -192,8 +192,8 @@ void nextPuyo::draw()
 
 void nextPuyo::setSprite(sprite &m_sprite1,sprite &m_sprite2,sprite &m_spriteEye1,sprite &m_spriteEye2,int &m_color1,int &m_color2,movePuyoType &m_type)
 {//it's almost a direct copy of movepuyo.cpp. Difference in centers
-    float subRectX1,subRectY1,subRectWidth1,subRectHeight1,subRectX2,subRectY2,subRectWidth2,subRectHeight2;
-    int m_bigColor=m_color1;
+    int subRectX1,subRectY1,subRectWidth1,subRectHeight1,subRectX2,subRectY2,subRectWidth2,subRectHeight2;
+    const int m_bigColor=m_color1;
     if (m_type==DOUBLET)
     {
         subRectX1=0; subRectY1=PUYOY*m_color1;
@@ -269,10 +269,10 @@ void nextPuyo::setSprite(sprite &m_sprite1,sprite &m_sprite2,sprite &m_spriteEye
     }
     else if (m_type==QUADRUPLET)
     {
-        subRectX1=10*PUYOX+(PUYOX+PUYOX/6.4f)*m_color1; subRectY1=PUYOY*13;
-        subRectWidth1=PUYOX+PUYOX/6.4f; subRectHeight1=PUYOY*2;
-        subRectX2=10*PUYOX+(PUYOX+PUYOX/6.4f)*m_color2; subRectY2=PUYOY*13;
-        subRectWidth2=PUYOX+PUYOX/6.4f; subRectHeight2=PUYOY*2;
+        subRectX1=10*PUYOX+(PUYOX+(PUYOX*64)/10)*m_color1; subRectY1=PUYOY*13;
+        subRectWidth1=PUYOX+(PUYOX*64)/10; subRectHeight1=PUYOY*2;
+        subRectX2=10*PUYOX+(PUYOX+(PUYOX*64)/10)*m_color2; subRectY2=PUYOY*13;
+        subRectWidth2=PUYOX+(PUYOX*64)/10; subRectHeight2=PUYOY*2;
         m_sprite2.setSubRect(subRectX1,subRectY1,subRectWidth1,subRectHeight1);
         m_sprite1.setSubRect(subRectX2,subRectY2,subRectWidth2,subRectHeight2);
         if (gamedata)
@@ -337,10 +337,10 @@ void nextPuyo::test()
 
 void nextPuyo::resetPuyoPos()
 {
-    m_pair1X=int(!m_orientation)*65+m_sign*25; m_pair1Y=40;
-    m_pair2X=int(!m_orientation)*65+m_sign*47; m_pair2Y=96;
-    m_pair3X=int(!m_orientation)*65+m_sign*47; m_pair3Y=160;
-    m_sprite21.setScale(33.0/48.0);
-    m_sprite22.setScale(33.0/48.0);
+    m_pair1X=static_cast<float>(!m_orientation)*65+static_cast<float>(m_sign)*25; m_pair1Y=40;
+    m_pair2X=static_cast<float>(!m_orientation)*65+static_cast<float>(m_sign)*47; m_pair2Y=96;
+    m_pair3X=static_cast<float>(!m_orientation)*65+static_cast<float>(m_sign)*47; m_pair3Y=160;
+    m_sprite21.setScale(33.0f/48.0f);
+    m_sprite22.setScale(33.0f/48.0f);
 }
 }

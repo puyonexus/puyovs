@@ -8,29 +8,30 @@ class Playlist;
 
 class PVSApplication : public QApplication
 {
-    Q_OBJECT
+	Q_OBJECT
 
-    struct Priv; Priv *p;
+	struct Priv; Priv* p;
+
 public:
-    PVSApplication(int &argc, char **argv);
-    ~PVSApplication();
+	PVSApplication(int& argc, char** argv);
+	~PVSApplication() override;
 
-    // Settings
-    Settings &settings();
+	// Settings
+	Settings& settings() const;
 
-    // Music
-    enum MusicMode { MusicOff, MusicPause, MusicNormal, MusicFever };
-    void setMusicMode(MusicMode mode, bool advance = false);
-    void setMusicVolume(float volume, bool fever=false);
+	// Music
+	enum MusicMode { MusicOff, MusicPause, MusicNormal, MusicFever };
+	void setMusicMode(MusicMode mode, bool advance = false) const;
+	void setMusicVolume(float volume, bool fever = false) const;
 
-    MusicPlayer &musicPlayer();
-    MusicPlayer &feverMusicPlayer();
+	MusicPlayer& musicPlayer() const;
+	MusicPlayer& feverMusicPlayer() const;
 
-    Playlist &playlist();
-    Playlist &feverPlaylist();
+	Playlist& playlist() const;
+	Playlist& feverPlaylist() const;
 
 private slots:
-    void reloadSettings();
+	void reloadSettings() const;
 };
 
-extern PVSApplication *pvsApp;
+extern PVSApplication* pvsApp;

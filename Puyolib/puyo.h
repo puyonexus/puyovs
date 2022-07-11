@@ -41,8 +41,8 @@ class puyo
         float GetAccelY() { return m_accelY; }
         void SetAccelY(float val) { m_accelY = val;}
         void AddAccelY(float val);
-        void setFallDelay(int val){fallDelay=val;}
-        puyoType getType()const{return m_type;}
+        void setFallDelay(int val){ fallDelay = static_cast<float>(val); }
+        puyoType getType()const{ return m_type; }
 
         //Virtual functions
         virtual void draw(frendertarget *target);

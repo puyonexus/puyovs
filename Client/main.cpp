@@ -21,9 +21,7 @@
 #include <QDebug>
 #include <QDesktopWidget>
 #include <QDir>
-#include <QMessageBox>
 #include <QTextCodec>
-#include <QProcess>
 #include <QSettings>
 
 #ifdef Q_OS_WIN
@@ -33,94 +31,94 @@
 void qSleep(int ms)
 {
 #ifdef Q_OS_WIN
-    Sleep(uint(ms));
+	Sleep(uint(ms));
 #else
-    struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
-    nanosleep(&ts, NULL);
+	struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
+	nanosleep(&ts, NULL);
 #endif
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
+	QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 #if QT_VERSION < 0x050000
-    // UTF-8 is now default in Qt 5!
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
+	// UTF-8 is now default in Qt 5!
+	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 #endif
 
-    QApplication::setAttribute(Qt::AA_X11InitThreads);
+	QApplication::setAttribute(Qt::AA_X11InitThreads);
 #if QT_VERSION >= 0x050600
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
-    QApplication::setApplicationName("PuyoVS");
-    PVSApplication a(argc, argv);
-    QStringList args = a.arguments();
+	QApplication::setApplicationName("PuyoVS");
+	PVSApplication a(argc, argv);
+	QStringList args = a.arguments();
 
 #ifdef PUYOVS_PACKAGED
-    QDir::setCurrent(defaultAssetPath);
-    QDebug() << "Running in packaged mode. puyovs.conf will be ignored.";
+	QDir::setCurrent(defaultAssetPath);
+	QDebug() << "Running in packaged mode. puyovs.conf will be ignored.";
 #else
-    QString applicationPath = QCoreApplication::applicationDirPath();
-    QDir applicationDir(applicationPath);
+	QString applicationPath = QCoreApplication::applicationDirPath();
+	QDir applicationDir(applicationPath);
 
-    // Check if a file named puyovs.conf exists.
-    QString binPath = applicationDir.absolutePath();
-    QString assetsPath = defaultAssetPath;
+	// Check if a file named puyovs.conf exists.
+	QString binPath = applicationDir.absolutePath();
+	QString assetsPath = defaultAssetPath;
 
-    // If puyovs.conf exists, use it.
-    if (applicationDir.exists("puyovs.conf")) {
-        QDir::setCurrent(binPath);
-        QSettings settings("puyovs.conf", QSettings::IniFormat);
-        if (settings.contains("paths/bin")) {
-            binPath = settings.value("paths/bin").toString();
-        }
-        if (settings.contains("paths/assets")) {
-            assetsPath = settings.value("paths/assets").toString();
-        }
-    }
+	// If puyovs.conf exists, use it.
+	if (applicationDir.exists("puyovs.conf")) {
+		QDir::setCurrent(binPath);
+		QSettings settings("puyovs.conf", QSettings::IniFormat);
+		if (settings.contains("paths/bin")) {
+			binPath = settings.value("paths/bin").toString();
+		}
+		if (settings.contains("paths/assets")) {
+			assetsPath = settings.value("paths/assets").toString();
+		}
+	}
 
-    if (!assetsPath.isEmpty()) {
-        QDir::setCurrent(assetsPath);
-    }
+	if (!assetsPath.isEmpty()) {
+		QDir::setCurrent(assetsPath);
+	}
 
-    qDebug() << "Bin Path: " << binPath;
-    qDebug() << "Asset Path: " << assetsPath;
+	qDebug() << "Bin Path: " << binPath;
+	qDebug() << "Asset Path: " << assetsPath;
 #endif
 
 #ifdef PUYOVS_UPDATER_ENABLED
-    if (!args.contains("--no-update")) {
-        if (args.contains("--remove-cruft")) {
-            qSleep(500);
-            qDebug() << "Removing old files.";
+	if (!args.contains("--no-update")) {
+		if (args.contains("--remove-cruft")) {
+			qSleep(500);
+			qDebug() << "Removing old files.";
 
-            char **arg = &argv[2];
-            while(*arg)
-            {
-                QString file = *(arg++);
+			char** arg = &argv[2];
+			while (*arg)
+			{
+				QString file = *(arg++);
 
-                qDebug() << "Removing" << file;
-                QFile::remove(file);
-            }
-        }
-        else
-        {
-            UpdateDialog d(binPath);
-            QDesktopWidget *desktop = QApplication::desktop();
-            QRect screenGeom = desktop->screenGeometry(QCursor::pos());
-            QRect frame = d.frameGeometry();
-            frame.moveCenter(screenGeom.center());
-            d.move(frame.topLeft());
-            d.exec();
-        }
-    }
+				qDebug() << "Removing" << file;
+				QFile::remove(file);
+			}
+		}
+		else
+		{
+			UpdateDialog d(binPath);
+			QDesktopWidget* desktop = QApplication::desktop();
+			QRect screenGeom = desktop->screenGeometry(QCursor::pos());
+			QRect frame = d.frameGeometry();
+			frame.moveCenter(screenGeom.center());
+			d.move(frame.topLeft());
+			d.exec();
+		}
+	}
 #endif
 
-    if (args.contains("--update-only")) {
-        return 0;
-    }
+	if (args.contains("--update-only")) {
+		return 0;
+	}
 
-    MainWindow *w = new MainWindow();
-    w->showTelemetryPrompt();
-    w->exec();
-    return 0;
+	MainWindow* w = new MainWindow();
+	w->showTelemetryPrompt();
+	w->exec();
+	return 0;
 }

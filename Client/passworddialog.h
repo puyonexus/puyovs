@@ -7,7 +7,7 @@
 class GameManager;
 
 namespace Ui {
-class MainWindow;
+class PasswordDialog;
 }
 
 namespace ppvs {
@@ -16,26 +16,21 @@ struct gameSettings;
 struct rulesetInfo_t;
 }
 
-namespace Ui {
-class PasswordDialog;
-}
-
 class PasswordDialog : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit PasswordDialog(QWidget *parent = 0,GameManager *gameManager = 0,NetChannel chan = NetChannel(), bool isSpectating = false);
-    ~PasswordDialog();
+	explicit PasswordDialog(QWidget* parent = nullptr, GameManager* gameManager = nullptr, NetChannel chan = NetChannel(), bool isSpectating = false);
+	~PasswordDialog() override;
 
 private slots:
-    void on_buttonBox_accepted();
-
-    void on_buttonBox_rejected();
+	void on_buttonBox_accepted();
+	void on_buttonBox_rejected();
 
 private:
-    Ui::PasswordDialog *ui;
-    GameManager *gameManager;
-    NetChannel chan;
-    bool isSpectating;
+	Ui::PasswordDialog* ui;
+	GameManager* gameManager;
+	NetChannel chan;
+	bool isSpectating;
 };

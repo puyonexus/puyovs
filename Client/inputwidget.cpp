@@ -2,34 +2,34 @@
 #include "inputdialog.h"
 #include "ui_inputwidget.h"
 
-InputWidget::InputWidget(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::InputWidget)
+InputWidget::InputWidget(QWidget* parent) :
+	QWidget(parent),
+	ui(new Ui::InputWidget)
 {
-    ui->setupUi(this);
+	ui->setupUi(this);
 }
 
 InputWidget::~InputWidget()
 {
-    delete ui;
+	delete ui;
 }
 
-QString InputWidget::text()
+QString InputWidget::text() const
 {
-    return ui->InputLineEdit->text();
+	return ui->InputLineEdit->text();
 }
 
-void InputWidget::setText(const QString &text)
+void InputWidget::setText(const QString& text) const
 {
-    ui->InputLineEdit->setText(text);
+	ui->InputLineEdit->setText(text);
 }
 
-void InputWidget::on_SetButton_clicked()
+void InputWidget::on_SetButton_clicked() const
 {
-    InputDialog dialog;
+	InputDialog dialog;
 
-    dialog.exec();
+	dialog.exec();
 
-    if(!dialog.inputStr().isEmpty())
-        ui->InputLineEdit->setText(dialog.inputStr());
+	if (!dialog.inputStr().isEmpty())
+		ui->InputLineEdit->setText(dialog.inputStr());
 }

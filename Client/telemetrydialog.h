@@ -11,23 +11,23 @@ class LanguageManager;
 
 class TelemetryDialog : public QDialog
 {
-    Q_OBJECT
-    
-public:
-    TelemetryDialog(LanguageManager* lm, QWidget *parent = 0);
-    ~TelemetryDialog();
+	Q_OBJECT
 
-    bool shouldShow();
-    void load();
-    void save();
+public:
+	TelemetryDialog(LanguageManager* lm, QWidget* parent = nullptr);
+	~TelemetryDialog() override;
+
+	bool shouldShow() const;
+	void load();
+	void save() const;
 
 private slots:
-    void languageChanged(int index);
-    void updateLanguagesBox();
+	void languageChanged(int index) const;
+	void updateLanguagesBox();
 
 private:
-    Ui::TelemetryDialog *ui;
-    LanguageManager* languageManager;
+	Ui::TelemetryDialog* ui;
+	LanguageManager* languageManager;
 
-    bool shouldShowDialog = true;
+	bool shouldShowDialog = true;
 };

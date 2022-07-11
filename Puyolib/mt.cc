@@ -57,7 +57,7 @@
  */
 MersenneTwister::MersenneTwister(void):
     mt_(new unsigned long[N]), mti_(N+1),
-    init_key_(NULL), key_length_(0), s_(0),
+    init_key_(nullptr), key_length_(0), s_(0),
     seeded_by_array_(false), seeded_by_int_(false)
 {
     unsigned long init[4] = { 0x123, 0x234, 0x345, 0x456 };
@@ -72,11 +72,11 @@ MersenneTwister::~MersenneTwister(void)
 {
     assert(mt_ != NULL);
     delete[] mt_;
-    mt_ = NULL;
+    mt_ = nullptr;
 
     assert(init_key_ != NULL);
     delete[] init_key_;
-    init_key_ = NULL;
+    init_key_ = nullptr;
 }
 
 /**
@@ -135,7 +135,7 @@ void MersenneTwister::init_by_array(unsigned long* init_key, int key_length)
     mt_[0] = 0x80000000UL; /* MSB is 1; assuring non-zero initial array */
 
     // Store the seed
-    if (init_key_ != NULL) {
+    if (init_key_ != nullptr) {
         delete[] init_key_;
     }
     init_key_ = new unsigned long[key_length];

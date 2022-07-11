@@ -1,36 +1,36 @@
 #include "startupdialog.h"
 #include "ui_startupdialog.h"
 
-StartupDialog::StartupDialog(QString motd,QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::StartupDialog)
+StartupDialog::StartupDialog(QString motd, QWidget* parent) :
+	QDialog(parent),
+	ui(new Ui::StartupDialog)
 {
-    ui->setupUi(this);
-    //ui->textEdit->setHtml(motd);
-    ui->textBrowser->setHtml(motd);
+	ui->setupUi(this);
+	//ui->textEdit->setHtml(motd);
+	ui->textBrowser->setHtml(motd);
 }
 
 StartupDialog::~StartupDialog()
 {
-    delete ui;
+	delete ui;
 }
 
 void StartupDialog::on_LobbyButton_clicked()
 {
-    done(1);
+	done(1);
 }
 
 void StartupDialog::on_TsuButton_clicked()
 {
-    done(2);
+	done(2);
 }
 
 void StartupDialog::on_FeverButton_clicked()
 {
-    done(3);
+	done(3);
 }
 
-void StartupDialog::on_textBrowser_anchorClicked(const QUrl &arg1)
+void StartupDialog::on_textBrowser_anchorClicked(const QUrl& arg1)
 {
-    QDesktopServices::openUrl(arg1);
+	QDesktopServices::openUrl(arg1);
 }

@@ -5,16 +5,15 @@
 
 class ChatroomTextEdit : public QPlainTextEdit
 {
-    Q_OBJECT
-public:
-    ChatroomTextEdit(QWidget *parent = 0);
-    
-signals:
-    void anchorClicked(QString);
+	Q_OBJECT
 
-public slots:
-    
+public:
+	ChatroomTextEdit(QWidget* parent = nullptr);
+
+signals:
+	void anchorClicked(QString);
+	
 protected:
-    virtual void mousePressEvent( QMouseEvent * event );
-    virtual void mouseMoveEvent( QMouseEvent * event );
+	void mousePressEvent(QMouseEvent* event) override;
+	void mouseMoveEvent(QMouseEvent* event) override;
 };

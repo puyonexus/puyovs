@@ -1,73 +1,72 @@
 #pragma once
 
 #include <QObject>
-#include <QMap>
 
 class QFileSystemWatcher;
 
 struct LanguagePriv;
 class Language : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    enum Error
-    {
-        NoError,
-        FileError,
-        ReadError,
-        EncodingError,
-        JsonError
-    };
+	enum Error
+	{
+		NoError,
+		FileError,
+		ReadError,
+		EncodingError,
+		JsonError
+	};
 
-    explicit Language(const QString &fileName, QObject *parent = 0);
-    ~Language();
+	explicit Language(const QString& fileName, QObject* parent = nullptr);
+	~Language() override;
 
-    Error error();
-    QString errorString();
+	Error error() const;
+	QString errorString() const;
 
-    QString realName();
-    QString fileName();
-    QString translate(const QString &section, const QString &key);
+	QString realName() const;
+	QString fileName() const;
+	QString translate(const QString& section, const QString& key) const;
 
 private:
-    LanguagePriv *d;
+	LanguagePriv* d;
 };
 
 class Translator;
 class LanguageManager : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    explicit LanguageManager(QObject *parent = 0);
+	explicit LanguageManager(QObject* parent = nullptr);
 
-    bool error();
-    QString errorString();
+	bool error() const;
+	QString errorString();
 
-    int languageCount();
-    Language *language(int id);
-    Language *currentLanguage();
-    QString currentLanguageRealName();
-    QString currentLanguageFileName();
+	int languageCount() const;
+	Language* language(int id) const;
+	Language* currentLanguage() const;
+	QString currentLanguageRealName() const;
+	QString currentLanguageFileName() const;
 
-    int currentLanguageIndex();
-    void setCurrentLanguageIndex(int id);
+	int currentLanguageIndex() const;
+	void setCurrentLanguageIndex(int id);
 
-    void setLanguageFromFilename(const QString &filename);
+	void setLanguageFromFilename(const QString& filename);
 
-    QString translate(const QString &section, const QString &key);
+	QString translate(const QString& section, const QString& key) const;
 
 private slots:
-    void refreshLanguageList(QString v=QString());
+	void refreshLanguageList(QString v = QString());
 
 signals:
-    void languagesModified();
+	void languagesModified();
 
 private:
-    QFileSystemWatcher *mFsWatcher;
-    QList <Language*> mLanguages;
-    int mCurrentLanguage;
-    bool mError;
-    QString mErrorString;
-    QString mLostLanguage;
-    Translator *mTranslator;
+	QFileSystemWatcher* mFsWatcher;
+	QList <Language*> mLanguages;
+	int mCurrentLanguage;
+	bool mError;
+	QString mErrorString;
+	QString mLostLanguage;
+	Translator* mTranslator;
 };

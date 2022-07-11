@@ -128,7 +128,7 @@ void splitString(std::string &in,char delimiter,stringList &v)
 void createFolder(std::string foldername)
 {
     #ifdef _WIN32
-        CreateDirectoryA(foldername.c_str(), NULL);
+        CreateDirectoryA(foldername.c_str(), nullptr);
     #else
         mkdir(foldername.c_str(),0777);
     #endif

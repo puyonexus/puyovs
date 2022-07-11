@@ -19,13 +19,13 @@ void encode(const char *key,char* in,int length)
         in[i]=in[i]^key[i%strlen(key)];
 }
 
-game* activegame=NULL;
+game* activegame= nullptr;
 
 game::game(gameSettings *gs)
 {
     initGlobal();
-    data = NULL;
-    currentruleset=NULL;
+    data = nullptr;
+    currentruleset= nullptr;
 
     settings=gs;
     connected=false;
@@ -59,14 +59,14 @@ game::game(gameSettings *gs)
     currentVolumeFever=100;
     globalVolume=1.0f;
 
-    black.setImage(NULL);
+    black.setImage(nullptr);
     black.setScale(640*2,480);
     black.setColor(0,0,0);
     black.setTransparency(0.5f);
     black.setPosition(-640/2,-480/4);
 
-    statusFont = 0;
-    statusText = 0;
+    statusFont = nullptr;
+    statusText = nullptr;
 }
 
 game::~game()
@@ -110,8 +110,8 @@ void game::loadGlobal()
     loadSounds();
 
     //Init shaders
-    data->glowShader = 0;
-    data->tunnelShader = 0;
+    data->glowShader = nullptr;
+    data->tunnelShader = nullptr;
 
     if(useShaders)
     {
@@ -374,7 +374,7 @@ void game::initGame(frontend *f)
 
 void game::setRules()
 {//set rules from rulesetinfo
-    if (currentruleset!=NULL)
+    if (currentruleset!= nullptr)
         delete currentruleset;
 
     //create rule object
@@ -1044,7 +1044,7 @@ bool game::checkLowestID()
     //only player
     bool returnval=false;
     PVS_Channel *ch=network->channelManager.getChannel(channelName);
-    if (ch!=NULL && network->channelManager.getStatus(channelName,network->getPVS_Peer())==1)
+    if (ch!= nullptr && network->channelManager.getStatus(channelName,network->getPVS_Peer())==1)
     {
         //active
         if (currentGameStatus!=GAMESTATUS_WAITING && currentGameStatus!=GAMESTATUS_SPECTATING)
@@ -1069,7 +1069,7 @@ void game::sendDescription()
 
     //player?
     PVS_Channel *ch=network->channelManager.getChannel(channelName);
-    if (ch!=NULL && network->channelManager.getStatus(channelName,network->getPVS_Peer())==1)
+    if (ch!= nullptr && network->channelManager.getStatus(channelName,network->getPVS_Peer())==1)
     {
         if (!settings->rankedMatch)
         {
@@ -1333,7 +1333,7 @@ void game::loadReplay(std::string replayfile)
 {
     settings->recording=PVS_REPLAYING;
     connected=false;
-    network=NULL;
+    network= nullptr;
 
     std::ifstream infile;
     infile.open(replayfile.c_str(),std::ios_base::in|std::ios_base::binary);

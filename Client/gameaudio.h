@@ -11,18 +11,18 @@ typedef QMapIterator<QString, alib::Stream> SampleCacheIterator;
 
 class GameAudio : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    GameAudio(QObject *parent = 0);
-    ~GameAudio();
+	GameAudio(QObject* parent = nullptr);
+	~GameAudio() override;
 
-    void play(const QString &path);
+	void play(const QString& path);
 
 private slots:
-    void init();
+	void init();
 
 private:
-    alib::Device *audioDevice;
-    SampleCache sampleCache;
+	alib::Device* audioDevice;
+	SampleCache sampleCache;
 };

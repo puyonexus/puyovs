@@ -4,29 +4,29 @@
 
 class QGLContext;
 struct GLExtensions;
-void loadExtensions(const QGLContext *gl, GLExtensions *ext);
+void loadExtensions(const QGLContext* gl, GLExtensions* ext);
 
-typedef GLuint (* glCreateProgramPtr) (void);
-typedef void (* glDeleteProgramPtr) (GLuint program);
-typedef void (* glAttachShaderPtr) (GLuint program, GLuint shader);
-typedef void (* glLinkProgramPtr) (GLuint program);
-typedef void (* glUseProgramPtr) (GLuint program);
-typedef GLuint (* glCreateShaderPtr) (GLenum type);
-typedef void (* glDeleteShaderPtr) (GLuint shader);
-typedef void (* glShaderSourcePtr) (GLuint shader, GLsizei count, const char* const *string, const GLint *length);
-typedef void (* glCompileShaderPtr) (GLuint shader);
-typedef void (* glGetShaderInfoLogPtr) (GLuint shader, GLsizei bufSize, GLsizei *length, char *infoLog);
-typedef void (* glGetProgramInfoLogPtr) (GLuint program, GLsizei bufSize, GLsizei *length, char *infoLog);
-typedef void (* glGetShaderivPtr) (GLuint shader, GLenum pname, GLint *params);
-typedef void (* glGetProgramivPtr) (GLuint program, GLenum pname, GLint *params);
-typedef GLint (* glGetUniformLocationPtr) (GLuint program, const char *name);
-typedef void (* glGetUniform1fPtr) (GLint location, GLfloat v0);
-typedef void (* glGetUniform4fPtr) (GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
-typedef void (* glGetUniform1iPtr) (GLint location, GLint v0);
+typedef GLuint(*glCreateProgramPtr) (void);
+typedef void (*glDeleteProgramPtr) (GLuint program);
+typedef void (*glAttachShaderPtr) (GLuint program, GLuint shader);
+typedef void (*glLinkProgramPtr) (GLuint program);
+typedef void (*glUseProgramPtr) (GLuint program);
+typedef GLuint(*glCreateShaderPtr) (GLenum type);
+typedef void (*glDeleteShaderPtr) (GLuint shader);
+typedef void (*glShaderSourcePtr) (GLuint shader, GLsizei count, const char* const* string, const GLint* length);
+typedef void (*glCompileShaderPtr) (GLuint shader);
+typedef void (*glGetShaderInfoLogPtr) (GLuint shader, GLsizei bufSize, GLsizei* length, char* infoLog);
+typedef void (*glGetProgramInfoLogPtr) (GLuint program, GLsizei bufSize, GLsizei* length, char* infoLog);
+typedef void (*glGetShaderivPtr) (GLuint shader, GLenum pname, GLint* params);
+typedef void (*glGetProgramivPtr) (GLuint program, GLenum pname, GLint* params);
+typedef GLint(*glGetUniformLocationPtr) (GLuint program, const char* name);
+typedef void (*glGetUniform1fPtr) (GLint location, GLfloat v0);
+typedef void (*glGetUniform4fPtr) (GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
+typedef void (*glGetUniform1iPtr) (GLint location, GLint v0);
 
 struct GLExtensions
 {
-    bool haveGLSL;
+	bool haveGLSL;
 
 	glCreateProgramPtr glCreateProgram;
 	glDeleteProgramPtr glDeleteProgram;

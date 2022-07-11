@@ -15,7 +15,7 @@ field::field()
     m_sweepFall=0;
     m_fieldInit=false;
     m_transformScale=1;
-    m_player=NULL;
+    m_player= nullptr;
     m_centerX=0;m_centerY=0;
     m_posXreal=0;m_posYreal=0;
     m_sweepFall=0;
@@ -99,8 +99,8 @@ void field::createPuyoArray()
     {
         for(j=0;j<m_properties.gridY;j++)
         {
-            fieldPuyoArray[i][j]=0;
-            fieldPuyoArrayCopy[i][j]=0;
+            fieldPuyoArray[i][j]=nullptr;
+            fieldPuyoArrayCopy[i][j]=nullptr;
         }
     }
     m_fieldInit=true;
@@ -115,12 +115,12 @@ void field::freePuyo(bool copy)
             if (!copy)
             {
                 delete fieldPuyoArray[i][j];
-                fieldPuyoArray[i][j]=0;
+                fieldPuyoArray[i][j]=nullptr;
             }
             else
             {
                 delete fieldPuyoArrayCopy[i][j];
-                fieldPuyoArrayCopy[i][j]=0;
+                fieldPuyoArrayCopy[i][j]=nullptr;
             }
         }
     }
@@ -207,7 +207,7 @@ bool field::isEmpty(int x,int y)
     if (y>m_properties.gridY-1 && x>0 && x<m_properties.gridX-1)
         return true;
 
-    if (fieldPuyoArray[x][y]==0)
+    if (fieldPuyoArray[x][y]==nullptr)
         return true;
     else
         return false;
@@ -219,7 +219,7 @@ bool field::isPuyo(int x, int y)
     if (x>m_properties.gridX-1 || x<0 || y>m_properties.gridY-1 || y<0)
         return false;
 
-    if (fieldPuyoArray[x][y]==NULL)
+    if (fieldPuyoArray[x][y]== nullptr)
         return false;
     else
         return true;
@@ -326,7 +326,7 @@ int field::dropSingle(int x, int y)
     //drop puyo down
     fieldPuyoArray[x][emptyY]=fieldPuyoArray[x][y];
     fieldPuyoArray[x][emptyY]->SetindexY(emptyY);
-    fieldPuyoArray[x][y]=0;
+    fieldPuyoArray[x][y]=nullptr;
     return emptyY;
 
 }
@@ -334,7 +334,7 @@ int field::dropSingle(int x, int y)
 puyo* field::get(int x,int y)
 {//get puyo
     if (isEmpty(x,y))
-        return 0;
+        return nullptr;
     return fieldPuyoArray[x][y];
 }
 
@@ -344,8 +344,8 @@ bool field::set(int x,int y,puyo* newpuyo)
     if (x>=m_properties.gridX || x<0 || y>=m_properties.gridY || y<0)
         return false;
 
-    if (newpuyo==NULL)
-        fieldPuyoArray[x][y]=0;
+    if (newpuyo== nullptr)
+        fieldPuyoArray[x][y]=nullptr;
     else
         fieldPuyoArray[x][y]=newpuyo;
     return true;
@@ -354,7 +354,7 @@ bool field::set(int x,int y,puyo* newpuyo)
 void field::clearFieldVal(int x,int y)
 {
     if (isPuyo(x,y))
-        fieldPuyoArray[x][y]=0;
+        fieldPuyoArray[x][y]=nullptr;
 }
 
 puyoType field::getPuyoType(int x,int y)
@@ -526,7 +526,7 @@ int field::predictChain()
                             fieldPuyoArray[pv.x-1][pv.y]->neighbourPop(this,true);
                         //delete puyo
                         delete fieldPuyoArray[pv.x][pv.y];
-                        fieldPuyoArray[pv.x][pv.y]=0;
+                        fieldPuyoArray[pv.x][pv.y]=nullptr;
                     }
 
                 }
@@ -550,7 +550,7 @@ int field::predictChain()
         {
             //Copy pointer
             fieldPuyoArray[i][j]=fieldPuyoArrayCopy[i][j];
-            fieldPuyoArrayCopy[i][j]=0;
+            fieldPuyoArrayCopy[i][j]=nullptr;
         }
     }
 
@@ -575,7 +575,7 @@ void field::clearField()
             if (!isEmpty(i,j))
             {
                 delete fieldPuyoArray[i][j];
-                fieldPuyoArray[i][j]=0;
+                fieldPuyoArray[i][j]=nullptr;
             }
         }
     }
@@ -1140,12 +1140,12 @@ void field::searchChain()
         if (isPuyo(i,m_properties.gridY-1))
         {
             delete fieldPuyoArray[i][m_properties.gridY-1];
-            fieldPuyoArray[i][m_properties.gridY-1]=0;
+            fieldPuyoArray[i][m_properties.gridY-1]=nullptr;
         }
         if (isPuyo(i,m_properties.gridY-2))
         {
             delete fieldPuyoArray[i][m_properties.gridY-2];
-            fieldPuyoArray[i][m_properties.gridY-2]=0;
+            fieldPuyoArray[i][m_properties.gridY-2]=nullptr;
         }
     }
 
@@ -1219,7 +1219,7 @@ void field::searchChain()
                     }
                     //pop puyo
                     removePuyo(pv.x,pv.y);
-                    fieldPuyoArray[pv.x][pv.y]=0;
+                    fieldPuyoArray[pv.x][pv.y]=nullptr;
                 }
                 //Add popped puyos to score
                 m_player->point+=m_player->puyosPopped*10;
@@ -1415,7 +1415,7 @@ void field::triggerGlow(posVectorInt shadowPos[4],int n,int colors[4])
         if (shadowPos[i].x>=0 && shadowPos[i].y>=0)
         {
             delete fieldPuyoArray[shadowPos[i].x][shadowPos[i].y];
-            fieldPuyoArray[shadowPos[i].x][shadowPos[i].y]=0;
+            fieldPuyoArray[shadowPos[i].x][shadowPos[i].y]=nullptr;
         }
     }
 }
@@ -1468,7 +1468,7 @@ int field::virtualChain(posVectorInt shadowPos[4],int n,int colors[4])
         if (shadowPos[i].x>=0 && shadowPos[i].y>=0)
         {
             delete fieldPuyoArray[shadowPos[i].x][shadowPos[i].y];
-            fieldPuyoArray[shadowPos[i].x][shadowPos[i].y]=0;
+            fieldPuyoArray[shadowPos[i].x][shadowPos[i].y]=nullptr;
         }
     }
     return predictedChain;
@@ -1714,7 +1714,7 @@ void field::throwAwayField()
                 createParticleThrow(fieldPuyoArray[i][j]);
                 //delete puyo
                 delete fieldPuyoArray[i][j];
-                fieldPuyoArray[i][j]=0;
+                fieldPuyoArray[i][j]=nullptr;
             }
         }
     }

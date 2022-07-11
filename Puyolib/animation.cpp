@@ -50,8 +50,8 @@ void animation::init(gameData *g,posVectorFloat offsetPos,float scale,std::strin
     if (init)
     {
         //traverse through init's inner elements
-        TiXmlNode* init_child = 0;
-        while((init_child = init->IterateChildren(init_child)) != 0)
+        TiXmlNode* init_child = nullptr;
+        while((init_child = init->IterateChildren(init_child)) != nullptr)
         {
             //cout<<"Found child "<<init_child->Value()<<": "<<init_child->ToElement()->Attribute("name")<<endl;
             if (init_child->ValueStr()=="sprite")
@@ -75,8 +75,8 @@ void animation::init(gameData *g,posVectorFloat offsetPos,float scale,std::strin
                 }
 
                 //traverse through sprite's elements
-                TiXmlNode* sprite_child = 0;
-                while((sprite_child = init_child->IterateChildren(sprite_child)) != 0)
+                TiXmlNode* sprite_child = nullptr;
+                while((sprite_child = init_child->IterateChildren(sprite_child)) != nullptr)
                 {
                     //get image name
                     std::string imagename;
@@ -90,23 +90,30 @@ void animation::init(gameData *g,posVectorFloat offsetPos,float scale,std::strin
                     if (sprite_child->ValueStr()=="rect")
                     {//find x,y,widht and height attributes.
                         int x,y,width,height;
-                        if (sprite_child->ToElement()->Attribute("x",&x) &&
-                            sprite_child->ToElement()->Attribute("y",&y) &&
-                            sprite_child->ToElement()->Attribute("width",&width) &&
-                            sprite_child->ToElement()->Attribute("height",&height))
-                            setRect(spritename,x,y,width,height);
+                        if (sprite_child->ToElement()->Attribute("x", &x) &&
+                            sprite_child->ToElement()->Attribute("y", &y) &&
+                            sprite_child->ToElement()->Attribute("width", &width) &&
+                            sprite_child->ToElement()->Attribute("height", &height)) {
+                            setRect(
+                                spritename,
+                                static_cast<float>(x),
+                                static_cast<float>(y),
+                                static_cast<float>(width),
+                                static_cast<float>(height)
+                            );
+                        }
                     }
                     //get center
                     if (sprite_child->ValueStr()=="center")
-                    {//find x,y,widht and height attributes.
+                    {//find x, y, width and height attributes.
                         int x,y;
                         if (sprite_child->ToElement()->Attribute("x",&x) &&
                             sprite_child->ToElement()->Attribute("y",&y))
-                            setCenter(spritename,x,y);
+                            setCenter(spritename, static_cast<float>(x), static_cast<float>(y));
                     }
                     //boundsprite
                     if (sprite_child->ValueStr()=="bind")
-                    {//find x,y,widht and height attributes.
+                    {//find x, y, width and height attributes.
                         std::string parent;
                         int x,y;
                         if (sprite_child->ToElement()->Attribute("parent") &&
@@ -116,7 +123,12 @@ void animation::init(gameData *g,posVectorFloat offsetPos,float scale,std::strin
                             parent=sprite_child->ToElement()->Attribute("parent");
                             //set parent and add self to parent as child
                             sprites[spritename].parent=parent;
-                            addChild(parent,spritename,x,y);
+                            addChild(
+                                parent,
+                                spritename,
+                                static_cast<float>(x),
+                                static_cast<float>(y)
+                            );
                             //setPosition(spritename,x,y);
                         }
                     }
@@ -145,8 +157,8 @@ void animation::init(gameData *g,posVectorFloat offsetPos,float scale,std::strin
                     continue; //must have a name!
                 }
                 //traverse through path's elements
-                TiXmlNode* path_child = 0;
-                while((path_child = init_child->IterateChildren(path_child)) != 0)
+                TiXmlNode* path_child = nullptr;
+                while((path_child = init_child->IterateChildren(path_child)) != nullptr)
                 {
                     //add nodes
                     if (path_child->ValueStr()=="node")
@@ -156,7 +168,7 @@ void animation::init(gameData *g,posVectorFloat offsetPos,float scale,std::strin
                             path_child->ToElement()->Attribute("y",&y))
                         {
                             //add node
-                            posVectorFloat pv(x,y);
+                            posVectorFloat pv(static_cast<float>(x), static_cast<float>(y));
                             paths[pathname].push_back(pv);
                         }
                     }
@@ -175,8 +187,8 @@ void animation::init(gameData *g,posVectorFloat offsetPos,float scale,std::strin
                     continue; //must have a name!
                 }
                 //traverse through sprite's elements
-                TiXmlNode* sprite_child = 0;
-                while((sprite_child = init_child->IterateChildren(sprite_child)) != 0)
+                TiXmlNode* sprite_child = nullptr;
+                while((sprite_child = init_child->IterateChildren(sprite_child)) != nullptr)
                 {
                     //get file name
                     std::string imagename;
@@ -215,8 +227,8 @@ void animation::playAnimation()
         if (anim)
         {
             //traverse through keyframes
-            TiXmlNode* anim_child = 0;
-            while((anim_child = anim->IterateChildren(anim_child)) != 0)
+            TiXmlNode* anim_child = nullptr;
+            while((anim_child = anim->IterateChildren(anim_child)) != nullptr)
             {
                 if (anim_child->ValueStr()=="event")
                 {
@@ -234,8 +246,8 @@ void animation::playAnimation()
                     }
 
                     //traverse through keyfames's elements
-                    TiXmlNode* kf_child = 0;
-                    while((kf_child = anim_child->IterateChildren(kf_child)) != 0)
+                    TiXmlNode* kf_child = nullptr;
+                    while((kf_child = anim_child->IterateChildren(kf_child)) != nullptr)
                     {
                         //play sound
                         if (starttime==t)
@@ -271,36 +283,51 @@ void animation::playAnimation()
                         //Instantly change sprite property
                         //set subrectangle
                         if (kf_child->ValueStr()=="rect")
-                        {//find x,y,widht and height attributes.
-                            int x,y,width,height;
-                            if (kf_child->ToElement()->Attribute("x",&x) &&
-                                kf_child->ToElement()->Attribute("y",&y) &&
-                                kf_child->ToElement()->Attribute("width",&width) &&
-                                kf_child->ToElement()->Attribute("height",&height))
-                                setRect(spritename,x,y,width,height);
+                        {//find x, y, width and height attributes.
+                            int x, y, width, height;
+                            if (kf_child->ToElement()->Attribute("x", &x) &&
+                                kf_child->ToElement()->Attribute("y", &y) &&
+                                kf_child->ToElement()->Attribute("width", &width) &&
+                                kf_child->ToElement()->Attribute("height", &height)) {
+                                setRect(
+                                    spritename,
+                                    static_cast<float>(x),
+                                    static_cast<float>(y),
+                                    static_cast<float>(width),
+                                    static_cast<float>(height)
+                                );
+                            }
                         }
                         //set center
                         if (kf_child->ValueStr()=="center")
-                        {//find x,y,widht and height attributes.
+                        {//find x and y attributes.
                             int x,y;
                             if (kf_child->ToElement()->Attribute("x",&x) &&
                                 kf_child->ToElement()->Attribute("y",&y))
-                                setCenter(spritename,x,y);
+                                setCenter(
+                                    spritename,
+                                    static_cast<float>(x),
+                                    static_cast<float>(y)
+                                );
                         }
                         //set position
                         if (kf_child->ValueStr()=="position")
                         {//find x,y
                             int x,y;
-                            if (kf_child->ToElement()->Attribute("x",&x) &&
-                                kf_child->ToElement()->Attribute("y",&y))
-                                setPosition(spritename,x,y);
+                            if (kf_child->ToElement()->Attribute("x", &x) &&
+                                kf_child->ToElement()->Attribute("y", &y)) {
+                                setPosition(
+                                    spritename,
+                                    static_cast<float>(x),
+                                    static_cast<float>(y)
+                                );
+                            }
                         }
                         if (kf_child->ValueStr()=="blend")
                         {//find x,y
-                            std::string mode;
-                            if (kf_child->ToElement()->Attribute("mode"))
+	                        if (kf_child->ToElement()->Attribute("mode"))
                             {
-                                mode=kf_child->ToElement()->Attribute("mode");
+	                            std::string mode = kf_child->ToElement()->Attribute("mode");
                                 setBlendmode(spritename,mode);
                             }
                         }
@@ -308,7 +335,7 @@ void animation::playAnimation()
 
                         //is animation ready to be played?
                         int duration;
-                        if (kf_child->ToElement()->Attribute("duration",&duration))
+                        if (kf_child->ToElement()->Attribute("duration", &duration))
                         {
                             if (t>starttime+duration)
                                 continue; //time has passed
@@ -330,12 +357,12 @@ void animation::playAnimation()
                         //transform scale
                         if (kf_child->ValueStr()=="scaleX")
                         {
-                            double startVal,endVal,alpha,beta;
+                            double startVal, endVal, alpha, beta;
                             if (!kf_child->ToElement()->Attribute("alpha",&alpha))alpha=0;
                             if (!kf_child->ToElement()->Attribute("beta",&beta))beta=0;
                             if (kf_child->ToElement()->Attribute("startVal",&startVal) &&
                                 kf_child->ToElement()->Attribute("endVal",&endVal))
-                                setScaleX(spritename,getLocalTimer(type,startVal,endVal,(t-starttime)*1.0/duration,alpha,beta));
+                                setScaleX(spritename,static_cast<float>(getLocalTimer(type,startVal,endVal,(t-starttime)*1.0/duration,alpha,beta)));
                         }
                         if (kf_child->ValueStr()=="scaleY")
                         {
@@ -344,7 +371,7 @@ void animation::playAnimation()
                             if (!kf_child->ToElement()->Attribute("beta",&beta))beta=0;
                             if (kf_child->ToElement()->Attribute("startVal",&startVal) &&
                                 kf_child->ToElement()->Attribute("endVal",&endVal))
-                                setScaleY(spritename,getLocalTimer(type,startVal,endVal,(t-starttime)*1.0/duration,alpha,beta));
+                                setScaleY(spritename, static_cast<float>(getLocalTimer(type,startVal,endVal,(t-starttime)*1.0/duration,alpha,beta)));
                         }
                         //set transparency
                         if (kf_child->ValueStr()=="transparency")
@@ -354,7 +381,7 @@ void animation::playAnimation()
                             if (!kf_child->ToElement()->Attribute("beta",&beta))beta=0;
                             if (kf_child->ToElement()->Attribute("startVal",&startVal) &&
                                 kf_child->ToElement()->Attribute("endVal",&endVal))
-                                setTransparency(spritename,getLocalTimer(type,startVal,endVal,(t-starttime)*1.0/duration,alpha,beta));
+                                setTransparency(spritename,static_cast<float>(getLocalTimer(type,startVal,endVal,(t-starttime)*1.0/duration,alpha,beta)));
                         }
                         if (kf_child->ValueStr()=="rotation")
                         {
@@ -363,7 +390,7 @@ void animation::playAnimation()
                             if (!kf_child->ToElement()->Attribute("beta",&beta))beta=0;
                             if (kf_child->ToElement()->Attribute("startVal",&startVal) &&
                                 kf_child->ToElement()->Attribute("endVal",&endVal))
-                                setAngle(spritename,getLocalTimer(type,startVal,endVal,(t-starttime)*1.0/duration,alpha,beta));
+                                setAngle(spritename, static_cast<float>(getLocalTimer(type,startVal,endVal,(t-starttime)*1.0/duration,alpha,beta)));
                         }
                         if (kf_child->ValueStr()=="move")
                         {
@@ -376,7 +403,7 @@ void animation::playAnimation()
                                 kf_child->ToElement()->Attribute("path"))
                             {
                                 pathname=kf_child->ToElement()->Attribute("path");
-                                move(spritename,pathname,getLocalTimer(type,startVal,endVal,(t-starttime)*1.0/duration,alpha,beta));
+                                move(spritename,pathname, static_cast<float>(getLocalTimer(type,startVal,endVal,(t-starttime)*1.0/duration,alpha,beta)));
                             }
                         }
                         //color
@@ -392,7 +419,7 @@ void animation::playAnimation()
                             {
                                 rgb=kf_child->ToElement()->Attribute("rgb");
                                 //split into two
-                                setColor(spritename,rgb,getLocalTimer(type,startVal,endVal,(t-starttime)*1.0/duration,alpha,beta));
+                                setColor(spritename,rgb, static_cast<float>(getLocalTimer(type,startVal,endVal,(t-starttime)*1.0/duration,alpha,beta)));
                             }
                         }
                     }
@@ -462,21 +489,29 @@ void animation::addChild(std::string &parent,std::string &child,float x,float y)
     sprites[child].childOffset.x=x;
     sprites[child].childOffset.y=y;
 }
-void animation::setRect(std::string &name,float x,float y,float width,float height)
+void animation::setRect(std::string &name, float x, float y, float width, float height)
 {
     if (!spriteExists(name)) return;
-    sprites[name].spr->setSubRect(x,y,width,height);
+    sprites[name].spr->setSubRect(
+        static_cast<int>(x),
+        static_cast<int>(y),
+        static_cast<int>(width),
+        static_cast<int>(height)
+    );
 }
 void animation::setCenter(std::string &name,float x,float y)
 {
     if (!spriteExists(name)) return;
-    sprites[name].spr->setCenter(x,y);
+    sprites[name].spr->setCenter(
+        static_cast<int>(x),
+        static_cast<int>(y)
+    );
 }
-void animation::setPosition(std::string &name,float x,float y)
+void animation::setPosition(std::string &name, float x, float y)
 {
     if (!spriteExists(name)) return;
-    sprites[name].position.x=x;
-    sprites[name].position.y=y;
+    sprites[name].position.x = x;
+    sprites[name].position.y = y;
 }
 void animation::setBlendmode(std::string &name,std::string &blend)
 {
@@ -511,12 +546,12 @@ void animation::setTransparency(std::string &name,float x)
     if (!spriteExists(name)) return;
     sprites[name].transparency=x;
 }
-void animation::setVisible(std::string &name,bool x)
+void animation::setVisible(std::string &name, bool x)
 {
     if (!spriteExists(name)) return;
     sprites[name].spr->setVisible(x);
 }
-void animation::setColor(std::string &name,std::string &color,float x)
+void animation::setColor(std::string &name, std::string &color, float x)
 {
     if (!spriteExists(name)) return;
     //get rgb values
@@ -575,7 +610,7 @@ void animation::playSound(std::string &name)
         sounds[name]->Play(gamedata);
 }
 
-bool animation::spriteExists(std::string &name)
+bool animation::spriteExists(const std::string &name)
 {
     return (sprites.find(name)==sprites.end())? false : true;
 }
@@ -604,55 +639,58 @@ void animation::clearSounds()
     sounds.clear();
 }
 
-
+// updates all properties of the sprite
 void animation::updateSprites()
-{//updates all properties of the sprite
-    std::map<std::string,animationSprite>::iterator it;
-    for (it=sprites.begin();it!= sprites.end();it++)
+{
+    for (auto& sprite : sprites)
     {
-        animationSprite &animSprite=(*it).second;
-        //do not update if it's a child
-        if (animSprite.parent!="")
+        animationSprite &animSprite = sprite.second;
+
+    	// do not update if it's a child
+        if (!animSprite.parent.empty())
             continue;
-        animSprite.spr->setPosition((animSprite.position.x+animSprite.pathPos.x)*globalScale+offset.x,
-                                      (animSprite.position.y+animSprite.pathPos.y)*globalScale+offset.y);
-        animSprite.spr->setScaleX(animSprite.scale.x*globalScale);
-        animSprite.spr->setScaleY(animSprite.scale.y*globalScale);
+
+        animSprite.spr->setPosition(
+            (animSprite.position.x + animSprite.pathPos.x) * globalScale + offset.x,
+            (animSprite.position.y + animSprite.pathPos.y) * globalScale + offset.y
+        );
+        animSprite.spr->setScaleX(animSprite.scale.x * globalScale);
+        animSprite.spr->setScaleY(animSprite.scale.y * globalScale);
         animSprite.spr->setRotation(animSprite.angle);
         animSprite.spr->setTransparency(animSprite.transparency);
         //update children
-        updateChildren((*it).first);
+        updateChildren(sprite.first);
     }
 }
 void animation::updateChildren(std::string parent)
 {
-    animationSprite &parentSprite=sprites[parent];
+    animationSprite &parentSprite = sprites[parent];
     for(size_t i=0;i<parentSprite.children.size();i++)
     {
         std::string &child=parentSprite.children[i];
-        animationSprite &childSprite=sprites[child];
-        //scale
-        float psx=parentSprite.spr->getScaleX();
-        float psy=parentSprite.spr->getScaleY();
-        float csx=childSprite.scale.x;
-        float csy=childSprite.scale.y;
+        const animationSprite &childSprite = sprites[child];
+        // scale
+        float psx = parentSprite.spr->getScaleX();
+        float psy = parentSprite.spr->getScaleY();
+        float csx = childSprite.scale.x;
+        float csy = childSprite.scale.y;
         childSprite.spr->setScaleX(psx*csx);
         childSprite.spr->setScaleY(psy*csy);
-        //rotation
-        float pr=parentSprite.spr->getAngle();
-        float cr=childSprite.angle;
+        // rotation
+        float pr = parentSprite.spr->getAngle();
+        float cr = childSprite.angle;
         childSprite.spr->setRotation(pr+cr);
-        //transparency
-        float pt=parentSprite.spr->getTransparency();
-        float ct=childSprite.transparency;
+        // transparency
+        float pt = parentSprite.spr->getTransparency();
+        float ct = childSprite.transparency;
         childSprite.spr->setTransparency(pt*ct);
-        //position
-        float px=(parentSprite.spr->getX()-offset.x)/globalScale;
-        float py=(parentSprite.spr->getY()-offset.y)/globalScale;
-        float cx=childSprite.position.x+childSprite.pathPos.x+childSprite.childOffset.x;
-        float cy=childSprite.position.y+childSprite.pathPos.y+childSprite.childOffset.y;
-        float r=sqrt(cx*cx*psx*psx+cy*cy*psy*psy);
-        float a=atan2(-cy*psy,cx*psx)*180/PI;
+        // position
+        float px = (parentSprite.spr->getX()-offset.x)/globalScale;
+        float py = (parentSprite.spr->getY()-offset.y)/globalScale;
+        float cx = childSprite.position.x+childSprite.pathPos.x+childSprite.childOffset.x;
+        float cy = childSprite.position.y+childSprite.pathPos.y+childSprite.childOffset.y;
+        float r = sqrt(cx*cx*psx*psx+cy*cy*psy*psy);
+        float a = atan2(-cy*psy,cx*psx)*180/PI;
         childSprite.spr->setPosition(offset.x+(px+r*cos((pr+a)*PI/180))*globalScale,
                                         offset.y+(py+r*sin((pr+a)*PI/-180))*globalScale);
         //update children

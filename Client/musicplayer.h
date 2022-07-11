@@ -6,31 +6,33 @@ namespace alib { class Stream; }
 
 class Playlist;
 class MusicStreamObserver;
+
 class MusicPlayer : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
-    friend class MusicStreamObserver;
+	friend class MusicStreamObserver;
 
-    struct Priv; Priv *p;
+	struct Priv; Priv* p;
+
 public:
-    enum LoopMode { NoLoop, LoopAtLeastOnce, LoopSingle, LoopAll };
+	enum LoopMode { NoLoop, LoopAtLeastOnce, LoopSingle, LoopAll };
 
-    MusicPlayer(Playlist &playlist, QObject *parent = 0);
-    ~MusicPlayer();
+	MusicPlayer(Playlist& playlist, QObject* parent = nullptr);
+	~MusicPlayer() override;
 
-    void setLoopMode(LoopMode mode);
-    LoopMode loopMode();
+	void setLoopMode(LoopMode mode) const;
+	LoopMode loopMode() const;
 
-    void playStream(const alib::Stream &stm);
-    void setVolume(float volume);
-    int numberOfTimesLooped();
+	void playStream(const alib::Stream& stm) const;
+	void setVolume(float volume) const;
+	int numberOfTimesLooped() const;
 
 public slots:
-    void next();
-    void previous();
-    void play();
-    void resume();
-    void pause();
-    void stop();
+	void next() const;
+	void previous() const;
+	void play() const;
+	void resume() const;
+	void pause() const;
+	void stop() const;
 };

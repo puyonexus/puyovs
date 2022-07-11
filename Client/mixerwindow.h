@@ -8,12 +8,12 @@ class MixerWindow;
 
 class MixerWindow : public QDialog
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+
 public:
-    explicit MixerWindow(QWidget *parent = 0);
-    ~MixerWindow();
-    
+	explicit MixerWindow(QWidget* parent = nullptr);
+	~MixerWindow() override;
+
 private:
-    Ui::MixerWindow *ui;
+	Ui::MixerWindow* ui;
 };

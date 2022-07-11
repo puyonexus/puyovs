@@ -1,75 +1,73 @@
 #include "inputdialog.h"
 #include "ui_inputdialog.h"
 #include "common.h"
-#include <math.h>
 
-#include <ilib/inputlib.h>
 #include <ilib/driver.h>
 
 #include <QTimer>
 
-InputDialog::InputDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::InputDialog)
+InputDialog::InputDialog(QWidget* parent) :
+	QDialog(parent),
+	ui(new Ui::InputDialog)
 {
-    ui->setupUi(this);
+	ui->setupUi(this);
 
-    drv = ilib::getDriver();
-    drv->enableEvents();
+	drv = ilib::getDriver();
+	drv->enableEvents();
 
-    ilib::InputEvent e;
+	ilib::InputEvent e;
 
-    // drain events
-    while(drv->getEvent(&e));
+	// drain events
+	while (drv->getEvent(&e));
 
-    QTimer *processTimer = new QTimer(this);
-    connect(processTimer, SIGNAL(timeout()), SLOT(process()));
-    processTimer->start(100);
+	QTimer* processTimer = new QTimer(this);
+	connect(processTimer, SIGNAL(timeout()), SLOT(process()));
+	processTimer->start(100);
 
-    QTimer::singleShot(1000 * 5, this, SLOT(timeout()));
+	QTimer::singleShot(1000 * 5, this, SLOT(timeout()));
 }
 
 InputDialog::~InputDialog()
 {
-    drv->disableEvents();
+	drv->disableEvents();
 
-    ilib::InputEvent e;
+	ilib::InputEvent e;
 
-    // drain events
-    drv->process();
-    while(drv->getEvent(&e));
+	// drain events
+	drv->process();
+	while (drv->getEvent(&e));
 
-    delete ui;
+	delete ui;
 }
 
 QString InputDialog::inputStr()
 {
-    return in;
+	return in;
 }
 
-void InputDialog::keyPressEvent(QKeyEvent *e)
+void InputDialog::keyPressEvent(QKeyEvent* e)
 {
-    in = InputCondition(e).toString();
-    close();
+	in = InputCondition(e).toString();
+	close();
 }
 
 void InputDialog::timeout()
 {
-    in = QString();
-    close();
+	in = QString();
+	close();
 }
 
 void InputDialog::process()
 {
-    drv->process();
+	drv->process();
 
-    ilib::InputEvent e;
-    while(drv->getEvent(&e))
-    {
-        if(e.type == ilib::InputEvent::AxisEvent && fabs(e.axis.value) < 0.5)
-            continue;
+	ilib::InputEvent e;
+	while (drv->getEvent(&e))
+	{
+		if (e.type == ilib::InputEvent::AxisEvent && fabs(e.axis.value) < 0.5)
+			continue;
 
-        in = InputCondition(e).toString();
-        close();
-    }
+		in = InputCondition(e).toString();
+		close();
+	}
 }

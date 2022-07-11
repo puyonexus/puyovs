@@ -131,7 +131,7 @@ public:
 
     // shaders
     virtual bool hasShaders() = 0;
-    virtual fshader *loadShader(const char *source = 0) = 0;
+    virtual fshader *loadShader(const char *source = nullptr) = 0;
 
     // blending
     virtual void setBlendMode(blendingMode) = 0;

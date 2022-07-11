@@ -9,6 +9,6 @@ PuyoRNG *MakePuyoRNG(const std::string &name, uint32_t seed, int index) {
     } else if (name == "legacy") {
         return new LegacyPuyoRNG(seed, index);
     } else {
-        return NULL;
+        return nullptr;
     }
 }

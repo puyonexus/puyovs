@@ -95,7 +95,7 @@ class player
         field *getFeverField(){return &m_fieldFever;}
 
         //Garbage
-        void updateTray(garbageCounter* c=0);
+        void updateTray(garbageCounter* c=nullptr);
         void playGarbageSound();
         int getGarbageSum();
         int getAttackSum();

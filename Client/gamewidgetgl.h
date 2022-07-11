@@ -18,18 +18,18 @@ class GameWidgetGL : public GameWidget
 
     Q_OBJECT
 public:
-    explicit GameWidgetGL(ppvs::game *game, NetChannelProxy *proxy, GameAudio *audio, QWidget *parent = 0);
-    ~GameWidgetGL();
+    explicit GameWidgetGL(ppvs::game *game, NetChannelProxy *proxy, GameAudio *audio, QWidget *parent = nullptr);
+    ~GameWidgetGL() override;
 
 protected:
-    void keyPressEvent(QKeyEvent *);
-    void keyReleaseEvent(QKeyEvent *);
-    void paintEvent(QPaintEvent *);
-    void closeEvent(QCloseEvent *);
+    void keyPressEvent(QKeyEvent *) override;
+    void keyReleaseEvent(QKeyEvent *) override;
+    void paintEvent(QPaintEvent *) override;
+    void closeEvent(QCloseEvent *) override;
     
 public slots:
-    void initialize();
-    void process();
+    void initialize() override;
+    void process() override;
 
 private:
     GameWidgetGLPriv *d;

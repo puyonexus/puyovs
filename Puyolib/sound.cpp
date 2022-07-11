@@ -6,7 +6,7 @@
 namespace ppvs
 {
 sound::sound()
-    : m_sound(0)
+    : m_sound(nullptr)
 {
     //ctor
 }
@@ -17,7 +17,7 @@ sound::~sound()
 
 void sound::Play(gameData* global)
 {
-    if (global==NULL || !global->playSounds || !global->windowFocus)
+    if (global== nullptr || !global->playSounds || !global->windowFocus)
         return;
 
 
@@ -44,7 +44,7 @@ fsound* sound::GetBuffer()
 void sound::Unload()
 {
     delete m_sound;
-    m_sound = NULL;
+    m_sound = nullptr;
 }
 
 }

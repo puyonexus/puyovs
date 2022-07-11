@@ -59,7 +59,7 @@ class animation
         posVectorFloat offset;
         float globalScale;
     protected:
-        bool spriteExists(std::string &name);
+        bool spriteExists(const std::string &name);
         void clearSprites();
         void clearSounds();
         void updateSprites();

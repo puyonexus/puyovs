@@ -54,9 +54,9 @@ void particle::play()
 {//particle's main function
     m_timer++;
     m_scale=1.2f-m_timer*0.05f;
-    if (m_scale<0.1)
+    if (m_scale<0.1f)
         m_sprite.setVisible(false);
-    gravityTimer+=0.3;
+    gravityTimer+=0.3f;
     m_posY+=gravityTimer;
     m_posX+=m_speedX;
     //destroy
@@ -82,8 +82,8 @@ particleThrow::particleThrow(float x, float y,int color,gameData* globalp)
     m_scale=1; m_rotate=0;
     //set sprite
     m_sprite.setImage(globalp->imgPuyo);
-    float xRect=2*PUYOX*(color/2);
-    float yRect=12*PUYOY+PUYOY*(color%2);
+    const int xRect=2*PUYOX*(color/2);
+    const int yRect=12*PUYOY+PUYOY*(color%2);
     m_sprite.setSubRect(xRect,yRect,PUYOX,PUYOY);
     m_sprite.setCenter(PUYOX/2,PUYOY/2);
 
@@ -92,9 +92,9 @@ particleThrow::particleThrow(float x, float y,int color,gameData* globalp)
     m_posX=x;
     m_posY=y;
     //set random initial speed
-    m_speedX=(getRandom(601)-300)/100.0f;
-    gravityTimer=-6+getRandom(333)/100.0f;
-    m_rotateSpeed=(getRandom(21)-10)*2;
+    m_speedX=static_cast<float>(getRandom(601)-300)/100.0f;
+    gravityTimer=-6.f+static_cast<float>(getRandom(333))/100.0f;
+    m_rotateSpeed=static_cast<float>((getRandom(21)-10)*2);
 }
 
 particleThrow::~particleThrow()
@@ -191,16 +191,15 @@ void chainWord::showAt(float x,float y,int n)
 
 void chainWord::move()
 {
-    if (m_timer>50)
+    if (m_timer > 50)
     {
-        m_visible=false;
+        m_visible = false;
         return;
     }
 
     m_timer++;
-    if (m_timer<15)
-        m_posY-=3.0*m_scale;
-
+    if (m_timer < 15)
+        m_posY -= 3.0f*m_scale;
 }
 
 //===========================================================================
@@ -302,7 +301,7 @@ void lightEffect::setTimer(float timer)
     if (m_timer<100)
         m_timer+=timer;
     else
-        m_timer+=4.8;
+        m_timer+=4.8f;
 
     if (!m_visible)
         return;
@@ -319,12 +318,12 @@ void lightEffect::draw(frendertarget *rw)
     float x,y;
     for (int i=59;i>=0;i--)
     {
-        temp_timer=(m_timer-i/3.0)/100.0;
+        temp_timer=(m_timer-i/3.0f)/100.0f;
         x=(m_start.x+(m_middle.x-m_start.x)*temp_timer)+((m_middle.x+(m_end.x-m_middle.x)*temp_timer)-(m_start.x+(m_middle.x-m_start.x)*temp_timer))*temp_timer;
         y=(m_start.y+(m_middle.y-m_start.y)*temp_timer)+((m_middle.y+(m_end.y-m_middle.y)*temp_timer)-(m_start.y+(m_middle.y-m_start.y)*temp_timer))*temp_timer;
         m_tail.setPosition(x,y);
-        m_tail.setTransparency((60-i)/60.0);
-        if (m_timer-i/3.0<100)
+        m_tail.setTransparency(static_cast<float>(60-i)/60.0f);
+        if (m_timer-static_cast<float>(i)/3.0f<100)
         {
             //m_tail.setColor(0,0,255,255*(60-i)/60.0/2);
             //m_tail.draw(rw);
@@ -333,7 +332,7 @@ void lightEffect::draw(frendertarget *rw)
             //m_tail.setColor(255,255,255,255*(60-i)/60.0);
             m_tail.draw(rw);
         }
-        if (i==0 && m_timer-i/3.0<100)
+        if (i==0 && m_timer-static_cast<float>(i)/3.0f<100)
         {
             m_sprite.setPosition(x,y);
             //m_sprite.setColor(0,0,255,255);
@@ -400,7 +399,7 @@ void feverLight::draw(frendertarget *rw)
     if (!m_visible)
         return;
 
-    float tempTimer=m_timer/100;
+    float tempTimer=m_timer/100.f;
 
     float x=(m_start.x+(m_middle.x-m_start.x)*tempTimer)+((m_middle.x+(m_end.x-m_middle.x)*tempTimer)-(m_start.x+(m_middle.x-m_start.x)*tempTimer))*tempTimer;
     float y=(m_start.y+(m_middle.y-m_start.y)*tempTimer)+((m_middle.y+(m_end.y-m_middle.y)*tempTimer)-(m_start.y+(m_middle.y-m_start.y)*tempTimer))*tempTimer;
@@ -412,12 +411,12 @@ void feverLight::draw(frendertarget *rw)
     else
     {//draw hitlight at end
         m_hitLight.setPosition(m_end.x,m_end.y);
-        m_hitLight.setScale(1+2*atan((m_timer-100)/100.0)*2/PI);
-        m_hitLight.setTransparency(max(0.0,1-(m_timer-100)/100.0));
+        m_hitLight.setScale(1.f+2.f*atan((m_timer-100.f)/100.0f)*2.f/PI);
+        m_hitLight.setTransparency(max(0.0f,1.f-(m_timer-100.f)/100.0f));
         m_hitLight.draw(rw);
     }
 
-    if (m_timer>200)
+    if (m_timer>200.f)
         m_visible=false;
 }
 
@@ -513,7 +512,7 @@ void nuisanceTray::play()
         //do the scaling
         if (m_animationTimer[i]>0 && m_animationTimer[i]<160)
         {
-            m_sprite[i].setScale((((std::exp(m_animationTimer[i]*-1.0/30)*-1)*std::cos((m_animationTimer[i]*7-45)*PI/180)+1)+std::exp(m_animationTimer[i]*-0.5))*m_globalScale);
+            m_sprite[i].setScale((((std::exp(m_animationTimer[i]*-1.0f/30.f)*-1.f)*std::cos((m_animationTimer[i]*7.f-45.f)*PI/180.f)+1.f)+std::exp(m_animationTimer[i]*-0.5f))*m_globalScale);
         }
         else
             m_sprite[i].setScale(m_globalScale);

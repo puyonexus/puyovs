@@ -1,13 +1,13 @@
 #include "userinfotextbox.h"
 
-UserInfoTextBox::UserInfoTextBox(QWidget *parent) :
-    QTextEdit(parent)
+UserInfoTextBox::UserInfoTextBox(QWidget* parent) :
+	QTextEdit(parent)
 {
-    setTextInteractionFlags(Qt::TextBrowserInteraction);
-    setReadOnly(true);
+	setTextInteractionFlags(Qt::TextBrowserInteraction);
+	setReadOnly(true);
 }
 
 QSize UserInfoTextBox::sizeHint() const
 {
-    return QSize(0, 100);
+	return QSize(0, 100);
 }

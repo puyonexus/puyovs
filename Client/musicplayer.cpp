@@ -10,240 +10,240 @@
 class MusicStreamObserver : public alib::StreamObserver
 {
 public:
-    MusicStreamObserver(MusicPlayer::Priv *mp):mp(mp){}
+	MusicStreamObserver(MusicPlayer::Priv* mp) :mp(mp) {}
 
 private:
-    void reachedEnd();
-    void reachedLoop();
+	void reachedEnd() override;
+	void reachedLoop() override;
 
-    MusicPlayer::Priv *mp;
+	MusicPlayer::Priv* mp;
 };
 
 struct MusicPlayer::Priv : QObject
 {
-    Playlist &playlist;
-    int playlistPtr;
-    MusicStreamObserver *stmObserver;
-    alib::Device *device;
-    alib::Stream currentStream;
-    MusicPlayer::LoopMode loopMode;
-    int looped;
+	Playlist& playlist;
+	int playlistPtr;
+	MusicStreamObserver* stmObserver;
+	alib::Device* device;
+	alib::Stream currentStream;
+	MusicPlayer::LoopMode loopMode;
+	int looped;
 
-    Priv(Playlist &p) : playlist(p),looped(0)
-    {
-        stmObserver = new MusicStreamObserver(this);
-        device = alib::open();
-        playlistPtr = 0;
-    }
+	Priv(Playlist& p) : playlist(p), looped(0)
+	{
+		stmObserver = new MusicStreamObserver(this);
+		device = alib::open();
+		playlistPtr = 0;
+	}
 
-    ~Priv()
-    {
-        alib::close();
-        delete stmObserver;
-    }
+	~Priv() override
+	{
+		alib::close();
+		delete stmObserver;
+	}
 
-    bool playStream(const alib::Stream &stm)
-    {
-        if(currentStream != stm)
-        {
-            currentStream.stop();
-            currentStream = stm;
-        }
+	bool playStream(const alib::Stream& stm)
+	{
+		if (currentStream != stm)
+		{
+			currentStream.stop();
+			currentStream = stm;
+		}
 
-        currentStream.setObserver(stmObserver);
-        return device->play(currentStream);
-    }
+		currentStream.setObserver(stmObserver);
+		return device->play(currentStream);
+	}
 
-    void setDeviceVolume(float volume)
-    {
-        device->setVolume(volume);
-    }
+	void setDeviceVolume(float volume) const
+	{
+		device->setVolume(volume);
+	}
 
-    void setCurrentStreamVolume(float volume)
-    {
-        currentStream.setVolume(volume);
-    }
+	void setCurrentStreamVolume(float volume)
+	{
+		currentStream.setVolume(volume);
+	}
 
-    void next()
-    {
-        if(playlist.childCount() == 0)
-            return;
+	void next()
+	{
+		if (playlist.childCount() == 0)
+			return;
 
-        looped=0;
-        if (!pvsApp->settings().boolean("music","randomorder",true))
-            playlistPtr++;
-        else
-        {
-            playlistPtr=int((qrand()*1.0/RAND_MAX)*playlist.childCount());
-        }
+		looped = 0;
+		if (!pvsApp->settings().boolean("music", "randomorder", true))
+			playlistPtr++;
+		else
+		{
+			playlistPtr = int(qrand() * 1.0 / RAND_MAX * playlist.childCount());
+		}
 
-        if(playlistPtr >= playlist.childCount())
-            playlistPtr = 0;
+		if (playlistPtr >= playlist.childCount())
+			playlistPtr = 0;
 
-        play();
-    }
+		play();
+	}
 
-    void previous()
-    {
-        if(playlist.childCount() == 0)
-            return;
-    }
+	void previous() const
+	{
+		if (playlist.childCount() == 0)
+			return;
+	}
 
-    void play()
-    {
-        if(playlist.childCount() == 0)
-            return;
-        if(playlistPtr < 0)
-            playlistPtr = playlist.childCount() - 1;
-        if(playlistPtr >= playlist.childCount())
-            playlistPtr = 0;
+	void play()
+	{
+		if (playlist.childCount() == 0)
+			return;
+		if (playlistPtr < 0)
+			playlistPtr = playlist.childCount() - 1;
+		if (playlistPtr >= playlist.childCount())
+			playlistPtr = 0;
 
-        if(!currentStream.error())
-            currentStream.stop();
+		if (!currentStream.error())
+			currentStream.stop();
 
-        // HACK: support qiodevice here.
-        currentStream = alib::Stream(playlist.child(playlistPtr)->url.toLocalFile().toUtf8().data());
-        currentStream.identifyAsMusic();
-        if(!playStream(currentStream))
-        {
-            next();
-            currentStream.setVolume(1.0f);
-        }
-    }
+		// HACK: support qiodevice here.
+		currentStream = alib::Stream(playlist.child(playlistPtr)->url.toLocalFile().toUtf8().data());
+		currentStream.identifyAsMusic();
+		if (!playStream(currentStream))
+		{
+			next();
+			currentStream.setVolume(1.0f);
+		}
+	}
 
-    void resume()
-    {
-        if(currentStream.atEnd() || currentStream.error())
-        {
-            next();
-            currentStream.setVolume(1.0f);
-        }
-        else
-            currentStream.resume();
-    }
+	void resume()
+	{
+		if (currentStream.atEnd() || currentStream.error())
+		{
+			next();
+			currentStream.setVolume(1.0f);
+		}
+		else
+			currentStream.resume();
+	}
 
-    void pause()
-    {
-        currentStream.pause();
-    }
+	void pause()
+	{
+		currentStream.pause();
+	}
 
-    void stop()
-    {
-        currentStream.stop();
-        currentStream = alib::Stream();
-    }
+	void stop()
+	{
+		currentStream.stop();
+		currentStream = alib::Stream();
+	}
 
-    void streamEnded()
-    {
-        if(currentStream.error())
-            return;
+	void streamEnded()
+	{
+		if (currentStream.error())
+			return;
 
-        looped++;
+		looped++;
 
-        switch(loopMode)
-        {
-        case MusicPlayer::NoLoop:
-            break;
-        case MusicPlayer::LoopSingle:
-            stop();
-            play();
-            break;
-        case MusicPlayer::LoopAll:
-            next();
-            currentStream.setVolume(1.0f);
-            break;
-        }
-    }
-    void streamLooped()
-    {
-        looped++;
-    }
+		switch (loopMode)
+		{
+		case MusicPlayer::NoLoop:
+			break;
+		case MusicPlayer::LoopSingle:
+			stop();
+			play();
+			break;
+		case MusicPlayer::LoopAll:
+			next();
+			currentStream.setVolume(1.0f);
+			break;
+		}
+	}
+	void streamLooped()
+	{
+		looped++;
+	}
 
 protected:
-    bool event(QEvent *e)
-    {
-        if(e->type() == QEvent::User)
-            streamEnded();
-        else if(e->type() == static_cast<QEvent::Type>(QEvent::User+1))
-            streamLooped();
+	bool event(QEvent* e) override
+	{
+		if (e->type() == QEvent::User)
+			streamEnded();
+		else if (e->type() == static_cast<QEvent::Type>(QEvent::User + 1))
+			streamLooped();
 
-        return QObject::event(e);
-    }
+		return QObject::event(e);
+	}
 };
 
 void MusicStreamObserver::reachedEnd()
 {
-    QEvent *uE = new QEvent(QEvent::User);
-    qApp->postEvent(mp, uE);
+	QEvent* uE = new QEvent(QEvent::User);
+	qApp->postEvent(mp, uE);
 }
 void MusicStreamObserver::reachedLoop()
 {
-    QEvent *uE = new QEvent(static_cast<QEvent::Type>(QEvent::User+1));
-    qApp->postEvent(mp, uE);
+	QEvent* uE = new QEvent(static_cast<QEvent::Type>(QEvent::User + 1));
+	qApp->postEvent(mp, uE);
 }
 
-MusicPlayer::MusicPlayer(Playlist &playlist, QObject *parent)
-    : QObject(parent), p(new Priv(playlist))
+MusicPlayer::MusicPlayer(Playlist& playlist, QObject* parent)
+	: QObject(parent), p(new Priv(playlist))
 {
 }
 
 MusicPlayer::~MusicPlayer()
 {
-    delete p;
+	delete p;
 }
 
-void MusicPlayer::setLoopMode(MusicPlayer::LoopMode mode)
+void MusicPlayer::setLoopMode(MusicPlayer::LoopMode mode) const
 {
-    p->loopMode = mode;
+	p->loopMode = mode;
 }
 
-MusicPlayer::LoopMode MusicPlayer::loopMode()
+MusicPlayer::LoopMode MusicPlayer::loopMode() const
 {
-    return p->loopMode;
+	return p->loopMode;
 }
 
-void MusicPlayer::playStream(const alib::Stream &stm)
+void MusicPlayer::playStream(const alib::Stream& stm) const
 {
-    p->playStream(stm);
+	p->playStream(stm);
 }
 
-void MusicPlayer::setVolume(float volume)
+void MusicPlayer::setVolume(float volume) const
 {
-    p->setCurrentStreamVolume(volume);
+	p->setCurrentStreamVolume(volume);
 }
 
-int MusicPlayer::numberOfTimesLooped()
+int MusicPlayer::numberOfTimesLooped() const
 {
-    return p->looped;
+	return p->looped;
 }
 
-void MusicPlayer::next()
+void MusicPlayer::next() const
 {
-    p->next();
+	p->next();
 }
 
-void MusicPlayer::previous()
+void MusicPlayer::previous() const
 {
-    p->previous();
+	p->previous();
 }
 
-void MusicPlayer::play()
+void MusicPlayer::play() const
 {
-    p->play();
+	p->play();
 }
 
-void MusicPlayer::resume()
+void MusicPlayer::resume() const
 {
-    p->resume();
+	p->resume();
 }
 
-void MusicPlayer::pause()
+void MusicPlayer::pause() const
 {
-    p->pause();
+	p->pause();
 }
 
-void MusicPlayer::stop()
+void MusicPlayer::stop() const
 {
-    p->stop();
+	p->stop();
 }
 

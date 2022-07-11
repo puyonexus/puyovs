@@ -15,41 +15,41 @@ class Settings;
 
 class GameManager : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    GameManager(NetClient *network, QObject *parent = 0);
-    ~GameManager();
+	GameManager(NetClient* network, QObject* parent = nullptr);
+	~GameManager() override;
 
-    bool closeAll();
-    void exec();
+	bool closeAll();
+	void exec();
 
 public slots:
-    void addGame(GameWidget *game);
-    ppvs::rulesetInfo_t createRules();
-    GameWidget *createGame(const QString &rules, const QString &roomName, bool spectating = false);
-    GameWidget *createGame(ppvs::gameSettings *gamesettings, const QString &roomName, bool spectating = false,bool replay=false);
-    GameWidget *findGame(const QString &roomName);
-    void gameDestroyed(GameWidget *game);
-    bool rankedMatch();
+	void addGame(GameWidget* game);
+	ppvs::rulesetInfo_t createRules();
+	GameWidget* createGame(const QString& rules, const QString& roomName, bool spectating = false);
+	GameWidget* createGame(ppvs::gameSettings* gamesettings, const QString& roomName, bool spectating = false, bool replay = false);
+	GameWidget* findGame(const QString& roomName) const;
+	void gameDestroyed(GameWidget* game);
+	bool rankedMatch() const;
 
 private slots:
-    void channelJoined(QString channel, NetPeerList peers);
-    void peerJoinedChannel(QString channel, QString peer);
-    void peerPartedChannel(QString channel, QString peer);
-    void channelMessageReceived(QString channel, uchar subchannel, QString peer, QString message);
-    void peerChannelMessageReceived(QString channel, uchar subchannel, QString peer, QString message);
-    void peerStatusReceived(QString channel, QString peer, uchar status);
-    void updateControls(GameWidget *game);
-    void updateAllControls();
-    void rankedMatchmessageReceived(QString message);
+	void channelJoined(QString channel, NetPeerList peers) const;
+	void peerJoinedChannel(QString channel, QString peer) const;
+	void peerPartedChannel(QString channel, QString peer) const;
+	void channelMessageReceived(QString channel, uchar subchannel, QString peer, QString message) const;
+	void peerChannelMessageReceived(QString channel, uchar subchannel, QString peer, QString message) const;
+	void peerStatusReceived(QString channel, QString peer, uchar status) const;
+	void updateControls(GameWidget* game);
+	void updateAllControls();
+	void rankedMatchmessageReceived(QString message);
 signals:
-    void exiting();
+	void exiting();
 
 protected:
-    void process();
-    bool getGame(const QString &channel, ppvs::game *&game, GameWidget *&widget);
+	void process() const;
+	bool getGame(const QString& channel, ppvs::game*& game, GameWidget*& widget) const;
 
-    QList<GameWidget *> games;
-    NetClient *network;
-    GameAudio *audio;
+	QList<GameWidget*> games;
+	NetClient* network;
+	GameAudio* audio;
 };

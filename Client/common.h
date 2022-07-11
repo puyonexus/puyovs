@@ -34,8 +34,9 @@ QString createRulesetString(ppvs::rulesetInfo_t* rs);
 
 namespace ilib
 {
-    struct InputEvent;
+struct InputEvent;
 }
+
 class QKeyEvent;
 
 extern QHash<QString, int> nameToCode;
@@ -44,28 +45,28 @@ extern QHash<int, QString> codeToName;
 class InputCondition
 {
 public:
-    enum MatchResult { NoMatch, MatchUp, MatchDown };
+	enum MatchResult { NoMatch, MatchUp, MatchDown };
 
-    InputCondition(const ilib::InputEvent &e);
-    InputCondition(QKeyEvent *e);
-    InputCondition(QString str);
-    InputCondition();
-    ~InputCondition();
+	InputCondition(const ilib::InputEvent& e);
+	InputCondition(QKeyEvent* e);
+	InputCondition(QString str);
+	InputCondition();
+	~InputCondition();
 
-    MatchResult match(const ilib::InputEvent &e);
-    MatchResult match(QKeyEvent *e);
-    QString toString();
+	MatchResult match(const ilib::InputEvent& e) const;
+	MatchResult match(QKeyEvent* e) const;
+	QString toString() const;
 
 private:
-    enum condtype { keytype, buttontype, axistype, hattype, unknown };
-    int type;
-    union
-    {
-        struct { int code; } key;
-        struct { int device; int id; } button;
-        struct { int device; int id; int direction; } axis;
-        struct { int device; int id; int direction; } hat;
-    };
+	enum condtype { keytype, buttontype, axistype, hattype, unknown };
+	int type;
+	union
+	{
+		struct { int code; } key;
+		struct { int device; int id; } button;
+		struct { int device; int id; int direction; } axis;
+		struct { int device; int id; int direction; } hat;
+	};
 };
 
 QString getCryptographicHash(QString str);

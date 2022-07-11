@@ -12,7 +12,7 @@
 #endif
 
 #if defined(Q_OS_WIN)
-    static const char *defaultAssetPath = PREFIX;
+static const char* defaultAssetPath = PREFIX;
 #else
-    static const char *defaultAssetPath = PREFIX "/share/puyovs";
+static const char* defaultAssetPath = PREFIX "/share/puyovs";
 #endif
