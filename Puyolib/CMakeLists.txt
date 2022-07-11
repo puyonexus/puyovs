@@ -31,3 +31,5 @@ add_library(Puyolib
     legacypuyorng.cpp
     puyorng.cpp
 )
+
+target_compile_features(PuyoVS PUBLIC cxx_std_17)

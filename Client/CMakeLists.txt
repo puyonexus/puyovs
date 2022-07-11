@@ -141,5 +141,7 @@ target_link_libraries(PuyoVS
 # Try to work around UIC issue on Linux.
 target_include_directories(PuyoVS PRIVATE .)
 
+target_compile_features(PuyoVS PUBLIC cxx_std_17)
+
 install(TARGETS PuyoVS DESTINATION ${bindir})
 install(DIRECTORY ../Test/ DESTINATION ${datadir})
