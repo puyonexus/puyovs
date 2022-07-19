@@ -85,7 +85,7 @@ void VgmReader::read(float *buffer, int &bufferFrames)
     render_vgmstream(sbuffer, finalLength, p->vgmstream);
 
     for(int i = 0; i < finalLength * p->channels; ++i)
-        buffer[i] = sbuffer[i] / 32768.;
+        buffer[i] = static_cast<float>(sbuffer[i]) / 32768.f;
 
     free(sbuffer);
 
@@ -206,7 +206,7 @@ static size_t alib_streamfile_read(ALibStreamFile *streamfile, uint8_t *dest, of
     }
 
     size_t sz = streamfile->alibStream->read(dest, length);
-    streamfile->offset += sz;
+    streamfile->offset += static_cast<off_t>(sz);
 
     return sz;
 }

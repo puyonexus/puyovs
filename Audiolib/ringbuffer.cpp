@@ -27,7 +27,7 @@ struct RingBuffer::Priv
     {
         unsigned char *r = readPtr, *w = writePtr;
 
-        int maxContinousWrite = (r > w ? r - w : bufferEnd - w);
+        int maxContinousWrite = static_cast<int>(r > w ? r - w : bufferEnd - w);
 
         if(len > maxContinousWrite)
             len = maxContinousWrite;
@@ -47,7 +47,7 @@ struct RingBuffer::Priv
     {
         unsigned char *r = readPtr, *w = writePtr;
 
-        int maxContinousRead = (w >= r ? w - r : bufferEnd - r);
+        int maxContinousRead = static_cast<int>(w >= r ? w - r : bufferEnd - r);
 
         if(len > maxContinousRead)
             len = maxContinousRead;
@@ -74,17 +74,17 @@ struct RingBuffer::Priv
     int freeSpace(unsigned char *r, unsigned char *w)
     {
         if(r > w)
-            return abs(r - w) - 1;
-        else
-            return size - abs(r - w) - 1;
+            return static_cast<int>(abs(r - w) - 1);
+        
+        return static_cast<int>(size - abs(r - w) - 1);
     }
 
     int length(unsigned char *r, unsigned char *w)
     {
         if(r <= w)
-            return abs(r - w);
-        else
-            return size - abs(r - w);
+            return static_cast<int>(abs(r - w));
+
+        return static_cast<int>(size - abs(r - w));
     }
 };
 
@@ -161,12 +161,12 @@ unsigned int RingBuffer::length()
 
 unsigned int RingBuffer::readPtr()
 {
-    return p->readPtr - p->buffer;
+    return static_cast<unsigned int>(p->readPtr - p->buffer);
 }
 
 unsigned int RingBuffer::writePtr()
 {
-    return p->writePtr - p->buffer;
+    return static_cast<unsigned int>(p->writePtr - p->buffer);
 }
 
 
