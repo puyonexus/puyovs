@@ -290,3 +290,14 @@ add_library(VgmStream
     src/meta/2dx9.c
     src/meta/2dx.c
 )
+
+if(MSVC)
+    # Disable warnings: we're not modifying VgmStream code.
+    add_definitions("/wd4018")
+    add_definitions("/wd4098")
+    add_definitions("/wd4101")
+    add_definitions("/wd4244")
+    add_definitions("/wd4267")
+    add_definitions("/wd4554")
+    add_definitions("/wd4700")
+endif()
