@@ -18,7 +18,7 @@ unsigned int PVS_Channel::getPeerListNameLength()
     peerList::iterator it;
     for(it=peers->begin();it!=peers->end();it++)
     {
-        length+=(*it)->name.length()+1;
+        length+=static_cast<unsigned int>((*it)->name.length()+1);
     }
     return length;
 }

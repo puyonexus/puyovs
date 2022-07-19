@@ -29,20 +29,20 @@ unsigned int pvs_htonl(unsigned int);
 //define packet size in constructor, or pass a char array
 class packetWriter
 {
-    unsigned int ppos;
-    unsigned int arraySize;
+    size_t ppos;
+    size_t arraySize;
     char *charArray;
     bool initialized;
     bool dynSize;
 public:
     packetWriter();
     packetWriter(char *p);
-    packetWriter(int size);
+    packetWriter(size_t size);
     ~packetWriter();
     //set & get
     void set(char *p);
     char* getArray(){return charArray;}
-    int getLength(){return ppos;}
+    int getLength(){return static_cast<int>(ppos);}
     //write value
     template <class T> bool writeValue (T in)
     {
@@ -53,9 +53,9 @@ public:
             return false;
         //endianness
         if (sizeof(in)==2)
-            in=pvs_htons(in);
+            in=static_cast<T>(pvs_htons(in));
         else if (sizeof(in)==4)
-            in=pvs_htonl(in);
+            in= static_cast<T>(pvs_htonl(in));
         //put in array
         *(T *)(charArray+ppos)=in;
         ppos+=sizeof(T);
@@ -72,7 +72,7 @@ public:
 class packetReader
 {
 public:
-    unsigned int ppos;
+    size_t ppos;
     struct _ENetPacket *packet;
     bool initialized;
     packetReader();
@@ -102,9 +102,9 @@ public:
         in=*(T *)(t_packet->data+ppos);
         //endianness
         if (sizeof(in)==2)
-            in=pvs_htons(in);
+            in=static_cast<T>(pvs_htons(in));
         else if (sizeof(in)==4)
-            in=pvs_htonl(in);
+            in=static_cast<T>(pvs_htonl(in));
         ppos+=sizeof(T);
         return true;
     }

@@ -383,7 +383,7 @@ int PVS_Server::receive(ENetEvent &event)
                 //return peerlist
                 PVS_Channel *currentChannel=channelManager.getChannel(currentChannelName);
                 peerList *pl=currentChannel->peers;
-                unsigned int Npeers=pl->size();
+                unsigned int Npeers=static_cast<unsigned int>(pl->size());
                 {//send list of peers back (includes self)
                     packetWriter pw(sizeof(unsigned char)+1+currentChannelName.length()+1+currentChannelDescription.length()+1+sizeof(unsigned int)+Npeers*sizeof(unsigned int)+channelManager.getChannel(currentChannelName)->getPeerListNameLength()+Npeers*sizeof(unsigned char));
                     pw.writeValue((unsigned char)PT_REQUESTJOINCHANNEL);
@@ -459,7 +459,7 @@ int PVS_Server::receive(ENetEvent &event)
                 //return peerlist
                 PVS_Channel *currentChannel=channelManager.getChannel(currentChannelName);
                 peerList *pl=currentChannel->peers;
-                unsigned int Npeers=pl->size();
+                unsigned int Npeers=static_cast<unsigned int>(pl->size());
                 {//send list of peers back (includes self)
                     packetWriter pw(sizeof(unsigned char)+1+currentChannelName.length()+1+currentChannelDescription.length()+1+sizeof(unsigned int)+Npeers*sizeof(unsigned int)+channelManager.getChannel(currentChannelName)->getPeerListNameLength()+Npeers*sizeof(unsigned char));
                     pw.writeValue((unsigned char)PT_REQUESTJOINCHANNEL);
@@ -705,12 +705,12 @@ void PVS_Server::sendToPeer(unsigned char subchannel,std::string mes,unsigned in
 void PVS_Server::sendChannelList(ENetPeer *peer)
 {
     //get total string size
-    unsigned int number=channelManager.globalChannelList.size();
+    unsigned int number=static_cast<unsigned int>(channelManager.globalChannelList.size());
     unsigned int size=0;
     for (channelList::iterator it=channelManager.globalChannelList.begin();it!=channelManager.globalChannelList.end();it++)
     {
-        size+=(*it)->name.length()+1;
-        size+=(*it)->description.length()+1;
+        size+=static_cast<unsigned int>((*it)->name.length()+1);
+        size+=static_cast<unsigned int>((*it)->description.length()+1);
     }
     packetWriter pw(sizeof(unsigned char)+sizeof(unsigned int)+size);
     pw.writeValue((unsigned char)PT_CHANNELLIST);
