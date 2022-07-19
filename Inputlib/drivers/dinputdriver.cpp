@@ -73,7 +73,7 @@ struct DInputDriver::Priv
                 #define axis(i, member) \
                     if(events && axes[i] != state . member) \
                         p->queue(InputEvent::createAxisEvent(id, i, state . member /  32767.f)); \
-                    axes[i] = state . member
+                    axes[i] = static_cast<short>(state . member)
 
                 axis(0, lX);
                 axis(1, lY);
@@ -137,7 +137,7 @@ struct DInputDriver::Priv
             device->SetDataFormat(&js2format);
             device->SetCooperativeLevel(GetDesktopWindow(), DISCL_NONEXCLUSIVE | DISCL_BACKGROUND);
             device->EnumObjects(enum_axes, (void*)this, DIDFT_ABSAXIS);
-            gamepads.push_back(Gamepad(device, gamepads.size())); // TODO: better id
+            gamepads.push_back(Gamepad(device, static_cast<int>(gamepads.size()))); // TODO: better id
 
             return DIENUM_CONTINUE;
         }
