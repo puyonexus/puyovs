@@ -415,7 +415,7 @@ void player::initVoices()
 void player::playerSetup(fieldProp& properties, int playernum, int playerTotal)
 {
 	//right side square setup
-	int width = ceil(sqrt(double(playerTotal - 1)));
+	int width = static_cast<int>(ceil(sqrt(static_cast<double>(playerTotal - 1))));
 
 	//Player 1
 	if (playernum == 1)
@@ -436,14 +436,14 @@ void player::playerSetup(fieldProp& properties, int playernum, int playerTotal)
 		//Set up border
 		m_borderSprite.setImage(data->imgBorder1);
 		//fever gauge
-		feverGauge.init(-8, properties.gridHeight * (properties.gridY - 3 - 0), 1, true, data);
+		feverGauge.init(-8.f, static_cast<float>(properties.gridHeight * (properties.gridY - 3 - 0)), 1.f, true, data);
 	}
 	//other players
 	else if (playernum > 1)
 	{
-		m_globalScale = 1.0f / float(width);
-		properties.offsetX = 400 + ((playernum - 2) % width) * 320 * m_globalScale - 75 * m_globalScale * (width - 1);
-		properties.offsetY = 84 + ((playernum - 2) / width) * 438 * m_globalScale - 42 * m_globalScale * (width - 1);
+		m_globalScale = 1.0f / static_cast<float>(width);
+		properties.offsetX = 400.f + static_cast<float>((playernum - 2) % width) * 320.f * m_globalScale - 75.f * m_globalScale * static_cast<float>(width - 1);
+		properties.offsetY = 84.f + static_cast<float>((playernum - 2) / width) * 438.f * m_globalScale - 42.f * m_globalScale * static_cast<float>(width - 1);
 		m_fieldNormal.init(properties, this);
 		m_fieldFever.init(properties, this);
 		m_fieldTemp.init(properties, this);
@@ -457,7 +457,7 @@ void player::playerSetup(fieldProp& properties, int playernum, int playerTotal)
 		//Set up Border
 		m_borderSprite.setImage(data->imgBorder2);
 		//feverGauge
-		feverGauge.init(76, properties.gridHeight * (properties.gridY - 3 - 0), 1, false, data);
+		feverGauge.init(76, static_cast<float>(properties.gridHeight * (properties.gridY - 3 - 0)), 1.f, false, data);
 	}
 	return;
 
@@ -537,16 +537,16 @@ void player::setCharacter(puyoCharacter pc, bool show)
 		currentCharacterSprite.setScale(m_globalScale);
 		charHolderSprite.setVisible(true);
 		showCharacterTimer = 5 * 60;
-		for (int i = 0; i < 16; i++)
-			dropset[i].setImage(data->front->loadImage("Data/CharSelect/dropset.png"));
-		setDropsetSprite(currentCharacterSprite.getX(), currentCharacterSprite.getY() + 60 * m_globalScale, m_character);
+		for (auto& i : dropset)
+			i.setImage(data->front->loadImage("Data/CharSelect/dropset.png"));
+		setDropsetSprite(static_cast<int>(currentCharacterSprite.getX()), static_cast<int>(currentCharacterSprite.getY() + 60.f * m_globalScale), m_character);
 	}
 }
 
 void player::setFieldImage(puyoCharacter pc)
 {
 	//in case of failure
-	fimage* im = data->imgCharField[int(pc)];
+	fimage* im = data->imgCharField[static_cast<unsigned char>(pc)];
 	if (!im || im->error())
 		if (m_playernum == 1)
 			m_fieldSprite.setImage(data->imgField1);
@@ -587,17 +587,17 @@ void player::play()
 			dropset[i].setTransparency(1);
 		if (showCharacterTimer < 120)
 		{
-			charHolderSprite.setTransparency(showCharacterTimer / 120.0f);
-			currentCharacterSprite.setTransparency(showCharacterTimer / 120.0f);
+			charHolderSprite.setTransparency(static_cast<float>(showCharacterTimer) / 120.0f);
+			currentCharacterSprite.setTransparency(static_cast<float>(showCharacterTimer) / 120.0f);
 			for (int i = 0; i < 16; i++)
-				dropset[i].setTransparency(showCharacterTimer / 120.0f);
+				dropset[i].setTransparency(static_cast<float>(showCharacterTimer) / 120.0f);
 		}
 	}
 	//play animation for checkmark
 	if (rematchIconTimer < 1000)
 	{
 		rematchIconTimer++;
-		rematchIcon.setScale(m_globalScale * interpolate("elastic", 2, 1, rematchIconTimer / 60.0, -5, 2));
+		rematchIcon.setScale(m_globalScale * static_cast<float>(interpolate("elastic", 2, 1, rematchIconTimer / 60.0, -5, 2)));
 	}
 	rematchIcon.setVisible(rematch);
 
@@ -860,28 +860,28 @@ void player::chooseColor()
 		else if (colorMenuTimer < -25)
 			menuHeight = 150 - (colorMenuTimer + 50) * 6;
 
-		colorMenuBorder[0].setPosition((192 / 2) - (88 + 00), 336 + (-168 - menuHeight));
-		colorMenuBorder[1].setPosition((192 / 2) - (88 - 24) - 1, 336 + (-168 - menuHeight));
-		colorMenuBorder[2].setPosition((192 / 2) + (88 - 24), 336 + (-168 - menuHeight));
+		colorMenuBorder[0].setPosition((192.f / 2.f) - (88.f + 00.f), 336.f + (-168.f - static_cast<float>(menuHeight)));
+		colorMenuBorder[1].setPosition((192.f / 2.f) - (88.f - 24.f) - 1, 336.f + (-168.f - static_cast<float>(menuHeight)));
+		colorMenuBorder[2].setPosition((192.f / 2.f) + (88.f - 24.f), 336.f + (-168.f - static_cast<float>(menuHeight)));
 
-		colorMenuBorder[3].setPosition((192 / 2) - (88 + 00), 336 + (-168 - menuHeight + 24) - 4);
-		colorMenuBorder[4].setPosition((192 / 2) - (88 - 24), 336 + (-168 - menuHeight + 24) - 4);
-		colorMenuBorder[5].setPosition((192 / 2) + (88 - 24), 336 + (-168 - menuHeight + 24) - 4);
+		colorMenuBorder[3].setPosition((192.f / 2.f) - (88.f + 00.f), 336.f + (-168.f - static_cast<float>(menuHeight) + 24.f) - 4.f);
+		colorMenuBorder[4].setPosition((192.f / 2.f) - (88.f - 24.f), 336.f + (-168.f - static_cast<float>(menuHeight) + 24.f) - 4.f);
+		colorMenuBorder[5].setPosition((192.f / 2.f) + (88.f - 24.f), 336.f + (-168.f - static_cast<float>(menuHeight) + 24.f) - 4.f);
 
-		colorMenuBorder[6].setPosition((192 / 2) - (88 + 00), 336 + (-168 + menuHeight));
-		colorMenuBorder[7].setPosition((192 / 2) - (88 - 24) - 1, 336 + (-168 + menuHeight));
-		colorMenuBorder[8].setPosition((192 / 2) + (88 - 24), 336 + (-168 + menuHeight));
+		colorMenuBorder[6].setPosition((192.f / 2.f) - (88.f + 00.f), 336.f + (-168.f + static_cast<float>(menuHeight)));
+		colorMenuBorder[7].setPosition((192.f / 2.f) - (88.f - 24.f) - 1, 336.f + (-168.f + static_cast<float>(menuHeight)));
+		colorMenuBorder[8].setPosition((192.f / 2.f) + (88.f - 24.f), 336.f + (-168.f + static_cast<float>(menuHeight)));
 		
-		colorMenuBorder[1].setScaleX(-(colorMenuBorder[0].getX() - colorMenuBorder[8].getX() + 24 * 1 - 4) / 24.0);
-		colorMenuBorder[4].setScaleX(-(colorMenuBorder[0].getX() - colorMenuBorder[8].getX() + 24 * 1 - 4) / 24.0);
-		colorMenuBorder[7].setScaleX(-(colorMenuBorder[0].getX() - colorMenuBorder[8].getX() + 24 * 1 - 4) / 24.0);
+		colorMenuBorder[1].setScaleX(-(colorMenuBorder[0].getX() - colorMenuBorder[8].getX() + 24 * 1 - 4) / 24.f);
+		colorMenuBorder[4].setScaleX(-(colorMenuBorder[0].getX() - colorMenuBorder[8].getX() + 24 * 1 - 4) / 24.f);
+		colorMenuBorder[7].setScaleX(-(colorMenuBorder[0].getX() - colorMenuBorder[8].getX() + 24 * 1 - 4) / 24.f);
 		colorMenuBorder[1].setScaleY(1);
 		colorMenuBorder[4].setScaleY(1);
 		colorMenuBorder[7].setScaleY(1);
 
-		colorMenuBorder[3].setScaleY(-(colorMenuBorder[0].getY() - colorMenuBorder[6].getY() + 24 * 1 - 4) / 24.0);
-		colorMenuBorder[4].setScaleY(-(colorMenuBorder[0].getY() - colorMenuBorder[6].getY() + 24 * 1 - 4) / 24.0);
-		colorMenuBorder[5].setScaleY(-(colorMenuBorder[0].getY() - colorMenuBorder[6].getY() + 24 * 1 - 4) / 24.0);
+		colorMenuBorder[3].setScaleY(-(colorMenuBorder[0].getY() - colorMenuBorder[6].getY() + 24 * 1 - 4) / 24.f);
+		colorMenuBorder[4].setScaleY(-(colorMenuBorder[0].getY() - colorMenuBorder[6].getY() + 24 * 1 - 4) / 24.f);
+		colorMenuBorder[5].setScaleY(-(colorMenuBorder[0].getY() - colorMenuBorder[6].getY() + 24 * 1 - 4) / 24.f);
 		colorMenuBorder[3].setScaleX(1);
 		colorMenuBorder[4].setScaleX(1);
 		colorMenuBorder[5].setScaleX(1);
@@ -899,7 +899,7 @@ void player::chooseColor()
 		{
 			spice[i].setVisible(true);
 			spice[i].setTransparency(1);
-			spice[i].setPosition((192 / 2), 336 + (-168 - 125 + 37 + 50 * i));
+			spice[i].setPosition(192.f / 2.f, 336.f + static_cast<float>(-168 - 125 + 37 + 50 * i));
 		}
 	}
 	//make choice
@@ -1104,7 +1104,7 @@ void player::chooseColor()
 	if (colorMenuTimer < -20)
 	{
 		spice[spiceSelect].setVisible(true);
-		spice[spiceSelect].setTransparency(interpolate("linear", 1, 0, (colorMenuTimer + 50) / 30.0, 0, 0));
+		spice[spiceSelect].setTransparency(static_cast<float>(interpolate("linear", 1, 0, (colorMenuTimer + 50) / 30.0, 0, 0)));
 	}
 	/*if (colorMenuTimer<20 && (-colorMenuTimer)%2==1)
 		spice[spiceSelect].setVisible(true);
@@ -1210,9 +1210,9 @@ void player::destroyPuyos()
 			if (currentgame->players.size() > 1)
 				div = max(2, divider);
 
-			EQ = int(currentScore / targetPoint) * power * 3 / (div + 1);
+			EQ = static_cast<int>(static_cast<float>(currentScore / targetPoint) * power * 3.f / static_cast<float>(div + 1));
 			//currentScore-=targetPoint*float(EQ/power);
-			currentScore -= targetPoint * int(currentScore / targetPoint);
+			currentScore -= targetPoint * (currentScore / targetPoint);
 
 			if (bonusEQ)
 			{
@@ -1244,7 +1244,7 @@ void player::playLightEffect()
 		}
 	}
 	//play feverlight
-	m_feverLight.setTimer(0.1);
+	m_feverLight.setTimer(0.1f);
 	//update fevergauge
 	feverGauge.update();
 
@@ -1275,8 +1275,8 @@ void player::addFeverCount()
 	posVectorFloat startpv, middlepv, endpv;
 	startpv = posVectorFloat(properties.offsetX + (192 / 2) * properties.scaleX * getGlobalScale(), properties.offsetY);
 	endpv = posVectorFloat(m_nextPuyoOffsetX + (feverGauge.getPV().x) * m_nextPuyoScale, m_nextPuyoOffsetY + (feverGauge.getPV().y) * m_nextPuyoScale);
-	middlepv.x = startpv.x + dir * PUYOX * 1.5;
-	middlepv.y = startpv.y - PUYOY * 1.5;
+	middlepv.x = startpv.x + static_cast<float>(dir * PUYOX) * 1.5f;
+	middlepv.y = startpv.y - static_cast<float>(PUYOY) * 1.5f;
 
 	m_feverLight.init(startpv, middlepv, endpv);
 	feverGauge.addCount();
@@ -1382,7 +1382,7 @@ int player::nuisanceDropPattern()
 
 	// pick an index
 	double rand = m_randomizerNuisanceDrop->genrand_real1();
-	int randomIndex = int(m_nuisanceList.size()) * rand;
+	int randomIndex = static_cast<int>(static_cast<double>(m_nuisanceList.size()) * rand);
 
 	// swap that index with the end and pop
 	int endValue = m_nuisanceList[m_nuisanceList.size() - 1];
@@ -1851,7 +1851,7 @@ void player::setLose()
 	currentgame->currentruleset->onLose(this);
 	characterAnimation.prepareAnimation("lose");
 	//play lose sound sound
-	int totalplayers = currentgame->players.size();
+	int totalplayers = static_cast<int>(currentgame->players.size());
 	int activeplayers = 0;
 	for (int i = 0; i < totalplayers; i++)
 	{//check if all players are in win or lose state
@@ -1869,16 +1869,16 @@ void player::setLose()
 
 void player::loseGame()
 {
-	//force others to check if winner
-	//unless he's in the middle of chaining
+	// force others to check if winner
+	// unless he's in the middle of chaining
 	if (m_loseWinTimer == 0)
 	{
-		for (size_t i = 0; i < currentgame->players.size(); i++)
+		for (auto& player : currentgame->players)
 		{
-			if (currentgame->players[i] != this)
+			if (player != this)
 			{
-				if (!(currentgame->players[i]->currentphase > 10 && currentgame->players[i]->currentphase < 40))
-					currentgame->players[i]->checkWinner();
+				if (!(player->currentphase > 10 && player->currentphase < 40))
+					player->checkWinner();
 			}
 		}
 	}
@@ -2009,7 +2009,7 @@ void player::startFever()
 		garbageSpeed = 8.0;
 		garbageEndTime = 80;
 		puyoBounceEnd = 40;
-		puyoBounceSpeed = 2.5;
+		puyoBounceSpeed = 2;
 		normalTray.align(activeField->getProperties().offsetX - (16) * m_globalScale, activeField->getProperties().offsetY - (32 + 16) * m_globalScale, m_globalScale);
 		normalTray.setDarken(true);
 		feverSuccess = 0;
@@ -2043,8 +2043,8 @@ void player::startFever()
 		m_fieldSprite.setVisible(true);
 		m_fieldFeverSprite.setVisible(false);
 		//rotate out normal field
-		m_transformScale = 1 - (m_transitionTimer - 50) / 50.0;
-		activeField->setTransformScale(1 - (m_transitionTimer - 50) / 50.0);
+		m_transformScale = 1.f - static_cast<float>(m_transitionTimer - 50) / 50.f;
+		activeField->setTransformScale(1.f - static_cast<float>(m_transitionTimer - 50) / 50.f);
 
 	}
 	else if (m_transitionTimer > 100 && m_transitionTimer <= 150)
@@ -2052,14 +2052,14 @@ void player::startFever()
 		m_fieldSprite.setVisible(false);
 		m_fieldFeverSprite.setVisible(true);
 		//rotate in fever field
-		m_transformScale = (m_transitionTimer - 100) / 50.0;
-		activeField->setTransformScale((m_transitionTimer - 100) / 50.0);
+		m_transformScale = static_cast<float>(m_transitionTimer - 100) / 50.f;
+		activeField->setTransformScale(static_cast<float>(m_transitionTimer - 100) / 50.f);
 	}
 }
 void player::checkEndFeverOnline()
 {
 	//online player gets stuck in this state until message is received
-	if (!messages.empty() && messages.front().compare("fe") == 0)
+	if (!messages.empty() && messages.front() == "fe")
 	{//fever ends
 		messages.pop_front();
 		feverEnd = true;
@@ -2176,7 +2176,7 @@ void player::endFever()
 		m_transitionTimer = 100;
 		m_transformScale = 1;
 		chainPopSpeed = 25;
-		garbageSpeed = 4.8;
+		garbageSpeed = 4.8f;
 		garbageEndTime = 100;
 		puyoBounceEnd = 2;
 		puyoBounceEnd = 50;
@@ -2240,8 +2240,8 @@ void player::endFever()
 		m_fieldSprite.setVisible(false);
 		m_fieldFeverSprite.setVisible(true);
 		//rotate out fever field
-		m_transformScale = 1 - (m_transitionTimer) / 50.0;
-		activeField->setTransformScale(1 - (m_transitionTimer) / 50.0);
+		m_transformScale = 1.f - static_cast<float>(m_transitionTimer) / 50.f;
+		activeField->setTransformScale(1.f - static_cast<float>(m_transitionTimer) / 50.f);
 
 	}
 	else if (m_transitionTimer > 50 && m_transitionTimer <= 100)
@@ -2249,8 +2249,8 @@ void player::endFever()
 		m_fieldSprite.setVisible(true);
 		m_fieldFeverSprite.setVisible(false);
 		//rotate in fever field
-		m_transformScale = (m_transitionTimer - 50) / 50.0;
-		activeField->setTransformScale((m_transitionTimer - 50) / 50.0);
+		m_transformScale = static_cast<float>(m_transitionTimer - 50) / 50.f;
+		activeField->setTransformScale(static_cast<float>(m_transitionTimer - 50) / 50.f);
 	}
 
 }
@@ -2583,14 +2583,14 @@ void player::draw()
 	data->front->clearDepth();
 	data->front->setDepthFunction(lessOrEqual);
 	data->front->setBlendMode(alphaBlending);
-	data->front->setColor(0., 0., 0., 0.);
+	data->front->setColor(0, 0, 0, 0);
 	data->front->drawRect(nullptr, 0, 0, 192, 336);
 	// Fever flip coordinates
 	// ----------------------
 	data->front->pushMatrix();
-	data->front->translate((192 / 2), 0, 0);
+	data->front->translate(192.f / 2.f, 0, 0);
 	data->front->scale(m_transformScale, 1, 1);
-	data->front->translate(-(192 / 2), 0, 0);
+	data->front->translate(-192.f / 2.f, 0, 0);
 	activeField->draw(); //draw to screen
 	data->front->setDepthFunction(equal);
 	movePuyos.draw(); //draw movePuyos on renderimage
@@ -2727,9 +2727,9 @@ void player::drawFieldFeverBack(posVectorFloat /*position*/, float rotation)
 void player::drawAllClear(posVectorFloat pos, float scaleX, float scaleY, float rotation)
 {
 	fieldProp p = activeField->getProperties();
-	float dist = activeField->getFieldSize().y * 0.67;
-	float x = pos.x - dist * sin(rotation * PI / 180);
-	float y = pos.y - dist * cos(rotation * PI / 180);
+	float dist = activeField->getFieldSize().y * 0.67f;
+	float x = pos.x - dist * sin(rotation * PI / 180.f);
+	float y = pos.y - dist * cos(rotation * PI / 180.f);
 
 	//tsu type
 	if (allClear == 1)
@@ -2750,8 +2750,8 @@ void player::drawAllClear(posVectorFloat pos, float scaleX, float scaleY, float 
 		if (allclearTimer >= 60)
 		{//flicker
 			//m_allclearSprite.setVisible((allclearTimer/2)%2);
-			m_allclearSprite.setScale(scaleX + scaleX * (allclearTimer - 60) / 10.0, scaleY - scaleY * (allclearTimer - 60) / 10.0);
-			m_allclearSprite.setTransparency(1 - (allclearTimer - 60) / 10.0);
+			m_allclearSprite.setScale(scaleX + scaleX * static_cast<float>(allclearTimer - 60) / 10.f, scaleY - scaleY * static_cast<float>(allclearTimer - 60) / 10.f);
+			m_allclearSprite.setTransparency(1.f - static_cast<float>(allclearTimer - 60) / 10.f);
 		}
 		else if (allclearTimer > 1 && allclearTimer < 60)
 		{//show normally
@@ -2792,12 +2792,12 @@ void player::drawLose()
 {
 	fieldProp p = activeField->getProperties();
 	posVectorFloat position = activeField->getBottomCoord(true);
-	position.y -= activeField->getFieldSize().y * 0.75;
+	position.y -= activeField->getFieldSize().y * 0.75f;
 
 	if (losewin == LOSE && m_loseWinTimer > 60)
 	{
 		m_loseSprite.setPosition(position);
-		m_loseSprite.setScale((1 + 0.1 * sin((m_loseWinTimer - 60) / 20.0)));
+		m_loseSprite.setScale(1 + 0.1f * sin(static_cast<float>(m_loseWinTimer - 60) / 20.f));
 		m_loseSprite.draw(data->front);
 	}
 }
@@ -2806,21 +2806,21 @@ void player::drawWin()
 {
 	fieldProp p = activeField->getProperties();
 	posVectorFloat position = activeField->getBottomCoord(true);
-	position.y -= activeField->getFieldSize().y * 0.75;
+	position.y -= activeField->getFieldSize().y * 0.75f;
 	if (losewin == WIN)
 	{
-		m_winSprite.setPosition(position.x, position.y + 10 * sin(m_loseWinTimer / 20.0));
-		m_winSprite.setScale(1);
+		m_winSprite.setPosition(position.x, position.y + 10.f * sin(static_cast<float>(m_loseWinTimer) / 20.f));
+		m_winSprite.setScale(1.f);
 		m_winSprite.draw(data->front);
 	}
 }
 
 void player::drawColorMenu()
 {
-	for (int i = 0; i < 9; i++)
-		colorMenuBorder[i].draw(data->front);
-	for (int i = 0; i < 5; i++)
-		spice[i].draw(data->front);
+	for (auto& i : colorMenuBorder)
+		i.draw(data->front);
+	for (auto& i : spice)
+		i.draw(data->front);
 }
 //}
 
@@ -2929,8 +2929,8 @@ void player::getUpdate(std::string str)
 		garbageSpeed = 8.0;
 		garbageEndTime = 80;
 		puyoBounceEnd = 40;
-		puyoBounceSpeed = 2.5;
-		normalTray.align(activeField->getProperties().offsetX - (16) * m_globalScale, activeField->getProperties().offsetY - (32 + 16) * m_globalScale, m_globalScale);
+		puyoBounceSpeed = 2;
+		normalTray.align(activeField->getProperties().offsetX - 16 * m_globalScale, activeField->getProperties().offsetY - (32 + 16) * m_globalScale, m_globalScale);
 		normalTray.setDarken(true);
 	}
 }
@@ -2964,7 +2964,7 @@ void player::setDropsetSprite(int x, int y, puyoCharacter pc)
 	//get total width and center dropset
 	float length = 0;
 	float xx = 0;
-	float scale = m_globalScale * 0.75;
+	float scale = m_globalScale * 0.75f;
 	for (int j = 0; j < 16; j++)
 	{
 		movePuyoType mpt = getFromDropPattern(pc, j);
@@ -2973,13 +2973,13 @@ void player::setDropsetSprite(int x, int y, puyoCharacter pc)
 		else
 			length += 18;
 	}
-	xx = -length / 2.0 - 5;
+	xx = -length / 2.f - 5.f;
 	//xx=-128;
 
 	for (int j = 0; j < 16; j++)
 	{
 		movePuyoType mpt = getFromDropPattern(pc, j);
-		dropset[j].setPosition(x + xx * scale, y);
+		dropset[j].setPosition(static_cast<float>(x) + xx * scale, static_cast<float>(y));
 		dropset[j].setScale(scale);
 		switch (mpt)
 		{
