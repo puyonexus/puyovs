@@ -26,6 +26,12 @@ if(ENABLE_UPDATER)
   add_definitions(-DPUYOVS_UPDATER_ENABLED=1)
 endif()
 
+# Disable inactionable warnings.
+if(MSVC)
+  # Secure CRT functions are not portable, so we won't use them.
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif()
+
 # Add sub-projects.
 add_subdirectory(Audiolib)
 add_subdirectory(Audiotest)

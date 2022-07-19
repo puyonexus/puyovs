@@ -415,7 +415,7 @@ void GameManager::channelMessageReceived(QString channel, uchar subchannel, QStr
 		std::string peerStd = peer.toStdString();
 
 		int playernum = -1;
-		for (int i = game->players.size() - 1; i >= 0; i--)
+		for (int i = static_cast<int>(game->players.size() - 1); i >= 0; i--)
 		{
 			if (game->players[i]->onlineName.compare(peerStd) == 0)
 			{
@@ -498,7 +498,7 @@ void GameManager::peerChannelMessageReceived(QString channel, uchar subchannel, 
 
 	// Find player number
 	int playernum = -1;
-	for (int i = game->players.size() - 1; i >= 0; i--)
+	for (int i = static_cast<int>(game->players.size() - 1); i >= 0; i--)
 	{
 		if (game->players[i]->onlineName.compare(peerStd) == 0)
 		{

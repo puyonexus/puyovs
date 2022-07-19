@@ -36,7 +36,7 @@ struct Buffer::Priv {
 
         memcpy(buffer, data + offset, amount);
 
-        return amount;
+        return static_cast<int>(amount);
     }
 
     void append(const char *d, size_t s)
@@ -140,7 +140,7 @@ char *Buffer::lock(int *size)
 {
     p.detach();
     if(size)
-        *size = p->size;
+        *size = static_cast<int>(p->size);
     p->locked = true;
     return p->data;
 }
@@ -232,6 +232,7 @@ BinaryStream *BinaryStream::openUrl(const char *url, const char *mode)
     FileStream *fileStream = new FileStream(url, mode);
     if(!fileStream->error()) return fileStream;
     delete fileStream;
+    return nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -262,7 +263,7 @@ FileStream::~FileStream()
 
 int FileStream::read(void *ptr, size_t size)
 {
-    return ::fread(ptr, 1, size, p->file);
+    return static_cast<int>(::fread(ptr, 1, size, p->file));
 }
 
 int FileStream::readChar()
@@ -272,7 +273,7 @@ int FileStream::readChar()
 
 int FileStream::write(const void *ptr, size_t size)
 {
-    return ::fwrite(ptr, 1, size, p->file);
+    return static_cast<int>(::fwrite(ptr, 1, size, p->file));
 }
 
 bool FileStream::seekable()
@@ -359,13 +360,13 @@ struct MemoryStream::Priv
             return 0;
 
         int read = buffer.read((char *)ptr, size, c);
-        c += size;
+        c += static_cast<long>(size);
         return read;
     }
 
     bool seek(long to, MemoryStream::SeekOrigin origin)
     {
-        int bufSize = buffer.size();
+        int bufSize = static_cast<int>(buffer.size());
 
         switch(origin)
         {
@@ -445,7 +446,7 @@ bool MemoryStream::error()
 
 long MemoryStream::size()
 {
-    return p->buffer.size();
+    return static_cast<long>(p->buffer.size());
 }
 
 }

@@ -130,7 +130,6 @@ struct VorbisReader::Priv
 
     void reset()
     {
-        int err;
         cursor = 0;
         stb_vorbis_seek_start(vorbis);
     }

@@ -192,7 +192,7 @@ packetWriter::packetWriter(char *p)
 {//pass char array
     set(p);
 }
-packetWriter::packetWriter(int size)
+packetWriter::packetWriter(size_t size)
 {//when passing size, so allocation/deallocation of character array self
     dynSize=true;
     arraySize=size;
@@ -219,7 +219,7 @@ bool packetWriter::writeString(const char *str)
     if (!initialized)
         return false;
 
-    int len=strlen(str)+1;
+    size_t len=strlen(str)+1;
 
     //passes array size
     if (dynSize && ppos+len > arraySize)

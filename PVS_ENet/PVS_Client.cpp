@@ -346,8 +346,8 @@ void PVS_Client::receive(ENetEvent &event)
 
             if (ok)
             {
-                if (!pr.getString(getPVS_Peer()->name));
-                if (!pr.getString(getPVS_Peer()->oldName));
+                pr.getString(getPVS_Peer()->name);
+                pr.getString(getPVS_Peer()->oldName);
                 onNameSet();
             }
             else
@@ -359,7 +359,7 @@ void PVS_Client::receive(ENetEvent &event)
         case PT_REQUESTJOINCHANNEL:
         {//channel join/creation response
             char ok=0;
-            if (!pr.getValue(ok));
+            pr.getValue(ok);
             if (ok)
             {//channel is created/joined: client recieves a list of peers (includes self)
                 if (!pr.getString(currentChannelName)) return;

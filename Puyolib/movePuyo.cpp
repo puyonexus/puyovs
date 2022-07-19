@@ -194,7 +194,7 @@ void movePuyo::setSprite()
 		subRectX1 = 0; subRectY1 = static_cast<float>(PUYOY * m_color1);
 		subRectWidth1 = static_cast<float>(PUYOX); subRectHeight1 = static_cast<float>(PUYOY);
 		subRectX2 = 0; subRectY2 = static_cast<float>(PUYOY * m_color2);
-		subRectWidth2 = PUYOX; subRectHeight2 = static_cast<float>(PUYOY);
+		subRectWidth2 = static_cast<float>(PUYOX); subRectHeight2 = static_cast<float>(PUYOY);
 		m_sprite1.setSubRect(
 			static_cast<int>(subRectX1),
 			static_cast<int>(subRectY1),
@@ -216,10 +216,10 @@ void movePuyo::setSprite()
 	}
 	else if (m_type == TRIPLET && m_color1 != m_color2)
 	{
-		subRectX1 = PUYOX * m_color1; subRectY1 = PUYOY * 5 + 1;
-		subRectWidth1 = PUYOX; subRectHeight1 = PUYOY * 2 - 1;
-		subRectX2 = 0; subRectY2 = PUYOY * m_color2;
-		subRectWidth2 = PUYOX; subRectHeight2 = PUYOY;
+		subRectX1 = static_cast<float>(PUYOX * m_color1); subRectY1 = static_cast<float>(PUYOY * 5 + 1);
+		subRectWidth1 = static_cast<float>(PUYOX); subRectHeight1 = static_cast<float>(PUYOY * 2 - 1);
+		subRectX2 = 0.f; subRectY2 = static_cast<float>(PUYOY * m_color2);
+		subRectWidth2 = static_cast<float>(PUYOX); subRectHeight2 = static_cast<float>(PUYOY);
 		m_sprite1.setSubRect(
 			static_cast<int>(subRectX1),
 			static_cast<int>(subRectY1),
@@ -245,10 +245,10 @@ void movePuyo::setSprite()
 	}
 	else if (m_type == TRIPLET && m_color1 == m_color2)
 	{
-		subRectX1 = 5 * PUYOX + 2 * PUYOX * m_color1; subRectY1 = PUYOY * 5 + 1;
-		subRectWidth1 = PUYOX * 2; subRectHeight1 = PUYOY * 2 - 1;
-		subRectX2 = 0; subRectY2 = PUYOY * m_color2;
-		subRectWidth2 = PUYOX; subRectHeight2 = PUYOY;
+		subRectX1 = static_cast<float>(5 * PUYOX + 2 * PUYOX * m_color1); subRectY1 = static_cast<float>(PUYOY * 5 + 1);
+		subRectWidth1 = static_cast<float>(PUYOX * 2); subRectHeight1 = static_cast<float>(PUYOY * 2 - 1);
+		subRectX2 = 0.f; subRectY2 = static_cast<float>(PUYOY * m_color2);
+		subRectWidth2 = static_cast<float>(PUYOX); subRectHeight2 = static_cast<float>(PUYOY);
 		m_sprite1.setSubRect(
 			static_cast<int>(subRectX1),
 			static_cast<int>(subRectY1),
@@ -274,10 +274,10 @@ void movePuyo::setSprite()
 	}
 	else if (m_type == QUADRUPLET)
 	{
-		subRectX1 = 10 * PUYOX + (PUYOX + PUYOX / 6.4f) * m_color1; subRectY1 = PUYOY * 13;
-		subRectWidth1 = PUYOX + PUYOX / 6.4f; subRectHeight1 = PUYOY * 2;
-		subRectX2 = 10 * PUYOX + (PUYOX + PUYOX / 6.4f) * m_color2; subRectY2 = PUYOY * 13;
-		subRectWidth2 = PUYOX + PUYOX / 6.4f; subRectHeight2 = PUYOY * 2;
+		subRectX1 = static_cast<float>(10 * PUYOX + (PUYOX + PUYOX * 64 / 10) * m_color1); subRectY1 = static_cast<float>(PUYOY * 13);
+		subRectWidth1 = static_cast<float>(PUYOX + PUYOX * 64 / 10); subRectHeight1 = static_cast<float>(PUYOY * 2);
+		subRectX2 = static_cast<float>(10 * PUYOX + (PUYOX + PUYOX * 64 / 10) * m_color2); subRectY2 = static_cast<float>(PUYOY * 13);
+		subRectWidth2 = static_cast<float>(PUYOX + PUYOX * 64 / 10); subRectHeight2 = static_cast<float>(PUYOY * 2);
 		m_sprite1.setSubRect(
 			static_cast<int>(subRectX1),
 			static_cast<int>(subRectY1),
@@ -303,8 +303,8 @@ void movePuyo::setSprite()
 	}
 	else if (m_type == BIG)
 	{
-		subRectX1 = 2 * PUYOX + 2 * PUYOX * m_bigColor; subRectY1 = PUYOY * 7;
-		subRectWidth1 = PUYOX * 2; subRectHeight1 = PUYOY * 2;
+		subRectX1 = static_cast<float>(2 * PUYOX + 2 * PUYOX * m_bigColor); subRectY1 = static_cast<float>(PUYOY * 7);
+		subRectWidth1 = static_cast<float>(PUYOX * 2); subRectHeight1 = static_cast<float>(PUYOY * 2);
 		subRectX2 = 0; subRectY2 = 0;
 		subRectWidth2 = 0; subRectHeight2 = 0;
 		m_sprite1.setSubRect(
@@ -341,9 +341,9 @@ void movePuyo::moveSpriteX()
 
 	//Snap
 	if (m_posReal[0].x<offsetX + m_pos[0].x * gridSizeX + PUYOX / 2 && m_posReal[0].x>offsetX + m_pos[0].x * gridSizeX + PUYOX / 2 - gridSizeX / 2.f)
-		m_posReal[0].x = offsetX + m_pos[0].x * gridSizeX + PUYOX / 2;
+		m_posReal[0].x = static_cast<float>(offsetX + m_pos[0].x * gridSizeX + PUYOX / 2);
 	else if (m_posReal[0].x > offsetX + m_pos[0].x * gridSizeX + PUYOX / 2 && m_posReal[0].x < offsetX + m_pos[0].x * gridSizeX + PUYOX / 2 + gridSizeX / 2.f)
-		m_posReal[0].x = offsetX + m_pos[0].x * gridSizeX + PUYOX / 2;
+		m_posReal[0].x = static_cast<float>(offsetX + m_pos[0].x * gridSizeX + PUYOX / 2);
 
 	//Controller movement
 	if (m_player->currentphase == MOVE)
@@ -378,9 +378,9 @@ void movePuyo::moveSpriteX()
 
 void movePuyo::setSpriteX()
 {//sets sprite in the x direction
-	int offsetX = m_player->activeField->getProperties().offsetX;
+	int offsetX = static_cast<int>(m_player->activeField->getProperties().offsetX);
 	int gridSizeX = m_player->activeField->getProperties().gridWidth;
-	m_posReal[0].x = offsetX + m_pos[0].x * gridSizeX + PUYOX / 2;
+	m_posReal[0].x = static_cast<float>(offsetX + m_pos[0].x * gridSizeX + PUYOX / 2);
 
 }
 
@@ -410,14 +410,14 @@ void movePuyo::setSpriteY()
 			}
 			setRotation();
 			int gridSizeX = prop.gridWidth;
-			m_quick1.setPosition(m_pos[0].x * gridSizeX, m_posReal[0].y - prop.offsetY - PUYOY / 2 + (PUYOY - prop.gridHeight));
-			m_quick2.setPosition(m_pos[1].x * gridSizeX, m_posReal[1].y - prop.offsetY - PUYOY / 2 + (PUYOY - prop.gridHeight));
+			m_quick1.setPosition(m_pos[0].x * static_cast<float>(gridSizeX), m_posReal[0].y - prop.offsetY - PUYOY / 2 + (PUYOY - prop.gridHeight));
+			m_quick2.setPosition(m_pos[1].x * static_cast<float>(gridSizeX), m_posReal[1].y - prop.offsetY - PUYOY / 2 + (PUYOY - prop.gridHeight));
 			//m_quick1.setPosition(m_pos[0].x*gridSizeX,m_posReal[0].y-prop.offsetY);
 			//m_quick2.setPosition(m_pos[1].x*gridSizeX,m_posReal[0].y-prop.offsetY);
 			m_quick1.setTransparency(1);
 			m_quick2.setTransparency(1);
-			m_quick1.setSubRect(4 * PUYOX + PUYOX * m_color1, 13 * PUYOY, PUYOX, PUYOY * 1.5);
-			m_quick2.setSubRect(4 * PUYOX + PUYOX * m_color2, 13 * PUYOY, PUYOX, PUYOY * 1.5);
+			m_quick1.setSubRect(4 * PUYOX + PUYOX * m_color1, 13 * PUYOY, PUYOX, static_cast<int>(static_cast<float>(PUYOY) * 1.5f));
+			m_quick2.setSubRect(4 * PUYOX + PUYOX * m_color2, 13 * PUYOY, PUYOX, static_cast<int>(static_cast<float>(PUYOY) * 1.5f));
 			m_dropCounter = 100;
 			m_holdCounter = 1;
 			m_qscale = 1;
@@ -437,7 +437,7 @@ void movePuyo::setSpriteY()
 
 		//add to fallcounter
 		if (m_fallCounter < 100)
-			m_fallCounter += m_player->dropspeed;
+			m_fallCounter += static_cast<int>(m_player->dropspeed);
 
 		//add score here
 		if (m_player->controls.Down > 0 &&
@@ -1059,8 +1059,8 @@ void movePuyo::setSpriteAngle()
 	//Rotate Puyos
 	//RotateCounter is for normal rotations, FlipTimer is for fast flipping (Variable Flip determines if used or not)
 	//MovepUyoAngle=Rotation( "Ctr_Variables_P1" )*90+RotateCounter( "Ctr_Timers_P1" )/8.0*90+FlipCounter( "Ctr_Timers_P1" )/8.0*180*Flip( "Ctr_Variables_P1" )
-	m_movePuyoAngle = m_rotation * 90 + m_rotateCounter / 8.0f * 90 + m_flipCounter / 8.0 * 180 * m_flip;
-
+	m_movePuyoAngle = static_cast<float>(m_rotation * 90) + static_cast<float>(m_rotateCounter) / 8.0f * 90 + static_cast<float>(m_flipCounter) / 8.0f * 180 * static_cast<float>(m_flip);
+	
 	//Trigger flip
 	if (m_type == DOUBLET && m_dropCounter < 90)
 	{
@@ -1204,14 +1204,14 @@ void movePuyo::move()
 
 		setRotation();
 		int gridSizeX = prop.gridWidth;
-		m_quick1.setPosition(m_pos[0].x * gridSizeX, m_posReal[0].y - prop.offsetY - PUYOY / 2 + (PUYOY - prop.gridHeight));
-		m_quick2.setPosition(m_pos[1].x * gridSizeX, m_posReal[1].y - prop.offsetY - PUYOY / 2 + (PUYOY - prop.gridHeight));
+		m_quick1.setPosition(static_cast<float>(m_pos[0].x * gridSizeX), m_posReal[0].y - prop.offsetY - static_cast<float>(PUYOY / 2) + static_cast<float>(PUYOY - prop.gridHeight));
+		m_quick2.setPosition(static_cast<float>(m_pos[1].x * gridSizeX), m_posReal[1].y - prop.offsetY - static_cast<float>(PUYOY / 2) + static_cast<float>(PUYOY - prop.gridHeight));
 		//m_quick1.setPosition(m_pos[0].x*gridSizeX,m_posReal[0].y-prop.offsetY);
 		//m_quick2.setPosition(m_pos[1].x*gridSizeX,m_posReal[0].y-prop.offsetY);
 		m_quick1.setTransparency(1);
 		m_quick2.setTransparency(1);
-		m_quick1.setSubRect(4 * PUYOX + PUYOX * m_color1, 13 * PUYOY, PUYOX, PUYOY * 1.5);
-		m_quick2.setSubRect(4 * PUYOX + PUYOX * m_color2, 13 * PUYOY, PUYOX, PUYOY * 1.5);
+		m_quick1.setSubRect(4 * PUYOX + PUYOX * m_color1, 13 * PUYOY, PUYOX, static_cast<int>(PUYOY * 1.5));
+		m_quick2.setSubRect(4 * PUYOX + PUYOX * m_color2, 13 * PUYOY, PUYOX, static_cast<int>(PUYOY * 1.5));
 		m_dropCounter = 100;
 		m_holdCounter = 1;
 		m_qscale = 1;
@@ -1243,8 +1243,8 @@ void movePuyo::move()
 	placeShadow();
 
 	//fade out quick drop
-	m_quick1.setTransparency(max(m_quick1.getTransparency() - 0.1, 0.0));
-	m_quick2.setTransparency(max(m_quick2.getTransparency() - 0.1, 0.0));
+	m_quick1.setTransparency(max(m_quick1.getTransparency() - 0.1f, 0.0f));
+	m_quick2.setTransparency(max(m_quick2.getTransparency() - 0.1f, 0.0f));
 
 	//send move message
 	/*
@@ -1409,8 +1409,8 @@ void movePuyo::placeShadow()
 	//projection downwards
 	int i = 0;
 	fieldProp prop = m_player->activeField->getProperties();
-	float height = prop.gridHeight;
-	float width = prop.gridWidth;
+	float height = static_cast<float>(prop.gridHeight);
+	float width = static_cast<float>(prop.gridWidth);
 	int maxheight = prop.gridY;
 	bool moveUp[4];
 
@@ -1439,7 +1439,7 @@ void movePuyo::placeShadow()
 		if (moveUp[k])
 			m_shadowPos[k].y += 1;
 	}
-	float xcorrection = -m_pos[0].x * 2 + prop.gridX / 2;
+	float xcorrection = -m_pos[0].x * 2.0f + static_cast<float>(prop.gridX / 2);
 	m_shadow1.setPosition(m_shadowPos[0].x * width + PUYOX / 2 + xcorrection, (maxheight - 4 - m_shadowPos[0].y) * height + PUYOY / 2);
 	m_shadow2.setPosition(m_shadowPos[1].x * width + PUYOX / 2 + xcorrection, (maxheight - 4 - m_shadowPos[1].y) * height + PUYOY / 2);
 	m_shadow3.setPosition(m_shadowPos[2].x * width + PUYOX / 2 + xcorrection, (maxheight - 4 - m_shadowPos[2].y) * height + PUYOY / 2);
@@ -1568,11 +1568,11 @@ void movePuyo::draw()
 	float posX_Qcor = 0, posY_Qcor = 0;
 	if (m_type == QUADRUPLET)
 	{//set correction factor for quadruplet puyo
-		posX_Qcor = PUYOX / 2;
-		posY_Qcor = -PUYOY / 2 + PUYOY * 0.18;
+		posX_Qcor = static_cast<float>(PUYOX / 2);
+		posY_Qcor = static_cast<float>(-PUYOY / 2) + static_cast<float>(PUYOY) * 0.18f;
 	}
 
-	float xcorrection = -m_pos[0].x * 2 + prop.gridX / 2;
+	float xcorrection = -m_pos[0].x * 2.f + static_cast<float>(prop.gridX / 2);
 
 	//Eye position
 	if (m_type != QUADRUPLET)
@@ -1652,9 +1652,9 @@ void movePuyo::drawQuick()
 	float corr = prop.gridHeight / (PUYOY * 1.0f);
 
 	m_quick1.setScaleX(scaleX);
-	m_quick1.setScaleY(scaleY * m_qscale * corr / 1.5);
+	m_quick1.setScaleY(scaleY * m_qscale * corr / 1.5f);
 	m_quick2.setScaleX(scaleX);
-	m_quick2.setScaleY(scaleY * m_qscale * corr / 1.5);
+	m_quick2.setScaleY(scaleY * m_qscale * corr / 1.5f);
 	m_quick1.draw(data->front);
 	m_quick2.draw(data->front);
 }

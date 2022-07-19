@@ -417,7 +417,7 @@ void game::setRules()
     if (settings->rulesetInfo.targetPoint>0)
         currentruleset->targetPoint=settings->rulesetInfo.targetPoint;
     if (settings->rulesetInfo.feverPower>0)
-        currentruleset->feverPower=settings->rulesetInfo.feverPower/100.0;
+        currentruleset->feverPower=static_cast<float>(settings->rulesetInfo.feverPower)/100.0f;
     if (settings->rulesetInfo.puyoToClear>0)
         currentruleset->puyoToClear=settings->rulesetInfo.puyoToClear;
     if (settings->rulesetInfo.requiredChain>=0)
@@ -855,7 +855,7 @@ void game::Loop()
     uint64_t startTime=timeGetTime();
     uint64_t endTime;
     //FPS counter
-    double second;
+    double second = 0;
     int fps=0;
     int fpscounter=0;
 
@@ -934,7 +934,7 @@ void game::resetPlayers()
             if (players[i]->active && players[i]->onlineID < lowest)
             {
                 lowest=players[i]->onlineID;
-                id=i;
+                id=static_cast<int>(i);
             }
         }
         //set random seed to proposed random seed
@@ -1258,8 +1258,8 @@ void game::saveReplay()
         strcpy(rph.name,name.c_str());
 
         //compress move vector
-        int movLength=players[i]->controls.recordEvents.size()*sizeof(controllerEvent);
-        unsigned long movComprLength=movLength*1.1+12;
+        int movLength=static_cast<int>(players[i]->controls.recordEvents.size()*sizeof(controllerEvent));
+        unsigned long movComprLength=static_cast<unsigned long>(static_cast<float>(movLength)*1.1f+12);
         unsigned char *movcompressed = new unsigned char[movComprLength];
         if (movLength!=0)
         {
@@ -1286,8 +1286,8 @@ void game::saveReplay()
             movComprLength=0;
 
         //compress messages
-        int mesLength=players[i]->recordMessages.size()*sizeof(messageEvent);
-        unsigned long mesComprLength=mesLength*1.1+12;
+        int mesLength=static_cast<int>(players[i]->recordMessages.size()*sizeof(messageEvent));
+        unsigned long mesComprLength=static_cast<unsigned long>(static_cast<float>(mesLength*1.1f)+12);
         unsigned char *mescompressed=new unsigned char[mesComprLength];
         if (mesLength!=0)
         {

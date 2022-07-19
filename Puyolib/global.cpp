@@ -13,11 +13,11 @@
 namespace ppvs
 {
 //Constants
-const float PI=3.14159265;
+const float PI=3.14159265f;
 const int PUYOX=32;
 const int PUYOY=32;
 const int CHAINPOPSPEED=25;
-const float GARBAGESPEED=4.8;
+const float GARBAGESPEED=4.8f;
 //Strings
 const std::string folder_user_sounds="User/Sounds/";
 const std::string folder_user_music="User/Music/";
@@ -53,7 +53,7 @@ usersettings gUserSettings;
 int getRandom(int in)
 {//returns random number with random seed
     unsigned long out;
-    out=in*grandomizer.genrand_real1();
+    out=static_cast<unsigned long>(in*grandomizer.genrand_real1());
     return int(out);
 }
 
