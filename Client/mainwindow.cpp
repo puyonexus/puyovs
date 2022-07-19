@@ -597,7 +597,7 @@ void MainWindow::loginResponse(uchar subchannel, QString message)
 			if (tokens.length() > 1) {
 				// 2nd parameter is the time left in seconds
 				int secs = tokens.last().toInt();
-				time.addSecs(secs);
+				time = time.addSecs(secs);
 				QString timeStr = time.toString(Qt::SystemLocaleLongDate);
 				QMessageBox(QMessageBox::Question, windowTitle(), tr("This account is temporarily blocked. It will be unblocked on %1", "Messages:TempBanned").arg(timeStr), QMessageBox::Ok, this).exec();
 				logOut();
