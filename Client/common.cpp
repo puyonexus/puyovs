@@ -33,11 +33,11 @@ QHash<int, QString> codeToName = buildCodeToName();
 GameModeList getModeList()
 {
 	GameModeList modeList = GameModeList()
-		<< GameModePair(TSU, QObject::trUtf8("Tsu", "ModeTsu"))
-		<< GameModePair(ENDLESS, QObject::trUtf8("Endless", "ModeEndless"))
-		<< GameModePair(ENDLESSFEVER, QObject::trUtf8("Endless Fever", "ModeEndlessFever"))
-		<< GameModePair(FEVER, QObject::trUtf8("Fever", "ModeFever"))
-		<< GameModePair(ENDLESSFEVERVS, QObject::trUtf8("Non-stop Fever", "ModeEndlessFeverVs"));
+		<< GameModePair(TSU, QObject::tr("Tsu", "ModeTsu"))
+		<< GameModePair(ENDLESS, QObject::tr("Endless", "ModeEndless"))
+		<< GameModePair(ENDLESSFEVER, QObject::tr("Endless Fever", "ModeEndlessFever"))
+		<< GameModePair(FEVER, QObject::tr("Fever", "ModeFever"))
+		<< GameModePair(ENDLESSFEVERVS, QObject::tr("Non-stop Fever", "ModeEndlessFeverVs"));
 	return modeList;
 }
 
