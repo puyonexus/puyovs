@@ -43,7 +43,7 @@ public:
 
         while(totalReceived < size)
         {
-            int bRequest = qMin(size_t(4096), size - data.size());
+            int bRequest = static_cast<int>(qMin(size_t(4096), size - data.size()));
             char buffer[4096] = { 0 };
             bRequest = reply->read(buffer, bRequest);
             data.append(buffer, bRequest);
@@ -53,7 +53,7 @@ public:
             qApp->processEvents();
         }
 
-        fprintf(stderr, "[HTTP] Read %u of %u.\n", data.size(), size);
+        fprintf(stderr, "[HTTP] Read %u of %u.\n", data.size(), static_cast<unsigned int>(size));
 
         memcpy(ptr, data.data(), data.size());
         return data.size();
@@ -101,7 +101,7 @@ public:
 
     int read(void *ptr, size_t size)
     {
-        int bufferNeeded = size - (buffer.size() - i);
+        int bufferNeeded = static_cast<int>(size - (buffer.size() - i));
 
         while(bufferNeeded > 0)
         {
@@ -115,7 +115,7 @@ public:
 
         int bufferRead = buffer.read(ptr, size, i);
         i += bufferRead;
-        fprintf(stderr, "[Buffer] Read %u of %u.\n", bufferRead, size);
+        fprintf(stderr, "[Buffer] Read %u of %u.\n", bufferRead, static_cast<unsigned int>(size));
         return bufferRead;
     }
 
@@ -126,7 +126,7 @@ public:
         buffer.append(newBuffer, bufferReceived);
         delete [] newBuffer;
 
-        fprintf(stderr, "Bytes prebuffered: %u\n", buffer.size());
+        fprintf(stderr, "Bytes prebuffered: %u\n", static_cast<unsigned int>(buffer.size()));
     }
 
     int write(const void *, size_t) { return 0; }
@@ -145,7 +145,7 @@ public:
             if(size() > 0)
                 i = size() + to;
             else
-                i = buffer.size() + to;
+                i = static_cast<int>(buffer.size() + to);
             break;
         }
         return true;
