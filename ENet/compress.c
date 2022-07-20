@@ -2,6 +2,11 @@
  @file compress.c
  @brief An adaptive order-2 PPM range coder
 */
+
+#ifdef _MSC_VER
+#pragma warning( disable : 4146 )
+#endif
+
 #define ENET_BUILDING_LIB 1
 #include <string.h>
 #include "enet/enet.h"

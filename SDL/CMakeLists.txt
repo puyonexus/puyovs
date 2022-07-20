@@ -103,4 +103,13 @@ else()
     )
 endif()
 
+if(MSVC)
+    # Disable warnings: we're not modifying SDL code.
+    add_definitions("/wd4005")
+    add_definitions("/wd4244")
+    add_definitions("/wd4267")
+    add_definitions("/wd4312")
+    add_definitions("/wd4996")
+endif()
+
 target_include_directories(SDL PUBLIC include)
