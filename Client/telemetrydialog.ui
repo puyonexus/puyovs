@@ -107,7 +107,6 @@
   <zorder>allowUsageStatisticsCheckBox</zorder>
   <zorder>verticalSpacer</zorder>
   <zorder>explainConfigLabel</zorder>
-  <zorder>horizontalLayoutWidget</zorder>
   <zorder>explanationLabel</zorder>
  </widget>
  <resources>

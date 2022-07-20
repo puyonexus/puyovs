@@ -159,19 +159,19 @@ void ChatroomForm::updateChallengeDisplay()
 		switch (challenge.rules.rulesetType)
 		{
 		case TSU_ONLINE:
-			challengeRules.sprintf(tr("", custom ? "Messages:RulesTsuCustom" : "Messages:RulesTsuDefault").toUtf8().data(), numPlayers);
+			challengeRules = QString::asprintf(tr("", custom ? "Messages:RulesTsuCustom" : "Messages:RulesTsuDefault").toUtf8().data(), numPlayers);
 			ui->ChallengeIcon->setPixmap(QPixmap(!custom ? "Data/Lobby/tsu.png" : "Data/Lobby/tsu_cust.png"));
 			break;
 		case FEVER_ONLINE:
-			challengeRules.sprintf(tr("", custom ? "Messages:RulesFeverCustom" : "Messages:RulesFeverDefault").toUtf8().data(), numPlayers);
+			challengeRules = QString::asprintf(tr("", custom ? "Messages:RulesFeverCustom" : "Messages:RulesFeverDefault").toUtf8().data(), numPlayers);
 			ui->ChallengeIcon->setPixmap(QPixmap(!custom ? "Data/Lobby/fever.png" : "Data/Lobby/fever_cust.png"));
 			break;
 		case FEVER15_ONLINE:
-			challengeRules.sprintf(tr("", custom ? "Messages:RulesFever15Custom" : "Messages:RulesFever15Default").toUtf8().data(), numPlayers);
+			challengeRules = QString::asprintf(tr("", custom ? "Messages:RulesFever15Custom" : "Messages:RulesFever15Default").toUtf8().data(), numPlayers);
 			ui->ChallengeIcon->setPixmap(QPixmap(!custom ? "Data/Lobby/fever15.png" : "Data/Lobby/fever15_cust.png"));
 			break;
 		case ENDLESSFEVERVS_ONLINE:
-			challengeRules.sprintf(tr("", custom ? "Messages:RulesEndlessFeverCustom" : "Messages:RulesEndlessFeverDefault").toUtf8().data(), numPlayers);
+			challengeRules = QString::asprintf(tr("", custom ? "Messages:RulesEndlessFeverCustom" : "Messages:RulesEndlessFeverDefault").toUtf8().data(), numPlayers);
 			ui->ChallengeIcon->setPixmap(QPixmap(!custom ? "Data/Lobby/endlessfever.png" : "Data/Lobby/endlessfever_cust.png"));
 			break;
 		default:
@@ -187,7 +187,7 @@ void ChatroomForm::updateChallengeDisplay()
 		QString challengeQuestion;
 		if (challenge.beingChallenged)
 		{
-			challengeQuestion.sprintf(tr("You've been challenged to a match.\nChallenger: %s\nAccept challenge?", "Messages:GotChallenged").toUtf8().data(),
+			challengeQuestion = QString::asprintf(tr("You've been challenged to a match.\nChallenger: %s\nAccept challenge?", "Messages:GotChallenged").toUtf8().data(),
 				challenge.challenger.toUtf8().data());
 			ui->ChallengeYesButton->setVisible(true);
 			ui->ChallengeNoButton->setVisible(true);
@@ -204,7 +204,7 @@ void ChatroomForm::updateChallengeDisplay()
 			{
 				int n = challenge.challengedList.count();
 				int total = challenge.rules.Nplayers - 1;
-				challengeQuestion.sprintf(tr("You challenged %i out of %i\nYou can challenge more users.\nOr start game now?", "Messages:ChallengeNumber").toUtf8().data(),
+				challengeQuestion = QString::asprintf(tr("You challenged %i out of %i\nYou can challenge more users.\nOr start game now?", "Messages:ChallengeNumber").toUtf8().data(),
 					n, total);
 				ui->ChallengeYesButton->setVisible(true);
 				ui->ChallengeNoButton->setVisible(false);
@@ -553,7 +553,7 @@ void ChatroomForm::on_ChallengeButton_clicked()
 	{
 		challenge.rules = createRules();
 		challenge.room = mProxy->client()->matchRoomPrefix() + mProxy->nick()
-			+ QString().sprintf("%05i%03i", mProxy->id(), ++challengeCounter % 1000)
+			+ QString::asprintf("%05i%03i", mProxy->id(), ++challengeCounter % 1000)
 			+ ":" + passHash;
 	}
 
@@ -656,7 +656,7 @@ void ChatroomForm::reviewRulesDialog(ppvs::rulesetInfo_t& rs)
 	//mainwindow contains the exact same function
 	//don't know where i can move this function so both classes can call this
 	QString ruleStr;
-	ruleStr.sprintf(tr("Margin Time: %i\nTarget Point: %i\nRequired Chain: %i\n"
+	ruleStr = QString::asprintf(tr("Margin Time: %i\nTarget Point: %i\nRequired Chain: %i\n"
 		"Initial Fever Count: %i\nFever Power: %i\nPuyo To Clear: %i\n"
 		"Quick Drop: %i\nNumber of players: %i\nChoose colors: %i", "Messages:ReviewRules").toUtf8().data()
 		, rs.marginTime
@@ -674,7 +674,14 @@ void ChatroomForm::inviteToMatch()
 	QString rules = createRulesetString(&challenge.rules);
 
 	// check if challenge roomName contains a password
-	QStringList items = challenge.room.split(':', QString::SkipEmptyParts);
+	QStringList items = challenge.room.split(
+		':',
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+		Qt::SkipEmptyParts
+#else
+		QString::SkipEmptyParts
+#endif
+	);
 	if (items.count() > 1 && !items[1].isEmpty()) {
 		return;
 	}

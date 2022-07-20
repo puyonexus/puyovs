@@ -41,13 +41,14 @@ void qSleep(int ms)
 int main(int argc, char* argv[])
 {
 	QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
-#if QT_VERSION < 0x050000
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 	// UTF-8 is now default in Qt 5!
 	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
-#endif
-
+	// Qt switched to Xcb in Qt 5, so this is irrelevant now.
 	QApplication::setAttribute(Qt::AA_X11InitThreads);
-#if QT_VERSION >= 0x050600
+#endif
+// Rewrite this using QT_VERSION_CHECK macro.
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
 	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 	QApplication::setApplicationName("PuyoVS");

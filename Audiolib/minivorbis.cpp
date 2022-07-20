@@ -1,6 +1,10 @@
 // Ogg Vorbis I audio decoder  -- version 0.99996
 // Written in April 2007 by Sean Barrett, sponsored by RAD Game Tools.
 
+#ifdef _MSC_VER
+#pragma warning( disable : 4018 4244 )
+#endif
+
 #include "minivorbis.h"
 #include "buffer.h"
 

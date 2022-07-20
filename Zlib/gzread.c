@@ -3,6 +3,10 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
+#ifdef _MSC_VER
+#pragma warning( disable : 4013 )
+#endif
+
 #include "gzguts.h"
 
 /* Local functions */
