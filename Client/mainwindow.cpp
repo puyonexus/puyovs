@@ -598,7 +598,8 @@ void MainWindow::loginResponse(uchar subchannel, QString message)
 				// 2nd parameter is the time left in seconds
 				int secs = tokens.last().toInt();
 				time = time.addSecs(secs);
-				QString timeStr = time.toString(Qt::SystemLocaleLongDate);
+				const QLocale locale;
+				const QString timeStr = time.toString(locale.dateTimeFormat(QLocale::LongFormat));
 				QMessageBox(QMessageBox::Question, windowTitle(), tr("This account is temporarily blocked. It will be unblocked on %1", "Messages:TempBanned").arg(timeStr), QMessageBox::Ok, this).exec();
 				logOut();
 			}
@@ -1049,7 +1050,7 @@ void MainWindow::on_ReplaysToolButton_clicked()
 void MainWindow::reviewRulesDialog(ppvs::rulesetInfo_t& rs)
 {
 	QString ruleStr;
-	ruleStr.sprintf(tr("Margin Time: %i\nTarget Point: %i\nRequired Chain: %i\n"
+	ruleStr = QString::asprintf(tr("Margin Time: %i\nTarget Point: %i\nRequired Chain: %i\n"
 		"Initial Fever Count: %i\nFever Power: %i\nPuyo To Clear: %i\n"
 		"Quick Drop: %i\nNumber of players: %i\nChoose colors: %i", "Messages:ReviewRules").toUtf8().data()
 		, rs.marginTime, rs.targetPoint, rs.requiredChain, rs.initialFeverCount
@@ -1161,7 +1162,15 @@ void MainWindow::getServerList() const
 	QString replyString = QString(replyArray);
 
 	// parse
-	QStringList servers = replyString.split(QRegExp("\n|\r\n|\r"), QString::SkipEmptyParts);
+	QStringList servers = replyString.split(
+		QRegExp("\n|\r\n|\r"),
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+		Qt::SkipEmptyParts
+#else
+		QString::SkipEmptyParts
+#endif
+	);
+
 	foreach(QString server, servers) {
 		// add to combo box
 		ui->ServerComboBox->addItem(server);

@@ -122,7 +122,7 @@ QString createRulesetString(ppvs::rulesetInfo_t* rs)
 	else if (rs->rulesetType == ENDLESSFEVERVS_ONLINE) ruleString = "EndlessFeverVS";
 
 	if (rs->custom)
-		return QString().sprintf("rules:%s|marginTime:%i|targetPoint:%i|requiredChain:%i|initialFeverCount:%i|feverPower:%i|puyoToClear:%i|quickDrop:%i|colors:%i|Nplayers:%i",
+		return QString::asprintf("rules:%s|marginTime:%i|targetPoint:%i|requiredChain:%i|initialFeverCount:%i|feverPower:%i|puyoToClear:%i|quickDrop:%i|colors:%i|Nplayers:%i",
 			ruleString.toUtf8().data(), rs->marginTime, rs->targetPoint, rs->requiredChain, rs->initialFeverCount, rs->feverPower, rs->puyoToClear, (int)rs->quickDrop, rs->colors, rs->Nplayers);
 	return (QStringList() << "rules:" + ruleString << "default" << QString("Nplayers:%1").arg(rs->Nplayers)).join("|");
 }

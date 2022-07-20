@@ -39,7 +39,15 @@ QImage FFontGL::renderTextline(const QString& line) const
 {
 	QFontMetrics fm(font);
 	QImage image;
-	image = QImage(fm.width(line) + 4, fm.lineSpacing(), QImage::Format_ARGB32);
+	image = QImage(
+#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
+		fm.horizontalAdvance(line) + 4,
+#else
+		fm.width(line) + 4,
+#endif
+		fm.lineSpacing(),
+		QImage::Format_ARGB32
+	);
 	image.fill(0);
 
 	QPainter p;

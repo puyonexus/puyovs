@@ -2,6 +2,11 @@
 #include <QApplication>
 #include <QObject>
 #include "musicplayer.h"
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+#include <qrandom.h>
+#endif
+
 #include "playlist.h"
 #include "pvsapplication.h"
 #include <alib/audiolib.h>
@@ -74,7 +79,12 @@ struct MusicPlayer::Priv : QObject
 			playlistPtr++;
 		else
 		{
+			// On Qt 5.10 and above, use QRandomGenerator instead.
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+			playlistPtr = int(int(QRandomGenerator::global()->generate()) * 1.0 / RAND_MAX * playlist.childCount());
+#else
 			playlistPtr = int(qrand() * 1.0 / RAND_MAX * playlist.childCount());
+#endif
 		}
 
 		if (playlistPtr >= playlist.childCount())

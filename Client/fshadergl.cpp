@@ -68,12 +68,10 @@ bool FShaderGL::setParameter(const char* param, double x, double y, double z, do
 
 bool FShaderGL::setCurrentTexture(const char* param)
 {
-	if (program)
-	{
-		currentTex = ext.glGetUniformLocation(program, param);
-		if (currentTex == -1)
-			return false;
-	}
+	if (!program) return false;
+
+	currentTex = ext.glGetUniformLocation(program, param);
+	return currentTex != -1;
 }
 
 bool FShaderGL::compile()

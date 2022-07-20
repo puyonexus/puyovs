@@ -312,7 +312,7 @@ void GameManager::channelJoined(QString channel, NetPeerList peers) const
 				{
 					playernum = j + 1;
 					game->players[j]->bindPlayer(peer.username.toStdString(), peer.id, true);
-					widget->chatWindow()->statusMessage(QString().sprintf(tr("%s was set to player %i", "Messages:SetPlayer").toUtf8().data(), peer.username.toUtf8().data(), playernum));
+					widget->chatWindow()->statusMessage(QString::asprintf(tr("%s was set to player %i", "Messages:SetPlayer").toUtf8().data(), peer.username.toUtf8().data(), playernum));
 					break;
 				}
 			}
@@ -373,7 +373,7 @@ void GameManager::peerPartedChannel(QString channel, QString peer) const
 	if (network->getStatus(channel, peer) == 1)
 	{
 		QString langStr = tr("Player %s left.", "Messages:PlayerLeave");
-		widget->chatWindow()->statusMessage(QString().sprintf(langStr.toUtf8().data(), peer.toUtf8().data()));
+		widget->chatWindow()->statusMessage(QString::asprintf(langStr.toUtf8().data(), peer.toUtf8().data()));
 
 		// Find the player
 		for (unsigned i = 0; i < game->players.size(); i++)
@@ -391,7 +391,7 @@ void GameManager::peerPartedChannel(QString channel, QString peer) const
 	else
 	{
 		QString langStr = tr("%s left."); // TODO: Needs a translation string!
-		widget->chatWindow()->statusMessage(QString().sprintf(langStr.toUtf8().data(), peer.toUtf8().data()));
+		widget->chatWindow()->statusMessage(QString::asprintf(langStr.toUtf8().data(), peer.toUtf8().data()));
 	}
 	// Remove from chatwindow
 	widget->chatWindow()->removeUser(peer);
@@ -600,7 +600,7 @@ void GameManager::peerStatusReceived(QString channel, QString peer, uchar status
 		{
 			// Spectator joined
 			QString langStr = tr("%s joined as spectator.", "Messages:JoinSpectator");
-			widget->chatWindow()->statusMessage(QString().sprintf(langStr.toUtf8().data(), peer.toUtf8().data()));
+			widget->chatWindow()->statusMessage(QString::asprintf(langStr.toUtf8().data(), peer.toUtf8().data()));
 		}
 		else
 		{
@@ -617,7 +617,7 @@ void GameManager::peerStatusReceived(QString channel, QString peer, uchar status
 					game->players[i]->bindPlayer(peer.toStdString(), network->id(channel, peer), false);
 
 					QString langStr = tr("%s was set to player %i", "Messages:SetPlayer");
-					widget->chatWindow()->statusMessage(QString().sprintf(langStr.toUtf8().data(), peer.toUtf8().data(), pln));
+					widget->chatWindow()->statusMessage(QString::asprintf(langStr.toUtf8().data(), peer.toUtf8().data(), pln));
 					break;
 				}
 			}
