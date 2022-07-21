@@ -37,9 +37,8 @@ void FImageGL::bind() const
 ppvs::fpixel FImageGL::pixel(int x, int y)
 {
 	if (tx.isNull()) tx = QImage(fn);
-	if (alpha.isNull()) alpha = tx.alphaChannel();
-	QColor px(tx.pixel(x, y));
-	return ppvs::fpixel(QColor(alpha.pixel(x, y)).red(), px.red(), px.green(), px.blue());
+	const QColor px{ tx.pixelColor(x, y) };
+	return ppvs::fpixel(px.alpha(), px.red(), px.green(), px.blue());
 }
 
 bool FImageGL::error()

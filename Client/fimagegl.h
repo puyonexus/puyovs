@@ -27,5 +27,4 @@ private:
 	QImage tx;
 	int w, h, id;
 	QString fn;
-	QImage alpha;
 };
