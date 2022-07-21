@@ -274,10 +274,10 @@ void movePuyo::setSprite()
 	}
 	else if (m_type == QUADRUPLET)
 	{
-		subRectX1 = static_cast<float>(10 * PUYOX + (PUYOX + PUYOX * 64 / 10) * m_color1); subRectY1 = static_cast<float>(PUYOY * 13);
-		subRectWidth1 = static_cast<float>(PUYOX + PUYOX * 64 / 10); subRectHeight1 = static_cast<float>(PUYOY * 2);
-		subRectX2 = static_cast<float>(10 * PUYOX + (PUYOX + PUYOX * 64 / 10) * m_color2); subRectY2 = static_cast<float>(PUYOY * 13);
-		subRectWidth2 = static_cast<float>(PUYOX + PUYOX * 64 / 10); subRectHeight2 = static_cast<float>(PUYOY * 2);
+		subRectX1 = 10.f * static_cast<float>(PUYOX) + (static_cast<float>(PUYOX) + static_cast<float>(PUYOX) / 6.4f) * m_color1; subRectY1 = static_cast<float>(PUYOY) * 13.f;
+		subRectWidth1 = static_cast<float>(PUYOX) + static_cast<float>(PUYOX) / 6.4f; subRectHeight1 = static_cast<float>(PUYOY) * 2.f;
+		subRectX2 = 10.f * static_cast<float>(PUYOX) + (static_cast<float>(PUYOX) + static_cast<float>(PUYOX) / 6.4f) * m_color2; subRectY2 = static_cast<float>(PUYOY) * 13.f;
+		subRectWidth2 = static_cast<float>(PUYOX) + static_cast<float>(PUYOX) / 6.4f; subRectHeight2 = static_cast<float>(PUYOY) * 2.f;
 		m_sprite1.setSubRect(
 			static_cast<int>(subRectX1),
 			static_cast<int>(subRectY1),

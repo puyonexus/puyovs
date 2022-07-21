@@ -269,10 +269,10 @@ void nextPuyo::setSprite(sprite &m_sprite1,sprite &m_sprite2,sprite &m_spriteEye
     }
     else if (m_type==QUADRUPLET)
     {
-        subRectX1=10*PUYOX+(PUYOX+(PUYOX*64)/10)*m_color1; subRectY1=PUYOY*13;
-        subRectWidth1=PUYOX+(PUYOX*64)/10; subRectHeight1=PUYOY*2;
-        subRectX2=10*PUYOX+(PUYOX+(PUYOX*64)/10)*m_color2; subRectY2=PUYOY*13;
-        subRectWidth2=PUYOX+(PUYOX*64)/10; subRectHeight2=PUYOY*2;
+        subRectX1 = static_cast<int>(10.f * static_cast<float>(PUYOX) + (static_cast<float>(PUYOX) + static_cast<float>(PUYOX) / 6.4f) * static_cast<float>(m_color1)); subRectY1 = PUYOY * 13;
+        subRectWidth1 = static_cast<int>(static_cast<float>(PUYOX) + static_cast<float>(PUYOX) / 6.4f); subRectHeight1 = PUYOY * 2;
+        subRectX2 = static_cast<int>(10.f * static_cast<float>(PUYOX) + (static_cast<float>(PUYOX) + static_cast<float>(PUYOX) / 6.4f) * static_cast<float>(m_color2)); subRectY2 = PUYOY * 13;
+        subRectWidth2 = static_cast<int>(static_cast<float>(PUYOX) + static_cast<float>(PUYOX) / 6.4f); subRectHeight2 = PUYOY * 2;
         m_sprite2.setSubRect(subRectX1,subRectY1,subRectWidth1,subRectHeight1);
         m_sprite1.setSubRect(subRectX2,subRectY2,subRectWidth2,subRectHeight2);
         if (gamedata)
