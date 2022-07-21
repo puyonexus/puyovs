@@ -21,14 +21,14 @@ class nextPuyo
         void update(std::deque<int> &dq,puyoCharacter p,int turn);
 
         int getPuyo();
-        int getOrientation();
+        int getOrientation() const;
         void draw();
         void idle();
         void test();
 
     protected:
     private:
-    void setSprite(sprite&,sprite&,sprite&,sprite&,int&,int&,movePuyoType&);
+    void setSprite(sprite&,sprite&,sprite&,sprite&,int&,int&,movePuyoType&) const;
     void resetPuyoPos();
     bool m_orientation;
     bool initialize;
