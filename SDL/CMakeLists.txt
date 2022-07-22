@@ -14,7 +14,6 @@ file(GLOB UNIVERSAL_SOURCES
     src/power/*.c
     src/render/*.c
     src/stdlib/*.c
-    src/test/*.c
     src/thread/*.c
     src/timer/*.c
     src/video/*.c
@@ -81,7 +80,7 @@ add_library(SDL
 )
 
 if(WIN32)
-    target_link_libraries(SDL Imm32)
+    target_link_libraries(SDL Imm32 Version WinMM)
 elseif(APPLE)
     target_link_libraries(SDL
         "-framework Foundation"
@@ -110,6 +109,12 @@ if(MSVC)
     add_definitions("/wd4267")
     add_definitions("/wd4312")
     add_definitions("/wd4996")
+
+    if(ENABLE_ASAN)
+        # DirectSound crashes ASAN on x64
+        # https://developercommunity.visualstudio.com/t/1365655
+        add_definitions(-DSDL_AUDIO_DRIVER_DSOUND=0)
+    endif()
 endif()
 
 target_include_directories(SDL PUBLIC include)

@@ -141,7 +141,9 @@ typedef unsigned int uintptr_t;
 #endif
 
 /* Enable various audio drivers */
+#ifndef SDL_AUDIO_DRIVER_DSOUND
 #define SDL_AUDIO_DRIVER_DSOUND	1
+#endif
 #define SDL_AUDIO_DRIVER_WINMM	1
 #define SDL_AUDIO_DRIVER_DUMMY	1
 
