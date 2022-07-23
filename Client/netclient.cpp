@@ -211,8 +211,10 @@ void NetClient::onChannelJoined(QString c)
 	PVS_Channel* pvsch = mClient->channelManager.getChannel(mClient->currentChannelName);
 	std::list<PVS_Peer*>* pl = pvsch->peers;
 
-	for (peerList::iterator it = pl->begin(); it != pl->end(); it++)
-		peers.append(NetPeer((*it)->id, QString::fromStdString((*it)->name), pvsch->status[(*it)->id]));
+	for (const auto& it : *pl)
+	{
+		peers.append(NetPeer(it->id, QString::fromStdString(it->name), pvsch->status[it->id]));
+	}
 
 	emit channelJoined(c, peers);
 }
@@ -231,8 +233,10 @@ void NetClient::onGetPeerList(std::vector<std::string>* v)
 {
 	QStringList peers;
 
-	for (uint i = 0; i < v->size(); ++i)
-		peers.append(QString::fromStdString(v->at(i)));
+	for (auto& peer : *v)
+	{
+		peers.append(QString::fromStdString(peer));
+	}
 
 	//emit peerListReceived(peers);
 }
