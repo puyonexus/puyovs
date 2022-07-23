@@ -20,14 +20,38 @@ add_definitions("-DPREFIX=\"${CMAKE_INSTALL_PREFIX}\"")
 
 # Options
 option(ENABLE_UPDATER "Enables the Puyo VS auto-updater" OFF)
+option(ENABLE_ASAN "Enables AddressSanitizer" OFF)
 
 if(ENABLE_UPDATER)
   message(STATUS "Enabling Puyo VS auto-updater")
   add_definitions(-DPUYOVS_UPDATER_ENABLED=1)
 endif()
 
-# Disable inactionable warnings.
+if(ENABLE_ASAN)
+  message(STATUS "Enabling ASAN")
+
+  if(MSVC)
+    # Disable <vector> ASAN. Otherwise Qt needs ASAN too.
+    add_definitions(-D_DISABLE_VECTOR_ANNOTATION)
+
+    set(ASAN_LIB_ARCH ${MSVC_CXX_ARCHITECTURE_ID})
+    string(TOLOWER ${ASAN_LIB_ARCH} ASAN_LIB_ARCH)
+    if(ASAN_LIB_ARCH STREQUAL "x86")
+      set(ASAN_LIB_ARCH "i386")
+    elseif(ASAN_LIB_ARCH STREQUAL "x64")
+      set(ASAN_LIB_ARCH "x86_64")
+    endif()
+
+    link_libraries(clang_rt.asan_dynamic-${ASAN_LIB_ARCH} clang_rt.asan_dynamic_runtime_thunk-${ASAN_LIB_ARCH})
+    add_link_options(/incremental:no /wholearchive:clang_rt.asan_dynamic_runtime_thunk-${ASAN_LIB_ARCH}.lib)
+  else()
+    add_compile_options(-fsanitize=address -fno-omit-frame-pointer)
+    add_link_options(-fsanitize=address)
+  endif()
+endif()
+
 if(MSVC)
+  # Disable inactionable warnings.
   # Secure CRT functions are not portable, so we won't use them.
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()

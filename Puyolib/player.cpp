@@ -21,7 +21,7 @@ player::player(playerType type, int playernum, int totalPlayers, game* g)
 	m_randomizerFeverColor = nullptr;
 	m_randomizerNuisanceDrop = new MersenneTwister();
 
-	//Types of players: human, CPU, network etc
+	// Types of players: human, CPU, network etc
 	m_type = type;
 	m_playernum = playernum;
 	active = false;
@@ -43,23 +43,23 @@ player::player(playerType type, int playernum, int totalPlayers, game* g)
 	bonusEQ = false;
 	hasMoved = false;
 
-	//Default active field: normal field
+	// Default active field: normal field
 	activeField = &m_fieldNormal;
 
-	//Controller
+	// Controller
 	controls.init(m_playernum, m_type, currentgame->settings->recording);
 
-	//Mover
+	// Mover
 	movePuyos.init(data);
 	dropspeed = 2;
 
-	//tray
+	// Tray
 	normalTray.init(data);
 	feverTray.init(data);
 
-	//Initialize player values
+	// Initialize player values
 	colors = 4;
-	if (playernum == 1) //player 1 abides default character
+	if (playernum == 1) // player 1 abides default character
 		m_character = currentgame->settings->defaultPuyoCharacter;
 	else
 		m_character = ARLE;
@@ -72,15 +72,14 @@ player::player(playerType type, int playernum, int totalPlayers, game* g)
 		cpuAI = new AI(this);
 	}
 
-	//TEMP: in online version, other players must inform eachother from their randomseedFever
+	// TEMP: in online version, other players must inform eachother from their randomseedFever
 	if (currentgame->settings->useCPUplayers)
 	{
 		initValues(ppvs::getRandom(1000));
-		//all player are active
+		// all player are active
 		active = true;
 	}
-	else
-		initValues(currentgame->randomSeed_NextList + onlineID);
+	else initValues(currentgame->randomSeed_NextList + onlineID);
 
 	//TEMP
 	//Field size may be set up by ruleset. For now, use standard field size
@@ -92,31 +91,31 @@ player::player(playerType type, int playernum, int totalPlayers, game* g)
 	properties.scaleY = 1;
 	properties.angle = 0;
 
-	//Initialize objects (place fields, movepuyo, nextpuyo etc)
+	// Initialize objects (place fields, movepuyo, nextpuyo etc)
 	playerSetup(properties, m_playernum, totalPlayers);
 	properties = m_fieldNormal.getProperties();
 
-	//resize sprite to fieldsize
+	// Resize sprite to fieldsize
 	m_fieldSprite.setSize(m_fieldNormal.getFieldSize()); //useless
 	m_fieldFeverSprite.setImage(data->imgFieldFever);
 	m_fieldFeverSprite.setSize(m_fieldNormal.getFieldSize());
 
-	//set chainword
+	// Set chainword
 	pchainWord = new chainWord(data);
 	pchainWord->setScale(m_globalScale);
-
-	//Initialize movePuyos at least once
+	
+	// Initialize movePuyos at least once
 	movePuyos.prepare(DOUBLET, this, 0, 0);
 
-	//Initialize garbagetray
+	// Initialize garbagetray
 	normalTray.align(properties.offsetX, properties.offsetY - (32) * m_globalScale, m_globalScale);
 	feverTray.align(properties.offsetX, properties.offsetY - (32) * m_globalScale, m_globalScale);
 	feverTray.setVisible(false);
 
-	//Initialize scoreCounter
+	// Initialize scoreCounter
 	m_scoreCounter.init(data, properties.offsetX, m_fieldNormal.getBottomCoord().y + PUYOY / 4 * m_globalScale, m_globalScale);
 
-	//Load other sprites
+	// Load other sprites
 	m_allclearSprite.setImage(data->imgAllClear);
 	m_allclearSprite.setCenter();
 	m_crossSprite.setImage(data->imgPuyo);
@@ -127,26 +126,26 @@ player::player(playerType type, int playernum, int totalPlayers, game* g)
 	m_loseSprite.setImage(data->imgLose);
 	m_loseSprite.setCenter();
 
-	//set border
+	// Set border
 	m_borderSprite.setCenter();
 	m_borderSprite.setPosition(properties.centerX,
 		properties.centerY / 2);
 	m_borderSprite.setScale(1);
 
-	//set origin of field to bottom of image
+	// Set origin of field to bottom of image
 	m_fieldSprite.setCenterBottom();
 	m_fieldFeverSprite.setCenterBottom();
 
-	//Initialize character animation object
+	// Initialize character animation object
 	setCharacter(m_character);
 	pickingCharacter = false;
 
-	//Color menu objects
+	// Color menu objects
 	for (int i = 0; i < 9; i++)
 	{
 		colorMenuBorder[i].setImage(data->imgPlayerBorder);
 		colorMenuBorder[i].setVisible(false);
-		colorMenuBorder[i].setSubRect((i % 3) * 24, (i / 3) * 24, 24, 24);
+		colorMenuBorder[i].setSubRect(i % 3 * 24, i / 3 * 24, 24, 24);
 	}
 	for (int i = 0; i < 5; i++)
 	{
@@ -157,8 +156,8 @@ player::player(playerType type, int playernum, int totalPlayers, game* g)
 	}
 	spiceSelect = 2;
 
-	//online
-	//needs a black image to draw over field
+	// Online
+	// Needs a black image to draw over field
 	overlaySprite.setImage(nullptr);
 	overlaySprite.setTransparency(0.5f);
 	overlaySprite.setScale(2 * 192, 336);
@@ -167,44 +166,51 @@ player::player(playerType type, int playernum, int totalPlayers, game* g)
 
 	charHolderSprite.setImage(data->imgCharHolder);
 	charHolderSprite.setCenter();
-	//charHolderSprite.setScale(m_globalScale);
-	charHolderSprite.setPosition(properties.offsetX + properties.gridWidth * properties.gridX / 2 * m_globalScale,
-		properties.offsetY + properties.gridHeight * properties.gridY / 2 * m_globalScale);
+	charHolderSprite.setPosition(
+		properties.offsetX + properties.gridWidth * properties.gridX / 2 * m_globalScale,
+		properties.offsetY + properties.gridHeight * properties.gridY / 2 * m_globalScale
+	);
 	charHolderSprite.setVisible(false);
 	charHolderSprite.setScale(m_globalScale);
 	currentCharacterSprite.setVisible(true);
-	for (int i = 0; i < 16; i++)
-		dropset[i].setVisible(true);
+	for (auto& i : dropset)
+	{
+		i.setVisible(true);
+	}
 	showCharacterTimer = 0;
 
 	rematchIcon.setImage(data->imgCheckmark);
 	rematchIcon.setCenter();
-	rematchIcon.setPosition(properties.offsetX + properties.gridWidth * properties.gridX / 2 * m_globalScale,
-		properties.offsetY + properties.gridHeight * (properties.gridY / 2 + 3) * m_globalScale);
+	rematchIcon.setPosition(
+		properties.offsetX + properties.gridWidth * properties.gridX / 2 * m_globalScale,
+		properties.offsetY + properties.gridHeight * (properties.gridY / 2 + 3) * m_globalScale
+	);
 	rematchIcon.setVisible(false);
 	rematchIcon.setScale(m_globalScale);
 	rematchIconTimer = 1000;
 
-	//set text
-	//text messages on screen
+	// Set text
+	// Text messages on screen
 	statusFont = data->front->loadFont("Arial", 14);
 	statusText = nullptr;
 
 	if (currentgame->settings->recording != PVS_REPLAYING)
+	{
 		setStatusText(currentgame->translatableStrings.waitingForPlayer.c_str());
+	}
 }
 
 void player::reset()
 {
-	//release all controls
+	// Release all controls
 	controls.release();
 
-	//set colors
+	// Set colors
 	if (!currentgame->settings->pickColors && currentgame->settings->recording != PVS_REPLAYING
 		&& currentgame->settings->rulesetInfo.colors >= 3 && currentgame->settings->rulesetInfo.colors <= 5)
 		colors = currentgame->settings->rulesetInfo.colors;
 
-	//reset fields
+	// Reset fields
 	m_fieldNormal.clearField();
 	m_fieldFever.clearField();
 	m_fieldSprite.setVisible(true);
@@ -215,7 +221,7 @@ void player::reset()
 	movePuyos.prepare(DOUBLET, this, 0, 0);
 	movePuyos.setVisible(false);
 
-	//reset fever mode
+	// Reset fever mode
 	activeField = &m_fieldNormal;
 	activeGarbage = &normalGarbage;
 	normalTray.align(activeField->getProperties().offsetX, activeField->getProperties().offsetY - (32) * m_globalScale, m_globalScale);
@@ -223,13 +229,13 @@ void player::reset()
 	normalTray.update(0);
 	feverTray.update(0);
 
-	//reset replay values
+	// Reset replay values
 	if (currentgame->settings->recording == PVS_RECORDING)
 		recordMessages.clear();
 	activeAtStart = 0;
 
-	//reset others
-	//TEMP random value
+	// Reset others
+	// TEMP random value
 	if (currentgame->settings->useCPUplayers)
 		initValues(ppvs::getRandom(1000));
 	else
@@ -238,9 +244,11 @@ void player::reset()
 	if (!active)
 		return;
 
-	//TEMP immediate reset
+	// TEMP immediate reset
 	if (currentgame->settings->pickColors)
+	{
 		currentphase = PICKCOLORS;
+	}
 	else
 	{
 		currentphase = GETREADY;
@@ -253,7 +261,7 @@ void player::initValues(int randomseed)
 {
 	useDropPattern = true;
 
-	//Initialize randomizer
+	// Initialize randomizer
 	randomSeedFever = randomseed;
 	setRandomSeed(randomSeedFever, &m_randomizerFeverChain);
 	setRandomSeed(randomSeedFever + 1, &m_randomizerFeverColor);
@@ -264,7 +272,7 @@ void player::initValues(int randomseed)
 	m_randomizerNuisanceDrop->init_genrand(randomseed);
 	m_nuisanceList.clear();
 
-	//Other values to initialize
+	// Other values to initialize
 	diacute = 0;
 	playvoice = -1; stutterTimer = 0;
 	currentFeverChainAmount = 5;
@@ -287,7 +295,6 @@ void player::initValues(int randomseed)
 	gravity = 0.5f;
 	attdef = NOATTACK;
 	scoreVal = 0; currentScore = 0;
-	//targetPoint=70; //may change per ruleset
 	createPuyo = false;
 	forgiveGarbage = false;
 	losewin = NOWIN;
@@ -320,25 +327,25 @@ void player::initValues(int randomseed)
 	m_transformScale = 1;
 	feverSuccess = 0;
 
-	//stop any animation
+	// Stop any animation
 	characterAnimation.prepareAnimation("");
 
-	//Initialize or override values according to ruleset
+	// Initialize or override values according to ruleset
 	currentgame->currentruleset->onInit(this);
 
-	//add 4 initial 3-colored puyo
+	// Add 4 initial 3-colored puyo
 	initNextList();
 	turns = 0;
 	waitForConfirm = 0;
 	loseConfirm = false;
 
-	//set nextpuyo
+	// Set nextpuyo
 	if (useDropPattern)
 		m_nextPuyo.update(m_nextList, m_character, 0);
 	else
 		m_nextPuyo.update(m_nextList, ARLE, 0);
 
-	//Idle
+	// Idle
 	currentphase = IDLE;
 
 	updateTray();
@@ -348,36 +355,42 @@ void player::initNextList()
 {
 	setRandomSeed(currentgame->randomSeed_NextList, &m_randomizerNextList);
 	m_nextList.clear();
-	//nextList needs 3 pairs to start
+	// nextList needs 3 pairs to start
 	addNewColorPair(3);
 	addNewColorPair(3);
 	checkAllClearStart();
 	addNewColorPair(colors);
 	turns = 0;
-
 }
 
 void player::checkAllClearStart()
 {
 	if (currentgame->currentruleset->allClearStart)
-		return;
-	//player is not allowed to start with all clear
-	if (m_nextList.empty())
-		return;
-	int firstcolor = m_nextList.front();
-	//at this point there should be 4 colors in m_nextlist
-	for (std::deque<int>::iterator it = m_nextList.begin(); it != m_nextList.end(); it++)
 	{
-		if (firstcolor != (*it))
-			return; //not the same color
+		return;
 	}
 
-	//cleared all checks: list is filled with same colors
-	//pop last 2 and push back new one
+	if (m_nextList.empty())
+	{
+		return;
+	}
+
+	int firstcolor = m_nextList.front();
+	// At this point there should be 4 colors in m_nextlist
+	for (const int& next : m_nextList)
+	{
+		if (firstcolor != next)
+		{
+			return; // Not the same color
+		}
+	}
+
+	// Cleared all checks: list is filled with same colors
+	// Pop last 2 and push back new one
 	m_nextList.pop_back();
 	m_nextList.pop_back();
 	addNewColorPair(3);
-	//try again
+	// Try again
 	checkAllClearStart();
 }
 
@@ -388,8 +401,8 @@ fsound* player::loadVoice(const std::string& folder, const char* sound)
 
 void player::initVoices()
 {
-	std::string currentCharacter = currentgame->settings->characterSetup[getCharacter()];
-	std::string folder = folder_user_character + currentCharacter + std::string("/Voice/");
+	const std::string currentCharacter = currentgame->settings->characterSetup[getCharacter()];
+	const std::string folder = folder_user_character + currentCharacter + std::string("/Voice/");
 	characterVoices.chain[0].SetBuffer(loadVoice(folder, "chain1.wav"));
 	characterVoices.chain[1].SetBuffer(loadVoice(folder, "chain2.wav"));
 	characterVoices.chain[2].SetBuffer(loadVoice(folder, "chain3.wav"));
@@ -414,53 +427,59 @@ void player::initVoices()
 
 void player::playerSetup(fieldProp& properties, int playernum, int playerTotal)
 {
-	//right side square setup
+	// Right side square setup
 	int width = static_cast<int>(ceil(sqrt(static_cast<double>(playerTotal - 1))));
-
-	//Player 1
+	
 	if (playernum == 1)
 	{
+		// Player 1
 		m_globalScale = 1;
 		properties.offsetX = 48;
 		properties.offsetY = 84;
 		m_fieldNormal.init(properties, this);
 		m_fieldFever.init(properties, this);
 		m_fieldTemp.init(properties, this);
-		//Set nextpuyo
+
+		// Set nextpuyo
 		m_nextPuyoOffsetX = properties.offsetX + (properties.gridX * properties.gridWidth * properties.scaleX + 10) * m_globalScale;
 		m_nextPuyoOffsetY = properties.offsetY;
 		m_nextPuyoScale = m_globalScale;
 		m_nextPuyo.init(0, 0, 1, true, data);
-		//Set background
+
+		// Set background
 		m_fieldSprite.setImage(data->imgField1);//can also be character related
-		//Set up border
+
+		// Set up border
 		m_borderSprite.setImage(data->imgBorder1);
-		//fever gauge
+
+		// Fever gauge
 		feverGauge.init(-8.f, static_cast<float>(properties.gridHeight * (properties.gridY - 3 - 0)), 1.f, true, data);
 	}
-	//other players
 	else if (playernum > 1)
 	{
+		// Other players
 		m_globalScale = 1.0f / static_cast<float>(width);
 		properties.offsetX = 400.f + static_cast<float>((playernum - 2) % width) * 320.f * m_globalScale - 75.f * m_globalScale * static_cast<float>(width - 1);
 		properties.offsetY = 84.f + static_cast<float>((playernum - 2) / width) * 438.f * m_globalScale - 42.f * m_globalScale * static_cast<float>(width - 1);
 		m_fieldNormal.init(properties, this);
 		m_fieldFever.init(properties, this);
 		m_fieldTemp.init(properties, this);
-		//Set nextpuyo
+
+		// Set nextpuyo
 		m_nextPuyoOffsetX = properties.offsetX - 75 * m_globalScale;
 		m_nextPuyoOffsetY = properties.offsetY;
 		m_nextPuyoScale = m_globalScale;
 		m_nextPuyo.init(0, 0, 1, false, data);
-		//Set background
-		m_fieldSprite.setImage(data->imgField2);//can also be character related
-		//Set up Border
+
+		// Set background
+		m_fieldSprite.setImage(data->imgField2); // can also be character related
+
+		// Set up border
 		m_borderSprite.setImage(data->imgBorder2);
-		//feverGauge
+
+		// Fever gauge
 		feverGauge.init(76, static_cast<float>(properties.gridHeight * (properties.gridY - 3 - 0)), 1.f, false, data);
 	}
-	return;
-
 }
 
 player::~player()
@@ -473,6 +492,7 @@ player::~player()
 		delete m_lightEffect.back();
 		m_lightEffect.pop_back();
 	}
+
 	//delete other
 	while (!m_secondsObj.empty())
 	{
@@ -480,13 +500,12 @@ player::~player()
 		m_secondsObj.pop_back();
 	}
 
-	if (statusText)
-		delete statusText;
+	delete statusText;
 	delete statusFont;
 	delete m_randomizerNuisanceDrop;
 }
 
-void player::setPlayerType(playerType playertype)
+void player::setPlayerType(const playerType playertype)
 {
 	m_type = playertype;
 	controls.init(m_playernum, m_type, currentgame->settings->recording);
@@ -494,33 +513,26 @@ void player::setPlayerType(playerType playertype)
 
 void player::setRandomSeed(unsigned long seed_in, PuyoRNG** randomizer)
 {
-	// check if already exists
-	if (*randomizer != nullptr)
-	{
-		delete (*randomizer);
-	}
-
-	if (currentgame->legacyRandomizer == true) {
-		(*randomizer) = MakePuyoRNG("legacy", seed_in, 0);
-	}
-	else {
-		(*randomizer) = MakePuyoRNG("classic", seed_in, 0);
-	}
+	delete *randomizer;
+	*randomizer = MakePuyoRNG(currentgame->legacyRandomizer == true ? "legacy" : "classic", seed_in, 0);
 }
 
+// Randomizer for next puyo list
 int player::getRandom(int in, PuyoRNG* randomizer)
-{//randomizer for next puyo list
-	Piece piece = randomizer->next(in);
-	return int(piece);
+{
+	return randomizer->next(in);
 }
 
+// Set character and initialize all related values (voice, animation, background)
 void player::setCharacter(puyoCharacter pc, bool show)
-{//set character and initialize all related values (voice,animation,background)
+{
 	m_character = pc;
 	initVoices();
-	posVectorFloat offset(activeField->getProperties().centerX * 1,
-		activeField->getProperties().centerY / 2.0f * 1);
-	std::string currentCharacter = currentgame->settings->characterSetup[pc];
+	const posVectorFloat offset(
+		activeField->getProperties().centerX * 1,
+		activeField->getProperties().centerY / 2.0f * 1
+	);
+	const std::string currentCharacter = currentgame->settings->characterSetup[pc];
 	if (currentgame->players.size() <= 10)
 		characterAnimation.init(data, offset, 1, folder_user_character + currentCharacter + std::string("/Animation/"));
 	else
@@ -528,39 +540,42 @@ void player::setCharacter(puyoCharacter pc, bool show)
 	if (currentgame->settings->useCharacterField)
 		setFieldImage(pc);
 
-	if (show)
+	if (!show) return;
+
+	currentCharacterSprite.setImage(data->front->loadImage((folder_user_character + currentgame->settings->characterSetup[pc] + "/icon.png").c_str()));
+	currentCharacterSprite.setCenter();
+	currentCharacterSprite.setPosition(charHolderSprite.getPosition() + posVectorFloat(1, 1) - posVectorFloat(2, 4));//correct for shadow
+	currentCharacterSprite.setVisible(true);
+	currentCharacterSprite.setScale(m_globalScale);
+	charHolderSprite.setVisible(true);
+	showCharacterTimer = 5 * 60;
+	for (auto& i : dropset)
 	{
-		currentCharacterSprite.setImage(data->front->loadImage((folder_user_character + currentgame->settings->characterSetup[pc] + "/icon.png").c_str()));
-		currentCharacterSprite.setCenter();
-		currentCharacterSprite.setPosition(charHolderSprite.getPosition() + posVectorFloat(1, 1) - posVectorFloat(2, 4));//correct for shadow
-		currentCharacterSprite.setVisible(true);
-		currentCharacterSprite.setScale(m_globalScale);
-		charHolderSprite.setVisible(true);
-		showCharacterTimer = 5 * 60;
-		for (auto& i : dropset)
-			i.setImage(data->front->loadImage("Data/CharSelect/dropset.png"));
-		setDropsetSprite(static_cast<int>(currentCharacterSprite.getX()), static_cast<int>(currentCharacterSprite.getY() + 60.f * m_globalScale), m_character);
+		i.setImage(data->front->loadImage("Data/CharSelect/dropset.png"));
 	}
+	setDropsetSprite(static_cast<int>(currentCharacterSprite.getX()), static_cast<int>(currentCharacterSprite.getY() + 60.f * m_globalScale), m_character);
 }
 
 void player::setFieldImage(puyoCharacter pc)
 {
-	//in case of failure
 	fimage* im = data->imgCharField[static_cast<unsigned char>(pc)];
 	if (!im || im->error())
-		if (m_playernum == 1)
-			m_fieldSprite.setImage(data->imgField1);
-		else
-			m_fieldSprite.setImage(data->imgField2);
+	{
+		m_fieldSprite.setImage(m_playernum == 1 ? data->imgField1 : data->imgField2);
+	}
 	else
+	{
 		m_fieldSprite.setImage(im);
+	}
 	if (m_nextPuyo.getOrientation() < 0)
+	{
 		m_fieldSprite.setFlipX(true);
+	}
 }
 
-
+// Game code
 void player::play()
-{//Game code
+{
 	//Debugging
 	if (debugMode == 1)
 	{
@@ -577,23 +592,27 @@ void player::play()
 			debugstring += std::string("mes: ") + messages.front()[0] + "\n";
 	}
 
-	//pick character (online)
+	// Pick character (online)
 	if (showCharacterTimer > 0)
 	{
 		showCharacterTimer--;
 		charHolderSprite.setTransparency(1);
 		currentCharacterSprite.setTransparency(1);
-		for (int i = 0; i < 16; i++)
-			dropset[i].setTransparency(1);
+		for (auto& i : dropset)
+		{
+			i.setTransparency(1);
+		}
 		if (showCharacterTimer < 120)
 		{
 			charHolderSprite.setTransparency(static_cast<float>(showCharacterTimer) / 120.0f);
 			currentCharacterSprite.setTransparency(static_cast<float>(showCharacterTimer) / 120.0f);
-			for (int i = 0; i < 16; i++)
-				dropset[i].setTransparency(static_cast<float>(showCharacterTimer) / 120.0f);
+			for (auto& i : dropset)
+			{
+				i.setTransparency(static_cast<float>(showCharacterTimer) / 120.0f);
+			}
 		}
 	}
-	//play animation for checkmark
+	// Play animation for checkmark
 	if (rematchIconTimer < 1000)
 	{
 		rematchIconTimer++;
@@ -601,49 +620,68 @@ void player::play()
 	}
 	rematchIcon.setVisible(rematch);
 
-	//process message
+	// Process message
 	if (m_type == ONLINE)
+	{
 		processMessage();
+	}
 
-	//=====Global events
-	//Animate particles
+	// ===== Global events
+
+	// Animate particles
 	activeField->animateParticle();
-	//Animate chainword
+
+	// Animate chainword
 	pchainWord->move();
-	//Animate light effects & secondsobj
+
+	// Animate light effects & secondsobj
 	playLightEffect();
-	//Do characterAnimation
+
+	// Do characterAnimation
 	characterAnimation.playAnimation();
-	//Move nextPuyo
+
+	// Move nextPuyo
 	if (currentphase > 0 && nextPuyoActive)
 		m_nextPuyo.play();
-	//Animate garbage trays
+
+	// Animate garbage trays
 	normalTray.play();
 	feverTray.play();
-	//set scorecounter
+
+	// Set scorecounter
 	setScoreCounter();
-	//Fever mode specific
+
+	// Fever mode specific
 	playFever();
 
-	//set Margin Time
+	// Set Margin Time
 	if (currentphase != PICKCOLORS && currentphase != IDLE)
+	{
 		setMarginTimer();
+	}
 
-	//=====PHASE -2: PICK COLORS
+	// =====PHASE -2: PICK COLORS
 	if (currentphase == PICKCOLORS)
+	{
 		chooseColor();
+	}
 
-	//=====PHASE -1: IDLE
-	//possiblity to enter menu? (maybe outside the player object)
+	// =====PHASE -1: IDLE
+	// Possiblity to enter menu? (maybe outside the player object)
 
-	//=====PHASE 0: GETREADY
+	// =====PHASE 0: GETREADY
 	if (currentphase == GETREADY)
+	{
 		getReady();
+	}
 
-	//=====PHASE 1: PREPARE
+	// =====PHASE 1: PREPARE
 	if (currentphase == PREPARE)
+	{
 		prepare();
-	//=====Phase 10: MOVE (global), the movement phase
+	}
+
+	// =====Phase 10: MOVE (global), the movement phase
 	movePuyos.move();
 	if (currentphase == MOVE)
 	{
@@ -652,89 +690,146 @@ void player::play()
 	}
 
 	if (currentphase == MOVE && cpuAI)
-	{//perform AI movement
+	{
+		// Perform AI movement
 		cpuMove();
 	}
 
-	//=====Phase 20 :CREATEPUYO
+	// =====Phase 20 :CREATEPUYO
 	if (currentphase == CREATEPUYO)
-	{//CREATEPUYO phase is dropping a colored puyo pair
+	{
+		// CREATEPUYO phase is dropping a colored puyo pair
 		activeField->createPuyo();
-		//reset chain number
-		chain = 0; predictedChain = 0;
-		//set target point
+
+		// Reset chain number
+		chain = 0;
+		predictedChain = 0;
+
+		// Set target point
 		if (currentgame->currentruleset->marginTime >= 0)
+		{
 			targetPoint = getTargetFromMargin(currentgame->currentruleset->targetPoint, currentgame->currentruleset->marginTime, margintimer);
+		}
 	}
-	//==========Phase 21: DROPPUYO
+
+	// ==========Phase 21: DROPPUYO
 	if (currentphase == DROPPUYO)
+	{
 		activeField->dropPuyo();
+	}
+
 	//==========Phase 22: FALLPUYO (global)
 	activeField->fallPuyo();
 	activeField->bouncePuyo();
 	if (currentphase == FALLPUYO || currentphase == FALLGARBAGE)
 	{
-		//end phase
+		// End phase
 		activeField->endFallPuyoPhase();
 	}
-	//==========Phase 31: SEARCHCHAIN
-	if (currentphase == SEARCHCHAIN)
-		activeField->searchChain();
-	//==========Phase 32: DESTROYPUYO
-	if (currentphase == DESTROYPUYO)
-		destroyPuyos();
-	//global phase 32
-	activeField->popPuyoAnim();
-	//==========Phase33-35: GARBAGE
-	if (currentphase == GARBAGE)
-		garbagePhase();
-	//global: countergarbage, it's outisde garbage phase
-	if (attdef == COUNTERATTACK)
-		counterGarbage();
 
-	//==========Phase 40: CHECKALLCLEAR
+	// ========== Phase 31: SEARCHCHAIN
+	if (currentphase == SEARCHCHAIN)
+	{
+		activeField->searchChain();
+	}
+
+	// ========== Phase 32: DESTROYPUYO
+	if (currentphase == DESTROYPUYO)
+	{
+		destroyPuyos();
+	}
+
+	// Global phase 32
+	activeField->popPuyoAnim();
+
+	// ========== Phase33-35: GARBAGE
+	if (currentphase == GARBAGE)
+	{
+		garbagePhase();
+	}
+
+	// global: countergarbage, it's outisde garbage phase
+	if (attdef == COUNTERATTACK)
+	{
+		counterGarbage();
+	}
+
+	// ========== Phase 40: CHECKALLCLEAR
 	if (currentphase == CHECKALLCLEAR)
+	{
 		checkAllClear();
-	//==========Phase 41: DROPGARBAGE
+	}
+
+	// ========== Phase 41: DROPGARBAGE
 	if (currentphase == DROPGARBAGE)
+	{
 		activeField->dropGarbage();
-	//==========Phase 43: CHECKLOSER
+	}
+
+	// ========== Phase 43: CHECKLOSER
 	if (currentphase == CHECKLOSER)
+	{
 		checkLoser(true);
+	}
 
 	//==========Phase 45: WAITGARBAGE - it acts the same as dropGarbage, except it waits for a message
 	if (currentphase == WAITGARBAGE)
+	{
 		waitGarbage();
-	//==========Phase 46: WAITCONFIRMGARBAGE
-	if (currentphase == WAITCONFIRMGARBAGE)
-		confirmGarbage();
+	}
 
-	//==========Phase 50: CHECKFEVER
+	// ========== Phase 46: WAITCONFIRMGARBAGE
+	if (currentphase == WAITCONFIRMGARBAGE)
+	{
+		confirmGarbage();
+	}
+
+	// ========== Phase 50: CHECKFEVER
 	if (currentphase == CHECKFEVER)
+	{
 		checkFever();
-	//==========Phase 51: PREPAREFEVER
+	}
+
+	// ========== Phase 51: PREPAREFEVER
 	if (currentphase == PREPAREFEVER)
+	{
 		startFever();
+	}
+
 	//==========Phase 52: DROPFEVERCHAIN
 	if (currentphase == DROPFEVER)
+	{
 		dropFeverChain();
+	}
+
 	//==========Phase 53: CHECKFEVER
 	if (currentphase == CHECKENDFEVER)
+	{
 		checkEndFever();
+	}
+
 	//==========Phase 54: ENDFEVER
 	if (currentphase == ENDFEVER)
+	{
 		endFever();
+	}
+
 	//==========Phase 54: CHECKENDFEVERONLINE
 	if (currentphase == CHECKENDFEVERONLINE)
+	{
 		checkEndFeverOnline();
-
+	}
 
 	//==========Phase 60: LOST
 	if (currentphase == LOSEDROP)
+	{
 		loseGame();
+	}
 
 	if (currentphase == WAITLOSE)
+	{
 		waitLose();
+	}
 
 	if (losewin == WIN)
 	{
@@ -742,7 +837,7 @@ void player::play()
 		winGame();
 	}
 
-	//play voice (leave at end)
+	// Play voice (leave at end)
 	playVoice();
 }
 
@@ -751,46 +846,64 @@ void player::endPhase()
 	currentphase = currentgame->currentruleset->endPhase(currentphase, this);
 }
 
-void player::updateTray(garbageCounter* c)
-{//update nuisance tray
+// Update nuisance tray
+void player::updateTray(const garbageCounter* c)
+{
 	if (!c)
-	{//automatic check of active garbage
+	{
+		// Automatic check of active garbage
 		if (activeGarbage == &normalGarbage)
+		{
 			normalTray.update(normalGarbage.GQ + normalGarbage.CQ);
+		}
 		else
 		{
 			feverTray.update(feverGarbage.GQ + feverGarbage.CQ);
 			if (feverGarbage.GQ + feverGarbage.CQ <= 0)
+			{
 				normalTray.update(normalGarbage.GQ + normalGarbage.CQ);
+			}
 		}
 	}
 	else
-	{//not active, but must still be updated
+	{
+		//not active, but must still be updated
 		if (c == &normalGarbage)
+		{
 			normalTray.update(c->CQ + c->GQ);
+		}
 		else if (c == &feverGarbage)
+		{
 			feverTray.update(c->CQ + c->GQ);
+		}
 	}
-	//debugstring=to_string(normalGarbage.GQ+normalGarbage.CQ);
 }
 
 void player::playGarbageSound()
 {
 	if (chain == 3)
+	{
 		data->snd.nuisance_hitS.Play(data);
+	}
 	else if (chain == 4)
+	{
 		data->snd.nuisance_hitM.Play(data);
+	}
 	else if (chain == 5)
+	{
 		data->snd.nuisance_hitL.Play(data);
+	}
 	else if (chain >= 6)
+	{
 		data->snd.heavy.Play(data);
-
+	}
 }
 
 void player::setScoreCounter()
 {
 	m_scoreCounter.setCounter(scoreVal);
 }
+
 void player::setScoreCounterPB()
 {
 	m_scoreCounter.setPointBonus(point, bonus);
@@ -801,7 +914,7 @@ void player::getReady()
 	charHolderSprite.setVisible(false);
 	currentCharacterSprite.setVisible(false);
 
-	//wait until timer hits go
+	// Wait until timer hits go
 	if (m_readyGoTimer >= 120)
 	{
 		if (currentgame->settings->recording == PVS_RECORDING)
@@ -818,13 +931,12 @@ void player::getReady()
 			}
 			controls.recordEvents.clear();
 		}
-		//reset controls
+		// Reset controls
 		controls.release();
 		endPhase();
 		m_readyGoTimer = 0;
 		return;
 	}
-
 
 	m_readyGoTimer++;
 }
@@ -833,32 +945,44 @@ void player::chooseColor()
 {
 	currentgame->data->matchTimer = 0;
 
-	//add timer
-	if (colorMenuTimer != 0)
-		colorMenuTimer++;
-	else
+	if (colorMenuTimer == 0)
+	{
 		return;
+	}
 
-	//set border
+	// Add timer
+	colorMenuTimer++;
+
+	// Set border
 	if (colorMenuTimer == 2)
 	{
 		menuHeight = 0;
-		for (int i = 0; i < 9; i++)
-			colorMenuBorder[i].setVisible(true);
+		for (auto& i : colorMenuBorder)
+		{
+			i.setVisible(true);
+		}
 	}
-	//disappear
+
+	// Disappear
 	if (colorMenuTimer == -26)
 	{
-		for (int i = 0; i < 9; i++)
-			colorMenuBorder[i].setVisible(false);
+		for (auto& i : colorMenuBorder)
+		{
+			i.setVisible(false);
+		}
 	}
-	//fade in/out
+
+	// Fade in/out
 	if (colorMenuTimer < 25 && colorMenuTimer != 0)
 	{
 		if (colorMenuTimer > 0)
+		{
 			menuHeight = colorMenuTimer * 6;
+		}
 		else if (colorMenuTimer < -25)
+		{
 			menuHeight = 150 - (colorMenuTimer + 50) * 6;
+		}
 
 		colorMenuBorder[0].setPosition((192.f / 2.f) - (88.f + 00.f), 336.f + (-168.f - static_cast<float>(menuHeight)));
 		colorMenuBorder[1].setPosition((192.f / 2.f) - (88.f - 24.f) - 1, 336.f + (-168.f - static_cast<float>(menuHeight)));
@@ -890,9 +1014,9 @@ void player::chooseColor()
 		colorMenuBorder[2].setScale(1);
 		colorMenuBorder[6].setScale(1);
 		colorMenuBorder[8].setScale(1);
-
 	}
-	//initialize
+
+	// Initialize
 	if (colorMenuTimer == 25)
 	{
 		for (int i = 0; i < 5; i++)
@@ -902,7 +1026,8 @@ void player::chooseColor()
 			spice[i].setPosition(192.f / 2.f, 336.f + static_cast<float>(-168 - 125 + 37 + 50 * i));
 		}
 	}
-	//make choice
+
+	// Make choice
 	for (int i = 0; i < 5; i++)
 	{
 		if (spiceSelect == i)
@@ -916,28 +1041,33 @@ void player::chooseColor()
 			spice[i].setColor(128, 128, 128);
 		}
 	}
-	//player 1 takes over CPU choice
+
+	// Player 1 takes over CPU choice
 	takeover = false;
-	for (size_t i = 0; i < currentgame->players.size(); i++)
-	{//find first CPU player
-		if (currentgame->players[i]->takeover) //no other takeovers
+	for (auto& player : currentgame->players)
+	{
+		// Find first CPU player
+		if (player->takeover) // No other takeovers
 			break;
+
 		if (currentgame->players[0]->pickedColor &&
-			currentgame->players[i]->getPlayerType() == CPU &&
-			!currentgame->players[i]->pickedColor &&
-			currentgame->players[i] == this)
+			player->getPlayerType() == CPU &&
+			!player->pickedColor &&
+			player == this)
 		{
 			takeover = true;
 			break;
 		}
 	}
+
 	if (takeover)
 	{
 		controls.A = currentgame->players[0]->controls.A;
 		controls.Down = currentgame->players[0]->controls.Down;
 		controls.Up = currentgame->players[0]->controls.Up;
 	}
-	//select option
+
+	// Select option
 	if (colorMenuTimer > 0)
 	{
 		bool select = false;
@@ -946,7 +1076,7 @@ void player::chooseColor()
 			spiceSelect++;
 			data->snd.cursor.Play(data);
 			select = true;
-			//send message
+			// Send message
 			if (currentgame->connected)
 				currentgame->network->sendToChannel(CHANNEL_GAME, std::string("s|") + to_string(spiceSelect), currentgame->channelName);
 		}
@@ -955,22 +1085,22 @@ void player::chooseColor()
 			spiceSelect--;
 			data->snd.cursor.Play(data);
 			select = true;
-			//send message
+			// Send message
 			if (currentgame->connected && m_type == HUMAN)
 				currentgame->network->sendToChannel(CHANNEL_GAME, std::string("s|") + to_string(spiceSelect), currentgame->channelName);
 		}
 
-		//get online message
+		// Get online message
 		if (m_type == ONLINE && !messages.empty() && messages.front()[0] == 's')
 		{
 			sscanf(messages.front().c_str(), "s|%i", &spiceSelect);
 			select = true;
-			//currentMessageStr="";
 			messages.pop_front();
 		}
 
 		if (select || colorMenuTimer == 25)
-		{//put this in
+		{
+			// Put this in
 			select = false;
 			if (spiceSelect == 0)
 			{
@@ -1000,11 +1130,13 @@ void player::chooseColor()
 			updateTray();
 		}
 
-		//automatic choice
+		// Automatic choice
 		if (currentgame->colorTimer == 1 && colorMenuTimer > 25 && pickedColor == false)
+		{
 			controls.A = 1;
+		}
 
-		//make choice
+		// Make choice
 		if (controls.A == 1 && colorMenuTimer > 25)
 		{
 			normalGarbage.GQ += normalGarbage.CQ;
@@ -1012,25 +1144,33 @@ void player::chooseColor()
 			data->snd.decide.Play(data);
 			controls.A++;
 			if (takeover)
+			{
 				currentgame->players[0]->controls.A++;
+			}
 			currentgame->colorTimer = 0;
 			colorMenuTimer = -50;
 			pickedColor = true;
-			for (int i = 0; i < 5; i++)
-				spice[i].setVisible(false);
-			//re-init colors
+			for (auto& i : spice)
+			{
+				i.setVisible(false);
+			}
+
+			// Re-init colors
 			initNextList();
-			//reset takeover if necessary
+
+			// Reset takeover if necessary
 			takeover = false;
-			//send message
+
+			// Send message
 			if (currentgame->connected && m_type == HUMAN)
+			{
 				currentgame->network->sendToChannel(CHANNEL_GAME, std::string("c|") + to_string(spiceSelect), currentgame->channelName);
+			}
 		}
 		//get choice from online
 		if (m_type == ONLINE && !messages.empty() && messages.front()[0] == 'c')
 		{
 			sscanf(messages.front().c_str(), "c|%i", &spiceSelect);
-			//currentMessageStr="";
 			if (spiceSelect == 0)
 			{
 				colors = 3;
@@ -1064,35 +1204,42 @@ void player::chooseColor()
 			data->snd.decide.Play(data);
 			colorMenuTimer = -50;
 			pickedColor = true;
-			for (int i = 0; i < 5; i++)
-				spice[i].setVisible(false);
-			//re-init colors
+
+			for (auto& i : spice)
+			{
+				i.setVisible(false);
+			}
+
+			// Re-init colors
 			initNextList();
 		}
-
 	}
-	//check if everyone picked colors
+
+	// Check if everyone picked colors
 	if (colorMenuTimer == -2)
 	{
 		bool start = true;
-		for (size_t i = 0; i < currentgame->players.size(); i++)
+		for (auto& player : currentgame->players)
 		{
-			if (!currentgame->players[i]->active && !currentgame->settings->useCPUplayers)
+			if (!player->active && !currentgame->settings->useCPUplayers)
+			{
 				continue;
-			if (!currentgame->players[i]->pickedColor || currentgame->players[i]->colorMenuTimer < -2)
+			}
+			if (!player->pickedColor || player->colorMenuTimer < -2)
 			{
 				start = false;
 				break;
 			}
 		}
+
 		if (start)
 		{
 			colorMenuTimer = 0;
-			for (size_t i = 0; i < currentgame->players.size(); i++)
+			for (auto& player : currentgame->players)
 			{
-				if (!currentgame->players[i]->active && !currentgame->settings->useCPUplayers)
+				if (!player->active && !currentgame->settings->useCPUplayers)
 					continue;
-				currentgame->players[i]->currentphase = GETREADY;
+				player->currentphase = GETREADY;
 			}
 			currentgame->readyGoObj.prepareAnimation("readygo");
 			currentgame->data->matchTimer = 0;
@@ -1100,71 +1247,76 @@ void player::chooseColor()
 	}
 	//fade out with flicker
 	if (colorMenuTimer < 0)
+	{
 		spice[spiceSelect].setVisible(false);
+	}
 	if (colorMenuTimer < -20)
 	{
 		spice[spiceSelect].setVisible(true);
 		spice[spiceSelect].setTransparency(static_cast<float>(interpolate("linear", 1, 0, (colorMenuTimer + 50) / 30.0, 0, 0)));
 	}
-	/*if (colorMenuTimer<20 && (-colorMenuTimer)%2==1)
-		spice[spiceSelect].setVisible(true);
-	if (colorMenuTimer<20 && (-colorMenuTimer)%2==0)
-		spice[spiceSelect].setVisible(false);*/
-
 }
 
 void player::prepare()
 {
 	//Read colors and pop front after reading
-	int color1 = *(m_nextList.begin());
-	int color2 = *(m_nextList.begin() + 1);
+	const int color1 = *m_nextList.begin();
+	const int color2 = *(m_nextList.begin() + 1);
 	addNewColorPair(colors);
 	popColor();
 
 	movePuyoType mpt = DOUBLET;
 	if (useDropPattern)
+	{
 		mpt = getFromDropPattern(m_character, turns);
+	}
 	movePuyos.prepare(mpt, this, color1, color2);
 
 	if (cpuAI)
-	{//determine best chain
+	{
+		// Determine best chain
 		cpuAI->prepare(mpt, color1, color2);
-		if (activeGarbage->GQ > 0)
-			cpuAI->pinch = true;
-		else
-			cpuAI->pinch = false;
+		cpuAI->pinch = activeGarbage->GQ > 0 ? true : false;
 		cpuAI->findLargest();
 	}
-	//release controls for ONLINE player
-	if (m_type == ONLINE)
-		controls.release();
 
-	//currentphase=MOVE;
+	// Release controls for ONLINE player
+	if (m_type == ONLINE)
+	{
+		controls.release();
+	}
+
 	endPhase();
 	poppedChain = false;
 	createPuyo = false;
 	forgiveGarbage = false;
-
 }
+
 void player::cpuMove()
 {
-	//get current rotation
-	if (movePuyos.getType() != BIG)
+	// Get current rotation
+	if (movePuyos.getType() == BIG)
 	{
-		if (movePuyos.getRotation() != cpuAI->bestRot)
+		if (movePuyos.getColorBig() != cpuAI->bestRot)
+		{
 			controls.A = cpuAI->timer % 12;
+		}
 	}
 	else
 	{
-		if (movePuyos.getColorBig() != cpuAI->bestRot)
+		if (movePuyos.getRotation() != cpuAI->bestRot)
+		{
 			controls.A = cpuAI->timer % 12;
+		}
 	}
 
 	if (cpuAI->timer > 30)
+	{
 		controls.Down++;
+	}
+
 	cpuAI->timer++;
 
-	//    debugstring=to_string(movePuyos.getPosX1())+"-"+to_string(cpuAI->bestPos)+"("+to_string(cpuAI->bestChain)+")\n";
 	if (movePuyos.getPosX1() == cpuAI->bestPos)
 	{
 		controls.A = 0;
@@ -1174,9 +1326,15 @@ void player::cpuMove()
 	}
 
 	if (movePuyos.getPosX1() < cpuAI->bestPos && cpuAI->timer > 10)
+	{
 		controls.Right++;
+	}
+
 	if (movePuyos.getPosX1() > cpuAI->bestPos && cpuAI->timer > 10)
+	{
 		controls.Left++;
+	}
+
 	if (controls.Left > 0 && controls.Right > 0)
 	{
 		controls.Left = 0;
@@ -1186,32 +1344,39 @@ void player::cpuMove()
 }
 
 void player::destroyPuyos()
-{//phase 31
+{
+	// Phase 31
 	destroyPuyosTimer++;
 	if (destroyPuyosTimer == chainPopSpeed)
 	{
-		//create "XX Chain" word
+		// Create "XX Chain" word
 		fieldProp prop = activeField->getProperties();
-		pchainWord->showAt(prop.gridWidth * rememberX * prop.scaleX,
-			prop.gridHeight * (prop.gridY - 3 - (rememberMaxY + 3)) * prop.scaleY, chain);
-		//play sound
+		pchainWord->showAt(
+			prop.gridWidth * rememberX * prop.scaleX,
+			prop.gridHeight * (prop.gridY - 3 - (rememberMaxY + 3)) * prop.scaleY, chain
+		);
+
+		// Play sound
 		data->snd.chain[min(chain - 1, 6)].Play(data);
 	}
 
 	if (destroyPuyosTimer == chainPopSpeed)
 	{
-		//set EQ
+		// Set EQ
 		if (chain >= currentgame->currentruleset->requiredChain)
 		{
 			float power = 1;
 			int div = 2;
 			if (feverMode)
+			{
 				power = currentgame->currentruleset->feverPower;
+			}
 			if (currentgame->players.size() > 1)
+			{
 				div = max(2, divider);
+			}
 
 			EQ = static_cast<int>(static_cast<float>(currentScore / targetPoint) * power * 3.f / static_cast<float>(div + 1));
-			//currentScore-=targetPoint*float(EQ/power);
 			currentScore -= targetPoint * (currentScore / targetPoint);
 
 			if (bonusEQ)
@@ -1228,13 +1393,15 @@ void player::destroyPuyos()
 	}
 }
 
+// Light effect & secondsobj
 void player::playLightEffect()
-{//light effect & secondsobj
-	for (size_t i = 0; i < m_lightEffect.size(); i++)
+{
+	for (auto& i : m_lightEffect)
 	{
-		m_lightEffect[i]->setTimer(garbageSpeed);
+		i->setTimer(garbageSpeed);
 	}
-	//check if any should be removed
+
+	// Check if any should be removed
 	for (size_t i = 0; i < m_lightEffect.size(); i++)
 	{
 		if (m_lightEffect[i]->getTimer() > 300)
@@ -1243,17 +1410,19 @@ void player::playLightEffect()
 			m_lightEffect.erase(std::remove(m_lightEffect.begin(), m_lightEffect.end(), m_lightEffect[i]), m_lightEffect.end());
 		}
 	}
-	//play feverlight
+	// Play feverlight
 	m_feverLight.setTimer(0.1f);
-	//update fevergauge
+
+	// Update fevergauge
 	feverGauge.update();
 
-	//secondsobj
-	for (size_t i = 0; i < m_secondsObj.size(); i++)
+	// Secondsobj
+	for (auto& i : m_secondsObj)
 	{
-		m_secondsObj[i]->move();
+		i->move();
 	}
-	//check if any should be removed
+
+	// Check if any should be removed
 	for (size_t i = 0; i < m_secondsObj.size(); i++)
 	{
 		if (m_secondsObj[i]->getTimer() > 50)
@@ -1269,7 +1438,9 @@ void player::playLightEffect()
 void player::addFeverCount()
 {
 	if (feverGauge.getCount() == 7)
+	{
 		return;
+	}
 
 	int dir = m_nextPuyo.getOrientation();
 	posVectorFloat startpv, middlepv, endpv;
@@ -1282,81 +1453,74 @@ void player::addFeverCount()
 	feverGauge.addCount();
 }
 
-int player::getGarbageSum()
-{//total garbage including fever garbage
+// Total garbage including fever garbage
+int player::getGarbageSum() const
+{
 	return normalGarbage.CQ + normalGarbage.GQ + feverGarbage.CQ + feverGarbage.GQ;
 }
 
-int player::getAttackSum()
-{//total attack amount
-	int attack = EQ - max(getGarbageSum(), 0);  //----> do not count negative GQ
-	//int attack=EQ-getGarbageSum();
-	if (attack > 0)
-		return attack;
-	else
-		return 0;
+// Total attack amount
+int player::getAttackSum() const
+{
+	const int attack = EQ - max(getGarbageSum(), 0);  //----> do not count negative GQ
+	return attack > 0 ? attack : 0;
 }
 
-void player::addAttacker(garbageCounter* gc, player* pl)
+void player::addAttacker(garbageCounter* gc, player* pl) const
 {
-	std::vector<player*>::iterator it;
-	it = std::find(gc->accumulator.begin(), gc->accumulator.end(), pl);
-	//found element
-	if (it != gc->accumulator.end())
+	if (const auto it = std::find(gc->accumulator.begin(), gc->accumulator.end(), pl); it != gc->accumulator.end())
+	{
 		return;
+	}
 	gc->accumulator.push_back(pl);
 }
 
 void player::removeAttacker(garbageCounter* gc, player* pl)
 {
-	std::vector<player*>::iterator it;
-	it = std::find(gc->accumulator.begin(), gc->accumulator.end(), pl);
-	//found element
-	if (it != gc->accumulator.end())
+	// Found element
+	if (const auto it = std::find(gc->accumulator.begin(), gc->accumulator.end(), pl); it != gc->accumulator.end())
 	{
 		gc->accumulator.erase(it);
 		lastAttacker = pl;
 	}
 }
 
+// Check if any attackers left in accumulator
 void player::checkAnyAttacker(garbageCounter* gc)
-{//check if any attackers left in accumulator
-	//loop through attackers and check their state to be sure
+{
+	// Loop through attackers and check their state to be sure
 	std::vector<player*> remove;
-	for (size_t i = 0; i < gc->accumulator.size(); i++)
+	for (auto& i : gc->accumulator)
 	{
 		//player still alive?
-		if (gc->accumulator[i]->losewin != NOWIN || !gc->accumulator[i]->active)
-			remove.push_back(gc->accumulator[i]);
+		if (i->losewin != NOWIN || !i->active)
+			remove.push_back(i);
 	}
+
 	while (!remove.empty())
 	{
 		removeAttacker(gc, remove.back());
 		remove.pop_back();
 	}
 
-	if (gc->accumulator.size() > 0)
+	if (!gc->accumulator.empty())
+	{
 		return;
-	else
-		//if none found, add CQ to GQ
-		addToGQ(gc);
+	}
 
+	// If none found, add CQ to GQ
+	addToGQ(gc);
 }
 
 void player::checkFeverGarbage()
-{//negative normal garbage during fever?!
+{
+	// negative normal garbage during fever?!
 	return;
-	if (normalGarbage.GQ < 0 && feverGarbage.GQ>0 && feverGarbage.GQ == -normalGarbage.GQ)
-	{
-		normalGarbage.GQ = 0;
-		feverGarbage.GQ = 0;
-	}
-	updateTray();
 }
 
 void player::addToGQ(garbageCounter* gc)
 {
-	if (gc->accumulator.size() == 0)
+	if (gc->accumulator.empty())
 	{
 		gc->GQ += gc->CQ;
 		gc->CQ = 0;
@@ -1365,7 +1529,7 @@ void player::addToGQ(garbageCounter* gc)
 
 void player::resetNuisanceDropPattern()
 {
-	int fieldWidth = properties.gridX;
+	const int fieldWidth = properties.gridX;
 	m_nuisanceList.clear();
 	for (int i = 0; i < fieldWidth; ++i) {
 		m_nuisanceList.push_back(i);
@@ -1375,18 +1539,18 @@ void player::resetNuisanceDropPattern()
 
 int player::nuisanceDropPattern()
 {
-	// refill if array is empty
-	if (m_nuisanceList.size() == 0) {
+	// Refill if array is empty
+	if (m_nuisanceList.empty()) {
 		resetNuisanceDropPattern();
 	}
 
-	// pick an index
+	// Pick an index
 	double rand = m_randomizerNuisanceDrop->genrand_real1();
-	int randomIndex = static_cast<int>(static_cast<double>(m_nuisanceList.size()) * rand);
+	const int randomIndex = static_cast<int>(static_cast<double>(m_nuisanceList.size()) * rand);
 
-	// swap that index with the end and pop
-	int endValue = m_nuisanceList[m_nuisanceList.size() - 1];
-	int value = m_nuisanceList[randomIndex];
+	// Swap that index with the end and pop
+	const int endValue = m_nuisanceList[m_nuisanceList.size() - 1];
+	const int value = m_nuisanceList[randomIndex];
 	m_nuisanceList[randomIndex] = endValue;
 	m_nuisanceList.pop_back();
 
@@ -1397,35 +1561,34 @@ void player::startGarbage()
 {
 	garbageTimer = 0;
 
-	//calculate DEF (CQ+GQ+sum(EQ))
+	// Calculate DEF (CQ+GQ+sum(EQ))
 	int totalEQ = 0;
 	for (size_t i = 0; i < currentgame->players.size(); i++)
 	{
-		//sum opponents attack
+		// Sum opponents attack
 		if (currentgame->players[i] != this)
 			totalEQ += currentgame->players[i]->getAttackSum();
 	}
-	int DEF = getGarbageSum() + totalEQ;
+	const int DEF = getGarbageSum() + totalEQ;
 
-	//set targets on the first run of startgarbage phase
-	for (size_t i = 0; i < currentgame->players.size(); i++)
+	// Set targets on the first run of startgarbage phase
+	for (auto& player : currentgame->players)
 	{
-		if (currentgame->players[i] != this && chain == 1)
+		if (player != this && chain == 1)
 		{
-			//targetGarbage.push_back(currentgame->players[i]->activeGarbage);
-			targetGarbage[currentgame->players[i]] = currentgame->players[i]->activeGarbage;
+			targetGarbage[player] = player->activeGarbage;
 		}
 	}
 
-	//attack or defend?
+	// Attack or defend?
 	if (DEF <= 0 && EQ > 0)
 	{
 		attdef = ATTACK;
-		for (size_t i = 0; i < currentgame->players.size(); i++)
+		for (auto& player : currentgame->players)
 		{
-			if (currentgame->players[i] != this)
+			if (player != this)
 			{
-				//add any negative GQ
+				// Add any negative GQ
 				if (normalGarbage.GQ + feverGarbage.GQ < 0)
 				{
 					EQ += -1 * (normalGarbage.GQ + feverGarbage.GQ);
@@ -1434,57 +1597,59 @@ void player::startGarbage()
 					updateTray();
 				}
 
-				//create light effect animation for each opponent
+				// Create light effect animation for each opponent
 				posVectorFloat startpv, middlepv, endpv;
 				startpv = activeField->getGlobalCoord(rememberX, rememberMaxY);
-				endpv = currentgame->players[i]->activeField->getTopCoord(-1);
-				//calculate a middle
-				//int dir=sign(int(endpv.x-startpv.x));
-				int dir = m_nextPuyo.getOrientation();
+				endpv = player->activeField->getTopCoord(-1);
+				// Calculate a middle
+				const int dir = m_nextPuyo.getOrientation();
 				middlepv.x = startpv.x - dir * PUYOX * 3;
 				middlepv.y = startpv.y - PUYOY * 3;
 				m_lightEffect.push_back(new lightEffect(data, startpv, middlepv, endpv));
 
 				//add self to garbage accumulator
-				currentgame->players[i]->addAttacker(targetGarbage[currentgame->players[i]], this);
+				player->addAttacker(targetGarbage[player], this);
 			}
 		}
 	}
 	else if (DEF > 0)
 	{
-		//calculate COUNTER = CQ+GQ+sum(EQ) - EQ
-		int COUNTER = getGarbageSum() + totalEQ - EQ;
-		//debugstring=to_string(getGarbageSum())+"+"+to_string(totalEQ)+"-"+to_string(EQ)+"="+to_string(COUNTER);
-		if (COUNTER >= 0)
-		{//normal defense
+		// Calculate COUNTER = CQ+GQ+sum(EQ) - EQ
+		if (const int COUNTER = getGarbageSum() + totalEQ - EQ; COUNTER >= 0)
+		{
+			// Normal defense
 			attdef = DEFEND;
-			//remove self from opponent garbage accumulator (if present)
-			for (size_t i = 0; i < currentgame->players.size(); i++)
+
+			// Remove self from opponent garbage accumulator (if present)
+			for (auto& player : currentgame->players)
 			{
-				if (currentgame->players[i] != this)
-				{
-					currentgame->players[i]->removeAttacker(targetGarbage[currentgame->players[i]], this);
-					currentgame->players[i]->checkAnyAttacker(targetGarbage[currentgame->players[i]]);
-				}
+				if (player == this) continue;
+				player->removeAttacker(targetGarbage[player], this);
+				player->checkAnyAttacker(targetGarbage[player]);
 			}
 		}
 		else
-		{//countering defense
-			//wait for defense to end before making next move
+		{
+			// Countering defense
+			// Wait for defense to end before making next move
 			attdef = COUNTERDEFEND;
-			//counter attack voice
-			if (playvoice > 4 && chain >= 3 && currentgame->currentruleset->voicePatternFever == true)
-				playvoice = 11;
-			if (playvoice <= 4 && chain >= 3 && currentgame->currentruleset->voicePatternFever == true)
-				playvoice = 10;
 
+			// Counter attack voice
+			if (playvoice > 4 && chain >= 3 && currentgame->currentruleset->voicePatternFever == true)
+			{
+				playvoice = 11;
+			}
+			if (playvoice <= 4 && chain >= 3 && currentgame->currentruleset->voicePatternFever == true)
+			{
+				playvoice = 10;
+			}
 		}
-		//create light effect for defense
-		posVectorFloat startpv, middlepv, endpv;
-		startpv = activeField->getGlobalCoord(rememberX, rememberMaxY);
-		endpv = activeField->getTopCoord(-1);
-		//calculate a middle
-		int dir = m_nextPuyo.getOrientation();
+		// create light effect for defense
+		posVectorFloat startpv = activeField->getGlobalCoord(rememberX, rememberMaxY);
+		posVectorFloat endpv = activeField->getTopCoord(-1);
+		// calculate a middle
+		const int dir = m_nextPuyo.getOrientation();
+		posVectorFloat middlepv;
 		middlepv.x = startpv.x - dir * PUYOX * 3;
 		middlepv.y = startpv.y - PUYOY * 3;
 		m_lightEffect.push_back(new lightEffect(data, startpv, middlepv, endpv));
@@ -1497,22 +1662,27 @@ void player::startGarbage()
 }
 
 void player::garbagePhase()
-{//phase 33
-	//stop chaining
+{
+	// Phase 33
+	// Stop chaining
 	if (currentgame->stopChaining)
+	{
 		return;
+	}
 
 	if (garbageTimer == 0)
 	{
 		hasMoved = false;
 
-		//trigger voice
+		// Trigger voice
 		if (destroyPuyosTimer == chainPopSpeed)
 		{
 			prepareVoice(chain, predictedChain);
 		}
+
 		startGarbage();
-		//trigger animation
+
+		// Trigger animation
 		if (destroyPuyosTimer == chainPopSpeed && playvoice >= 5)
 		{
 			if (playvoice < 10)
@@ -1523,7 +1693,7 @@ void player::garbagePhase()
 		}
 	}
 
-	//change garbagetimer
+	// Change garbageTimer
 	garbageTimer += garbageSpeed;
 
 	if (garbageTimer > garbageEndTime)
@@ -1535,7 +1705,8 @@ void player::garbagePhase()
 }
 
 void player::counterGarbage()
-{//almost the same as normal garbage phase, except no endphase
+{
+	// Almost the same as normal garbage phase, except no endphase
 	garbageTimer += garbageSpeed;
 	if (garbageTimer > garbageEndTime)
 	{
@@ -1546,41 +1717,45 @@ void player::counterGarbage()
 
 void player::endGarbage()
 {
-	//play sound
-	if (EQ > 0 && m_lightEffect.size() > 0)
+	// Play sound
+	if (EQ > 0 && !m_lightEffect.empty())
+	{
 		data->snd.hit.Play(data);
-
-	//Attack animation ends: check if any garbage sneaked past after all
+	}
+	
+	// Attack animation ends: check if any garbage sneaked past after all
 	if (attdef == ATTACK || attdef == COUNTERATTACK)
-	{//bad prediction of attack: there is garbage on your side after all and must be defended
+	{
+		// bad prediction of attack: there is garbage on your side after all and must be defended
 		if (getGarbageSum() > 0 && (normalGarbage.GQ > 0 || feverGarbage.GQ > 0))
 		{
-			//defend
+			// Defend
 			activeGarbage->GQ -= EQ;
-			//push defense through normal GQ if necessary?
-			//be careful here! don't let normal.GQ go negative
+			// Push defense through normal GQ if necessary?
+			// Be careful here! don't let normal.GQ go negative
 			if (activeGarbage == &feverGarbage && normalGarbage.GQ > 0 && activeGarbage->GQ < 0)
 			{
 				normalGarbage.GQ += feverGarbage.GQ;
 				feverGarbage.GQ = 0;
 				if (normalGarbage.GQ < 0)
-				{//don't let normal GQ go negative!
+				{
+					// Don't let normal GQ go negative!
 					feverGarbage.GQ += normalGarbage.GQ;
 					normalGarbage.GQ = 0;
 				}
 				updateTray(&normalGarbage);
 			}
 			updateTray();
-			//This part is different from real defense
-			//garbage left: all is ok, defend ends.
+			// This part is different from real defense
 			if (getGarbageSum() >= 0)
 			{
+				// Garbage left: all is OK, defend ends.
 				EQ = 0;
 				attdef = NOATTACK;
 			}
-			//garbage is countered: put leftover back in EQ and continue attack, do not create counterattack animation!
 			else
 			{
+				// Garbage is countered: put leftover back in EQ and continue attack, do not create counterattack animation!
 				EQ = -1 * (getGarbageSum());
 				normalGarbage.GQ = 0; normalGarbage.CQ = 0;
 				feverGarbage.GQ = 0; feverGarbage.CQ = 0;
@@ -1589,47 +1764,48 @@ void player::endGarbage()
 		}
 	}
 
-	//Normal Attack
-	//add EQ to opponents CQ
+	// Normal Attack
+	// Add EQ to opponents CQ
 	if (attdef == ATTACK || attdef == COUNTERATTACK)
 	{
-		for (size_t i = 0; i < currentgame->players.size(); i++)
+		for (auto& player : currentgame->players)
 		{
-			if (currentgame->players[i] != this)
-			{
-				targetGarbage[currentgame->players[i]]->CQ += EQ;
-				//EQ=0;
-				currentgame->players[i]->updateTray(targetGarbage[currentgame->players[i]]);
-				playGarbageSound();
-				//end of attack
-				if (chain == predictedChain || (attdef == COUNTERATTACK && hasMoved))
-				{
-					//remove as accumulator
-					currentgame->players[i]->removeAttacker(targetGarbage[currentgame->players[i]], this);
-					//force player to check if zero (there should always be a last player)
-					currentgame->players[i]->checkAnyAttacker(targetGarbage[currentgame->players[i]]);
-				}
-				currentgame->players[i]->checkFeverGarbage();
-			}
+			if (player == this) continue;
 
+			targetGarbage[player]->CQ += EQ;
+			player->updateTray(targetGarbage[player]);
+			playGarbageSound();
+			// End of attack
+			if (chain == predictedChain || (attdef == COUNTERATTACK && hasMoved))
+			{
+				// Remove as accumulator
+				player->removeAttacker(targetGarbage[player], this);
+
+				// Force player to check if zero (there should always be a last player)
+				player->checkAnyAttacker(targetGarbage[player]);
+			}
+			player->checkFeverGarbage();
 		}
-		//end of attack
+
+		// End of attack
 		currentgame->currentruleset->onAttack(this);
 		attdef = NOATTACK;
 	}
 
-	//Defense end
+	// Defense end
 	if (attdef == DEFEND || attdef == COUNTERDEFEND)
 	{
 		activeGarbage->GQ -= EQ;
-		//push defense through normal GQ if necessary?
-		//be careful here! don't let normal.GQ go negative
+
+		// Push defense through normal GQ if necessary?
+		// Be careful here! don't let normal.GQ go negative
 		if (activeGarbage == &feverGarbage && normalGarbage.GQ > 0 && activeGarbage->GQ < 0)
 		{
 			normalGarbage.GQ += feverGarbage.GQ;
 			feverGarbage.GQ = 0;
 			if (normalGarbage.GQ < 0)
-			{//don't let normal GQ go negative!
+			{
+				// Don't let normal GQ go negative!
 				feverGarbage.GQ += normalGarbage.GQ;
 				normalGarbage.GQ = 0;
 			}
@@ -1637,89 +1813,98 @@ void player::endGarbage()
 		}
 		updateTray();
 
-		//online players will not offset (?)
+		// online players will not offset (?)
 		if (m_type != ONLINE)
+		{
 			currentgame->currentruleset->onOffset(this);
+		}
 
-		//send message
+		// send message
 		if (currentgame->connected && m_type == HUMAN)
+		{
 			currentgame->network->sendToChannel(CHANNEL_GAME, "fo", currentgame->channelName);
+		}
 
-		//THERE IS NO SUCH THING AS DEFENSE AND COUNTERDEFENSE
-		//always check if defense can be countered at end!!
+		// THERE IS NO SUCH THING AS DEFENSE AND COUNTERDEFENSE
+		// always check if defense can be countered at end!!
 		attdef = COUNTERDEFEND;
 	}
 
-	//Counter defense
+	// Counter defense
 	if (attdef == COUNTERDEFEND)
 	{
-		//calculate DEF again
+		// calculate DEF again
 		int totalEQ = 0;
-		for (size_t i = 0; i < currentgame->players.size(); i++)
+		for (const auto& player : currentgame->players)
 		{
-			//sum opponents EQ
-			if (currentgame->players[i] != this)
-				totalEQ += currentgame->players[i]->getAttackSum();
-		}
-		int DEF = getGarbageSum() + totalEQ;
+			if (player == this) continue;
 
-		if (DEF >= 0)
-		{//ineffective counter -> just end counter
+			// sum opponents EQ
+			totalEQ += player->getAttackSum();
+		}
+
+		if (const int DEF = getGarbageSum() + totalEQ; DEF >= 0)
+		{
+			// ineffective counter -> just end counter
 			attdef = NOATTACK;
-			//std::cout<<"End counter p"<<m_playernum<<std::endl;
 		}
 		else
-		{//turn into attack
+		{
+			// turn into attack
 			attdef = COUNTERATTACK;
-			for (size_t i = 0; i < currentgame->players.size(); i++)
+			for (auto& player : currentgame->players)
 			{
-				if (currentgame->players[i] != this)
+				if (player == this) continue;
+
+				if (getGarbageSum() < 0) // no need to check again?
 				{
-					if (getGarbageSum() < 0)//no need to check again?
-					{
-						EQ = -1 * (getGarbageSum());
-						normalGarbage.GQ = 0; normalGarbage.CQ = 0;
-						feverGarbage.GQ = 0; feverGarbage.CQ = 0;
-						updateTray();
-					}
-
-					//create new light effect animation for each opponent
-					posVectorFloat startpv, middlepv, endpv;
-					startpv = activeField->getTopCoord(-1);
-					endpv = currentgame->players[i]->activeField->getTopCoord(-1);
-					//calculate a middle
-					int dir = m_nextPuyo.getOrientation();
-					middlepv.x = startpv.x - dir * PUYOX * 3;
-					middlepv.y = startpv.y - PUYOY * 3;
-					m_lightEffect.push_back(new lightEffect(data, startpv, middlepv, endpv));
-
-					//add self to garbage accumulator
-					currentgame->players[i]->addAttacker(targetGarbage[currentgame->players[i]], this);
+					EQ = -1 * (getGarbageSum());
+					normalGarbage.GQ = 0; normalGarbage.CQ = 0;
+					feverGarbage.GQ = 0; feverGarbage.CQ = 0;
+					updateTray();
 				}
+
+				// create new light effect animation for each opponent
+				posVectorFloat startpv, middlepv, endpv;
+				startpv = activeField->getTopCoord(-1);
+				endpv = player->activeField->getTopCoord(-1);
+
+				// calculate a middle
+				const int dir = m_nextPuyo.getOrientation();
+				middlepv.x = startpv.x - dir * PUYOX * 3;
+				middlepv.y = startpv.y - PUYOY * 3;
+				m_lightEffect.push_back(new lightEffect(data, startpv, middlepv, endpv));
+
+				// add self to garbage accumulator
+				player->addAttacker(targetGarbage[player], this);
 			}
 		}
-
 	}
 
-	//reset EQ
+	// Reset EQ
 	if (attdef != COUNTERATTACK)
+	{
 		EQ = 0;
+	}
 
 }
 
+// Adds 2 new colors to nextlist and update nextpuyo
 void player::addNewColorPair(int n)
-{//adds 2 new colors to nextlist and update nextpuyo
+{
 	int color1 = this->getRandom(n, m_randomizerNextList);
 	int color2 = this->getRandom(n, m_randomizerNextList);
 
-	//Perform TGM randomizer algorithm?
-	if (currentgame->legacyRandomizer) {
+	// Perform TGM randomizer algorithm?
+	if (currentgame->legacyRandomizer)
+	{
 		color1 = TGMR(color1, n);
 		color2 = TGMR(color2, n);
 	}
 
 	m_nextList.push_back(color1);
-	//Regenerate color 2 if type is quadruple and colors are the same
+
+	// Regenerate color 2 if type is quadruple and colors are the same
 	if (useDropPattern)
 	{
 		while (color1 == color2 && getFromDropPattern(m_character, turns + 3) == QUADRUPLET)
@@ -1729,90 +1914,99 @@ void player::addNewColorPair(int n)
 	}
 	m_nextList.push_back(color2);
 
-	//update nextpuyo
-	if (useDropPattern)
-		m_nextPuyo.update(m_nextList, m_character, turns);
-	else
-		m_nextPuyo.update(m_nextList, ARLE, turns);
+	// Update nextPuyo
+	m_nextPuyo.update(m_nextList, useDropPattern ? m_character : ARLE, turns);
 }
 
+// Clear front of deque
 void player::popColor()
-{//clear front of deque
-	if (m_nextList.size() > 6)
+{
+	if (m_nextList.size() <= 6)
 	{
-		m_nextList.pop_front();
-		m_nextList.pop_front();
+		return;
 	}
+	m_nextList.pop_front();
+	m_nextList.pop_front();
 }
 
+// Check if color exists in last generated colors
 int player::TGMR(int color, int n)
-{//check if color exists in last generated colors
-	//do not apply TGMR if nextlist on the first 4 colors
-	if (m_nextList.size() < 4)
-		return color;
-
-	std::deque<int>::iterator i;
-	for (i = m_nextList.begin(); i != m_nextList.begin() + 4; i++)
+{
+	// Do not apply TGMR if nextlist on the first 4 colors
+	if (m_nextList.size() >= 4)
 	{
-		if (*i == color)
+		for (auto i = m_nextList.begin(); i != m_nextList.begin() + 4; ++i)
 		{
-			color = this->getRandom(n, m_randomizerNextList);
-			break;
+			if (*i == color)
+			{
+				color = this->getRandom(n, m_randomizerNextList);
+				break;
+			}
 		}
 	}
+
 	return color;
 }
 
 void player::checkAllClear()
 {
-	//check if you're the winner here
+	// Check if you're the winner here
 	checkWinner();
+
 	if (activeField->count() == 0)
 	{
-		//play sound
+		// Play sound
 		data->snd.allcleardrop.Play(data);
-		//do something according to rules
+
+		// Do something according to rules
 		currentgame->currentruleset->onAllClear(this);
 	}
-	//end
+	
 	endPhase();
 }
 
 void player::checkLoser(bool endphase)
 {
-	//check if player places puyo on spawnpoint
-	//doesnt necessarily mean losing, but the phase will change according to rules
+	// Check if player places puyo on spawnpoint
+	// Doesn't necessarily mean losing, but the phase will change according to rules
 	posVectorInt spawn = movePuyos.getSpawnPoint();
 	bool lose = false;
 	bool lose2 = false;
 	lose = activeField->isPuyo(spawn.x, spawn.y);
-	//is there a 2nd spawnpoint?
+
+	// Is there a 2nd spawnpoint?
 	if (currentgame->currentruleset->doubleSpawn)
+	{
 		lose2 = activeField->isPuyo(spawn.x + 1, spawn.y);
+	}
 
 	if (lose || lose2)
 	{
-		//player loses
+		// Player loses
 		if (m_type != ONLINE)
 		{
 			setLose();
-			//online game: send message to others
+			// Online game: send message to others
 			if (currentgame->connected)
+			{
 				currentgame->network->sendToChannel(CHANNEL_GAME, "l", currentgame->channelName.c_str());
+			}
 		}
 		else
 		{
-			//wait for message to arrive
+			// Wait for message to arrive
 			currentphase = WAITLOSE;
 		}
 	}
 	else if (endphase)
+	{
 		endPhase();
+	}
 }
 
 void player::checkWinner()
 {
-	//player wins if all others have lost
+	// Player wins if all others have lost
 	int Nlosers = 0;
 	for (size_t i = 0; i < currentgame->players.size(); i++)
 	{
@@ -1823,21 +2017,23 @@ void player::checkWinner()
 			Nlosers++;
 		}
 	}
-	//a winner is you
+
+	// A winner is you
 	if (losewin == NOWIN && Nlosers == currentgame->countActivePlayers() - 1 && Nlosers != 0 && active)
 	{
-		//save replay
+		// Save replay
 		currentgame->saveReplay();
 		wins++;
 
 		currentgame->currentruleset->onWin(this);
 		characterAnimation.prepareAnimation("win");
 
-		//ranked match: prepare to disconnect
+		// Ranked match: prepare to disconnect
 		prepareDisconnect();
 
 	}
-	//only player left after everyone else left the game
+
+	// Only player left after everyone else left the game
 	if (currentgame->countActivePlayers() == 1 && currentgame->players.size() > 1 && active)
 	{
 		currentgame->currentruleset->onWin(this);
@@ -1850,27 +2046,28 @@ void player::setLose()
 {
 	currentgame->currentruleset->onLose(this);
 	characterAnimation.prepareAnimation("lose");
-	//play lose sound sound
-	int totalplayers = static_cast<int>(currentgame->players.size());
-	int activeplayers = 0;
-	for (int i = 0; i < totalplayers; i++)
-	{//check if all players are in win or lose state
-		if (currentgame->players[i]->losewin == NOWIN)
-		{
-			activeplayers++;
-		}
-	}
-	if (activeplayers > 1 && totalplayers > 0)
-		data->snd.lose.Play(data);
-	else if (totalplayers == 1) //endless
-		data->snd.lose.Play(data);
 
+	// Play lose sound sound
+	int activeplayers = 0;
+	for (const auto& player : currentgame->players)
+	{
+		// Check if all players are in win or lose state
+		if (player->losewin != NOWIN)
+			continue;
+
+		activeplayers++;
+	}
+
+	if (currentgame->players.size() == 1 || activeplayers > 1 && !currentgame->players.empty())
+	{
+		data->snd.lose.Play(data);
+	}
 }
 
 void player::loseGame()
 {
-	// force others to check if winner
-	// unless he's in the middle of chaining
+	// Force others to check if winner
+	// Unless he's in the middle of chaining
 	if (m_loseWinTimer == 0)
 	{
 		for (auto& player : currentgame->players)
@@ -1882,50 +2079,56 @@ void player::loseGame()
 			}
 		}
 	}
-
-	//drop puyos
-//    if (activeField==&m_fieldNormal)
+	
+	// Drop puyos
 	activeField->loseDrop();
-	//losetimer
+
+	// Increment losetimer
 	m_loseWinTimer++;
 
 	if (m_loseWinTimer == 60)
 	{
 		characterVoices.lose.Play(data);
 	}
-
-	//online: wait for confirm message from everyone
+	
+	// Online: wait for confirm message from everyone
 	if (losewin == LOSEWAIT)
 	{
-		//count confirmed
+		// Count confirmed
 		int count = 0;
-		for (size_t i = 0; i < currentgame->players.size(); i++)
+		for (const auto& player : currentgame->players)
 		{
-			if (currentgame->players[i] != this && currentgame->players[i]->active && currentgame->players[i]->loseConfirm)
+			if (player != this && player->active && player->loseConfirm)
 				count++;
 		}
-		//everybody confirmed your loss-> your state goes to lose
+		// Everybody confirmed your loss-> your state goes to lose
 		if (count == currentgame->countActivePlayers() - 1)
 		{
 			losewin = LOSE;
-			//again, check anyone else if winner
-			for (size_t i = 0; i < currentgame->players.size(); i++)
-			{
-				if (currentgame->players[i] != this)
-				{
-					if (!(currentgame->players[i]->currentphase > 10 && currentgame->players[i]->currentphase < 40))
-						currentgame->players[i]->checkWinner();
-				}
-			}
 
-			//ranked match: report loss
+			// Again, check anyone else if winner
+			for (const auto& player : currentgame->players)
+			{
+				if (player == this)
+				{
+					continue;
+				}
+
+				if (player->currentphase > 10 && player->currentphase < 40)
+				{
+					continue;
+				}
+
+				player->checkWinner();
+			}
+			
+			// ranked match: report loss
 			if (currentgame->settings->rankedMatch && m_type == HUMAN && currentgame->connected)
 			{
 				currentgame->network->sendToServer(9, "score");
-				//maxwins reached
+				// maxwins reached
 				prepareDisconnect();
 			}
-
 		}
 	}
 }
@@ -1937,20 +2140,21 @@ void player::winGame()
 	{
 		characterVoices.win.Play(data);
 	}
-
 }
 
 void player::checkFever()
 {
-	//check if fevercount == 7
+	// Check if fevercount == 7
 	if (feverGauge.getCount() == 7 && !feverMode)
 	{
 		m_transitionTimer = 0;
 		m_fieldSprite.setVisible(true);
 		m_fieldFeverSprite.setVisible(false);
-		//clear field
+
+		// Clear field
 		m_fieldFever.clearField();
-		//all clear bonus: add feverchainamount and add time
+
+		// All clear bonus: add feverchainamount and add time
 		if (allClear == 1)
 		{
 			allClear = 0;
@@ -1962,10 +2166,9 @@ void player::checkFever()
 				showSecondsObj(5 * 60);
 			}
 		}
-
 	}
 
-	//wait until light has reached fevergauge
+	// Wait until light has reached fevergauge
 	if (feverGauge.getCount() == 7 && feverGauge.fullGauge())
 	{
 		feverMode = true;
@@ -1973,12 +2176,12 @@ void player::checkFever()
 		endPhase();
 	}
 	else if (feverGauge.getCount() != 7)
-	{//no fever mode
-		//all clear bonus: drop a 4 chain
+	{
+		// No fever mode
+		// All clear bonus: drop a 4 chain
 		if (allClear == 1)
 		{
 			activeField->dropField(getFeverChain(getRandom(currentgame->currentruleset->NFeverChains, m_randomizerNextList), colors, 4, getRandom(colors, m_randomizerFeverColor)));
-			//allClear=2; //do not reset allClear here, do it in ruleset.cpp, wait for field to drop
 			forgiveGarbage = true;
 			allclearTimer = 1;
 			if (feverGauge.seconds < 60 * feverGauge.maxSeconds)
@@ -1991,13 +2194,18 @@ void player::checkFever()
 	}
 }
 
+// Animation transition into fever
 void player::startFever()
-{//animation transition into fever
-	//first 50 frames is to wait for light to hit fevergauge
+{
+	// First 50 frames is to wait for light to hit fevergauge
 	if (m_transitionTimer >= 50 && m_transitionTimer < 150)
+	{
 		m_transitionTimer += 3;
+	}
 	if (m_transitionTimer < 50)
+	{
 		m_transitionTimer += 2;
+	}
 
 	if (m_transitionTimer > 150)
 	{
@@ -2013,11 +2221,10 @@ void player::startFever()
 		normalTray.align(activeField->getProperties().offsetX - (16) * m_globalScale, activeField->getProperties().offsetY - (32 + 16) * m_globalScale, m_globalScale);
 		normalTray.setDarken(true);
 		feverSuccess = 0;
-		//        feverGauge.setPositionSeconds(activeField->getTopCoord(0.5));
 		endPhase();
 	}
 
-	//sound & animation
+	// Sound & animation
 	if (m_transitionTimer == 50)
 	{
 		data->snd.fever.Play(data);
@@ -2030,19 +2237,19 @@ void player::startFever()
 		}
 	}
 
-	//switch fields now
+	// Switch fields now
 	if (m_transitionTimer == 101)
 	{
 		activeField = &m_fieldFever;
 		activeGarbage = &feverGarbage;
 	}
 
-	//rotation animation
+	// Rotation animation
 	if (m_transitionTimer > 50 && m_transitionTimer <= 100)
 	{
 		m_fieldSprite.setVisible(true);
 		m_fieldFeverSprite.setVisible(false);
-		//rotate out normal field
+		// Rotate out normal field
 		m_transformScale = 1.f - static_cast<float>(m_transitionTimer - 50) / 50.f;
 		activeField->setTransformScale(1.f - static_cast<float>(m_transitionTimer - 50) / 50.f);
 
@@ -2051,90 +2258,90 @@ void player::startFever()
 	{
 		m_fieldSprite.setVisible(false);
 		m_fieldFeverSprite.setVisible(true);
-		//rotate in fever field
+		// Rotate in fever field
 		m_transformScale = static_cast<float>(m_transitionTimer - 100) / 50.f;
 		activeField->setTransformScale(static_cast<float>(m_transitionTimer - 100) / 50.f);
 	}
 }
 void player::checkEndFeverOnline()
 {
-	//online player gets stuck in this state until message is received
+	// Online player gets stuck in this state until message is received
 	if (!messages.empty() && messages.front() == "fe")
-	{//fever ends
+	{
+		// Fever ends
 		messages.pop_front();
 		feverEnd = true;
 		m_transitionTimer = 0;
 		m_fieldSprite.setVisible(false);
 		m_fieldFeverSprite.setVisible(true);
-		//check loser at the last moment
+		// Check loser at the last moment
 		if (currentgame->currentruleset->feverDeath)
-			checkLoser(false); //do not end phase in this function
+		{
+			checkLoser(false); // Do not end phase in this function
+		}
 		endPhase();
 	}
-	else if (!messages.empty() && messages.front().compare("fc") == 0)
-	{//fever continues;
+	else if (!messages.empty() && messages.front() == "fc")
+	{
+		// Fever continues;
 		messages.pop_front();
 		endPhase();
 	}
 }
 void player::checkEndFever()
 {
-	//check if seconds == 0
+	// Check if seconds == 0
 	if (feverGauge.seconds == 0 && feverMode && m_type != ONLINE) //online players end fever when they give a message
 	{
-		//feverMode=false;
 		feverEnd = true;
 		m_transitionTimer = 0;
 		m_fieldSprite.setVisible(false);
 		m_fieldFeverSprite.setVisible(true);
 
-		//send message BEFORE sending possible lose message
+		// Send message BEFORE sending possible lose message
 		if (m_type == HUMAN && currentgame->connected)
+		{
 			currentgame->network->sendToChannel(CHANNEL_GAME, "fe", currentgame->channelName);
+		}
 
-		//check loser at the last moment?
+		// Check loser at the last moment?
 		if (currentgame->currentruleset->feverDeath)
-			checkLoser(false); //do not end phase in this function
+		{
+			checkLoser(false); // Do not end phase in this function
+		}
 	}
-	//not the end?
-	if (!feverEnd && m_type == HUMAN && currentgame->connected)
-		currentgame->network->sendToChannel(CHANNEL_GAME, "fc", currentgame->channelName);
 
-	//check if player popped a chain
+	// Not the end?
+	if (!feverEnd && m_type == HUMAN && currentgame->connected)
+	{
+		currentgame->network->sendToChannel(CHANNEL_GAME, "fc", currentgame->channelName);
+	}
+
+	// Check if player popped a chain
 	if (poppedChain)
 	{
-		//update chains
+		// Update chains
 		if (predictedChain >= currentFeverChainAmount)
-		{//succes
+		{
+			// Success
 			currentFeverChainAmount = predictedChain + 1;
 			feverSuccess = 1;
-			//if (feverGauge.seconds!=0)
-			//    characterVoices.feversuccess.Play(global);
 		}
-		else if (predictedChain == currentFeverChainAmount - 1)
-		{//no success
-
-		}
-		else
-		{//failure
-			int diff = currentFeverChainAmount - predictedChain;
-			if (diff > 2)
-				currentFeverChainAmount -= 2;
-			else
-				currentFeverChainAmount -= 1;
+		else if (predictedChain != currentFeverChainAmount - 1)
+		{
+			// Failure
+			currentFeverChainAmount -= currentFeverChainAmount - predictedChain > 2 ? 2 : 1;
 			feverSuccess = 2;
-			//if (feverGauge.seconds!=0)
-			//    characterVoices.feverfail.Play(global);
 		}
 
-		//time bonus
+		// Time bonus
 		if (predictedChain > 2 && feverGauge.seconds != 0 && feverGauge.seconds < 60 * feverGauge.maxSeconds)
 		{
 			feverGauge.addTime((predictedChain - 2) * 30);
 			showSecondsObj((predictedChain - 2) * 30);
 		}
 
-		//all clear bonus
+		// All clear bonus
 		if (allClear == 1)
 		{
 			allClear = 0;
@@ -2142,7 +2349,7 @@ void player::checkEndFever()
 			currentFeverChainAmount += 2;
 			if (feverGauge.seconds < 60 * 30)
 			{
-				//do not add time if fever is actually ending
+				// Do not add time if fever is actually ending
 				if (feverGauge.seconds != 0)
 				{
 					feverGauge.addTime(5 * 60);
@@ -2150,23 +2357,28 @@ void player::checkEndFever()
 				}
 			}
 		}
-		//minimum and maximum fever chain
+		// Minimum and maximum fever chain
 		if (currentFeverChainAmount < 3)
+		{
 			currentFeverChainAmount = 3;
+		}
 		if (currentFeverChainAmount > 15)
+		{
 			currentFeverChainAmount = 15;
+		}
 
-		//clear field
-		//if (feverGauge.seconds>0) //do not throw away at the last moment
+		// Clear field
 		if (!feverEnd)
+		{
 			activeField->throwAwayField();
+		}
 	}
 	endPhase();
 }
 
-
+// Transition out of fever
 void player::endFever()
-{//transition out of fever
+{
 	if (m_transitionTimer < 100)
 	{
 		m_transitionTimer += 3;
@@ -2180,19 +2392,19 @@ void player::endFever()
 		garbageEndTime = 100;
 		puyoBounceEnd = 2;
 		puyoBounceEnd = 50;
-		//        feverGauge.resetPositionSeconds();
 		endPhase();
 	}
 
-	//switch fields now
+	// Switch fields now
 	if (m_transitionTimer == 51)
 	{
 		feverMode = false;
-		//music: check if anyone is in fever
+
+		// Music: check if anyone is in fever
 		bool stopMusic = true;
-		for (size_t i = 0; i < currentgame->players.size(); i++)
+		for (const auto& player : currentgame->players)
 		{
-			if (currentgame->players[i]->feverMode == true && currentgame->players[i]->losewin == NOWIN && currentgame->players[i]->active)
+			if (player->feverMode == true && player->losewin == NOWIN && player->active)
 			{
 				stopMusic = false;
 				break;
@@ -2206,40 +2418,43 @@ void player::endFever()
 		}
 		activeField = &m_fieldNormal;
 		activeGarbage = &normalGarbage;
-		//add fevergarbage to normalgarbage, move accumulator
-		//and switch any targets to fevergarbage to normalgarbage
+
+		// Add fevergarbage to normalgarbage, move accumulator
+		// And switch any targets to fevergarbage to normalgarbage
 		normalGarbage.CQ += feverGarbage.CQ; feverGarbage.CQ = 0;
 		normalGarbage.GQ += feverGarbage.GQ; feverGarbage.GQ = 0;
-		for (size_t i = 0; i < feverGarbage.accumulator.size(); i++)
-		{//move accumulators to normalgarbage
-			normalGarbage.accumulator.push_back(feverGarbage.accumulator[i]);
+		for (auto i : feverGarbage.accumulator)
+		{
+			// Move accumulators to normalgarbage
+			normalGarbage.accumulator.push_back(i);
 		}
 		feverGarbage.accumulator.clear();
-		for (size_t i = 0; i < currentgame->players.size(); i++)
-		{//set opponents targets to normalgarbage
-			if (currentgame->players[i] != this)
+		for (auto& player : currentgame->players)
+		{
+			// Set opponents targets to normalgarbage
+			if (player != this)
 			{
-				currentgame->players[i]->targetGarbage[this] = &normalGarbage;
+				player->targetGarbage[this] = &normalGarbage;
 			}
 		}
 		updateTray(&normalGarbage);
 		updateTray(&feverGarbage);
 
-		//reset seconds and gauge
+		// Reset seconds and gauge
 		feverGauge.seconds = 60 * 15;
 		feverGauge.setCount(currentgame->currentruleset->initialFeverCount);
 
-		//reset garbagetray
+		// Reset garbage tray
 		normalTray.align(activeField->getProperties().offsetX, activeField->getProperties().offsetY - (32) * m_globalScale, m_globalScale);
 		normalTray.setDarken(false);
 	}
 
-	//rotation animation
+	// Rotation animation
 	if (m_transitionTimer > 0 && m_transitionTimer <= 50)
 	{
 		m_fieldSprite.setVisible(false);
 		m_fieldFeverSprite.setVisible(true);
-		//rotate out fever field
+		// Rotate out fever field
 		m_transformScale = 1.f - static_cast<float>(m_transitionTimer) / 50.f;
 		activeField->setTransformScale(1.f - static_cast<float>(m_transitionTimer) / 50.f);
 
@@ -2248,7 +2463,7 @@ void player::endFever()
 	{
 		m_fieldSprite.setVisible(true);
 		m_fieldFeverSprite.setVisible(false);
-		//rotate in fever field
+		// Rotate in fever field
 		m_transformScale = static_cast<float>(m_transitionTimer - 50) / 50.f;
 		activeField->setTransformScale(static_cast<float>(m_transitionTimer - 50) / 50.f);
 	}
@@ -2257,32 +2472,42 @@ void player::endFever()
 
 void player::playFever()
 {
-	if (feverMode)
-	{
-		//play sounds
-		if (feverGauge.seconds / 60 > 0 && feverGauge.seconds / 60 < 6 && feverGauge.seconds % 60 == 0 && losewin == NOWIN)
-			data->snd.fevertimecount.Play(data);
-		if (feverGauge.seconds == 1 && losewin == NOWIN)
-			data->snd.fevertimeend.Play(data);
+	if (!feverMode) return;
 
-		//subtract seconds
-		if (feverGauge.seconds > 0 && feverGauge.endless == false && losewin == NOWIN && !currentgame->stopChaining)
-			feverGauge.seconds--;
-		//display
-		feverGauge.update();
+	// Play sounds
+	if (feverGauge.seconds / 60 > 0 && feverGauge.seconds / 60 < 6 && feverGauge.seconds % 60 == 0 && losewin == NOWIN)
+	{
+		data->snd.fevertimecount.Play(data);
 	}
+	if (feverGauge.seconds == 1 && losewin == NOWIN)
+	{
+		data->snd.fevertimeend.Play(data);
+	}
+
+	// Subtract seconds
+	if (feverGauge.seconds > 0 && feverGauge.endless == false && losewin == NOWIN && !currentgame->stopChaining)
+	{
+		feverGauge.seconds--;
+	}
+
+	// Display
+	feverGauge.update();
 }
 
 void player::dropFeverChain()
 {
-	int old = feverColor;
-	while (old == feverColor)//background color
+	// Cycle background color
+	const int old = feverColor;
+	while (old == feverColor)
+	{
 		feverColor = ppvs::getRandom(5);
-	//drop field
+	}
+
+	// Drop field
 	activeField->dropField(getFeverChain(getRandom(currentgame->currentruleset->NFeverChains, m_randomizerFeverChain), colors, currentFeverChainAmount, getRandom(colors, m_randomizerFeverColor)));
 	calledRandomFeverChain++;
 
-	//garbage should not drop after this
+	// Garbage should not drop after this
 	forgiveGarbage = true;
 
 	endPhase();
@@ -2290,7 +2515,7 @@ void player::dropFeverChain()
 
 void player::showSecondsObj(int n)
 {
-	posVectorFloat pv = feverGauge.getPositionSeconds();
+	const posVectorFloat pv = feverGauge.getPositionSeconds();
 	m_secondsObj.push_back(new secondsObject(data));
 	m_secondsObj.back()->setScale(m_globalScale);
 	m_secondsObj.back()->showAt(m_nextPuyoOffsetX + (pv.x - 16) * m_nextPuyoScale * m_globalScale, m_nextPuyoOffsetY + (pv.y + 16) * m_nextPuyoScale * m_globalScale * m_secondsObj.size(), n);
@@ -2304,41 +2529,43 @@ void player::setMarginTimer()
 void player::prepareVoice(int chain, int predictedChain)
 {
 	playvoice = getVoicePattern(chain, predictedChain, currentgame->currentruleset->voicePatternFever);
-	//count diacute
+
+	// Count diacutes
 	if (playvoice == 4)
 		diacute++;
+
 	stutterTimer = 0;
 }
 
 void player::playVoice()
 {
-	if (playvoice >= 0)
-	{
-		stutterTimer++;
-		if (stutterTimer == 1)
-		{
-			characterVoices.chain[playvoice].Stop(data);
-			characterVoices.chain[playvoice].Play(data);
-		}
-		if (diacute > 0 && stutterTimer == 1 && playvoice > 4)
-		{
-			stutterTimer = -10;
-			diacute--;
-		}
-		if (diacute == 0)
-			playvoice = -1;
+	if (playvoice < 0) return;
 
+	stutterTimer++;
+	if (stutterTimer == 1)
+	{
+		characterVoices.chain[playvoice].Stop(data);
+		characterVoices.chain[playvoice].Play(data);
+	}
+	if (diacute > 0 && stutterTimer == 1 && playvoice > 4)
+	{
+		stutterTimer = -10;
+		diacute--;
+	}
+	if (diacute == 0)
+	{
+		playvoice = -1;
 	}
 }
 
-//{ Online stuff
+#pragma region Online stuff
 
-void player::bindPlayer(std::string name, unsigned int id, bool setActive)
+void player::bindPlayer(const std::string& name, unsigned int id, bool setActive)
 {
 	onlineName = name;
 	active = setActive;
 	onlineID = id;
-	//reset stuff
+	// Reset stuff
 	messages.clear();
 	wins = 0;
 	loseConfirm = false;
@@ -2353,11 +2580,13 @@ void player::unbindPlayer()
 	rematch = false;
 	rematchIcon.setVisible(false);
 	messages.clear();
-	//still playing
+
+	// Still playing
 	if (losewin == NOWIN && currentphase != IDLE)
 	{
 		setLose();
-		//add to replay
+
+		// Add to replay
 		if (currentgame->settings->recording == PVS_RECORDING)
 		{
 			messageEvent me = { data->matchTimer,"exit" };
@@ -2367,15 +2596,15 @@ void player::unbindPlayer()
 	}
 	setStatusText(currentgame->translatableStrings.disconnected.c_str());
 
-	//was player in choose color status?
+	// Was player in choose color status?
 	if (!pickedColor)
 	{
 		bool start = true;
-		for (size_t i = 0; i < currentgame->players.size(); i++)
+		for (auto& player : currentgame->players)
 		{
-			if (!currentgame->players[i]->active && !currentgame->settings->useCPUplayers)
+			if (!player->active && !currentgame->settings->useCPUplayers)
 				continue;
-			if (!currentgame->players[i]->pickedColor || currentgame->players[i]->colorMenuTimer < -2)
+			if (!player->pickedColor || player->colorMenuTimer < -2)
 			{
 				start = false;
 				break;
@@ -2383,16 +2612,16 @@ void player::unbindPlayer()
 		}
 		if (start)
 		{
-			//players should be in pickcolor phase
+			// Players should be in pickcolor phase
 
 			colorMenuTimer = 0;
-			for (size_t i = 0; i < currentgame->players.size(); i++)
+			for (auto& player : currentgame->players)
 			{
-				if (!currentgame->players[i]->active && !currentgame->settings->useCPUplayers)
+				if (!player->active && !currentgame->settings->useCPUplayers)
 					continue;
 
-				if (currentgame->players[i]->currentphase == PICKCOLORS)
-					currentgame->players[i]->currentphase = GETREADY;
+				if (player->currentphase == PICKCOLORS)
+					player->currentphase = GETREADY;
 				else
 					return;
 			}
@@ -2408,98 +2637,70 @@ void player::unbindPlayer()
 
 void player::processMessage()
 {
-	//debug: display all messages
-	/*
-	debugstring="";
-	for (stringList::iterator it=messages.begin();it!=messages.end();it++)
-		debugstring+=(*it)+"\n";
-	debugstring+=to_string(margintimer);
-	*/
-	//always clear currentMessage after using it, if it's not cleared, it indicates it has yet to be processed.
-	/*if (currentMessageStr.compare("")==0 && !messages.empty())
-	{
-		//load newest
-		currentMessageStr=messages.front();
-		messages.pop_front();
-	}*/
-	//game continues, other functions pick up currentMessage
-
-	//check if lose confirm was received
-	//set to immediate check
-	/*
-	if (m_type==ONLINE && !messages.empty() && messages.front()[0]=='o')
-	{
-		//this player confirms your loss
-		loseConfirm=true;
-		messages.pop_front();
-	}*/
-
-	//skip move message if it's a big multiplayer match
+	// Skip move message if it's a big multiplayer match
 	if (currentgame->players.size() > 10 && !messages.empty() && messages.front()[0] == 'm')
 	{
 		messages.pop_front();
 	}
 
-	//receive offset message
+	// Receive offset message
 	if (m_type == ONLINE && !messages.empty() && messages.front().compare("fo") == 0)
 	{
 		currentgame->currentruleset->onOffset(this);
 		messages.pop_front();
 	}
-
-	//replay: player exits
+	
+	// Replay: player exits
 	if (currentgame->settings->recording == PVS_REPLAYING && m_type == ONLINE &&
 		!messages.empty() && messages.front().compare("exit") == 0)
 	{
 		setLose();
 	}
-
-
 }
 
 void player::addMessage(std::string mes)
 {
-	//add to replay
+	// Add to replay
 	if (currentgame->settings->recording == PVS_RECORDING)
 	{
 		messageEvent me = { data->matchTimer,"" };
 		recordMessages.push_back(me);
 		if (mes.length() < 64)
+		{
 			strcpy(recordMessages.back().message, mes.c_str());
+		}
 	}
 
-	//process immediately?
-	if (m_type == ONLINE && mes.compare("d") == 0)
+	// Process immediately?
+	if (m_type == ONLINE && mes == "d")
 	{
 		waitForConfirm--;
-		//do not add
 		return;
 	}
 
-	//check if lose confirm was received
-	if (m_type == ONLINE && mes.compare("o") == 0)
+	// Check if lose confirm was received
+	if (m_type == ONLINE && mes == "o")
 	{
-		//this player confirms your loss
+		// This player confirms your loss
 		loseConfirm = true;
-		//do not add
 		return;
 	}
 
-	//add message
+	// Add message
 	messages.push_back(mes);
 }
 
 void player::confirmGarbage()
 {
-	//moves < Min(4, Turns+1) -> moves should be less than 4, except the first turns
-
-	//read everyone's confirm count, if there's anyone with confirm>4, you can't move on
-	//(alternatively, we could count the total)
-	for (size_t i = 0; i < currentgame->players.size(); i++)
+	// Moves < Min(4, Turns+1) -> Moves should be less than 4, except the first turns
+	
+	// Read everyone's confirm count, if there's anyone with confirm>4, you can't move on
+	// (alternatively, we could count the total)
+	for (const auto& player : currentgame->players)
 	{
-		if (currentgame->players[i] != this && currentgame->players[i]->waitForConfirm > 3)
+		if (player != this && player->waitForConfirm > 3)
 		{
-			//also see garbagephase
+			// Also see garbagephase
 			currentgame->stopChaining = true;
 			return;
 		}
@@ -2511,34 +2712,29 @@ void player::confirmGarbage()
 
 void player::waitGarbage()
 {
-	//ONLINE player gets stuck here until message about garbage arrives
+	// ONLINE player gets stuck here until message about garbage arrives
 	bool receive = false;
 
-	//receive n: dropped nothing
+	// Receive n: dropped nothing
 	if (m_type == ONLINE && !messages.empty() && messages.front()[0] == 'n')
-
 	{
 		receive = true;
-		//nothing else happens
-		//currentMessageStr="";
 		messages.pop_front();
 	}
 
 	if (m_type == ONLINE && !messages.empty() && messages.front()[0] == 'g')
-
 	{
-		//drop garbage
-		int dropAmount = 0;//=to_int(currentMessage[1]);
+		// Drop garbage
+		int dropAmount = 0;
 		sscanf(messages.front().c_str(), "g|%i", &dropAmount);
 		activeField->dropGarbage(false, dropAmount);
 		receive = true;
-		//currentMessageStr="";
 		messages.pop_front();
 	}
 
 	if (receive == true)
 	{
-		//send message dO back
+		// Send message dO back
 		if (currentgame->connected && m_type == ONLINE)
 		{
 			currentgame->network->sendToChannel(CHANNEL_GAME, "d", currentgame->channelName.c_str());
@@ -2547,291 +2743,25 @@ void player::waitGarbage()
 	}
 }
 
+// Ignore all messages except the lose message
 void player::waitLose()
-{//ignore all messages except the lose message
-	if (!messages.empty())
+{
+	if (messages.empty()) return;
+
+	if (messages.front()[0] == 'l')
 	{
-		if (!messages.empty() && messages.front()[0] == 'l')
-		{//lose
-			setLose();
-			//send confirmation back to this particular player
-			if (currentgame->connected)
-				currentgame->network->sendToPeer(CHANNEL_GAME, "o", currentgame->channelName, onlineID);
+		// Lose
+		setLose();
+
+		// Send confirmation back to this particular player
+		if (currentgame->connected)
+		{
+			currentgame->network->sendToPeer(CHANNEL_GAME, "o", currentgame->channelName, onlineID);
 		}
-		//discard any message
-		//currentMessageStr="";
-		messages.pop_front();
-	}
-}
-
-//}
-
-//{ draw Code
-
-void player::draw()
-{//Draw everything from the player
-	//drawFieldBack();//draw background
-	//drawAllClear();//Draw all clear
-
-	// Field coordinates
-	// -----------------
-	data->front->pushMatrix();
-	data->front->translate(properties.offsetX, properties.offsetY, 0);
-	data->front->scale(properties.scaleX * getGlobalScale(),
-		properties.scaleY * getGlobalScale(), 1);
-
-	data->front->clearDepth();
-	data->front->setDepthFunction(lessOrEqual);
-	data->front->setBlendMode(alphaBlending);
-	data->front->setColor(0, 0, 0, 0);
-	data->front->drawRect(nullptr, 0, 0, 192, 336);
-	// Fever flip coordinates
-	// ----------------------
-	data->front->pushMatrix();
-	data->front->translate(192.f / 2.f, 0, 0);
-	data->front->scale(m_transformScale, 1, 1);
-	data->front->translate(-192.f / 2.f, 0, 0);
-	activeField->draw(); //draw to screen
-	data->front->setDepthFunction(equal);
-	movePuyos.draw(); //draw movePuyos on renderimage
-	data->front->setDepthFunction(always);
-	data->front->popMatrix();
-	// ----------------------
-	m_borderSprite.draw(data->front); //border
-	pchainWord->draw(data->front); //draw chainword
-	characterAnimation.draw();
-	// -----------------
-	data->front->popMatrix();
-
-	// Next coordinates
-	// ----------------
-	data->front->pushMatrix();
-	data->front->translate(m_nextPuyoOffsetX, m_nextPuyoOffsetY, 0);
-	data->front->scale(m_nextPuyoScale, m_nextPuyoScale, 1);
-	m_nextPuyo.draw(); //draw nextpuyo
-	feverGauge.draw();
-	// ----------------
-	data->front->popMatrix();
-
-	normalTray.draw();
-	feverTray.draw();
-	m_scoreCounter.draw();
-
-	// Field coordinates
-	// -----------------
-	data->front->pushMatrix();
-	data->front->translate(properties.offsetX, properties.offsetY, 0);
-	data->front->scale(properties.scaleX * getGlobalScale(),
-		properties.scaleY * getGlobalScale(), 1);
-	drawColorMenu();//draw choose color menu
-	drawWin();//Draw win
-	drawLose();//Draw lose
-
-	//online; darken screen if player is not bound
-	if (!currentgame->settings->useCPUplayers && (onlineName == "" || !active))
-	{
-		/*data->front->setBlendMode(alphaBlending);
-		data->front->setColor(1., 1., 1., 0.375);
-		data->front->drawRect(0, 0, 0, 192, 336);*/
-		overlaySprite.draw(data->front);
 	}
 
-	//draw status text
-	if (statusText)
-	{
-		data->front->setColor(255, 255, 255, 255);
-		if ((m_type == ONLINE || m_type == HUMAN) && currentgame->currentGameStatus != GAMESTATUS_PLAYING
-			&& currentgame->currentGameStatus != GAMESTATUS_SPECTATING && !currentgame->settings->useCPUplayers)
-			statusText->draw(0, 0);
-		else if (currentgame->forceStatusText)
-			statusText->draw(0, 0);
-	}
-	//debug
-//    char db[512];
-//    sprintf(db,"attackers: %i\nCQ: %i\nGQ: %i\n%i",normalGarbage.accumulator.size(),normalGarbage.CQ,normalGarbage.GQ,debugCounter);
-//    setStatusText(db);
-//    statusText->draw(0, 0);
-	// -----------------
-	data->front->popMatrix();
-
-	if (showCharacterTimer > 0 && currentgame->currentGameStatus != GAMESTATUS_PLAYING)
-	{
-		charHolderSprite.draw(data->front);
-		currentCharacterSprite.draw(data->front);
-		for (int i = 0; i < 16; i++)
-			dropset[i].draw(data->front);
-	}
-
-	if (currentgame->currentGameStatus != GAMESTATUS_PLAYING && currentgame->currentGameStatus != GAMESTATUS_SPECTATING)
-		rematchIcon.draw(data->front);
-
-}
-
-void player::drawEffect()
-{//draw light effect, secondsobj
-	for (size_t i = 0; i < m_lightEffect.size(); i++)
-	{
-		m_lightEffect[i]->draw(data->front);
-	}
-
-	//feverlight
-	m_feverLight.draw(data->front);
-
-	for (size_t i = 0; i < m_secondsObj.size(); i++)
-	{
-		m_secondsObj[i]->draw(data->front);
-	}
-
-}
-
-void player::drawFieldBack(posVectorFloat /*position*/, float rotation)
-{
-	m_fieldSprite.setPosition(0, 0);
-	m_fieldSprite.setCenter(0, 0);
-	m_fieldSprite.setScale(1, 1);
-	m_fieldSprite.setRotation(rotation);
-	m_fieldSprite.draw(data->front);
-}
-
-// C99 round
-double _round(double r) { return (r > 0.0) ? floor(r + 0.5) : ceil(r - 0.5); }
-
-void player::drawFieldFeverBack(posVectorFloat /*position*/, float rotation)
-{
-	if (!feverMode)
-		return;
-	m_fieldFeverSprite.setPosition(0, 0);
-	m_fieldFeverSprite.setCenter(0, 0);
-	m_fieldFeverSprite.setScale(1, 1);
-	m_fieldFeverSprite.setRotation(rotation);
-	//transition to new color
-	_round(feverColorR * 100) < _round(tunnelShaderColor[feverColor][0] * 100) ? feverColorR += 0.01f : feverColorR -= 0.01f;
-	_round(feverColorG * 100) < _round(tunnelShaderColor[feverColor][1] * 100) ? feverColorG += 0.01f : feverColorG -= 0.01f;
-	_round(feverColorB * 100) < _round(tunnelShaderColor[feverColor][2] * 100) ? feverColorB += 0.01f : feverColorB -= 0.01f;
-
-	if (data->tunnelShader)
-	{
-		data->tunnelShader->setParameter("cl", feverColorR, feverColorG, feverColorB, 1.0f);
-		m_fieldFeverSprite.setImage(data->imgFieldFever);
-		m_fieldFeverSprite.draw(data->front, data->tunnelShader);
-	}
-	else
-	{
-		//animate
-		m_fieldFeverSprite.setImage(data->imgFeverBack[(data->globalTimer / 2) % 30]);
-		m_fieldFeverSprite.setColor(feverColorR * 255, feverColorG * 255, feverColorB * 255);
-		m_fieldFeverSprite.draw(data->front);
-	}
-}
-
-void player::drawAllClear(posVectorFloat pos, float scaleX, float scaleY, float rotation)
-{
-	fieldProp p = activeField->getProperties();
-	float dist = activeField->getFieldSize().y * 0.67f;
-	float x = pos.x - dist * sin(rotation * PI / 180.f);
-	float y = pos.y - dist * cos(rotation * PI / 180.f);
-
-	//tsu type
-	if (allClear == 1)
-	{//just draw it until it clears
-		m_allclearSprite.setVisible(true);
-		m_allclearSprite.setPosition(x, y);
-		m_allclearSprite.setScale(1, 1);
-		m_allclearSprite.setRotation(rotation);
-		m_allclearSprite.draw(data->front);
-	}
-	//fever type: use timer
-	if (allclearTimer >= 1)
-	{
-		allclearTimer++;
-		m_allclearSprite.setPosition(x, y);
-		m_allclearSprite.setScale(1, 1);
-		m_allclearSprite.setRotation(rotation);
-		if (allclearTimer >= 60)
-		{//flicker
-			//m_allclearSprite.setVisible((allclearTimer/2)%2);
-			m_allclearSprite.setScale(scaleX + scaleX * static_cast<float>(allclearTimer - 60) / 10.f, scaleY - scaleY * static_cast<float>(allclearTimer - 60) / 10.f);
-			m_allclearSprite.setTransparency(1.f - static_cast<float>(allclearTimer - 60) / 10.f);
-		}
-		else if (allclearTimer > 1 && allclearTimer < 60)
-		{//show normally
-			m_allclearSprite.setVisible(true);
-		}
-		//draw
-		m_allclearSprite.draw(data->front);
-		//end
-		if (allclearTimer >= 70)
-			allclearTimer = 0;
-	}
-}
-
-void player::drawCross(frendertarget* r)
-{
-	//fevermode: do not draw crosses?
-//    if (feverMode)
-//        return;
-	//fieldProp p=activeField->getProperties();
-	//place at spawnpoint
-	posVectorInt spv = movePuyos.getSpawnPoint();
-	spv.y += 1;
-	posVectorFloat rpv = activeField->getLocalCoord(spv.x, spv.y);
-
-	m_crossSprite.setPosition(rpv.x, rpv.y);
-	m_crossSprite.draw(r);
-
-	//check if 2nd spawnpoint
-	if (currentgame->currentruleset->doubleSpawn)
-	{
-		rpv = activeField->getLocalCoord(spv.x + 1, spv.y);
-		m_crossSprite.setPosition(rpv.x, rpv.y);
-		m_crossSprite.draw(r);
-	}
-}
-
-void player::drawLose()
-{
-	fieldProp p = activeField->getProperties();
-	posVectorFloat position = activeField->getBottomCoord(true);
-	position.y -= activeField->getFieldSize().y * 0.75f;
-
-	if (losewin == LOSE && m_loseWinTimer > 60)
-	{
-		m_loseSprite.setPosition(position);
-		m_loseSprite.setScale(1 + 0.1f * sin(static_cast<float>(m_loseWinTimer - 60) / 20.f));
-		m_loseSprite.draw(data->front);
-	}
-}
-
-void player::drawWin()
-{
-	fieldProp p = activeField->getProperties();
-	posVectorFloat position = activeField->getBottomCoord(true);
-	position.y -= activeField->getFieldSize().y * 0.75f;
-	if (losewin == WIN)
-	{
-		m_winSprite.setPosition(position.x, position.y + 10.f * sin(static_cast<float>(m_loseWinTimer) / 20.f));
-		m_winSprite.setScale(1.f);
-		m_winSprite.draw(data->front);
-	}
-}
-
-void player::drawColorMenu()
-{
-	for (auto& i : colorMenuBorder)
-		i.draw(data->front);
-	for (auto& i : spice)
-		i.draw(data->front);
-}
-//}
-
-void player::setStatusText(const char* utf8)
-{
-	if (utf8 == lastText) return;
-	if (!statusFont) return;
-	if (statusText) delete statusText;
-
-	statusText = statusFont->render(utf8);
-	lastText = utf8;
+	// Discard any message
+	messages.pop_front();
 }
 
 void player::getUpdate(std::string str)
@@ -2874,17 +2804,15 @@ void player::getUpdate(std::string str)
 		, &allclr
 	);
 
-	//initialize
+	// Initialize
 	setRandomSeed(rngseed, &m_randomizerNextList);
 	colors = clrs;
 	initValues(rngseed + onlineID);
-	//set other stuff
+
+	// Set other stuff
 	currentphase = phase(ph);
 	m_fieldNormal.setFieldFromString(fieldstring);
-	if (fm == 0)
-		feverMode = false;
-	else
-		feverMode = true;
+	feverMode = fm == 0 ? false : true;
 	m_fieldFever.setFieldFromString(feverstring);
 	feverGauge.setCount(fc);
 	normalGarbage.GQ = nGQ;
@@ -2897,7 +2825,8 @@ void player::getUpdate(std::string str)
 		getRandom(0, m_randomizerFeverColor);
 	}
 	turns = trns;
-	//call nextlist random
+
+	// Call nextlist random
 	for (int i = 0; i < turns; i++)
 	{
 		getRandom(0, m_randomizerNextList);
@@ -2908,12 +2837,12 @@ void player::getUpdate(std::string str)
 	predictedChain = prdctchn;
 	allClear = allclr;
 
-	//set target garbage, otherwise it may crash
-	for (size_t i = 0; i < currentgame->players.size(); i++)
+	// Set target garbage, otherwise it may crash
+	for (auto& player : currentgame->players)
 	{
-		if (currentgame->players[i] != this)
+		if (player != this)
 		{
-			targetGarbage[currentgame->players[i]] = currentgame->players[i]->activeGarbage;
+			targetGarbage[player] = player->activeGarbage;
 		}
 	}
 
@@ -2939,11 +2868,11 @@ void player::prepareDisconnect()
 {
 	if (currentgame->settings->rankedMatch && m_type == HUMAN && currentgame->connected)
 	{
-		//maxwins reached
+		// Max wins reached
 		bool disconnect = false;
-		for (size_t i = 0; i < currentgame->players.size(); i++)
+		for (auto& player : currentgame->players)
 		{
-			if (currentgame->players[i]->wins == currentgame->settings->maxWins)
+			if (player->wins == currentgame->settings->maxWins)
 			{
 				//prepare to disconnect channel
 				disconnect = true;
@@ -2953,32 +2882,299 @@ void player::prepareDisconnect()
 		{
 			currentgame->rankedState = 1;
 			currentgame->network->requestChannelDescription(currentgame->channelName, std::string(""));
-			//for (size_t i=0;i<currentgame->players.size();i++)
-			//    currentgame->players[i]->unbindPlayer();
 		}
 
 	}
 }
+
+#pragma endregion
+
+#pragma region Rendering
+
+// Draw everything from the player
+void player::draw()
+{
+	// Field coordinates
+	// -----------------
+	data->front->pushMatrix();
+	data->front->translate(properties.offsetX, properties.offsetY, 0);
+	data->front->scale(properties.scaleX * getGlobalScale(), properties.scaleY * getGlobalScale(), 1);
+
+	data->front->clearDepth();
+	data->front->setDepthFunction(lessOrEqual);
+	data->front->setBlendMode(alphaBlending);
+	data->front->setColor(0, 0, 0, 0);
+	data->front->drawRect(nullptr, 0, 0, 192, 336);
+
+	// Fever flip coordinates
+	// ----------------------
+	data->front->pushMatrix();
+	data->front->translate(192.f / 2.f, 0, 0);
+	data->front->scale(m_transformScale, 1, 1);
+	data->front->translate(-192.f / 2.f, 0, 0);
+	activeField->draw();
+	data->front->setDepthFunction(equal);
+	movePuyos.draw();
+	data->front->setDepthFunction(always);
+	data->front->popMatrix();
+	// ----------------------
+	m_borderSprite.draw(data->front);
+	pchainWord->draw(data->front);
+	characterAnimation.draw();
+	// -----------------
+	data->front->popMatrix();
+
+	// Next coordinates
+	// ----------------
+	data->front->pushMatrix();
+	data->front->translate(m_nextPuyoOffsetX, m_nextPuyoOffsetY, 0);
+	data->front->scale(m_nextPuyoScale, m_nextPuyoScale, 1);
+	m_nextPuyo.draw();
+	feverGauge.draw();
+	// ----------------
+	data->front->popMatrix();
+
+	normalTray.draw();
+	feverTray.draw();
+	m_scoreCounter.draw();
+
+	// Field coordinates
+	// -----------------
+	data->front->pushMatrix();
+	data->front->translate(properties.offsetX, properties.offsetY, 0);
+	data->front->scale(properties.scaleX * getGlobalScale(), properties.scaleY * getGlobalScale(), 1);
+	drawColorMenu();
+	drawWin();
+	drawLose();
+
+	// Online; darken screen if player is not bound
+	if (!currentgame->settings->useCPUplayers && (onlineName.empty() || !active))
+	{
+		overlaySprite.draw(data->front);
+	}
+
+	//draw status text
+	if (statusText)
+	{
+		data->front->setColor(255, 255, 255, 255);
+		if ((m_type == ONLINE || m_type == HUMAN) && currentgame->currentGameStatus != GAMESTATUS_PLAYING
+			&& currentgame->currentGameStatus != GAMESTATUS_SPECTATING && !currentgame->settings->useCPUplayers)
+		{
+			statusText->draw(0, 0);
+		}
+		else if (currentgame->forceStatusText)
+		{
+			statusText->draw(0, 0);
+		}
+	}
+	// -----------------
+	data->front->popMatrix();
+
+	if (showCharacterTimer > 0 && currentgame->currentGameStatus != GAMESTATUS_PLAYING)
+	{
+		charHolderSprite.draw(data->front);
+		currentCharacterSprite.draw(data->front);
+		for (auto& sprite : dropset)
+			sprite.draw(data->front);
+	}
+
+	if (currentgame->currentGameStatus != GAMESTATUS_PLAYING && currentgame->currentGameStatus != GAMESTATUS_SPECTATING)
+	{
+		rematchIcon.draw(data->front);
+	}
+}
+
+// Draw light effect, secondsobj
+void player::drawEffect()
+{
+	for (const auto& lightEffect : m_lightEffect)
+	{
+		lightEffect->draw(data->front);
+	}
+
+	// feverlight
+	m_feverLight.draw(data->front);
+
+	for (const auto& secondsObj : m_secondsObj)
+	{
+		secondsObj->draw(data->front);
+	}
+
+}
+
+void player::drawFieldBack(posVectorFloat /*position*/, const float rotation)
+{
+	m_fieldSprite.setPosition(0, 0);
+	m_fieldSprite.setCenter(0, 0);
+	m_fieldSprite.setScale(1, 1);
+	m_fieldSprite.setRotation(rotation);
+	m_fieldSprite.draw(data->front);
+}
+
+// C99 round
+double _round(double r) { return (r > 0.0) ? floor(r + 0.5) : ceil(r - 0.5); }
+
+void player::drawFieldFeverBack(posVectorFloat /*position*/, float rotation)
+{
+	if (!feverMode)
+		return;
+
+	m_fieldFeverSprite.setPosition(0, 0);
+	m_fieldFeverSprite.setCenter(0, 0);
+	m_fieldFeverSprite.setScale(1, 1);
+	m_fieldFeverSprite.setRotation(rotation);
+
+	// Transition to new color
+	_round(feverColorR * 100) < _round(tunnelShaderColor[feverColor][0] * 100) ? feverColorR += 0.01f : feverColorR -= 0.01f;
+	_round(feverColorG * 100) < _round(tunnelShaderColor[feverColor][1] * 100) ? feverColorG += 0.01f : feverColorG -= 0.01f;
+	_round(feverColorB * 100) < _round(tunnelShaderColor[feverColor][2] * 100) ? feverColorB += 0.01f : feverColorB -= 0.01f;
+
+	if (data->tunnelShader)
+	{
+		data->tunnelShader->setParameter("cl", feverColorR, feverColorG, feverColorB, 1.0f);
+		m_fieldFeverSprite.setImage(data->imgFieldFever);
+		m_fieldFeverSprite.draw(data->front, data->tunnelShader);
+	}
+	else
+	{
+		m_fieldFeverSprite.setImage(data->imgFeverBack[data->globalTimer / 2 % 30]);
+		m_fieldFeverSprite.setColor(feverColorR * 255, feverColorG * 255, feverColorB * 255);
+		m_fieldFeverSprite.draw(data->front);
+	}
+}
+
+void player::drawAllClear(posVectorFloat pos, float scaleX, float scaleY, float rotation)
+{
+	fieldProp p = activeField->getProperties();
+	const float dist = activeField->getFieldSize().y * 0.67f;
+	const float x = pos.x - dist * sin(rotation * PI / 180.f);
+	const float y = pos.y - dist * cos(rotation * PI / 180.f);
+
+	// Tsu type
+	if (allClear == 1)
+	{
+		// Just draw it until it clears
+		m_allclearSprite.setVisible(true);
+		m_allclearSprite.setPosition(x, y);
+		m_allclearSprite.setScale(1, 1);
+		m_allclearSprite.setRotation(rotation);
+		m_allclearSprite.draw(data->front);
+	}
+
+	// Fever type: use timer
+	if (allclearTimer >= 1)
+	{
+		allclearTimer++;
+		m_allclearSprite.setPosition(x, y);
+		m_allclearSprite.setScale(1, 1);
+		m_allclearSprite.setRotation(rotation);
+		if (allclearTimer >= 60)
+		{
+			// Flicker
+			m_allclearSprite.setScale(scaleX + scaleX * static_cast<float>(allclearTimer - 60) / 10.f, scaleY - scaleY * static_cast<float>(allclearTimer - 60) / 10.f);
+			m_allclearSprite.setTransparency(1.f - static_cast<float>(allclearTimer - 60) / 10.f);
+		}
+		else if (allclearTimer > 1 && allclearTimer < 60)
+		{
+			// Show normally
+			m_allclearSprite.setVisible(true);
+		}
+
+		m_allclearSprite.draw(data->front);
+		
+		if (allclearTimer >= 70)
+		{
+			allclearTimer = 0;
+		}
+	}
+}
+
+void player::drawCross(frendertarget* r)
+{
+	// Place at spawnpoint
+	posVectorInt spv = movePuyos.getSpawnPoint();
+	spv.y += 1;
+	posVectorFloat rpv = activeField->getLocalCoord(spv.x, spv.y);
+
+	m_crossSprite.setPosition(rpv.x, rpv.y);
+	m_crossSprite.draw(r);
+
+	// Check if 2nd spawnpoint
+	if (currentgame->currentruleset->doubleSpawn)
+	{
+		rpv = activeField->getLocalCoord(spv.x + 1, spv.y);
+		m_crossSprite.setPosition(rpv.x, rpv.y);
+		m_crossSprite.draw(r);
+	}
+}
+
+void player::drawLose()
+{
+	fieldProp p = activeField->getProperties();
+	posVectorFloat position = activeField->getBottomCoord(true);
+	position.y -= activeField->getFieldSize().y * 0.75f;
+
+	if (losewin == LOSE && m_loseWinTimer > 60)
+	{
+		m_loseSprite.setPosition(position);
+		m_loseSprite.setScale(1 + 0.1f * sin(static_cast<float>(m_loseWinTimer - 60) / 20.f));
+		m_loseSprite.draw(data->front);
+	}
+}
+
+void player::drawWin()
+{
+	fieldProp p = activeField->getProperties();
+	posVectorFloat position = activeField->getBottomCoord(true);
+	position.y -= activeField->getFieldSize().y * 0.75f;
+
+	if (losewin == WIN)
+	{
+		m_winSprite.setPosition(position.x, position.y + 10.f * sin(static_cast<float>(m_loseWinTimer) / 20.f));
+		m_winSprite.setScale(1.f);
+		m_winSprite.draw(data->front);
+	}
+}
+
+void player::drawColorMenu()
+{
+	for (auto& i : colorMenuBorder)
+	{
+		i.draw(data->front);
+	}
+
+	for (auto& i : spice)
+	{
+		i.draw(data->front);
+	}
+}
+
+void player::setStatusText(const char* utf8)
+{
+	if (utf8 == lastText) return;
+	if (!statusFont) return;
+	delete statusText;
+
+	statusText = statusFont->render(utf8);
+	lastText = utf8;
+}
+
 void player::setDropsetSprite(int x, int y, puyoCharacter pc)
 {
-	//get total width and center dropset
+	// Get total width and center dropset
 	float length = 0;
 	float xx = 0;
-	float scale = m_globalScale * 0.75f;
+	const float scale = m_globalScale * 0.75f;
 	for (int j = 0; j < 16; j++)
 	{
 		movePuyoType mpt = getFromDropPattern(pc, j);
-		if (mpt == DOUBLET)
-			length += 10;
-		else
-			length += 18;
+		length += mpt == DOUBLET ? 10 : 18;
 	}
 	xx = -length / 2.f - 5.f;
-	//xx=-128;
 
 	for (int j = 0; j < 16; j++)
 	{
-		movePuyoType mpt = getFromDropPattern(pc, j);
+		const movePuyoType mpt = getFromDropPattern(pc, j);
 		dropset[j].setPosition(static_cast<float>(x) + xx * scale, static_cast<float>(y));
 		dropset[j].setScale(scale);
 		switch (mpt)
@@ -3010,7 +3206,8 @@ void player::setDropsetSprite(int x, int y, puyoCharacter pc)
 			break;
 		}
 	}
-
 }
+
+#pragma endregion
 
 }

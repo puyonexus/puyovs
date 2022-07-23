@@ -25,3 +25,4 @@ add_library(Audiolib
 
 target_link_libraries(Audiolib SDL VgmStream)
 target_include_directories(Audiolib PUBLIC include)
+target_compile_features(Audiolib PUBLIC cxx_std_17)
