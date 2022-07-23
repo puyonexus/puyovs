@@ -431,7 +431,6 @@ void animation::playAnimation()
 						// Color
 						if (kf_child->ValueStr() == "color")
 						{
-							std::string rgb;
 							double startVal, endVal, alpha, beta;
 							if (!kf_child->ToElement()->Attribute("alpha", &alpha))alpha = 0;
 							if (!kf_child->ToElement()->Attribute("beta", &beta))beta = 0;
@@ -439,8 +438,8 @@ void animation::playAnimation()
 								kf_child->ToElement()->Attribute("endVal", &endVal) &&
 								kf_child->ToElement()->Attribute("rgb"))
 							{
-								rgb = kf_child->ToElement()->Attribute("rgb");
-								//split into two
+								// Split into two
+								std::string rgb = kf_child->ToElement()->Attribute("rgb");
 								setColor(spritename, rgb, static_cast<float>(getLocalTimer(type, startVal, endVal, (t - starttime) * 1.0 / duration, alpha, beta)));
 							}
 						}
@@ -454,10 +453,9 @@ void animation::playAnimation()
 	if (t > duration && t < 900)
 	{
 		// End animation: hide all sprites
-		std::map<std::string, animationSprite>::iterator it;
-		for (it = sprites.begin(); it != sprites.end(); it++)
+		for (auto& sprite : sprites)
 		{
-			(*it).second.transparency = 0;
+			sprite.second.transparency = 0;
 		}
 		t = 1000;
 	}
@@ -467,10 +465,9 @@ void animation::playAnimation()
 void animation::draw()
 {
 	updateSprites();
-	std::list<animationSprite*>::iterator it;
-	for (it = drawSprites.begin(); it != drawSprites.end(); ++it)
+	for (const auto& drawSprite : drawSprites)
 	{
-		(**it).spr->draw(gamedata->front);
+		drawSprite->spr->draw(gamedata->front);
 	}
 }
 
@@ -663,15 +660,11 @@ bool animation::spriteExists(const std::string& name)
 
 void animation::clearSprites()
 {
-	//delete all sprite objects
-	std::map<std::string, animationSprite>::iterator it;
-	for (it = sprites.begin(); it != sprites.end(); it++)
+	for (const auto& sprite : sprites)
 	{
-		delete (*it).second.spr;
+		delete sprite.second.spr;
 	}
-	//clear map
 	sprites.clear();
-	//and draw list
 	drawSprites.clear();
 }
 
