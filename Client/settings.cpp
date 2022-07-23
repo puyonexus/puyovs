@@ -1,5 +1,7 @@
 #include <QByteArray>
+#include <QDir>
 #include "settings.h"
+
 #include "common.h"
 
 Settings::Settings(QObject* parent) :
@@ -8,7 +10,8 @@ Settings::Settings(QObject* parent) :
 	mError = false;
 
 	// Get a file handle.
-	QFile file(getDataLocation() + "\\Settings.json");
+	QString settingsFile = getDataLocation() + "/Settings.json";
+	QFile file(settingsFile);
 
 	// Open file.
 	if (!file.open(QFile::ReadOnly))
@@ -191,10 +194,10 @@ void Settings::setReal(const QString& section, const QString& key, qreal value)
 
 void Settings::save()
 {
+	QString settingsFile = getDataLocation() + "/Settings.json";
+	QFile file(settingsFile);
+
 	mError = false;
-
-	QFile file(getDataLocation() + "\\Settings.json");
-
 	if (!file.open(QFile::WriteOnly))
 	{
 		mError = true;
