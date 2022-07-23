@@ -521,7 +521,6 @@ void nuisancePuyo::neighbourPop(field* f, bool v)
 		f->set(m_posX, m_posY, nullptr);
 		delete this;
 	}
-
 }
 
 //=======================================
