@@ -2,9 +2,6 @@
 
 namespace alib {
 
-SampleReader::~SampleReader()
-{
-
-}
+SampleReader::~SampleReader() = default;
 
 }

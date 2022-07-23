@@ -16,11 +16,11 @@ public:
     int read(void *outData, unsigned int len);
     int seek(unsigned int len);
 
-    unsigned int freeSpace();
-    unsigned int length();
+    [[nodiscard]] unsigned int freeSpace() const;
+    [[nodiscard]] unsigned int length() const;
 
-    unsigned int readPtr();
-    unsigned int writePtr();
+    [[nodiscard]] unsigned int readPtr() const;
+    [[nodiscard]] unsigned int writePtr() const;
 };
 
 }

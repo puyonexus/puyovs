@@ -8,23 +8,23 @@ namespace alib
 
 class PCMReader : public SampleReader, NonCopyable
 {
-    ALIB_DECLARE_PRIV;
+	ALIB_DECLARE_PRIV;
 
 public:
-    PCMReader(BinaryStream *dataStream, int channels, int freq);
-    ~PCMReader();
+	PCMReader(BinaryStream* dataStream, int channels, int freq);
+	~PCMReader() override;
 
-    void read(float *buffer, int &bufferFrames);
-    void reset();
+	void read(float* buffer, int& bufferFrames) override;
+	void reset() override;
 
-    bool atEnd() const;
-    bool haveEnd() const;
-    bool error() const;
+	[[nodiscard]] bool atEnd() const override;
+	[[nodiscard]] bool haveEnd() const override;
+	[[nodiscard]] bool error() const override;
 
-    int numChannels() const;
-    int sampleRate() const;
+	[[nodiscard]] int numChannels() const override;
+	[[nodiscard]] int sampleRate() const override;
 
-    bool hasLooped();
+	bool hasLooped() override;
 };
 
 }
