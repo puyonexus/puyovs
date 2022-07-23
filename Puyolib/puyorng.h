@@ -18,6 +18,7 @@ enum Piece {
 
 class PuyoRNG {
 public:
+    virtual ~PuyoRNG() = default;
     virtual Piece next(int colors) = 0;
 };
 
