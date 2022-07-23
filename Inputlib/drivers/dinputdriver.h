@@ -11,14 +11,14 @@ class DInputDriver : public Driver
 
 public:
     DInputDriver();
-    ~DInputDriver();
+    ~DInputDriver() override;
 
-    bool error();
-    void process();
+    bool error() const override;
+    void process() override;
 
-    void enableEvents();
-    void disableEvents();
-    bool getEvent(InputEvent *e);
+    void enableEvents() override;
+    void disableEvents() override;
+    bool getEvent(InputEvent *e) override;
 
 
 };

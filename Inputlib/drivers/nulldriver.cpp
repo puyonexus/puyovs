@@ -2,15 +2,10 @@
 
 namespace ilib {
 
-NullDriver::NullDriver()
-{
-}
+NullDriver::NullDriver() = default;
+NullDriver::~NullDriver() = default;
 
-NullDriver::~NullDriver()
-{
-}
-
-bool NullDriver::error()
+bool NullDriver::error() const
 {
     // NullDriver: 100% bug and failure free!
     return false;

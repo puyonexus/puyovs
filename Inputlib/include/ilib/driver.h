@@ -15,19 +15,19 @@ public:
     {
         virtual ~Gamepad() { }
 
-        virtual int numButtons() = 0;
-        virtual int numAxis() = 0;
-        virtual int numHats() = 0;
+        [[nodiscard]] virtual int numButtons() const = 0;
+        [[nodiscard]] virtual int numAxis() const = 0;
+        [[nodiscard]] virtual int numHats() const = 0;
 
-        virtual bool button(int num) = 0;
-        virtual float axis(int num) = 0;
-        virtual HatPosition hat(int num) = 0;
+        [[nodiscard]] virtual bool button(int num) const = 0;
+        [[nodiscard]] virtual float axis(int num) const = 0;
+        [[nodiscard]] virtual HatPosition hat(int num) const = 0;
     };
 
     virtual ~Driver() {};
 
     virtual void process() = 0;
-    virtual bool error() = 0;
+    virtual bool error() const = 0;
 
     virtual void enableEvents() = 0;
     virtual void disableEvents() = 0;

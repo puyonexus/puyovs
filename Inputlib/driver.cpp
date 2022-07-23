@@ -6,27 +6,33 @@
 namespace ilib
 {
 
-Driver *inputDriver = 0;
+Driver *inputDriver = nullptr;
 
 Driver *getDriver()
 {
-    if(inputDriver) return inputDriver;
+	if (inputDriver) return inputDriver;
 
-    #define driver(class) inputDriver = new class;\
-        if(!inputDriver->error()) return inputDriver; else { delete inputDriver; inputDriver = 0; }
+#define driver(class) \
+    do { \
+		inputDriver = new class; \
+	    if(!inputDriver->error()) \
+			return inputDriver; \
+		delete inputDriver; \
+		inputDriver = nullptr; \
+	} while (0)
 
 #ifdef ILIB_USE_DRIVER_SDL
-    driver(SDLDriver);
+	driver(SDLDriver);
 #endif
 #ifdef ILIB_USE_DRIVER_DINPUT
-    driver(DInputDriver);
+	driver(DInputDriver);
 #endif
 
-    driver(NullDriver);
+	driver(NullDriver);
 
-    #undef driver
+#undef driver
 
-    return inputDriver;
+	return inputDriver;
 }
 
 }
