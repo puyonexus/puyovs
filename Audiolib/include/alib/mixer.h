@@ -8,15 +8,15 @@ namespace alib {
 class Mixer
 {
 public:
-    virtual ~Mixer();
+	virtual ~Mixer();
 
-    virtual bool setFormat(int rate, int channels) = 0;
-    virtual void read(float *buffer, int &length) = 0;
-    virtual bool play(Stream stream) = 0;
+	virtual bool setFormat(int rate, int channels) = 0;
+	virtual void read(float* buffer, int& length) = 0;
+	virtual bool play(Stream stream) = 0;
 
-    virtual int sampleRate() = 0;
-    virtual int numChannels() = 0;
-    virtual bool error() = 0;
+	virtual int sampleRate() const = 0;
+	virtual int numChannels() const = 0;
+	virtual bool error() const = 0;
 };
 
 /**
@@ -24,22 +24,22 @@ public:
  */
 class SoftwareMixer : public Mixer, NonCopyable
 {
-    ALIB_DECLARE_PRIV;
+	ALIB_DECLARE_PRIV;
 
 public:
-    SoftwareMixer();
-    ~SoftwareMixer();
+	SoftwareMixer();
+	~SoftwareMixer();
 
-    bool setFormat(int rate, int channels);
-    void read(float *buffer, int &length);
-    bool play(Stream stream);
+	bool setFormat(int rate, int channels);
+	void read(float* buffer, int& length);
+	bool play(Stream stream);
 
-    int sampleRate();
-    int numChannels();
-    bool error();
-    void setVolume(float volume);
-    void setSoundVolume(float volume);
-    void setMusicVolume(float volume);
+	int sampleRate() const;
+	int numChannels() const;
+	bool error() const;
+	void setVolume(float volume);
+	void setSoundVolume(float volume);
+	void setMusicVolume(float volume);
 };
 
 }

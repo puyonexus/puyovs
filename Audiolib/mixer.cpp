@@ -9,197 +9,196 @@
 
 namespace alib {
 
-Mixer::~Mixer()
-{
-}
+Mixer::~Mixer() = default;
 
 struct SoftwareMixer::Priv {
-    struct PlayingStream {
-        PlayingStream(Stream &st) : stm(st) { }
-        alib::Stream stm;
+	struct PlayingStream {
+		PlayingStream(const Stream& st) : stm(st) { }
+		alib::Stream stm;
 
-        bool done()
-        {
-            if(!stm.atEnd())
-                return false;
+		bool done() const
+		{
+			return stm.atEnd();
+		}
 
-            return true;
-        }
-        bool looped()
-        {
-            return stm.hasLooped();
-        }
-    };
+		bool looped() const
+		{
+			return stm.hasLooped();
+		}
+	};
 
-    int channels, rate, frameSize, maxFrames;
-    std::list<PlayingStream> streams;
-    static const int scratchBufferLen = 64 * 1024;
-    static const int sampleSize = sizeof(float);
-    float *scratchBuffer;
-    float masterVolume;
-    float musicVolume,soundVolume;
+	int channels, rate, frameSize, maxFrames;
+	std::list<PlayingStream> streams;
+	static constexpr int scratchBufferLen = 64 * 1024;
+	static constexpr int sampleSize = sizeof(float);
+	float* scratchBuffer;
+	float masterVolume;
+	float musicVolume, soundVolume;
 
-    Priv() : channels(2), rate(44100),masterVolume(1.0f),musicVolume(1.0f),soundVolume(1.0f)
-    {
-        setFormat(rate, channels);
-        scratchBuffer = new float[scratchBufferLen];
-    }
+	Priv() : channels(2), rate(44100), masterVolume(1.0f), musicVolume(1.0f), soundVolume(1.0f)
+	{
+		setFormat(rate, channels);
+		scratchBuffer = new float[scratchBufferLen];
+	}
 
-    ~Priv() { delete [] scratchBuffer; }
+	~Priv() { delete[] scratchBuffer; }
 
-    bool setFormat(int r, int c)
-    {
-        if(r > 1000) rate = r;
-        if(c > 0) channels = c;
+	bool setFormat(int r, int c)
+	{
+		if (r > 1000) rate = r;
+		if (c > 0) channels = c;
 
-        // Truncate the overbuffers, if any exist, since they are now invalid.
-        for(std::list<Priv::PlayingStream>::iterator it = streams.begin();
-            it != streams.end(); ++it)
-        {
-            PlayingStream &e = *it;
-        }
+		// Truncate the overbuffers, if any exist, since they are now invalid.
+		for (auto& e : streams)
+		{
+			// Something was probably meant to be done here...
+			// but what?!
+		}
 
-        frameSize = sampleSize * channels;
-        maxFrames = scratchBufferLen / frameSize;
+		frameSize = sampleSize * channels;
+		maxFrames = scratchBufferLen / frameSize;
 
-        return true;
-    }
+		return true;
+	}
 
-    void read(float *buffer, int &bufferFrames)
-    {
-        int bufferSamples = bufferFrames * channels;
-        int scratchBufferSamples = (bufferFrames) * channels;
-        int bufPtr = 0;
+	void read(float* buffer, const int& bufferFrames)
+	{
+		const int bufferSamples = bufferFrames * channels;
+		const int scratchBufferSamples = (bufferFrames)*channels;
+		int bufPtr = 0;
 
-        memset(buffer, 0, bufferFrames * frameSize);
+		memset(buffer, 0, bufferFrames * frameSize);
 
-        for(std::list<Priv::PlayingStream>::iterator it = streams.begin();
-            it != streams.end(); ++it)
-        {
-            PlayingStream &e = *it;
+		for (auto& e : streams)
+		{
+			bufPtr = 0;
+			memset(scratchBuffer, 0, scratchBufferSamples * sampleSize);
 
-            bufPtr = 0;
-            memset(scratchBuffer, 0, scratchBufferSamples * sampleSize);
+			int requestFrames = (scratchBufferSamples - bufPtr) / channels;
 
-            int requestFrames = (scratchBufferSamples - bufPtr) / channels;
+			e.stm.read(scratchBuffer + bufPtr, requestFrames);
+			bufPtr += requestFrames * channels;
 
-            e.stm.read(scratchBuffer + bufPtr, requestFrames);
-            bufPtr += requestFrames * channels;
+			int mixLen = std::min(bufPtr, bufferSamples);
 
-            int mixLen = std::min(bufPtr, bufferSamples);
-            // Mixing
-            for(int i = 0; i < mixLen; ++i)
-                buffer[i] = (buffer[i] + scratchBuffer[i] * e.stm.volume() * (e.stm.isMusic() ? musicVolume : soundVolume) )
-                        *masterVolume;
-        }
+			// Mixing
+			for (int i = 0; i < mixLen; ++i)
+			{
+				buffer[i] = (buffer[i] + scratchBuffer[i] * e.stm.volume() * (e.stm.isMusic() ? musicVolume : soundVolume))
+					* masterVolume;
+			}
+		}
 
-        std::list<Priv::PlayingStream>::iterator it = streams.begin();
+		auto it = streams.begin();
 
-        while(it != streams.end())
-        {
-            if ((*it).looped())
-            {
-                (*it).stm.signalLoop();
-            }
-            if((*it).done())
-            {
-                (*it).stm.signalEnd();
-                it = streams.erase(it);
-            }
-            else
-            {
-                ++it;
-            }
-        }
-    }
-    bool play(Stream &stream)
-    {
-        std::list<Priv::PlayingStream>::iterator it = streams.begin();
-        while(it != streams.end())
-        {
-            if((*it).stm == stream)
-                it = streams.erase(it);
-            else
-                ++it;
-        }
-        stream.reset();
+		while (it != streams.end())
+		{
+			if ((*it).looped())
+			{
+				(*it).stm.signalLoop();
+			}
+			if ((*it).done())
+			{
+				(*it).stm.signalEnd();
+				it = streams.erase(it);
+			}
+			else
+			{
+				++it;
+			}
+		}
+	}
 
-        if(stream.setFormat(channels, rate) && !stream.error())
-        {
-            streams.push_back(Priv::PlayingStream(stream));
+	bool play(Stream& stream)
+	{
+		auto it = streams.begin();
+		while (it != streams.end())
+		{
+			if ((*it).stm == stream)
+				it = streams.erase(it);
+			else
+				++it;
+		}
+		stream.reset();
 
-            return true;
-        }
-        else return false;
-    }
+		if (stream.setFormat(channels, rate) && !stream.error())
+		{
+			streams.emplace_back(stream);
 
-    void setVolume(float volume)
-    {
-        masterVolume=volume;
-    }
-    void setMusicVolume(float volume)
-    {
-        musicVolume=volume;
-    }
-    void setSoundVolume(float volume)
-    {
-        soundVolume=volume;
-    }
+			return true;
+		}
+		return false;
+	}
+
+	void setVolume(const float volume)
+	{
+		masterVolume = volume;
+	}
+
+	void setMusicVolume(const float volume)
+	{
+		musicVolume = volume;
+	}
+
+	void setSoundVolume(const float volume)
+	{
+		soundVolume = volume;
+	}
 };
 
 SoftwareMixer::SoftwareMixer()
-    : p(new Priv)
+	: p(new Priv)
 {
 }
 
 SoftwareMixer::~SoftwareMixer()
 {
-    delete p;
+	delete p;
 }
 
-bool SoftwareMixer::setFormat(int rate, int channels)
+bool SoftwareMixer::setFormat(const int rate, const int channels)
 {
-    return p->setFormat(rate, channels);
+	return p->setFormat(rate, channels);
 }
 
-void SoftwareMixer::read(float *buffer, int &length)
+void SoftwareMixer::read(float* buffer, int& length)
 {
-    p->read(buffer, length);
+	p->read(buffer, length);
 }
 
 bool SoftwareMixer::play(Stream stream)
 {
-    return p->play(stream);
+	return p->play(stream);
 }
 
-int SoftwareMixer::sampleRate()
+int SoftwareMixer::sampleRate() const
 {
-    return p->rate;
+	return p->rate;
 }
 
-int SoftwareMixer::numChannels()
+int SoftwareMixer::numChannels() const
 {
-    return p->channels;
+	return p->channels;
 }
 
-bool SoftwareMixer::error()
+bool SoftwareMixer::error() const
 {
-    return false;
+	return false;
 }
 
-void SoftwareMixer::setVolume(float volume)
+void SoftwareMixer::setVolume(const float volume)
 {
-    p->setVolume(volume);
+	p->setVolume(volume);
 }
 
-void SoftwareMixer::setSoundVolume(float volume)
+void SoftwareMixer::setSoundVolume(const float volume)
 {
-    p->setSoundVolume(volume);
+	p->setSoundVolume(volume);
 }
 
 void SoftwareMixer::setMusicVolume(float volume)
 {
-    p->setMusicVolume(volume);
+	p->setMusicVolume(volume);
 }
 
 }
