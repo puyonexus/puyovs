@@ -173,8 +173,8 @@ public:
 	 */
 	void setObserver(StreamObserver* observer);
 	void setVolume(float volume);
-	float volume();
-	bool isMusic();
+	float volume() const;
+	bool isMusic() const;
 	void identifyAsMusic();
 
 	bool operator == (const alib::Stream& other) const { return p == other.p; }
