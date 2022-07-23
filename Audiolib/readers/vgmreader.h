@@ -10,35 +10,36 @@ class BinaryStream;
 
 class VgmReader : public SampleReader, NonCopyable
 {
-    ALIB_DECLARE_PRIV;
+	ALIB_DECLARE_PRIV;
 
 public:
-    VgmReader(Buffer &buffer);
-    VgmReader(BinaryStream *stream);
-    ~VgmReader();
+	VgmReader(Buffer& buffer);
+	VgmReader(BinaryStream* stream);
+	~VgmReader() override;
 
-    void read(float *buffer, int &bufferFrames);
-    void reset();
+	void read(float* buffer, int& bufferFrames) override;
+	void reset() override;
 
-    bool atEnd() const;
-    bool haveEnd() const;
-    bool error() const;
+	[[nodiscard]] bool atEnd() const override;
+	[[nodiscard]] bool haveEnd() const override;
+	[[nodiscard]] bool error() const override;
 
-    int numChannels() const;
-    int sampleRate() const;
+	[[nodiscard]] int numChannels() const override;
+	[[nodiscard]] int sampleRate() const override;
 
-    bool hasLooped();
+	bool hasLooped() override;
 };
 
 }
+
 #define ALIB_VGM_DETECT(out, stream, parameter) \
     do { \
         if(out) break; \
-        out = new VgmReader(parameter); \
-        if(out && out->error()) { \
-            delete out; \
-            out = 0; \
-            stream->rewind(); \
+        (out) = new VgmReader(parameter); \
+        if((out) && (out)->error()) { \
+            delete (out); \
+            (out) = 0; \
+            (stream)->rewind(); \
         } \
     } while(0)
 #else

@@ -24,7 +24,6 @@ SOURCES += audiolib.cpp \
     minivorbis.cpp
 
 HEADERS += \
-    alibint.h \
     fast_mutex.h \
     minivorbis.h \
     minimp3.h \
@@ -47,7 +46,6 @@ HEADERS += \
     include/alib/mixer.h \
     include/alib/buffer.h \
     include/alib/ringbuffer.h \
-    drivers/nulldriver.h \
     readers/vgmreader.h \
     readers/pcmreader.h \
     include/alib/common.h

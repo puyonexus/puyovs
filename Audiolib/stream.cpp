@@ -13,28 +13,22 @@ namespace alib {
 
 struct Stream::Priv
 {
-	Priv() : inNumChannels(2), inSampleRate(44100),
-		outNumChannels(2), outSampleRate(44100),
-		needConversion(false), error(false), paused(false),
-		volume(1.0f), music(false),
-		observer(0), reader(0), resampler(0) { }
-
+	Priv() = default;
 	~Priv() { delete resampler; delete reader; }
 
-	int inNumChannels, inSampleRate;
-	int outNumChannels, outSampleRate;
-	bool needConversion, error, paused;
-	float volume; bool music;
-	StreamObserver* observer;
-	SampleReader* reader;
-	Resampler* resampler;
-	Buffer resamplingBuffer;
+	int inNumChannels = 2, inSampleRate = 44100;
+	int outNumChannels = 2, outSampleRate = 44100;
+	bool needConversion = false, error = false, paused = false;
+	float volume = 1.0f; bool music = false;
+	StreamObserver* observer = nullptr;
+	SampleReader* reader = nullptr;
+	Resampler* resampler = nullptr;
+	Buffer resamplingBuffer{};
 
 	void loadFromStream(BinaryStream* dataStream)
 	{
 		if (!dataStream || dataStream->error())
 		{
-			delete dataStream;
 			error = true;
 			return;
 		}
@@ -42,17 +36,15 @@ struct Stream::Priv
 		ALIB_VGM_DETECT(reader, dataStream, dataStream);
 		ALIB_OGG_DETECT(reader, dataStream, dataStream);
 
-		if (reader && !reader->error())
+		if (!reader || reader->error())
 		{
-			return;
+			error = true;
 		}
-
-		error = true;
 	}
 
 	void loadFromBuffer(Buffer& buffer)
 	{
-		MemoryStream* dataStream = new MemoryStream(buffer);
+		const auto dataStream = new MemoryStream(buffer);
 		loadFromStream(dataStream);
 
 		if (error)
@@ -89,8 +81,7 @@ struct Stream::Priv
 
 		if (needConversion)
 		{
-			resampler = new Resampler(inNumChannels, inSampleRate,
-				outNumChannels, outSampleRate);
+			resampler = new Resampler(inNumChannels, inSampleRate, outNumChannels, outSampleRate);
 		}
 
 		return true;
@@ -115,57 +106,64 @@ struct Stream::Priv
 			return;
 		}
 
-		if (needConversion && resampler)
+		if (!needConversion || !resampler)
 		{
-			if (inSampleRate == outSampleRate)
+			reader->read(buffer, length);
+			return;
+		}
+
+		if (inSampleRate == outSampleRate)
+		{
+			// The sample rates are the same, but the number of channels differs;
+			// we need to upmix/downmix.
+			// TODO: this "works" but it's non-sense. Upmix/downmix needs actual logic.
+			const auto bufferIn = new float[length * inNumChannels];
+			reader->read(bufferIn, length);
+
+			for (int i = 0; i < length; ++i)
 			{
-				float* bufferIn = new float[length * inNumChannels];
-				reader->read(bufferIn, length);
-
-				for (int i = 0; i < length; ++i)
-					for (int j = 0; j < outNumChannels; ++j)
-						buffer[(i * outNumChannels) + j] = bufferIn[(i * inNumChannels) + (j % inNumChannels)];
-
-				delete[] bufferIn;
+				for (int j = 0; j < outNumChannels; ++j)
+				{
+					buffer[i * outNumChannels + j] = bufferIn[i * inNumChannels + j % inNumChannels];
+				}
 			}
-			else
-			{
-				int fullLengthIn = ((long long)length * inSampleRate) / outSampleRate;
-				int neededLengthIn = fullLengthIn;
-				float* bufferIn = new float[fullLengthIn * inNumChannels];
-				memset(bufferIn, 0, sizeof(float) * fullLengthIn * inNumChannels);
-				memset(buffer, 0, sizeof(float) * length * outNumChannels);
 
-				int recalled = resamplingBuffer.read(bufferIn, neededLengthIn * inNumChannels * sizeof(float), 0) / (sizeof(float));
-				neededLengthIn -= recalled / inNumChannels;
-				int lengthInRecv = neededLengthIn;
-				reader->read(bufferIn + recalled, lengthInRecv);
-
-				resamplingBuffer.append((bufferIn + recalled), neededLengthIn * inNumChannels * sizeof(float));
-				resampler->resample(bufferIn, &fullLengthIn, buffer, &length);
-				resamplingBuffer.removeFront(fullLengthIn * inNumChannels * sizeof(float));
-
-				delete[] bufferIn;
-			}
+			delete[] bufferIn;
 		}
 		else
 		{
-			reader->read(buffer, length);
-		}
+			int fullLengthIn = static_cast<long long>(length) * inSampleRate / outSampleRate;
+			int neededLengthIn = fullLengthIn;
+			auto bufferIn = new float[fullLengthIn * inNumChannels];
+			memset(bufferIn, 0, sizeof(float) * fullLengthIn * inNumChannels);
+			memset(buffer, 0, sizeof(float) * length * outNumChannels);
 
+			const int recalled = resamplingBuffer.read(bufferIn, neededLengthIn * inNumChannels * sizeof(float), 0) / (sizeof(float));
+			neededLengthIn -= recalled / inNumChannels;
+			int lengthInRecv = neededLengthIn;
+			reader->read(bufferIn + recalled, lengthInRecv);
+
+			resamplingBuffer.append(bufferIn + recalled, neededLengthIn * inNumChannels * sizeof(float));
+			resampler->resample(bufferIn, &fullLengthIn, buffer, &length);
+			resamplingBuffer.removeFront(fullLengthIn * inNumChannels * sizeof(float));
+
+			delete[] bufferIn;
+		}
 	}
 
 	void reset()
 	{
 		if (reader && !error)
+		{
 			reader->reset();
+		}
 	}
 
 	void stop()
 	{
-		reader = 0;
+		reader = nullptr;
 		error = true;
-		observer = 0;
+		observer = nullptr;
 	}
 
 	void pause()
@@ -233,7 +231,7 @@ Stream Stream::fromRaw(BinaryStream* dataStream, int channels, int freq)
 Buffer Stream::toRaw()
 {
 	const int frameSize = numChannels() * sizeof(float);
-	float* buffer = static_cast<float*>(malloc(4096 * frameSize));
+	const auto buffer = static_cast<float*>(malloc(4096 * static_cast<size_t>(frameSize)));
 	Buffer finalBuffer;
 
 	while (!atEnd())
@@ -284,9 +282,11 @@ void Stream::resume()
 bool Stream::atEnd() const
 {
 	if (p->reader && !p->error)
+	{
 		return p->reader->atEnd();
-	else
-		return true;
+	}
+
+	return true;
 }
 
 void Stream::signalEnd()
@@ -302,17 +302,21 @@ void Stream::signalLoop()
 bool Stream::hasLooped() const
 {
 	if (p->reader && !p->error)
+	{
 		return p->reader->hasLooped();
-	else
-		return false;
+	}
+
+	return false;
 }
 
 bool Stream::haveEnd() const
 {
 	if (p->reader && !p->error)
+	{
 		return p->reader->haveEnd();
-	else
-		return true;
+	}
+
+	return true;
 }
 
 bool Stream::error() const

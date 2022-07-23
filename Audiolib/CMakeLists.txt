@@ -20,7 +20,33 @@ add_library(Audiolib
     readers/vgmreader.cpp
     readers/pcmreader.cpp
     tinythread.cpp
+
     minivorbis.cpp
+    fast_mutex.h
+    minivorbis.h
+    minimp3.h
+    samplereader.h
+    tinythread.h
+    readers/vorbisreader.h
+    speex/stack_alloc.h
+    speex/speex_types.h
+    speex/speex_resampler.h
+    speex/fixed_generic.h
+    speex/fixed_debug.h
+    speex/fixed_bfin.h
+    speex/fixed_arm5e.h
+    speex/fixed_arm4.h
+    speex/arch.h
+    include/alib/stream.h
+    include/alib/sample.h
+    include/alib/audiolib.h
+    include/alib/resampler.h
+    include/alib/mixer.h
+    include/alib/buffer.h
+    include/alib/ringbuffer.h
+    readers/vgmreader.h
+    readers/pcmreader.h
+    include/alib/common.h
 )
 
 target_link_libraries(Audiolib SDL VgmStream)

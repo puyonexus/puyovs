@@ -12,8 +12,8 @@ public:
     Resampler(int inNumChannels, int inSampleRate, int outNumChannels, int outSampleRate);
     ~Resampler();
 
-    void resample(float *in, int *in_len, float *out, int *out_len);
-    bool error();
+    void resample(float *in, int *in_len, float *out, int *out_len) const;
+    bool error() const;
 };
 
 }
