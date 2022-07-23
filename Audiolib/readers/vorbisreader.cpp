@@ -44,35 +44,35 @@ struct VorbisReader::Priv
 	void setVorbis(stb_vorbis* v)
 	{
 		if (!v)
+		{
 			return;
-
-		if (vorbis)
-			stb_vorbis_close(vorbis);
+		}
+		
+		stb_vorbis_close(vorbis);
 
 		vorbis = v;
 		info = stb_vorbis_get_info(v);
 
 		loopStart = loopLen = cursor = 0;
 
-		const char* loopStartNames[] = { "LOOPSTART", "loop_start", "LOOP_START", "LoopStart", nullptr };
-		const char* loopLengthNames[] = { "LOOPLENGTH", "loop_length", "LOOP_LENGTH", "LoopLength", nullptr };
-		const char** i = nullptr;
-		const char* field;
-
-		for (i = loopStartNames; *i != nullptr; ++i)
+		for (const auto name : { "LOOPSTART", "loop_start", "LOOP_START", "LoopStart" })
 		{
-			field = stb_vorbis_get_comment_by_field(vorbis, *i, nullptr);
-
-			if (field != nullptr)
+			const char *field = stb_vorbis_get_comment_by_field(vorbis, name, nullptr);
+			if (field)
+			{
 				loopStart = atoi(field);
+				break;
+			}
 		}
 
-		for (i = loopLengthNames; *i != nullptr; ++i)
+		for (const auto name : { "LOOPLENGTH", "loop_length", "LOOP_LENGTH", "LoopLength" })
 		{
-			field = stb_vorbis_get_comment_by_field(vorbis, *i, nullptr);
-
-			if (field != nullptr)
+			const char* field = stb_vorbis_get_comment_by_field(vorbis, name, nullptr);
+			if (field)
+			{
 				loopLen = atoi(field);
+				break;
+			}
 		}
 
 		numChannels = info.channels;
@@ -80,12 +80,18 @@ struct VorbisReader::Priv
 		sampleRate = info.sample_rate;
 
 		if (loopLen > 0)
+		{
 			loopEnd = loopStart + loopLen;
+		}
 		else
+		{
 			loopEnd = numSamples;
+		}
 
 		if (loopEnd < loopStart)
+		{
 			loopEnd = loopStart = loopLen = 0;
+		}
 	}
 
 	void read(float* buffer, int& length)
@@ -93,9 +99,16 @@ struct VorbisReader::Priv
 		int firstLen = length, secondLen = 0, wantLen = length,
 			wantEnd = loopEnd > 0 ? std::min(loopEnd, numSamples) : numSamples;
 
-		if (error || !vorbis) { length = 0; return; }
+		if (error || !vorbis)
+		{
+			length = 0;
+			return;
+		}
+
 		if (wantEnd > 0 && length + cursor >= wantEnd)
+		{
 			firstLen = wantEnd - cursor;
+		}
 
 		firstLen = stb_vorbis_get_samples_float_interleaved(vorbis, numChannels, buffer, firstLen * numChannels);
 		cursor += firstLen;
@@ -117,7 +130,9 @@ struct VorbisReader::Priv
 	void seekForward(int samples)
 	{
 		if (samples < 1)
+		{
 			return;
+		}
 
 		cursor += samples;
 		stb_vorbis_seek_forward(vorbis, samples);

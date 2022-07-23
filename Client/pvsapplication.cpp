@@ -29,11 +29,11 @@ PVSApplication::PVSApplication(int& argc, char** argv)
 	// Copy settings.json if necessary
 	if (!QDir(getDataLocation()).exists())
 	{
-		QDir().mkdir(getDataLocation());
+		QDir().mkpath(getDataLocation());
 	}
-	if (QFile("Settings.json").exists() && !QFile(getDataLocation() + "\\Settings.json").exists())
+	if (QFile("Settings.json").exists() && !QFile(getDataLocation() + "/Settings.json").exists())
 	{
-		QFile("Settings.json").copy(getDataLocation() + "\\Settings.json");
+		QFile("Settings.json").copy(getDataLocation() + "/Settings.json");
 	}
 
 	p->settings = new Settings(this);
