@@ -36,6 +36,8 @@ const static Qt::ItemDataRole scoreRole = static_cast<Qt::ItemDataRole>(Qt::User
 MainWindow::MainWindow(QWidget* parent) :
 	QMainWindow(parent), ui(new Ui::MainWindow)
 {
+    setAttribute(Qt::WA_DeleteOnClose);
+
 	// Get settings manager
 	Settings& settings = pvsApp->settings();
 
@@ -221,7 +223,7 @@ void MainWindow::closeEvent(QCloseEvent* e)
 	while (ui->tabWidget->count() > 0)
 		delete ui->tabWidget->widget(ui->tabWidget->count() - 1);
 
-	delete this;
+	close();
 }
 
 void MainWindow::addMatchRoom(NetChannel channel)

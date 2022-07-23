@@ -99,6 +99,7 @@ struct GameWidgetGLPriv
 GameWidgetGL::GameWidgetGL(ppvs::game* game, NetChannelProxy* proxy, GameAudio* audio, QWidget* parent) :
 	GameWidget(game, proxy, parent), d(new GameWidgetGLPriv)
 {
+    setAttribute(Qt::WA_DeleteOnClose);
 	d->ready = false;
 	d->audio = audio;
 	d->inputDriver = ilib::getDriver();
@@ -243,7 +244,8 @@ void GameWidgetGL::closeEvent(QCloseEvent* event)
 	}
 	else
 	{
-		delete this;
+		mGame->runGame = false;
+		close();
 	}
 }
 
@@ -278,7 +280,7 @@ void GameWidgetGL::initialize()
 
 void GameWidgetGL::process()
 {
-	if (!d->ready)
+	if (!d->ready || !mGame->runGame)
 		return;
 
 	quint64 now = timeGetTime();
@@ -322,7 +324,7 @@ void GameWidgetGL::process()
 
 		if (!mGame->runGame)
 		{
-			delete this;
+			close();
 			return;
 		}
 	}
