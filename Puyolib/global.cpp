@@ -50,7 +50,7 @@ float tunnelShaderColor[6][3] = {
 MersenneTwister grandomizer;
 
 // Load ini file
-usersettings gUserSettings;
+UserSettings gUserSettings;
 
 // Global functions
 //================
@@ -62,12 +62,12 @@ int getRandom(int in)
 	return int(out);
 }
 
-void setBuffer(sound& s, fsound* sb)
+void setBuffer(Sound& s, FeSound* sb)
 {
 	if (sb)
-		s.SetBuffer(sb);
+		s.setBuffer(sb);
 	else
-		s.Unload();
+		s.unload();
 }
 
 // Change each element of the string to lower case

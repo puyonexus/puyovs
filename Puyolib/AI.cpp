@@ -1,10 +1,10 @@
 #include "AI.h"
-#include "player.h"
+#include "Player.h"
 
 namespace ppvs
 {
 
-AI::AI(player* pl)
+AI::AI(Player* pl)
 {
 	m_player = pl;
 	bestPos = 0;
@@ -17,7 +17,7 @@ AI::~AI()
 {
 }
 
-void AI::prepare(movePuyoType mpt, int color1, int color2)
+void AI::prepare(MovePuyoType mpt, int color1, int color2)
 {
 	m_type = mpt;
 	m_color1 = color1; m_color2 = color2;
@@ -29,7 +29,7 @@ void AI::prepare(movePuyoType mpt, int color1, int color2)
 void AI::findLargest()
 {
 	// Try all positions and rotations
-	fieldProp prop = m_player->activeField->getProperties();
+	FieldProp prop = m_player->activeField->getProperties();
 	int remember = 0;
 	int current = 0;
 	for (int i = 0; i < prop.gridX; i++)
@@ -142,10 +142,10 @@ void AI::setRotation()
 int AI::predictChain()
 {
 	int i = 0;
-	fieldProp prop = m_player->activeField->getProperties();
+	FieldProp prop = m_player->activeField->getProperties();
 	int maxheight = prop.gridY;
 	bool moveUp[4];
-	posVectorInt tempPos[4];
+	PosVectorInt tempPos[4];
 	int colors[4];
 
 	// Check if any puyo is stuck in wall

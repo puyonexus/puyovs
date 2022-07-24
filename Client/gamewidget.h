@@ -5,7 +5,7 @@
 #include "common.h"
 
 namespace ppvs {
-class game;
+class Game;
 }
 
 class ChatWindow;
@@ -16,12 +16,12 @@ class GameWidget : public QMainWindow
 {
 	Q_OBJECT
 public:
-	explicit GameWidget(ppvs::game* game, NetChannelProxy* proxy, QWidget* parent = nullptr);
+	explicit GameWidget(ppvs::Game* game, NetChannelProxy* proxy, QWidget* parent = nullptr);
 	~GameWidget() override;
 
 	QSize sizeHint() const override;
 
-	ppvs::game* game() const;
+	ppvs::Game* game() const;
 	ChatWindow* chatWindow() const;
 
 	void setControls(InputCondition up, InputCondition down,
@@ -49,7 +49,7 @@ protected:
 	void closeEvent(QCloseEvent* event) override;
 
 	bool mMusicPlaying, mFeverMusic;
-	ppvs::game* mGame;
+	ppvs::Game* mGame;
 	QDockWidget* mChatDockWidget;
 	ChatWindow* mChatWindow;
 	QAction* mToggleChat;

@@ -26,7 +26,7 @@
 #include "gamewidget.h"
 #include "gamemanager.h"
 #include "glmanager.h"
-#include "../Puyolib/gameSettings.h"
+#include "../Puyolib/GameSettings.h"
 #include "chatwindow.h"
 #include "telemetrydialog.h"
 
@@ -836,11 +836,11 @@ void MainWindow::startRankedMatch(bool tsu) const
 	if (gameManager->rankedMatch())
 		return;
 
-	ppvs::gameSettings* settings;
+	ppvs::GameSettings* settings;
 	if (tsu)
-		settings = new ppvs::gameSettings(ppvs::rulesetInfo_t(TSU_ONLINE));
+		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(TSU_ONLINE));
 	else
-		settings = new ppvs::gameSettings(ppvs::rulesetInfo_t(FEVER_ONLINE));
+		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(FEVER_ONLINE));
 	settings->rankedMatch = true;
 	GameWidget* game = gameManager->createGame(settings, "");
 
@@ -871,11 +871,11 @@ void MainWindow::spectateRankedMatch(bool tsu) const
 		return;
 	}
 
-	ppvs::gameSettings* settings;
+	ppvs::GameSettings* settings;
 	if (tsu)
-		settings = new ppvs::gameSettings(ppvs::rulesetInfo_t(TSU_ONLINE));
+		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(TSU_ONLINE));
 	else
-		settings = new ppvs::gameSettings(ppvs::rulesetInfo_t(FEVER_ONLINE));
+		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(FEVER_ONLINE));
 
 	GameWidget* game = gameManager->createGame(settings, chan.name, true);
 
@@ -888,8 +888,8 @@ void MainWindow::spectateRankedMatch(bool tsu) const
 	chatWindow->setChatEnabled(false);
 }
 
-#include "../Puyolib/gameSettings.h"
-#include "../Puyolib/game.h"
+#include "../Puyolib/GameSettings.h"
+#include "../Puyolib/Game.h"
 
 void MainWindow::on_OfflineToolButton_clicked()
 {
@@ -898,7 +898,7 @@ void MainWindow::on_OfflineToolButton_clicked()
 		// Dialog already opened
 		return;
 	}
-	mGameSettings = new ppvs::gameSettings();
+	mGameSettings = new ppvs::GameSettings();
 	OfflineDialog* dlg = new OfflineDialog(mGameSettings);
 	connect(dlg, SIGNAL(finished(int)), this, SLOT(on_OfflineDialog_Finished(int)));
 	dlg->show();
@@ -1011,7 +1011,7 @@ void MainWindow::on_ReviewRulesFriendlyButton_clicked()
 	if (chan.isNull())
 		return;
 
-	ppvs::rulesetInfo_t rs;
+	ppvs::RuleSetInfo rs;
 	readRulesetString(chan.description, &rs);
 	reviewRulesDialog(rs);
 }
@@ -1043,7 +1043,7 @@ void MainWindow::on_ReplaysToolButton_clicked()
 	dlg->activateWindow();
 }
 
-void MainWindow::reviewRulesDialog(ppvs::rulesetInfo_t& rs)
+void MainWindow::reviewRulesDialog(ppvs::RuleSetInfo& rs)
 {
 	QString ruleStr;
 	ruleStr = QString::asprintf(tr("Margin Time: %i\nTarget Point: %i\nRequired Chain: %i\n"

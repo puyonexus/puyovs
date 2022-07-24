@@ -8,7 +8,7 @@
 #include "settings.h"
 #include "common.h"
 #include "../Puyolib/global.h"
-#include "../Puyolib/game.h"
+#include "../Puyolib/Game.h"
 #include "../PVS_ENet/PVS_Client.h"
 
 volatile bool loopEnabled;
@@ -64,10 +64,10 @@ void GameManager::addGame(GameWidget* game)
 	connect(this, SIGNAL(exiting()), game, SLOT(close()));
 }
 
-ppvs::rulesetInfo_t GameManager::createRules()
+ppvs::RuleSetInfo GameManager::createRules()
 {
 	Settings& settings = pvsApp->settings();
-	ppvs::rulesetInfo_t rs;
+	ppvs::RuleSetInfo rs;
 
 	// Base rules
 	unsigned int ruleId = settings.integer("rules", "baserules", 0);
@@ -104,13 +104,13 @@ ppvs::rulesetInfo_t GameManager::createRules()
 
 GameWidget* GameManager::createGame(const QString& rules, const QString& roomName, bool spectating)
 {
-	ppvs::rulesetInfo_t rs;
+	ppvs::RuleSetInfo rs;
 	readRulesetString(rules, &rs);
 
-	return createGame(new ppvs::gameSettings(rs), roomName, spectating);
+	return createGame(new ppvs::GameSettings(rs), roomName, spectating);
 }
 
-GameWidget* GameManager::createGame(ppvs::gameSettings* gs, const QString& roomName, bool spectating, bool replay)
+GameWidget* GameManager::createGame(ppvs::GameSettings* gs, const QString& roomName, bool spectating, bool replay)
 {
 	Settings& settings = pvsApp->settings();
 	NetChannelProxy* proxy = nullptr;
@@ -133,12 +133,12 @@ GameWidget* GameManager::createGame(ppvs::gameSettings* gs, const QString& roomN
 	QStringList characters(settings.charMap());
 	for (int i = 0; i < characters.count(); i++)
 	{
-		ppvs::puyoCharacter ch = ppvs::puyoCharacter(i);
+		ppvs::PuyoCharacter ch = ppvs::PuyoCharacter(i);
 		gs->characterSetup[ch] = characters.at(i).toStdString();
 	}
 
 	// Set default character
-	gs->defaultPuyoCharacter = ppvs::puyoCharacter(settings.integer("account", "defaultcharacter", 2));
+	gs->defaultPuyoCharacter = ppvs::PuyoCharacter(settings.integer("account", "defaultcharacter", 2));
 
 	// Load controls
 	gs->controls["1a"] = settings.string("controlsp1", "a", "x").toStdString();
@@ -152,7 +152,7 @@ GameWidget* GameManager::createGame(ppvs::gameSettings* gs, const QString& roomN
 	gs->playMusic = settings.boolean("launcher", "enablemusic", true);
 	gs->playSound = settings.boolean("launcher", "enablesound", true);
 
-	ppvs::game* game = new ppvs::game(gs);
+	ppvs::Game* game = new ppvs::Game(gs);
 
 	game->translatableStrings.waitingForPlayer = tr("Waiting for player...", "Messages:GameWaitingForPlayer").toStdString();
 	game->translatableStrings.disconnected = tr("Player disconnected.", "Messages:GameDisconnected").toStdString();
@@ -235,7 +235,7 @@ bool GameManager::rankedMatch() const
 
 void GameManager::channelJoined(QString channel, NetPeerList peers) const
 {
-	ppvs::game* game = nullptr;
+	ppvs::Game* game = nullptr;
 	GameWidget* widget = nullptr;
 
 	if (!getGame(channel, game, widget))
@@ -334,7 +334,7 @@ void GameManager::channelJoined(QString channel, NetPeerList peers) const
 
 void GameManager::peerJoinedChannel(QString channel, QString peer) const
 {
-	ppvs::game* game = nullptr;
+	ppvs::Game* game = nullptr;
 	GameWidget* widget = nullptr;
 
 	if (!getGame(channel, game, widget))
@@ -343,7 +343,7 @@ void GameManager::peerJoinedChannel(QString channel, QString peer) const
 	// As player, send them your status.
 	if (network->getStatus(channel) == 1)
 	{
-		ppvs::player* player = game->players[0];
+		ppvs::Player* player = game->players[0];
 		network->sendMessageToPeer(channel, CHANNEL_GAME,
 			(QStringList() << "update"
 				<< QString::number((int)player->getCharacter())
@@ -360,7 +360,7 @@ void GameManager::peerJoinedChannel(QString channel, QString peer) const
 
 void GameManager::peerPartedChannel(QString channel, QString peer) const
 {
-	ppvs::game* game = nullptr;
+	ppvs::Game* game = nullptr;
 	GameWidget* widget = nullptr;
 	std::string peerStd = peer.toStdString();
 
@@ -397,7 +397,7 @@ void GameManager::peerPartedChannel(QString channel, QString peer) const
 
 void GameManager::channelMessageReceived(QString channel, uchar subchannel, QString peer, QString message) const
 {
-	ppvs::game* game = nullptr;
+	ppvs::Game* game = nullptr;
 	GameWidget* widget = nullptr;
 
 	if (!getGame(channel, game, widget))
@@ -427,14 +427,14 @@ void GameManager::channelMessageReceived(QString channel, uchar subchannel, QStr
 		{
 			int c = items.at(1).toInt();
 			game->charSelectMenu->setCharacter(playernum, c, false);
-			game->players[playernum]->setCharacter(static_cast<ppvs::puyoCharacter>(c), true);
+			game->players[playernum]->setCharacter(static_cast<ppvs::PuyoCharacter>(c), true);
 			game->players[playernum]->pickingCharacter = true;
 		}
 		else if (items.at(0) == "choice")
 		{
 			int c = items.at(1).toInt();
 			game->charSelectMenu->setCharacter(playernum, c, true);
-			game->players[playernum]->setCharacter(static_cast<ppvs::puyoCharacter>(c), true);
+			game->players[playernum]->setCharacter(static_cast<ppvs::PuyoCharacter>(c), true);
 			game->players[playernum]->pickingCharacter = false;
 		}
 		else if (items.at(0) == "rematch")
@@ -483,7 +483,7 @@ void GameManager::channelMessageReceived(QString channel, uchar subchannel, QStr
 
 void GameManager::peerChannelMessageReceived(QString channel, uchar subchannel, QString peer, QString message) const
 {
-	ppvs::game* game = nullptr;
+	ppvs::Game* game = nullptr;
 	GameWidget* widget = nullptr;
 
 	if (!getGame(channel, game, widget))
@@ -511,14 +511,14 @@ void GameManager::peerChannelMessageReceived(QString channel, uchar subchannel, 
 	{
 		int c = items.at(1).toInt();
 		game->charSelectMenu->setCharacter(playernum, c, true);
-		game->players[playernum]->setCharacter(static_cast<ppvs::puyoCharacter>(c), true);
+		game->players[playernum]->setCharacter(static_cast<ppvs::PuyoCharacter>(c), true);
 	}
 	else if (items.at(0) == "update")
 	{
 		// Update character choice
 		int c = items.at(1).toInt();
 		game->charSelectMenu->setCharacter(playernum, c, true);
-		game->players[playernum]->setCharacter(static_cast<ppvs::puyoCharacter>(c), true);
+		game->players[playernum]->setCharacter(static_cast<ppvs::PuyoCharacter>(c), true);
 
 		// Get propesed random seed
 		int rnd = items.at(2).toInt();
@@ -552,7 +552,7 @@ void GameManager::peerChannelMessageReceived(QString channel, uchar subchannel, 
 
 void GameManager::peerStatusReceived(QString channel, QString peer, uchar status) const
 {
-	ppvs::game* game = nullptr;
+	ppvs::Game* game = nullptr;
 	GameWidget* widget = nullptr;
 
 	if (!getGame(channel, game, widget))
@@ -568,7 +568,7 @@ void GameManager::peerStatusReceived(QString channel, QString peer, uchar status
 			// Set player 1 to human
 			if (game->players.size() > 0)
 			{
-				ppvs::puyoCharacter chara = ppvs::puyoCharacter(pvsApp->settings().integer("account", "defaultcharacter", 2));
+				ppvs::PuyoCharacter chara = ppvs::PuyoCharacter(pvsApp->settings().integer("account", "defaultcharacter", 2));
 				pln = 1;
 
 				game->players[0]->setPlayerType(HUMAN);
@@ -723,7 +723,7 @@ void GameManager::rankedMatchmessageReceived(QString message)
 		g->replaceProxy(new NetChannelProxy("", network));
 
 		// Request new match immediately
-		ppvs::gameSettings* gs = g->game()->settings;
+		ppvs::GameSettings* gs = g->game()->settings;
 		g->game()->newRankedMatchMessage = QString(QString("new|") + QString("%1|").arg(PVSVERSION)
 			+ QString(gs->rulesetInfo.rulesetType == TSU_ONLINE ? "0" : "1")).toStdString();
 	}
@@ -736,7 +736,7 @@ void GameManager::rankedMatchmessageReceived(QString message)
 	}
 }
 
-bool GameManager::getGame(const QString& channel, ppvs::game*& game, GameWidget*& widget) const
+bool GameManager::getGame(const QString& channel, ppvs::Game*& game, GameWidget*& widget) const
 {
 	if (channel.left(4) != "PVSM" && channel.left(4) != "PVST" && channel.left(4) != "PVSF")
 		return false;

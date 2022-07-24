@@ -20,7 +20,7 @@
 
 namespace ppvs
 {
-struct rulesetInfo_t;
+struct RuleSetInfo;
 }
 
 // Modelist
@@ -28,9 +28,9 @@ typedef QPair<int, QString> GameModePair;
 typedef QList<GameModePair> GameModeList;
 typedef QListIterator<QPair<int, QString> > GameModeListIterator;
 GameModeList getModeList();
-void readRulesetString(QString str, ppvs::rulesetInfo_t* rs);
+void readRulesetString(QString str, ppvs::RuleSetInfo* rs);
 QString getDataLocation();
-QString createRulesetString(ppvs::rulesetInfo_t* rs);
+QString createRulesetString(ppvs::RuleSetInfo* rs);
 
 namespace ilib
 {

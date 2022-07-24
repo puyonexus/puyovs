@@ -9,7 +9,7 @@
 #include "chatroomform.h"
 #include "settings.h"
 #include "ui_chatroomform.h"
-#include "../Puyolib/gameSettings.h"
+#include "../Puyolib/GameSettings.h"
 #include "chatroomtextedit.h"
 
 ChatroomForm::ChatroomForm(NetPeerList peers, NetChannelProxy* proxy, GameManager* manager, QWidget* parent) :
@@ -225,9 +225,9 @@ bool ChatroomForm::isAutoRejectEnabled() const
 	return ui->AutoRejectCheckBox->isChecked();
 }
 
-ppvs::rulesetInfo_t ChatroomForm::createRules() const
+ppvs::RuleSetInfo ChatroomForm::createRules() const
 {
-	ppvs::rulesetInfo_t rs = gameManager->createRules();
+	ppvs::RuleSetInfo rs = gameManager->createRules();
 	return rs;
 }
 
@@ -257,7 +257,7 @@ void ChatroomForm::urlClicked(QString url)
 
 
 
-	challenge.game = gameManager->createGame(new ppvs::gameSettings(challenge.rules), challenge.room, true);
+	challenge.game = gameManager->createGame(new ppvs::GameSettings(challenge.rules), challenge.room, true);
 	challenge.game->show();
 	challenge.game->raise();
 	challenge = ChallengeState();
@@ -405,7 +405,7 @@ void ChatroomForm::peerMessageReceived(uchar subchannel, QString nick, QString m
 				challenge.challengedList.clear();
 				if (challenge.rules.Nplayers == 2)
 				{
-					challenge.game = gameManager->createGame(new ppvs::gameSettings(challenge.rules), challenge.room);
+					challenge.game = gameManager->createGame(new ppvs::GameSettings(challenge.rules), challenge.room);
 					challenge.game->show();
 					challenge.game->raise();
 					challenge = ChallengeState();
@@ -566,7 +566,7 @@ void ChatroomForm::on_ChallengeButton_clicked()
 	// For >2, create game now.
 	if (challenge.rules.Nplayers > 2 && challenge.challengedList.empty())
 	{
-		challenge.game = gameManager->createGame(new ppvs::gameSettings(challenge.rules), challenge.room);
+		challenge.game = gameManager->createGame(new ppvs::GameSettings(challenge.rules), challenge.room);
 		challenge.game->hide();
 	}
 
@@ -593,7 +593,7 @@ void ChatroomForm::on_ChallengeYesButton_clicked()
 	if (challenge.beingChallenged)
 	{
 		mProxy->sendMessage(CHANNEL_CHALLENGERESPONSE, challenge.challenger, "accept");
-		challenge.game = gameManager->createGame(new ppvs::gameSettings(challenge.rules), challenge.room);
+		challenge.game = gameManager->createGame(new ppvs::GameSettings(challenge.rules), challenge.room);
 		challenge.game->show();
 		challenge.game->raise();
 		challenge = ChallengeState();
@@ -651,7 +651,7 @@ void ChatroomForm::on_ReviewRulesButton_clicked()
 	reviewRulesDialog(challenge.rules);
 }
 
-void ChatroomForm::reviewRulesDialog(ppvs::rulesetInfo_t& rs)
+void ChatroomForm::reviewRulesDialog(ppvs::RuleSetInfo& rs)
 {
 	// MainWindow contains the exact same function
 	// Don't know where I can move this function so both classes can call this
@@ -696,7 +696,7 @@ void ChatroomForm::inviteToMatch()
 void ChatroomForm::getInvitation(QString invite) const
 {
 	// Read rules to determine number of players
-	ppvs::rulesetInfo_t rs;
+	ppvs::RuleSetInfo rs;
 	readRulesetString(invite, &rs);
 
 	// Get additional info out (p1 name and p2 name)

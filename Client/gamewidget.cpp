@@ -6,9 +6,9 @@
 #include "chatwindow.h"
 #include "netclient.h"
 #include "playlist.h"
-#include "../Puyolib/game.h"
+#include "../Puyolib/Game.h"
 
-GameWidget::GameWidget(ppvs::game* game, NetChannelProxy* proxy, QWidget* parent)
+GameWidget::GameWidget(ppvs::Game* game, NetChannelProxy* proxy, QWidget* parent)
 	: QMainWindow(parent), mGame(game)
 {
 	if (proxy)
@@ -82,7 +82,7 @@ QSize GameWidget::sizeHint() const
 	return QSize(width, height);
 }
 
-ppvs::game* GameWidget::game() const
+ppvs::Game* GameWidget::game() const
 {
 	return mGame;
 }
@@ -244,9 +244,9 @@ void GameWidget::closeEvent(QCloseEvent* event)
 void GameWidget::setupMusic(int evt)
 {
 	bool focused = isActiveWindow();
-	switch (ppvs::fmusicevent(evt))
+	switch (ppvs::FeMusicEvent(evt))
 	{
-	case ppvs::music_can_stop:
+	case ppvs::MusicCanStop:
 		if (!pvsApp->settings().boolean("music", "stopmusicafterround", false))
 			return;
 
@@ -261,19 +261,19 @@ void GameWidget::setupMusic(int evt)
 				pvsApp->setMusicMode(PVSApplication::MusicOff);
 		}
 		break;
-	case ppvs::music_continue:
-		mMusicPlaying = true;
 
+	case ppvs::MusicContinue:
+		mMusicPlaying = true;
 		if (focused) pvsApp->setMusicMode(PVSApplication::MusicNormal, pvsApp->settings().boolean("music", "advance", true));
 		break;
-	case ppvs::music_enter_fever:
-		if (focused) pvsApp->setMusicMode(PVSApplication::MusicFever, true);
 
+	case ppvs::MusicEnterFever:
+		if (focused) pvsApp->setMusicMode(PVSApplication::MusicFever, true);
 		mFeverMusic = true;
 		break;
-	case ppvs::music_exit_fever:
-		if (focused) pvsApp->setMusicMode(PVSApplication::MusicNormal, false);
 
+	case ppvs::MusicExitFever:
+		if (focused) pvsApp->setMusicMode(PVSApplication::MusicNormal, false);
 		mFeverMusic = false;
 		break;
 	}

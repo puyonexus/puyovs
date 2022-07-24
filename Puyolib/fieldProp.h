@@ -8,28 +8,27 @@ enum direction
 };
 
 // (probably should have a better name... there's already std::pair for something else.)
-template<class T> struct pair
+template<class T> struct Pair
 {
 	T x;
 	T y;
-	pair() {}
-	pair(T x, T y) :x(x), y(y) {}
+	Pair() {}
+	Pair(T x, T y) :x(x), y(y) {}
 
-	pair<T> operator+(const pair<T>& p1)
+	Pair<T> operator+(const Pair<T>& p1)
 	{
-		return pair<T>(this->x + p1.x, this->y + p1.y);
+		return Pair<T>(this->x + p1.x, this->y + p1.y);
 	}
-	pair<T> operator-(const pair<T>& p1)
+	Pair<T> operator-(const Pair<T>& p1)
 	{
-		return pair<T>(this->x - p1.x, this->y - p1.y);
+		return Pair<T>(this->x - p1.x, this->y - p1.y);
 	}
 };
 
-typedef pair<int> posVectorInt;
-typedef pair<float> posVectorFloat;
+typedef Pair<int> PosVectorInt;
+typedef Pair<float> PosVectorFloat;
 
-
-struct fieldProp
+struct FieldProp
 {
 	int gridX, gridY; // Number of gridspaces in X and Y direction
 	int gridWidth, gridHeight; // Width and height of a single gridspace

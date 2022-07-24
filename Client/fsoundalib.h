@@ -1,11 +1,11 @@
 #pragma once
 
 #include <QObject>
-#include "../Puyolib/frontend.h"
+#include "../Puyolib/Frontend.h"
 
 class GameAudio;
 
-class FSoundAlib : public ppvs::fsound, public QObject
+class FSoundAlib : public ppvs::FeSound, public QObject
 {
 public:
 	FSoundAlib(const QString& fn, GameAudio* audio, QObject* parent);

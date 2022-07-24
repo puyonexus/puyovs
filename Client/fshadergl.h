@@ -1,9 +1,9 @@
 #pragma once
 
 #include "glextensions.h"
-#include "../Puyolib/frontend.h"
+#include "../Puyolib/Frontend.h"
 
-class FShaderGL : public ppvs::fshader, public QObject
+class FShaderGL : public ppvs::FeShader, public QObject
 {
 public:
 	FShaderGL(const char* source, GLExtensions& ext, QObject* parent);

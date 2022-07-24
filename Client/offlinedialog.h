@@ -10,7 +10,7 @@ namespace Ui {
 }
 
 namespace ppvs {
-	struct gameSettings;
+	struct GameSettings;
 }
 
 class Settings;
@@ -20,7 +20,7 @@ class OfflineDialog : public QDialog
 	Q_OBJECT
 
 public:
-	explicit OfflineDialog(ppvs::gameSettings* gameSettings, QWidget* parent = nullptr);
+	explicit OfflineDialog(ppvs::GameSettings* gameSettings, QWidget* parent = nullptr);
 	~OfflineDialog() override;
 
 private slots:
@@ -32,5 +32,5 @@ private slots:
 private:
 	Ui::OfflineDialog* ui;
 	const QList<QPair<int, QString>> mModeList;
-	ppvs::gameSettings* mGameSettings;
+	ppvs::GameSettings* mGameSettings;
 };

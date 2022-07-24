@@ -17,9 +17,9 @@ class MainWindow;
 }
 
 namespace ppvs {
-class game;
-struct gameSettings;
-struct rulesetInfo_t;
+class Game;
+struct GameSettings;
+struct RuleSetInfo;
 }
 
 class GameWidgetGL;
@@ -41,7 +41,7 @@ public:
 
 	bool isLoggedIn() const;
 
-	void reviewRulesDialog(ppvs::rulesetInfo_t& rs);
+	void reviewRulesDialog(ppvs::RuleSetInfo& rs);
 
 	void updateServerList();
 	QNetworkReply* serverListReply;
@@ -129,5 +129,5 @@ private:
 	bool showSettingsDlg;
 	bool showSearchDlg;
 	SearchDialog* searchDlg;
-	ppvs::gameSettings* mGameSettings;
+	ppvs::GameSettings* mGameSettings;
 };

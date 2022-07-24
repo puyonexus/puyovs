@@ -62,7 +62,7 @@ QImage FFontGL::renderTextline(const QString& line) const
 	return image;
 }
 
-ppvs::ftext* FFontGL::render(const char* str)
+ppvs::FeText* FFontGL::render(const char* str)
 {
 	QFontMetrics fm(font);
 	int lineSpacing = fm.lineSpacing();

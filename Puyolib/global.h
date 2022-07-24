@@ -1,8 +1,8 @@
 #pragma once
-#include "mt.h"
-#include "sound.h"
-#include "sprite.h"
-#include "frontend.h"
+#include "RNG/MersenneTwister.h"
+#include "Sound.h"
+#include "Sprite.h"
+#include "Frontend.h"
 
 #include <map>
 #include <vector>
@@ -37,12 +37,12 @@ inline static unsigned long timeGetTime()
 namespace ppvs
 {
 
-typedef char playerType;
+typedef char PlayerType;
 #define HUMAN   0
 #define CPU     1
 #define ONLINE  2
 
-typedef char puyoCharacter;
+typedef char PuyoCharacter;
 #define ACCORD          0
 #define AMITIE          1
 #define ARLE            2
@@ -69,23 +69,23 @@ typedef char puyoCharacter;
 #define YU_REI          23
 #define NUM_CHARACTERS  24
 
-typedef int recordState;
+typedef int RecordState;
 #define PVS_NOTRECORDING 0
 #define PVS_RECORDING    1
 #define PVS_REPLAYING    2
 
 // Global sounds struct
-struct sounds
+struct Sounds
 {
-	sound allcleardrop, drop, feverlight, fever, fevertimecount, fevertimeend, go, heavy, hit, lose, move,
+	Sound allcleardrop, drop, feverlight, fever, fevertimecount, fevertimeend, go, heavy, hit, lose, move,
 		nuisance_hitL, nuisance_hitM, nuisance_hitS,
 		nuisanceL, nuisanceS, ready, rotate, win,
 		decide, cancel, cursor;
-	sound chain[7];
+	Sound chain[7];
 };
 
 // Settings by the users for modding, are loaded at start of game
-struct usersettings
+struct UserSettings
 {
 	// Strings to userfolders
 	std::string str_puyo;
@@ -96,25 +96,25 @@ struct usersettings
 };
 
 // Variables through that are global in game
-struct gameData
+struct GameData
 {
 	// Controllers
-	frontend* front;
-	fimage* imgPuyo, * imgBackground, * imgField1, * imgField2, * imgBorder1, * imgBorder2, * imgPlayerBorder, * imgSpice;
-	fimage* imgFieldFever, * imgScore, * imgChain, * imgCheckmark;
-	fimage* imgAllClear, * imgLose, * imgWin;
-	fimage* imgNextPuyoBackgroundR, * imgNextPuyoBackgroundL;
-	fimage* imgFeverGauge, * imgSeconds;
-	fimage* imgLight, * imgLight_s, * imgLight_hit, * imgfsparkle, * imgfLight, * imgfLight_hit, * imgTime;
-	fimage* imgMenu[3][2];
-	fimage* imgFeverBack[30];
-	fimage* imgCharHolder, * imgNameHolder, * imgPlayerNumber, * imgPlayerCharSelect, * imgBlack;
-	fimage* imgCharField[NUM_CHARACTERS], * imgCharSelect[NUM_CHARACTERS], * imgSelect[NUM_CHARACTERS], * imgCharName[NUM_CHARACTERS];
-	fimage* imgDropset;
-	fshader* glowShader;
-	fshader* tunnelShader;
-	sounds snd;
-	usersettings gUserSettings;
+	Frontend* front;
+	FeImage* imgPuyo, * imgBackground, * imgField1, * imgField2, * imgBorder1, * imgBorder2, * imgPlayerBorder, * imgSpice;
+	FeImage* imgFieldFever, * imgScore, * imgChain, * imgCheckmark;
+	FeImage* imgAllClear, * imgLose, * imgWin;
+	FeImage* imgNextPuyoBackgroundR, * imgNextPuyoBackgroundL;
+	FeImage* imgFeverGauge, * imgSeconds;
+	FeImage* imgLight, * imgLight_s, * imgLight_hit, * imgfsparkle, * imgfLight, * imgfLight_hit, * imgTime;
+	FeImage* imgMenu[3][2];
+	FeImage* imgFeverBack[30];
+	FeImage* imgCharHolder, * imgNameHolder, * imgPlayerNumber, * imgPlayerCharSelect, * imgBlack;
+	FeImage* imgCharField[NUM_CHARACTERS], * imgCharSelect[NUM_CHARACTERS], * imgSelect[NUM_CHARACTERS], * imgCharName[NUM_CHARACTERS];
+	FeImage* imgDropset;
+	FeShader* glowShader;
+	FeShader* tunnelShader;
+	Sounds snd;
+	UserSettings gUserSettings;
 	int globalTimer; // Global timer in game
 	int matchTimer; // Duration of a match
 	int PUYOXCENTER; // Center of rotation for quadruplets
@@ -173,14 +173,14 @@ void initFeverChains();
 std::string getFeverChain(int type, int colors, int chain, int offset = 0);
 int getRandom(int);
 std::string Lower(std::string str);
-void setBuffer(sound& s, fsound* sb);
+void setBuffer(Sound& s, FeSound* sb);
 int sign(int i);
 double interpolate(std::string type, double startVal, double endVal, double t, double alpha = 1, double beta = 1);
 void splitString(std::string& in, char delimiter, stringList& v);
 void createFolder(std::string foldername);
 
 // Debugging
-extern ffont* fontArial;
+extern FeFont* fontArial;
 extern std::string debugstring;
 extern int debugMode;
 

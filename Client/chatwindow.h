@@ -7,7 +7,7 @@ class ChatWindow;
 }
 
 namespace ppvs {
-class game;
+class Game;
 }
 
 class NetChannelProxy;
@@ -18,7 +18,7 @@ class ChatWindow : public QWidget
 	Q_OBJECT
 
 public:
-	explicit ChatWindow(NetChannelProxy* proxy, ppvs::game* game, GameWidget* widget, QWidget* parent = nullptr);
+	explicit ChatWindow(NetChannelProxy* proxy, ppvs::Game* game, GameWidget* widget, QWidget* parent = nullptr);
 	~ChatWindow() override;
 
 	void setQuickChat(bool);
@@ -48,7 +48,7 @@ protected:
 
 private:
 	NetChannelProxy* mProxy;
-	ppvs::game* mGame;
+	ppvs::Game* mGame;
 	GameWidget* mGameWidget;
 	bool quickchat;
 	Ui::ChatWindow* ui;

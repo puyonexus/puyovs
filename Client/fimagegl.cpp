@@ -34,11 +34,11 @@ void FImageGL::bind() const
 	glBindTexture(GL_TEXTURE_2D, id);
 }
 
-ppvs::fpixel FImageGL::pixel(int x, int y)
+ppvs::FePixel FImageGL::pixel(int x, int y)
 {
 	if (tx.isNull()) tx = QImage(fn);
 	const QColor px{ tx.pixelColor(x, y) };
-	return ppvs::fpixel(px.alpha(), px.red(), px.green(), px.blue());
+	return ppvs::FePixel(px.alpha(), px.red(), px.green(), px.blue());
 }
 
 bool FImageGL::error()
@@ -46,6 +46,6 @@ bool FImageGL::error()
 	return id == 0 || w == 0 || h == 0;
 }
 
-void FImageGL::setFilter(ppvs::filterType)
+void FImageGL::setFilter(ppvs::FilterType)
 {
 }

@@ -8,8 +8,8 @@
 #include <ilib/inputevent.h>
 
 // Puyolib hook-back
-#include "../Puyolib/frontend.h"
-#include "../Puyolib/game.h"
+#include "../Puyolib/Frontend.h"
+#include "../Puyolib/Game.h"
 #include "../Puyolib/global.h"
 #include "../PVS_ENet/PVS_Client.h"
 
@@ -91,12 +91,12 @@ struct GameWidgetGLPriv
 	GLExtensions ext;
 	GameAudio* audio;
 	ilib::Driver* inputDriver;
-	ppvs::finput inputState;
+	ppvs::FeInput inputState;
 	quint64 nextFrame;
 	bool ready;
 };
 
-GameWidgetGL::GameWidgetGL(ppvs::game* game, NetChannelProxy* proxy, GameAudio* audio, QWidget* parent) :
+GameWidgetGL::GameWidgetGL(ppvs::Game* game, NetChannelProxy* proxy, GameAudio* audio, QWidget* parent) :
 	GameWidget(game, proxy, parent), d(new GameWidgetGLPriv)
 {
     setAttribute(Qt::WA_DeleteOnClose);
@@ -117,7 +117,7 @@ GameWidgetGL::GameWidgetGL(ppvs::game* game, NetChannelProxy* proxy, GameAudio* 
 	setFocusProxy(d->gl);
 	d->gl->setFocusPolicy(Qt::StrongFocus);
 
-	memset(&d->inputState, 0, sizeof(ppvs::finput));
+	memset(&d->inputState, 0, sizeof(ppvs::FeInput));
 
 #if defined(Q_OS_MAC)
 	// Workaround for MacOSX resize. 

@@ -6,7 +6,7 @@
 #include <QCryptographicHash>
 #include <QDesktopServices>
 #include "common.h"
-#include "../Puyolib/game.h"
+#include "../Puyolib/Game.h"
 #include <ilib/inputevent.h>
 
 QHash<QString, int> buildNameToCode()
@@ -58,7 +58,7 @@ QString getDataLocation()
 #endif
 }
 
-void readRulesetString(QString str, ppvs::rulesetInfo_t* rs)
+void readRulesetString(QString str, ppvs::RuleSetInfo* rs)
 {
 	// assert rs != 0
 
@@ -109,7 +109,7 @@ void readRulesetString(QString str, ppvs::rulesetInfo_t* rs)
 }
 
 
-QString createRulesetString(ppvs::rulesetInfo_t* rs)
+QString createRulesetString(ppvs::RuleSetInfo* rs)
 {
 	QString ruleString = "Tsu";
 

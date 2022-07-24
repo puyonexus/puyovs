@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QList>
 #include <QBasicTimer>
-#include "../Puyolib/gameSettings.h" // ppvs::rulesetInfo_t
+#include "../Puyolib/GameSettings.h" // ppvs::RuleSetInfo
 #include "netclient.h"
 
 class GameAudio;
@@ -25,9 +25,9 @@ public:
 
 public slots:
 	void addGame(GameWidget* game);
-	ppvs::rulesetInfo_t createRules();
+	ppvs::RuleSetInfo createRules();
 	GameWidget* createGame(const QString& rules, const QString& roomName, bool spectating = false);
-	GameWidget* createGame(ppvs::gameSettings* gamesettings, const QString& roomName, bool spectating = false, bool replay = false);
+	GameWidget* createGame(ppvs::GameSettings* gamesettings, const QString& roomName, bool spectating = false, bool replay = false);
 	GameWidget* findGame(const QString& roomName) const;
 	void gameDestroyed(GameWidget* game);
 	bool rankedMatch() const;
@@ -47,7 +47,7 @@ signals:
 
 protected:
 	void process() const;
-	bool getGame(const QString& channel, ppvs::game*& game, GameWidget*& widget) const;
+	bool getGame(const QString& channel, ppvs::Game*& game, GameWidget*& widget) const;
 
 	QList<GameWidget*> games;
 	NetClient* network;

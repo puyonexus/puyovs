@@ -3,14 +3,14 @@
 #include <QWidget>
 #include <QIcon>
 #include "netclient.h"
-#include "../Puyolib/gameSettings.h" // ppvs::rulesetInfo_t
+#include "../Puyolib/GameSettings.h" // ppvs::RuleSetInfo
 
 namespace Ui {
 class ChatroomForm;
 }
 
 namespace ppvs {
-struct rulesetInfo_t;
+struct RuleSetInfo;
 }
 
 class QListWidgetItem;
@@ -29,7 +29,7 @@ struct ChallengeState
 	QString challenger;
 	QString challengedUser;
 	QStringList challengedList;
-	ppvs::rulesetInfo_t rules;
+	ppvs::RuleSetInfo rules;
 	GameWidget* game;
 };
 
@@ -58,8 +58,8 @@ public:
 	void updateChallengeButton() const;
 	void updateChallengeDisplay();
 	bool isAutoRejectEnabled() const;
-	ppvs::rulesetInfo_t createRules() const;
-	void reviewRulesDialog(ppvs::rulesetInfo_t& rs);
+	ppvs::RuleSetInfo createRules() const;
+	void reviewRulesDialog(ppvs::RuleSetInfo& rs);
 	void inviteToMatch();
 	void getInvitation(QString invite) const;
 	void setAutoreject() const;

@@ -5,61 +5,61 @@
 namespace ppvs
 {
 
-enum filterType
+enum FilterType
 {
-	nearestFilter,
-	linearFilter
+	NearestFilter,
+	LinearFilter
 };
 
-enum blendingMode
+enum BlendingMode
 {
-	noBlending,
-	alphaBlending,
-	additiveBlending,
-	multiplyBlending
+	NoBlending,
+	AlphaBlending,
+	AdditiveBlending,
+	MultiplyBlending
 };
 
-enum depthFunction
+enum DepthFunction
 {
-	always,
-	lessOrEqual,
-	greaterOrEqual,
-	equal
+	Always,
+	LessOrEqual,
+	GreaterOrEqual,
+	Equal
 };
 
-struct viewportGeometry
+struct ViewportGeometry
 {
-	viewportGeometry() : w(0), h(0) { }
-	viewportGeometry(int w, int h) : w(w), h(h) { }
+	ViewportGeometry() : w(0), h(0) { }
+	ViewportGeometry(int w, int h) : w(w), h(h) { }
 	int w, h;
 };
 
-struct rectGeometry
+struct RectGeometry
 {
-	rectGeometry() : x(0.), y(0.), w(0.), h(0.) { }
-	rectGeometry(double x, double y, double w, double h) : x(x), y(y), w(w), h(h) { }
+	RectGeometry() : x(0.), y(0.), w(0.), h(0.) { }
+	RectGeometry(double x, double y, double w, double h) : x(x), y(y), w(w), h(h) { }
 	double x, y, w, h;
 };
 
-struct fpixel { unsigned char a, r, g, b; fpixel(unsigned char a, unsigned char r, unsigned char g, unsigned char b) :a(a), r(r), g(g), b(b) {} };
+struct FePixel { unsigned char a, r, g, b; FePixel(unsigned char a, unsigned char r, unsigned char g, unsigned char b) :a(a), r(r), g(g), b(b) {} };
 
-class fimage
+class FeImage
 {
 public:
-	virtual ~fimage() { }
+	virtual ~FeImage() { }
 
 	virtual int width() = 0;
 	virtual int height() = 0;
-	virtual fpixel pixel(int x, int y) = 0;
+	virtual FePixel pixel(int x, int y) = 0;
 	virtual bool error() = 0;
 
-	virtual void setFilter(filterType) = 0;
+	virtual void setFilter(FilterType) = 0;
 };
 
-class fshader
+class FeShader
 {
 public:
-	virtual ~fshader() { }
+	virtual ~FeShader() { }
 
 	virtual bool setSource(const char* src) = 0;
 	virtual bool setParameter(const char* param, double value) = 0;
@@ -71,52 +71,52 @@ public:
 	virtual void unbind() = 0;
 };
 
-class fsound
+class FeSound
 {
 public:
-	virtual ~fsound() { }
+	virtual ~FeSound() { }
 
 	virtual void play() = 0;
 	virtual void stop() = 0;
 };
 
-enum fmusicevent
+enum FeMusicEvent
 {
-	music_can_stop,
-	music_continue,
-	music_enter_fever,
-	music_exit_fever
+	MusicCanStop,
+	MusicContinue,
+	MusicEnterFever,
+	MusicExitFever
 };
 
-class ftext
+class FeText
 {
 public:
 	virtual void draw(float x, float y) = 0;
-	virtual ~ftext() { }
+	virtual ~FeText() { }
 };
 
-class ffont
+class FeFont
 {
 public:
-	virtual ~ffont() { }
+	virtual ~FeFont() { }
 
-	virtual ftext* render(const char* str) = 0;
+	virtual FeText* render(const char* str) = 0;
 };
 
-struct finput
+struct FeInput
 {
 	bool up, down, left, right, a, b, start;
 };
 
-class frendertarget
+class FeRenderTarget
 {
 public:
-	virtual ~frendertarget() { }
+	virtual ~FeRenderTarget() { }
 
 	// - Graphics -
-	virtual fimage* loadImage(const char* nameu8) = 0;
-	virtual fimage* loadImage(const std::string& nameu8) = 0;
-	virtual ffont* loadFont(const char* nameu8, double fontSize) = 0;
+	virtual FeImage* loadImage(const char* nameu8) = 0;
+	virtual FeImage* loadImage(const std::string& nameu8) = 0;
+	virtual FeFont* loadFont(const char* nameu8, double fontSize) = 0;
 
 	// Matrix
 	virtual void pushMatrix() = 0;
@@ -127,19 +127,19 @@ public:
 	virtual void scale(float x, float y, float z) = 0;
 
 	// Viewport
-	virtual viewportGeometry viewport() = 0;
+	virtual ViewportGeometry viewport() = 0;
 
 	// Shaders
 	virtual bool hasShaders() = 0;
-	virtual fshader* loadShader(const char* source = nullptr) = 0;
+	virtual FeShader* loadShader(const char* source = nullptr) = 0;
 
 	// Blending
-	virtual void setBlendMode(blendingMode) = 0;
+	virtual void setBlendMode(BlendingMode) = 0;
 	virtual void setColor(int r, int g, int b, int a) = 0;
 	virtual void unsetColor() = 0;
 
 	// Depth
-	virtual void setDepthFunction(depthFunction) = 0;
+	virtual void setDepthFunction(DepthFunction) = 0;
 	virtual void clearDepth() = 0;
 
 	// Alpha test
@@ -147,26 +147,26 @@ public:
 	virtual void disableAlphaTesting() = 0;
 
 	// Drawing
-	virtual void drawRect(fimage* image, double subx, double suby, double subw, double subh) = 0;
+	virtual void drawRect(FeImage* image, double subx, double suby, double subw, double subh) = 0;
 
 	virtual void clear() = 0;
 	virtual void swapBuffers() = 0;
 };
 
 
-class frontend : public frendertarget
+class Frontend : public FeRenderTarget
 {
 public:
-	virtual ~frontend() { }
+	virtual ~Frontend() { }
 
 	// - Audio -
-	virtual fsound* loadSound(const char* nameu8) = 0;
-	virtual fsound* loadSound(const std::string& nameu8) = 0;
-	virtual void musicEvent(fmusicevent event) = 0;
+	virtual FeSound* loadSound(const char* nameu8) = 0;
+	virtual FeSound* loadSound(const std::string& nameu8) = 0;
+	virtual void musicEvent(FeMusicEvent event) = 0;
 	virtual void musicVolume(float volume, bool fever) = 0;
 
 	// - Input -
-	virtual finput inputState(int pl) = 0;
+	virtual FeInput inputState(int pl) = 0;
 };
 
 }

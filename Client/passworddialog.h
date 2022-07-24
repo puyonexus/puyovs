@@ -11,9 +11,9 @@ class PasswordDialog;
 }
 
 namespace ppvs {
-class game;
-struct gameSettings;
-struct rulesetInfo_t;
+class Game;
+struct GameSettings;
+struct RuleSetInfo;
 }
 
 class PasswordDialog : public QDialog

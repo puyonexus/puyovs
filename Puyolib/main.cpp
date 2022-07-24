@@ -1,3 +1,3 @@
-#include "game.h"
+#include "Game.h"
 
 using namespace ppvs;
