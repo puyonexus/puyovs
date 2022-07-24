@@ -5,53 +5,32 @@
 
 namespace ppvs
 {
-//contains droppatterns, fever patterns, voice patterns etc.
 
-/*enum puyoCharacter
-{//define characters
-    ACCORD,
-    AMITIE,
-    ARLE,
-    DONGURIGAERU,
-    DRACO,
-    CARBUNCLE,
-    ECOLO,
-    FELI,
-    KLUG,
-    LEMRES,
-    MAGURO,
-    OCEAN_PRINCE,
-    ONION_PIXY,
-    RAFFINE,
-    RIDER,
-    RISUKUMA,
-    RINGO,
-    RULUE,
-    SATAN,
-    SCHEZO,
-    SIG,
-    SUKETOUDARA,
-    WITCH,
-    YU_REI,
-};*/
+// Contains droppatterns, fever patterns, voice patterns etc.
 
+// Define types of movepuyo
 enum movePuyoType
-{//define types of movepuyo
-    DOUBLET,TRIPLET,QUADRUPLET,BIG,TRIPLETR
+{
+	DOUBLET,
+	TRIPLET,
+	QUADRUPLET,
+	BIG,
+	TRIPLETR
 };
 
 struct drop_struct
 {
-    movePuyoType mpt[16];
+	movePuyoType mpt[16];
 };
 
-//Call this function to get the movepuyoType
-movePuyoType getFromDropPattern(puyoCharacter,int);
-//Drop pattern for nuisance
-int nuisanceDropPattern(int maxX,int cycle);
-void createNuisancePattern(int max,int *array);
+// Call this function to get the movepuyoType
+movePuyoType getFromDropPattern(puyoCharacter, int);
 
-//see global voicePattern variable
-int getVoicePattern(int chain,int predicted,bool fever=true);
+// Drop pattern for nuisance
+int nuisanceDropPattern(int maxX, int cycle);
+void createNuisancePattern(int max, int* array);
+
+// See global voicePattern variable
+int getVoicePattern(int chain, int predicted, bool fever = true);
 
 }

@@ -7,16 +7,17 @@ using namespace std;
 
 namespace ppvs
 {
-//Lists
-int linkBonus_TSU[11]={0,0,0,0,2,3,4,5,6,7,10};
-int colorBonus_TSU[5]={0,3,6,12,24};
-int chainBonus_TSU[22]={0,8,16,32,64,96,128,160,192,224,256,288,320,352,384,416,448,480,512,544,576,608};
 
-int linkBonus_FEVER[11]={0,0,0,0,1,2,3,4,5,6,8};
-int colorBonus_FEVER[5]={0,2,4,8,16};
+// Lists
+int linkBonus_TSU[11] = { 0,0,0,0,2,3,4,5,6,7,10 };
+int colorBonus_TSU[5] = { 0,3,6,12,24 };
+int chainBonus_TSU[22] = { 0,8,16,32,64,96,128,160,192,224,256,288,320,352,384,416,448,480,512,544,576,608 };
 
-//Character powers
-int chainBonus_NORMAL[24][24]={
+int linkBonus_FEVER[11] = { 0,0,0,0,1,2,3,4,5,6,8 };
+int colorBonus_FEVER[5] = { 0,2,4,8,16 };
+
+// Character powers
+int chainBonus_NORMAL[24][24] = {
 {4,11,24,33,51,106,179,274,371,472,600,732,882,999,999,999,999,999,999,999,999,999,999,999},
 {4,12,24,32,48,96 ,160,240,320,400,500,600,700,800,900,999,999,999,999,999,999,999,999,999},
 {4,12,24,33,50,101,169,254,341,428,538,648,763,876,990,999,999,999,999,999,999,999,999,999},
@@ -40,8 +41,8 @@ int chainBonus_NORMAL[24][24]={
 {4,11,22,29,43,86 ,144,216,288,360,450,540,630,720,810,900,990,999,999,999,999,999,999,999},
 {4,11,21,28,41,82 ,135,202,267,332,413,492,567,644,720,795,869,936,999,999,999,999,999,999},
 {4,12,23,31,46,92 ,152,229,305,380,476,570,665,760,855,898,935,969,999,999,999,999,999,999},
-{4,11,22,29,43,86 ,144,216,288,360,450,540,630,720,810,900,990,999,999,999,999,999,999,999}};
-int chainBonus_FEVER[24][24]={
+{4,11,22,29,43,86 ,144,216,288,360,450,540,630,720,810,900,990,999,999,999,999,999,999,999} };
+int chainBonus_FEVER[24][24] = {
 {4,9 ,16,20,27,43,72,108,144,216,252,259,308,360,396,432,468,504,540,576,612,648,684,720},
 {4,10,18,22,30,48,80,120,160,240,280,288,342,400,440,480,520,560,600,640,680,720,760,800},
 {4,9 ,16,20,27,43,72,108,144,216,252,259,308,360,396,432,468,504,540,576,612,648,684,720},
@@ -65,118 +66,117 @@ int chainBonus_FEVER[24][24]={
 {4,11,20,25,34,55,92,139,186,281,329,339,405,476,526,576,624,672,720,768,816,864,912,960},
 {4,11,20,25,34,55,92,139,186,281,329,339,405,476,526,576,624,672,720,768,816,864,912,960},
 {4,10,19,23,32,49,82,125,165,249,292,299,358,419,462,505,546,589,630,672,715,756,799,840},
-{4,9 ,17,22,31,50,85,130,175,266,315,326,394,468,521,576,624,672,720,768,816,864,912,960}};
+{4,9 ,17,22,31,50,85,130,175,266,315,326,394,468,521,576,624,672,720,768,816,864,912,960} };
 
-//target point calculation
-int getTargetFromMargin(int initialTarget,int marginTime,int currentTime)
+// Target point calculation
+int getTargetFromMargin(int initialTarget, int marginTime, int currentTime)
 {
-    if (currentTime>=marginTime)
-    {
-        int step=(currentTime-marginTime)/(16*60);
-        step=min(step,13);
-        int out=initialTarget;
-        //even
-        if (step%2==0)
-        {
-            out=initialTarget*3/4;
-            step=step/2;
-        }
-        //uneven
-        else
-        {
-            step=(step+1)/2;
-        }
-        return max(int(out/pow(2.,step)),1);
-    }
-    else
-        return initialTarget;
+	if (currentTime >= marginTime)
+	{
+		int step = (currentTime - marginTime) / (16 * 60);
+		step = min(step, 13);
+		int out = initialTarget;
+
+		// Even
+		if (step % 2 == 0)
+		{
+			out = initialTarget * 3 / 4;
+			step = step / 2;
+		}
+
+		// Uneven
+		else
+		{
+			step = (step + 1) / 2;
+		}
+		return max(int(out / pow(2., step)), 1);
+	}
+	return initialTarget;
 }
 
 //{Base rules
 //-------------------------
 ruleset::ruleset()
 {
-    //ctor
-    delayedFall=true;
-    doubleSpawn=true;
-    addDropBonus=false;
-    voicePatternFever=true;
-    fastDrop=48;
-    marginTime=0;
-    initialFeverCount=0;
-    puyoToClear=4;
-    feverPower=1;
-    requiredChain=0;
-    NFeverChains=4;
-    allClearStart=true;
-    feverDeath=true;
-    bonusEQ=false;
-    quickDrop=false;
+	delayedFall = true;
+	doubleSpawn = true;
+	addDropBonus = false;
+	voicePatternFever = true;
+	fastDrop = 48;
+	marginTime = 0;
+	initialFeverCount = 0;
+	puyoToClear = 4;
+	feverPower = 1;
+	requiredChain = 0;
+	NFeverChains = 4;
+	allClearStart = true;
+	feverDeath = true;
+	bonusEQ = false;
+	quickDrop = false;
 }
 
 ruleset::~ruleset()
 {
-    //dtor
 }
 
 void ruleset::setRules(rules rulestring)
 {
-    m_rules=rulestring;
+	m_rules = rulestring;
 
-    //set constants
-    switch (m_rules)
-    {
-        case ENDLESS:
-            break;
-        case TSU:
-            break;
-        case FEVER:
-            break;
-    }
+	// Set constants
+	switch (m_rules)
+	{
+	case ENDLESS:
+		break;
+	case TSU:
+		break;
+	case FEVER:
+		break;
+	}
 }
 
 void ruleset::setGame(game* g)
 {
-    currentgame=g;
-    data=g->data;
-    this->onSetGame();
+	currentgame = g;
+	data = g->data;
+	this->onSetGame();
 }
 
-phase ruleset::endPhase(phase,player*)
+phase ruleset::endPhase(phase, player*)
 {
-    return IDLE;
+	return IDLE;
 }
 
 void ruleset::onSetGame()
 {
-    // use this to set legacyRandomizer
+	// Use this to set legacyRandomizer
 }
 
 void ruleset::onInit(player* thisplayer)
 {
-    thisplayer->targetPoint=70;
+	thisplayer->targetPoint = 70;
 }
 
 void ruleset::onAllClearPop(player* thisplayer)
 {
-    thisplayer->allClear=0;
+	thisplayer->allClear = 0;
 }
 
 void ruleset::onAllClear(player* thisplayer)
 {
-    thisplayer->allClear=1;
+	thisplayer->allClear = 1;
 }
 
 void ruleset::onLose(player* thisplayer)
 {
-    thisplayer->losewin=LOSE;
-    thisplayer->currentphase=LOSEDROP;
+	thisplayer->losewin = LOSE;
+	thisplayer->currentphase = LOSEDROP;
 }
 
 void ruleset::onWin(player* thisplayer)
 {
-    thisplayer->losewin=WIN;
-    thisplayer->currentphase=WIN_IDLE;
+	thisplayer->losewin = WIN;
+	thisplayer->currentphase = WIN_IDLE;
 
 }
 
@@ -197,38 +197,35 @@ void ruleset::onAttack(player*)
 
 int ruleset::getLinkBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=11)
-        return linkBonus_TSU[10];
-    else
-        return linkBonus_TSU[n];
+	if (n >= 11)
+		return linkBonus_TSU[10];
+	return linkBonus_TSU[n];
 }
 
 int ruleset::getColorBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=5)
-        return colorBonus_TSU[4];
-    else
-        return colorBonus_TSU[n];
+	if (n >= 5)
+		return colorBonus_TSU[4];
+	return colorBonus_TSU[n];
 }
 
 int ruleset::getChainBonus(player* pl)
 {
-    int n=pl->chain;
-    n--;
-    if (n<0)
-            return 0;
-    if (n>=16)
-        return min(chainBonus[15]+32*(n - 15),999);
-    else
-        return chainBonus[n];
+	int n = pl->chain;
+	n--;
+	if (n < 0)
+		return 0;
+	if (n >= 16)
+		return min(chainBonus[15] + 32 * (n - 15), 999);
+	return chainBonus[n];
 }
 //}
 
@@ -236,8 +233,8 @@ int ruleset::getChainBonus(player* pl)
 //==========================================================
 ruleset_ENDLESS::ruleset_ENDLESS()
 {
-    delayedFall=true;
-    doubleSpawn=true;
+	delayedFall = true;
+	doubleSpawn = true;
 }
 
 ruleset_ENDLESS::~ruleset_ENDLESS()
@@ -246,141 +243,124 @@ ruleset_ENDLESS::~ruleset_ENDLESS()
 }
 
 
-phase ruleset_ENDLESS::endPhase(phase currentPhase,player* thisplayer)
+phase ruleset_ENDLESS::endPhase(phase currentPhase, player* thisplayer)
 {
-    switch (currentPhase)
-    {
-        case GETREADY:
-            return DROPGARBAGE;
-            break;
-        case PREPARE:
-            return MOVE;
-            break;
-        case MOVE:
-            thisplayer->createPuyo=true;
-            return CREATEPUYO;
-            break;
-        case CREATEPUYO:
-            return DROPPUYO;
-            break;
-        case DROPPUYO:
-            return FALLPUYO;
-            break;
-        case FALLPUYO:
-            return SEARCHCHAIN;
-            break;
-        case SEARCHCHAIN:
-            //continue to phase 40 if no chain found, else to 32
-            if (!thisplayer->foundChain)
-                return CHECKALLCLEAR;
-            else //found chain
-                thisplayer->destroyPuyosTimer=1;
-                return DESTROYPUYO;
-            break;
-        case DESTROYPUYO:
-            //return DROPPUYO;
-            return GARBAGE;
-            break;
-        case GARBAGE:
-            return DROPPUYO;
-            break;
-        case CHECKALLCLEAR:
-            return DROPGARBAGE;
-            break;
-        case DROPGARBAGE:
-            return FALLGARBAGE;
-            break;
-        case FALLGARBAGE:
-            return CHECKLOSER;
-            break;
-        case CHECKLOSER:
-            return PREPARE;
-            break;
+	switch (currentPhase)
+	{
+	case GETREADY:
+		return DROPGARBAGE;
+	case PREPARE:
+		return MOVE;
+	case MOVE:
+		thisplayer->createPuyo = true;
+		return CREATEPUYO;
+	case CREATEPUYO:
+		return DROPPUYO;
+	case DROPPUYO:
+		return FALLPUYO;
+	case FALLPUYO:
+		return SEARCHCHAIN;
+	case SEARCHCHAIN:
+		// Continue to phase 40 if no chain found, else to 32
+		{
+			// Continue to phase 40 if no chain found, else to 32
+			if (!thisplayer->foundChain)
+				return CHECKALLCLEAR;
+				// Found chain
+			thisplayer->destroyPuyosTimer = 1;
+		}
+		return DESTROYPUYO;
+	case DESTROYPUYO:
+		return GARBAGE;
+	case GARBAGE:
+		return DROPPUYO;
+	case CHECKALLCLEAR:
+		return DROPGARBAGE;
+	case DROPGARBAGE:
+		return FALLGARBAGE;
+	case FALLGARBAGE:
+		return CHECKLOSER;
+	case CHECKLOSER:
+		return PREPARE;
 
-        default:
-            return IDLE;
+	default:
+		return IDLE;
 
-    }
+	}
 }
 
 void ruleset_ENDLESS::onInit(player* thisplayer)
 {
-    thisplayer->targetPoint=targetPoint;
+	thisplayer->targetPoint = targetPoint;
 }
 
-void ruleset_ENDLESS::onAllClearPop(player *thisplayer)
+void ruleset_ENDLESS::onAllClearPop(player* thisplayer)
 {
-    //add 30 nuisance puyos
-    //triggers during phase 30
-    if (thisplayer->currentphase==SEARCHCHAIN)
-    {
-        thisplayer->currentScore+=30*thisplayer->targetPoint;
-        thisplayer->allClear=0;
-    }
+	// Add 30 nuisance puyos
+	// Triggers during phase 30
+	if (thisplayer->currentphase == SEARCHCHAIN)
+	{
+		thisplayer->currentScore += 30 * thisplayer->targetPoint;
+		thisplayer->allClear = 0;
+	}
 }
 
 void ruleset_ENDLESS::onWin(player* thisplayer)
 {
-    thisplayer->losewin=WIN;
-    thisplayer->currentphase=WIN_IDLE;
-    //sound
-    if (thisplayer==currentgame->players[0])
-        data->snd.win.Play(data);
-    else
-        data->snd.lose.Play(data);
+	thisplayer->losewin = WIN;
+	thisplayer->currentphase = WIN_IDLE;
+
+	// Sound
+	if (thisplayer == currentgame->players[0])
+		data->snd.win.Play(data);
+	else
+		data->snd.lose.Play(data);
 }
 
 void ruleset_ENDLESS::onChain(player*)
 {
-    //thisplayer->forgiveGarbage=true;
 }
 
 void ruleset_ENDLESS::onOffset(player* thisplayer)
 {
-    thisplayer->forgiveGarbage=true;
-    thisplayer->addFeverCount();
+	thisplayer->forgiveGarbage = true;
+	thisplayer->addFeverCount();
 }
 int ruleset_ENDLESS::getLinkBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=11)
-        return linkBonus_FEVER[10];
-    else
-        return linkBonus_FEVER[n];
+	if (n >= 11)
+		return linkBonus_FEVER[10];
+	return linkBonus_FEVER[n];
 }
 
 int ruleset_ENDLESS::getColorBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=5)
-        return colorBonus_FEVER[4];
-    else
-        return colorBonus_FEVER[n];
+	if (n >= 5)
+		return colorBonus_FEVER[4];
+	return colorBonus_FEVER[n];
 }
 
 int ruleset_ENDLESS::getChainBonus(player* pl)
 {
-    int n=pl->chain;
-    int character = pl->getCharacter();
-    n--;
-    if (n<0)
-        return 0;
+	int n = pl->chain;
+	int character = pl->getCharacter();
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>23)
-        return 999;
-    else
-    {
-        if (pl->feverMode)
-            return chainBonus_FEVER[character][n];
-        else
-            return chainBonus_NORMAL[character][n];
-    }
+	if (n > 23)
+		return 999;
+	if (pl->feverMode)
+		return chainBonus_FEVER[character][n];
+	return chainBonus_NORMAL[character][n];
 }
 //}
 
@@ -388,147 +368,132 @@ int ruleset_ENDLESS::getChainBonus(player* pl)
 //==========================================================
 ruleset_TSU::ruleset_TSU()
 {
-    delayedFall=false;
-    doubleSpawn=false;
-    addDropBonus=true;
-    voicePatternFever=false;
+	delayedFall = false;
+	doubleSpawn = false;
+	addDropBonus = true;
+	voicePatternFever = false;
 }
 
 ruleset_TSU::~ruleset_TSU()
 {
-
 }
 
 
-phase ruleset_TSU::endPhase(phase currentPhase,player* thisplayer)
+phase ruleset_TSU::endPhase(phase currentPhase, player* thisplayer)
 {
-    switch (currentPhase)
-    {
-        case GETREADY:
-            return DROPGARBAGE;
-            break;
-        case PREPARE:
-            return MOVE;
-            break;
-        case MOVE:
-            thisplayer->createPuyo=true;
-            return CREATEPUYO;
-            break;
-        case CREATEPUYO:
-            return DROPPUYO;
-            break;
-        case DROPPUYO:
-            return FALLPUYO;
-            break;
-        case FALLPUYO:
-            return SEARCHCHAIN;
-            break;
-        case SEARCHCHAIN:
-            //continue to phase 40 if no chain found, else to 32
-            if (!thisplayer->foundChain)
-                return CHECKALLCLEAR;
-            else //found chain
-                thisplayer->destroyPuyosTimer=1;
-                return DESTROYPUYO;
-            break;
-        case DESTROYPUYO:
-            return GARBAGE;
-            break;
-        case GARBAGE:
-            return DROPPUYO;
-            break;
-        case CHECKALLCLEAR:
-            return DROPGARBAGE;
-            break;
-        case DROPGARBAGE:
-            return FALLGARBAGE;
-            break;
-        case FALLGARBAGE:
-            return CHECKLOSER;
-            break;
-        case CHECKLOSER:
-            return PREPARE;
-            break;
+	switch (currentPhase)
+	{
+	case GETREADY:
+		return DROPGARBAGE;
+	case PREPARE:
+		return MOVE;
+	case MOVE:
+		thisplayer->createPuyo = true;
+		return CREATEPUYO;
+	case CREATEPUYO:
+		return DROPPUYO;
+	case DROPPUYO:
+		return FALLPUYO;
+	case FALLPUYO:
+		return SEARCHCHAIN;
+	case SEARCHCHAIN:
+		// Continue to phase 40 if no chain found, else to 32
+		{
+			// Continue to phase 40 if no chain found, else to 32
+			if (!thisplayer->foundChain)
+				return CHECKALLCLEAR;
+				// Found chain
+			thisplayer->destroyPuyosTimer = 1;
+		}
+		return DESTROYPUYO;
+	case DESTROYPUYO:
+		return GARBAGE;
+	case GARBAGE:
+		return DROPPUYO;
+	case CHECKALLCLEAR:
+		return DROPGARBAGE;
+	case DROPGARBAGE:
+		return FALLGARBAGE;
+	case FALLGARBAGE:
+		return CHECKLOSER;
+	case CHECKLOSER:
+		return PREPARE;
 
-        default:
-            return IDLE;
+	default:
+		return IDLE;
 
-    }
+	}
 }
 
 void ruleset_TSU::onInit(player* thisplayer)
 {
-    thisplayer->targetPoint=targetPoint;
-    thisplayer->feverGauge.setVisible(false);
-    thisplayer->useDropPattern=false;
+	thisplayer->targetPoint = targetPoint;
+	thisplayer->feverGauge.setVisible(false);
+	thisplayer->useDropPattern = false;
 }
 
-void ruleset_TSU::onAllClearPop(player *thisplayer)
+void ruleset_TSU::onAllClearPop(player* thisplayer)
 {
-    //add 30 nuisance puyos
-    //triggers during phase 30
-    if (thisplayer->currentphase==SEARCHCHAIN)
-    {
-        thisplayer->currentScore+=30*thisplayer->targetPoint;
-        thisplayer->allClear=0;
-    }
+	// Add 30 nuisance puyos
+	// Triggers during phase 30
+	if (thisplayer->currentphase == SEARCHCHAIN)
+	{
+		thisplayer->currentScore += 30 * thisplayer->targetPoint;
+		thisplayer->allClear = 0;
+	}
 }
 
 void ruleset_TSU::onWin(player* thisplayer)
 {
-    thisplayer->losewin=WIN;
-    thisplayer->currentphase=WIN_IDLE;
-    //sound if player 1 wins or loses
-    if (thisplayer==currentgame->players[0])
-        data->snd.win.Play(data);
-    else
-        data->snd.lose.Play(data);
+	thisplayer->losewin = WIN;
+	thisplayer->currentphase = WIN_IDLE;
+	// Sound if player 1 wins or loses
+	if (thisplayer == currentgame->players[0])
+		data->snd.win.Play(data);
+	else
+		data->snd.lose.Play(data);
 }
 
 void ruleset_TSU::onLose(player* thisplayer)
 {
-    thisplayer->losewin=LOSE;
-    thisplayer->currentphase=LOSEDROP;
-    //sounds for losing (not player 1)
-    //debugstring=to_string(currentgame->getActivePlayers());
-    if (thisplayer!=currentgame->players[0] && currentgame->getActivePlayers()!=1)
-        data->snd.lose.Play(data);
+	thisplayer->losewin = LOSE;
+	thisplayer->currentphase = LOSEDROP;
+	// Sounds for losing (not player 1)
+	if (thisplayer != currentgame->players[0] && currentgame->getActivePlayers() != 1)
+		data->snd.lose.Play(data);
 }
 
 int ruleset_TSU::getLinkBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=11)
-        return linkBonus_TSU[10];
-    else
-        return linkBonus_TSU[n];
+	if (n >= 11)
+		return linkBonus_TSU[10];
+	return linkBonus_TSU[n];
 }
 
 int ruleset_TSU::getColorBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=5)
-        return colorBonus_TSU[4];
-    else
-        return colorBonus_TSU[n];
+	if (n >= 5)
+		return colorBonus_TSU[4];
+	return colorBonus_TSU[n];
 }
 
 int ruleset_TSU::getChainBonus(player* pl)
 {
-    int n=pl->chain;
-    n--;
-    if (n<0)
-            return 0;
-    if (n>=16)
-        return min(chainBonus_TSU[15]+32*(n - 15),999);
-    else
-        return chainBonus_TSU[n];
+	int n = pl->chain;
+	n--;
+	if (n < 0)
+		return 0;
+	if (n >= 16)
+		return min(chainBonus_TSU[15] + 32 * (n - 15), 999);
+	return chainBonus_TSU[n];
 }
 //}
 
@@ -536,8 +501,8 @@ int ruleset_TSU::getChainBonus(player* pl)
 //==========================================================
 ruleset_FEVER::ruleset_FEVER()
 {
-    delayedFall=true;
-    doubleSpawn=true;
+	delayedFall = true;
+	doubleSpawn = true;
 }
 
 ruleset_FEVER::~ruleset_FEVER()
@@ -545,212 +510,186 @@ ruleset_FEVER::~ruleset_FEVER()
 
 }
 
-phase ruleset_FEVER::endPhase(phase currentPhase,player* thisplayer)
+phase ruleset_FEVER::endPhase(phase currentPhase, player* thisplayer)
 {
-    switch (currentPhase)
-    {
-        case GETREADY:
-            return DROPGARBAGE;
-            break;
-        case PREPARE:
-            return MOVE;
-            break;
-        case MOVE:
-            thisplayer->createPuyo=true;
-            return CREATEPUYO;
-            break;
-        case CREATEPUYO:
-            return DROPPUYO;
-            break;
-        case DROPPUYO:
-            return FALLPUYO;
-            break;
-        case FALLPUYO:
-            return SEARCHCHAIN;
-            break;
-        case SEARCHCHAIN:
-            //continue to phase 40 if no chain found, else to 32
-            if (!thisplayer->foundChain)
-                return CHECKALLCLEAR;
-            else //found chain
-                thisplayer->destroyPuyosTimer=1;
-                return DESTROYPUYO;
-            break;
-        case DESTROYPUYO:
-            //return DROPPUYO;
-            return GARBAGE;
-            break;
-        case GARBAGE:
-            return DROPPUYO;
-            break;
-        case CHECKALLCLEAR:
-            if (thisplayer->feverMode)
-                return CHECKENDFEVER;
-            else
-                return DROPGARBAGE;
-            break;
-        case CHECKENDFEVER:
-            if (thisplayer->feverGauge.seconds==0)
-                return ENDFEVER;
-            else
-            {
-                if (!thisplayer->poppedChain) //no chain popped: normal progression
-                    return DROPGARBAGE;
-                else //player popped a chain, drop a new feverchain
-                {
-                    thisplayer->poppedChain=false; //chain must be reset here
-                    return DROPFEVER;
-                }
-            }
-            break;
-        case ENDFEVER:
-                return DROPGARBAGE;
-            break;
+	switch (currentPhase)
+	{
+	case GETREADY:
+		return DROPGARBAGE;
+	case PREPARE:
+		return MOVE;
+	case MOVE:
+		thisplayer->createPuyo = true;
+		return CREATEPUYO;
+	case CREATEPUYO:
+		return DROPPUYO;
+	case DROPPUYO:
+		return FALLPUYO;
+	case FALLPUYO:
+		return SEARCHCHAIN;
+	case SEARCHCHAIN:
+		// Continue to phase 40 if no chain found, else to 32
+		{
+			// Continue to phase 40 if no chain found, else to 32
+			if (!thisplayer->foundChain)
+				return CHECKALLCLEAR;
+				// Found chain
+			thisplayer->destroyPuyosTimer = 1;
+		}
+		return DESTROYPUYO;
+	case DESTROYPUYO:
+		return GARBAGE;
+	case GARBAGE:
+		return DROPPUYO;
+	case CHECKALLCLEAR:
+		{
+			if (thisplayer->feverMode)
+				return CHECKENDFEVER;
+			return DROPGARBAGE;
+		}
+	case CHECKENDFEVER:
+		{
+			if (thisplayer->feverGauge.seconds == 0)
+				return ENDFEVER;
+			if (!thisplayer->poppedChain) // No chain popped: normal progression
+			{
+				return DROPGARBAGE;
+			}
+			// Player popped a chain, drop a new feverchain
+			thisplayer->poppedChain = false; // Chain must be reset here
+			return DROPFEVER;
+		}
+	case ENDFEVER:
+		return DROPGARBAGE;
 
-        case DROPGARBAGE:
-            return FALLGARBAGE;
-            break;
-        case FALLGARBAGE:
-            return CHECKLOSER;
-            break;
-        case CHECKLOSER:
-            if (!thisplayer->feverMode)
-                return CHECKFEVER; //not in fever: check if fever should start
-            else
-                return PREPARE;
-            break;
-        case CHECKFEVER:
-            if (thisplayer->feverMode)
-                return PREPAREFEVER;
-            else
-            {
-                if (thisplayer->allClear==0)
-                    return PREPARE;
-                else
-                {
-                    thisplayer->allClear=0;
-                    return DROPPUYO;
-                }
-            }
-            break;
-        case PREPAREFEVER:
-            return DROPFEVER;
-            break;
-        case DROPFEVER:
-            return DROPPUYO;
+	case DROPGARBAGE:
+		return FALLGARBAGE;
+	case FALLGARBAGE:
+		return CHECKLOSER;
+	case CHECKLOSER:
+		{
+			if (!thisplayer->feverMode)
+				return CHECKFEVER; // Not in fever: check if fever should start
+			return PREPARE;
+		}
+	case CHECKFEVER:
+		{
+			if (thisplayer->feverMode)
+				return PREPAREFEVER;
+			if (thisplayer->allClear == 0)
+				return PREPARE;
+			thisplayer->allClear = 0;
+			return DROPPUYO;
+		}
+	case PREPAREFEVER:
+		return DROPFEVER;
+	case DROPFEVER:
+		return DROPPUYO;
 
-        case LOSEDROP:
-            return LOSEDROP; //in fever it's possible the game tries to call endphase in fever mode
+	case LOSEDROP:
+		return LOSEDROP; // In fever it's possible the game tries to call endphase in fever mode
 
-        default:
-            return IDLE;
-    }
+	default:
+		return IDLE;
+	}
 }
 
 void ruleset_FEVER::onSetGame()
 {
-    currentgame->legacyRandomizer = true;
-    currentgame->legacyNuisanceDrop = true;
+	currentgame->legacyRandomizer = true;
+	currentgame->legacyNuisanceDrop = true;
 }
 
 void ruleset_FEVER::onInit(player* thisplayer)
 {
-    thisplayer->targetPoint=targetPoint;
-    thisplayer->feverGauge.setVisible(true);
-    puyoToClear=4; //must be 4!
+	thisplayer->targetPoint = targetPoint;
+	thisplayer->feverGauge.setVisible(true);
+	puyoToClear = 4; // Must be 4!
 }
 
-void ruleset_FEVER::onAllClearPop(player *)
+void ruleset_FEVER::onAllClearPop(player*)
 {
-    //does nothing
+	// Does nothing
 }
 
 void ruleset_FEVER::onAllClear(player* thisplayer)
 {
-    //drop a fever pattern on the field or increase feverchain amount & fevertime
-    //implementation of allclear is inside player object (checkstartfever and checkendfever)
-    thisplayer->allClear=1;
+	// Drop a fever pattern on the field or increase feverchain amount & fevertime
+	// Implementation of allclear is inside player object (checkstartfever and checkendfever)
+	thisplayer->allClear = 1;
 }
 
 void ruleset_FEVER::onLose(player* thisplayer)
 {
-    thisplayer->losewin=LOSE;
-    thisplayer->currentphase=LOSEDROP;
+	thisplayer->losewin = LOSE;
+	thisplayer->currentphase = LOSEDROP;
 }
 
 void ruleset_FEVER::onWin(player* thisplayer)
 {
-    thisplayer->losewin=WIN;
-    thisplayer->currentphase=WIN_IDLE;
-    //sound
-    if (thisplayer==currentgame->players[0])
-        data->snd.win.Play(data);
-    else
-        data->snd.lose.Play(data);
+	thisplayer->losewin = WIN;
+	thisplayer->currentphase = WIN_IDLE;
+	// Sound
+	if (thisplayer == currentgame->players[0])
+		data->snd.win.Play(data);
+	else
+		data->snd.lose.Play(data);
 }
 
 void ruleset_FEVER::onChain(player*)
 {
-    //thisplayer->forgiveGarbage=true;
-    //thisplayer->feverColor=getRandom(5);
 }
 
 void ruleset_FEVER::onOffset(player* thisplayer)
 {
-    thisplayer->forgiveGarbage=true;
-    thisplayer->addFeverCount();
+	thisplayer->forgiveGarbage = true;
+	thisplayer->addFeverCount();
 }
 
 void ruleset_FEVER::onAttack(player* thisplayer)
 {
-    if (!thisplayer->feverMode && thisplayer->feverGauge.seconds<60*30)
-    {
-        thisplayer->feverGauge.addTime(60);
-        thisplayer->showSecondsObj(60);
-    }
+	if (!thisplayer->feverMode && thisplayer->feverGauge.seconds < 60 * 30)
+	{
+		thisplayer->feverGauge.addTime(60);
+		thisplayer->showSecondsObj(60);
+	}
 }
 
 int ruleset_FEVER::getLinkBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=11)
-        return linkBonus_FEVER[10];
-    else
-        return linkBonus_FEVER[n];
+	if (n >= 11)
+		return linkBonus_FEVER[10];
+	return linkBonus_FEVER[n];
 }
 
 int ruleset_FEVER::getColorBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=5)
-        return colorBonus_FEVER[4];
-    else
-        return colorBonus_FEVER[n];
+	if (n >= 5)
+		return colorBonus_FEVER[4];
+	return colorBonus_FEVER[n];
 }
 
 int ruleset_FEVER::getChainBonus(player* pl)
 {
-    int n=pl->chain;
-    int character=pl->getCharacter();
-    n--;
-    if (n<0)
-        return 0;
+	int n = pl->chain;
+	int character = pl->getCharacter();
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>23)
-        return 999;
-    else
-    {
-        if (pl->feverMode)
-            return chainBonus_FEVER[character][n];
-        else
-            return chainBonus_NORMAL[character][n];
-    }
+	if (n > 23)
+		return 999;
+	if (pl->feverMode)
+		return chainBonus_FEVER[character][n];
+	return chainBonus_NORMAL[character][n];
 }
 //}
 
@@ -758,9 +697,9 @@ int ruleset_FEVER::getChainBonus(player* pl)
 //==========================================================
 ruleset_ENDLESSFEVER::ruleset_ENDLESSFEVER()
 {
-    delayedFall=true;
-    doubleSpawn=true;
-    allClearStart=false;
+	delayedFall = true;
+	doubleSpawn = true;
+	allClearStart = false;
 }
 
 ruleset_ENDLESSFEVER::~ruleset_ENDLESSFEVER()
@@ -768,219 +707,194 @@ ruleset_ENDLESSFEVER::~ruleset_ENDLESSFEVER()
 
 }
 
-phase ruleset_ENDLESSFEVER::endPhase(phase currentPhase,player* thisplayer)
+phase ruleset_ENDLESSFEVER::endPhase(phase currentPhase, player* thisplayer)
 {
-    switch (currentPhase)
-    {
-        case GETREADY:
-            return CHECKFEVER;
-            break;
-        case PREPARE:
-            return MOVE;
-            break;
-        case MOVE:
-            thisplayer->createPuyo=true;
-            return CREATEPUYO;
-            break;
-        case CREATEPUYO:
-            return DROPPUYO;
-            break;
-        case DROPPUYO:
-            return FALLPUYO;
-            break;
-        case FALLPUYO:
-            return SEARCHCHAIN;
-            break;
-        case SEARCHCHAIN:
-            //continue to phase 40 if no chain found, else to 32
-            if (!thisplayer->foundChain)
-                return CHECKALLCLEAR;
-            else //found chain
-                thisplayer->destroyPuyosTimer=1;
-                return DESTROYPUYO;
-            break;
-        case DESTROYPUYO:
-            return GARBAGE;
-            break;
-        case GARBAGE:
-            return DROPPUYO;
-            break;
-        case CHECKALLCLEAR:
-            if (thisplayer->feverMode)
-                return CHECKENDFEVER;
-            else
-                return DROPGARBAGE;
-            break;
-        case CHECKENDFEVER:
-            if (thisplayer->feverGauge.seconds==0)
-            {//lose
-                    thisplayer->losewin=LOSE;
-                    return LOSEDROP;
-            }
-            else
-            {
-                if (!thisplayer->poppedChain) //no chain popped: normal progression
-                    return DROPGARBAGE;
-                else //player popped a chain, drop a new feverchain
-                {
-                    thisplayer->poppedChain=false; //chain must be reset here
-                    return DROPFEVER;
-                }
-            }
-            break;
-        case ENDFEVER:
-                return DROPGARBAGE;
-            break;
+	switch (currentPhase)
+	{
+	case GETREADY:
+		return CHECKFEVER;
+	case PREPARE:
+		return MOVE;
+	case MOVE:
+		thisplayer->createPuyo = true;
+		return CREATEPUYO;
+	case CREATEPUYO:
+		return DROPPUYO;
+	case DROPPUYO:
+		return FALLPUYO;
+	case FALLPUYO:
+		return SEARCHCHAIN;
+	case SEARCHCHAIN:
+		// Continue to phase 40 if no chain found, else to 32
+		{
+			// Continue to phase 40 if no chain found, else to 32
+			if (!thisplayer->foundChain)
+				return CHECKALLCLEAR;
+				// Found chain
+			thisplayer->destroyPuyosTimer = 1;
+		}
+		return DESTROYPUYO;
+	case DESTROYPUYO:
+		return GARBAGE;
+	case GARBAGE:
+		return DROPPUYO;
+	case CHECKALLCLEAR:
+		{
+			if (thisplayer->feverMode)
+				return CHECKENDFEVER;
+			return DROPGARBAGE;
+		}
+	case CHECKENDFEVER:
+		{
+			if (thisplayer->feverGauge.seconds == 0)
+			{
+				// Lose
+				thisplayer->losewin = LOSE;
+				return LOSEDROP;
+			}
+			if (!thisplayer->poppedChain) // No chain popped: normal progression
+			{
+				return DROPGARBAGE;
+			}
+			// Player popped a chain, drop a new feverchain
+			thisplayer->poppedChain = false; // Chain must be reset here
+			return DROPFEVER;
+		}
+	case ENDFEVER:
+		return DROPGARBAGE;
 
-        case DROPGARBAGE:
-            return FALLGARBAGE;
-            break;
-        case FALLGARBAGE:
-            return CHECKLOSER;
-            break;
-        case CHECKLOSER:
-            if (!thisplayer->feverMode)
-                return CHECKFEVER; //not in fever: check if fever should start
-            else
-                return PREPARE;
-            break;
-        case CHECKFEVER:
-            if (thisplayer->feverMode)
-                return PREPAREFEVER;
-            else
-            {
-                if (thisplayer->allClear==0)
-                    return PREPARE;
-                else
-                {
-                    thisplayer->allClear=0;
-                    return DROPPUYO;
-                }
-            }
-            break;
-        case PREPAREFEVER:
-            //return IDLE; //record here
-            return DROPFEVER;
-            break;
-        case DROPFEVER:
-            return DROPPUYO;
+	case DROPGARBAGE:
+		return FALLGARBAGE;
+	case FALLGARBAGE:
+		return CHECKLOSER;
+	case CHECKLOSER:
+		{
+			if (!thisplayer->feverMode)
+				return CHECKFEVER; // Not in fever: check if fever should start
+			return PREPARE;
+		}
+	case CHECKFEVER:
+		{
+			if (thisplayer->feverMode)
+				return PREPAREFEVER;
+			if (thisplayer->allClear == 0)
+				return PREPARE;
+			thisplayer->allClear = 0;
+			return DROPPUYO;
+		}
+	case PREPAREFEVER:
+		return DROPFEVER;
+	case DROPFEVER:
+		return DROPPUYO;
 
-        case LOSEDROP:
-            return LOSEDROP; //in fever it's possible the game tries to call endphase in fever mode
+	case LOSEDROP:
+		return LOSEDROP; // In fever it's possible the game tries to call endphase in fever mode
 
-        default:
-            return IDLE;
-    }
+	default:
+		return IDLE;
+	}
 }
 
 void ruleset_ENDLESSFEVER::onSetGame()
 {
-    currentgame->legacyRandomizer = true;
-    currentgame->legacyNuisanceDrop = true;
+	currentgame->legacyRandomizer = true;
+	currentgame->legacyNuisanceDrop = true;
 }
 
 void ruleset_ENDLESSFEVER::onInit(player* thisplayer)
 {
-    thisplayer->targetPoint=targetPoint;
-    thisplayer->feverGauge.setVisible(true);
-    puyoToClear=4; //must be 4!
-    thisplayer->feverGauge.setCount(7);
-    thisplayer->feverGauge.setSeconds(60*60);
-    thisplayer->feverGauge.maxSeconds=99;
-    thisplayer->nextPuyoActive=false;
+	thisplayer->targetPoint = targetPoint;
+	thisplayer->feverGauge.setVisible(true);
+	puyoToClear = 4; // Must be 4!
+	thisplayer->feverGauge.setCount(7);
+	thisplayer->feverGauge.setSeconds(60 * 60);
+	thisplayer->feverGauge.maxSeconds = 99;
+	thisplayer->nextPuyoActive = false;
 }
 
-void ruleset_ENDLESSFEVER::onAllClearPop(player *)
+void ruleset_ENDLESSFEVER::onAllClearPop(player*)
 {
-    //does nothing
+	// Does nothing
 }
 
 void ruleset_ENDLESSFEVER::onAllClear(player* thisplayer)
 {
-    //drop a fever pattern on the field or increase feverchain amount & fevertime
-    //implementation of allclear is inside player object (checkstartfever and checkendfever)
-    thisplayer->allClear=1;
+	// Drop a fever pattern on the field or increase feverchain amount & fevertime
+	// Implementation of allclear is inside player object (checkstartfever and checkendfever)
+	thisplayer->allClear = 1;
 }
 
 void ruleset_ENDLESSFEVER::onLose(player* thisplayer)
 {
-    thisplayer->losewin=LOSE;
-    thisplayer->currentphase=LOSEDROP;
+	thisplayer->losewin = LOSE;
+	thisplayer->currentphase = LOSEDROP;
 }
 
 void ruleset_ENDLESSFEVER::onWin(player* thisplayer)
 {
-    thisplayer->losewin=WIN;
-    thisplayer->currentphase=WIN_IDLE;
-    //sound
-    if (thisplayer==currentgame->players[0])
-        data->snd.win.Play(data);
-    else
-        data->snd.lose.Play(data);
+	thisplayer->losewin = WIN;
+	thisplayer->currentphase = WIN_IDLE;
+	// Sound
+	if (thisplayer == currentgame->players[0])
+		data->snd.win.Play(data);
+	else
+		data->snd.lose.Play(data);
 }
 
 void ruleset_ENDLESSFEVER::onChain(player*)
 {
-    //thisplayer->forgiveGarbage=true;
-    //thisplayer->feverColor=getRandom(5);
 }
 
 void ruleset_ENDLESSFEVER::onOffset(player* thisplayer)
 {
-    thisplayer->forgiveGarbage=true;
-    thisplayer->addFeverCount();
+	thisplayer->forgiveGarbage = true;
+	thisplayer->addFeverCount();
 }
 
 void ruleset_ENDLESSFEVER::onAttack(player* thisplayer)
 {
-    if (!thisplayer->feverMode && thisplayer->feverGauge.seconds<60*30)
-    {
-        thisplayer->feverGauge.addTime(60);
-        thisplayer->showSecondsObj(60);
-    }
+	if (!thisplayer->feverMode && thisplayer->feverGauge.seconds < 60 * 30)
+	{
+		thisplayer->feverGauge.addTime(60);
+		thisplayer->showSecondsObj(60);
+	}
 }
 
 int ruleset_ENDLESSFEVER::getLinkBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=11)
-        return linkBonus_FEVER[10];
-    else
-        return linkBonus_FEVER[n];
+	if (n >= 11)
+		return linkBonus_FEVER[10];
+	return linkBonus_FEVER[n];
 }
 
 int ruleset_ENDLESSFEVER::getColorBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=5)
-        return colorBonus_FEVER[4];
-    else
-        return colorBonus_FEVER[n];
+	if (n >= 5)
+		return colorBonus_FEVER[4];
+	return colorBonus_FEVER[n];
 }
 
 int ruleset_ENDLESSFEVER::getChainBonus(player* pl)
 {
-    int n=pl->chain;
-    int character=pl->getCharacter();
-    n--;
-    if (n<0)
-        return 0;
+	int n = pl->chain;
+	int character = pl->getCharacter();
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>23)
-        return 999;
-    else
-    {
-        if (pl->feverMode)
-            return chainBonus_FEVER[character][n];
-        else
-            return chainBonus_NORMAL[character][n];
-    }
+	if (n > 23)
+		return 999;
+	if (pl->feverMode)
+		return chainBonus_FEVER[character][n];
+	return chainBonus_NORMAL[character][n];
 }
 //}
 
@@ -988,8 +902,8 @@ int ruleset_ENDLESSFEVER::getChainBonus(player* pl)
 //==========================================================
 ruleset_ENDLESSFEVERVS::ruleset_ENDLESSFEVERVS()
 {
-    delayedFall=true;
-    doubleSpawn=true;
+	delayedFall = true;
+	doubleSpawn = true;
 }
 
 ruleset_ENDLESSFEVERVS::~ruleset_ENDLESSFEVERVS()
@@ -997,218 +911,189 @@ ruleset_ENDLESSFEVERVS::~ruleset_ENDLESSFEVERVS()
 
 }
 
-phase ruleset_ENDLESSFEVERVS::endPhase(phase currentPhase,player* thisplayer)
+phase ruleset_ENDLESSFEVERVS::endPhase(phase currentPhase, player* thisplayer)
 {
-    switch (currentPhase)
-    {
-        case GETREADY:
-            return CHECKFEVER;
-            break;
-        case PREPARE:
-            return MOVE;
-            break;
-        case MOVE:
-            thisplayer->createPuyo=true;
-            return CREATEPUYO;
-            break;
-        case CREATEPUYO:
-            return DROPPUYO;
-            break;
-        case DROPPUYO:
-            return FALLPUYO;
-            break;
-        case FALLPUYO:
-            return SEARCHCHAIN;
-            break;
-        case SEARCHCHAIN:
-            //continue to phase 40 if no chain found, else to 32
-            if (!thisplayer->foundChain)
-                return CHECKALLCLEAR;
-            else //found chain
-                thisplayer->destroyPuyosTimer=1;
-                return DESTROYPUYO;
-            break;
-        case DESTROYPUYO:
-            //return DROPPUYO;
-            return GARBAGE;
-            break;
-        case GARBAGE:
-            return DROPPUYO;
-            break;
-        case CHECKALLCLEAR:
-            if (thisplayer->feverMode)
-                return CHECKENDFEVER;
-            else
-                return DROPGARBAGE;
-            break;
-        case CHECKENDFEVER:
-            if (thisplayer->feverGauge.seconds==0)
-                return ENDFEVER;
-            else
-            {
-                if (!thisplayer->poppedChain) //no chain popped: normal progression
-                    return DROPGARBAGE;
-                else //player popped a chain, drop a new feverchain
-                {
-                    thisplayer->poppedChain=false; //chain must be reset here
-                    return DROPFEVER;
-                }
-            }
-            break;
-        case ENDFEVER:
-                return DROPGARBAGE;
-            break;
+	switch (currentPhase)
+	{
+	case GETREADY:
+		return CHECKFEVER;
+	case PREPARE:
+		return MOVE;
+	case MOVE:
+		thisplayer->createPuyo = true;
+		return CREATEPUYO;
+	case CREATEPUYO:
+		return DROPPUYO;
+	case DROPPUYO:
+		return FALLPUYO;
+	case FALLPUYO:
+		return SEARCHCHAIN;
+	case SEARCHCHAIN:
+		// Continue to phase 40 if no chain found, else to 32
+		{
+			// Continue to phase 40 if no chain found, else to 32
+			if (!thisplayer->foundChain)
+				return CHECKALLCLEAR;
+				// Found chain
+			thisplayer->destroyPuyosTimer = 1;
+		}
+		return DESTROYPUYO;
+	case DESTROYPUYO:
+		return GARBAGE;
+	case GARBAGE:
+		return DROPPUYO;
+	case CHECKALLCLEAR:
+		{
+			if (thisplayer->feverMode)
+				return CHECKENDFEVER;
+			return DROPGARBAGE;
+		}
+	case CHECKENDFEVER:
+		{
+			if (thisplayer->feverGauge.seconds == 0)
+				return ENDFEVER;
+			if (!thisplayer->poppedChain) // No chain popped: normal progression
+				return DROPGARBAGE;
+			// Player popped a chain, drop a new feverchain
+			thisplayer->poppedChain = false; // Chain must be reset here
+			return DROPFEVER;
+		}
+	case ENDFEVER:
+		return DROPGARBAGE;
 
-        case DROPGARBAGE:
-            return FALLGARBAGE;
-            break;
-        case FALLGARBAGE:
-            return CHECKLOSER;
-            break;
-        case CHECKLOSER:
-            if (!thisplayer->feverMode)
-                return CHECKFEVER; //not in fever: check if fever should start
-            else
-                return PREPARE;
-            break;
-        case CHECKFEVER:
-            if (thisplayer->feverMode)
-                return PREPAREFEVER;
-            else
-            {
-                if (thisplayer->allClear==0)
-                    return PREPARE;
-                else
-                {
-                    thisplayer->allClear=0;
-                    return DROPPUYO;
-                }
-            }
-            break;
-        case PREPAREFEVER:
-            return DROPFEVER;
-            break;
-        case DROPFEVER:
-            return DROPPUYO;
+	case DROPGARBAGE:
+		return FALLGARBAGE;
+	case FALLGARBAGE:
+		return CHECKLOSER;
+	case CHECKLOSER:
+		{
+			if (!thisplayer->feverMode)
+				return CHECKFEVER; // Not in fever: check if fever should start
+			return PREPARE;
+		}
+	case CHECKFEVER:
+		{
+			if (thisplayer->feverMode)
+				return PREPAREFEVER;
+			if (thisplayer->allClear == 0)
+				return PREPARE;
+			thisplayer->allClear = 0;
+			return DROPPUYO;
+		}
+	case PREPAREFEVER:
+		return DROPFEVER;
+	case DROPFEVER:
+		return DROPPUYO;
 
-        case LOSEDROP:
-            return LOSEDROP; //in fever it's possible the game tries to call endphase in fever mode
+	case LOSEDROP:
+		return LOSEDROP; // In fever it's possible the game tries to call endphase in fever mode
 
-        default:
-            return IDLE;
-    }
+	default:
+		return IDLE;
+	}
 }
 
 void ruleset_ENDLESSFEVERVS::onSetGame()
 {
-    currentgame->legacyRandomizer = true;
-    currentgame->legacyNuisanceDrop = true;
+	currentgame->legacyRandomizer = true;
+	currentgame->legacyNuisanceDrop = true;
 }
 
 void ruleset_ENDLESSFEVERVS::onInit(player* thisplayer)
 {
-    thisplayer->targetPoint=targetPoint;
-    thisplayer->feverGauge.setVisible(true);
-    puyoToClear=4; //must be 4!
-    thisplayer->feverGauge.setCount(7);
-    thisplayer->feverGauge.setSeconds(99*60);
-    thisplayer->feverGauge.endless=true;
-    thisplayer->normalGarbage.GQ=270;
-    thisplayer->updateTray();
-    thisplayer->nextPuyoActive=false;
+	thisplayer->targetPoint = targetPoint;
+	thisplayer->feverGauge.setVisible(true);
+	puyoToClear = 4; // Must be 4!
+	thisplayer->feverGauge.setCount(7);
+	thisplayer->feverGauge.setSeconds(99 * 60);
+	thisplayer->feverGauge.endless = true;
+	thisplayer->normalGarbage.GQ = 270;
+	thisplayer->updateTray();
+	thisplayer->nextPuyoActive = false;
 }
 
-void ruleset_ENDLESSFEVERVS::onAllClearPop(player *)
+void ruleset_ENDLESSFEVERVS::onAllClearPop(player*)
 {
-    //does nothing
 }
 
 void ruleset_ENDLESSFEVERVS::onAllClear(player* thisplayer)
 {
-    //drop a fever pattern on the field or increase feverchain amount & fevertime
-    //implementation of allclear is inside player object (checkstartfever and checkendfever)
-    thisplayer->allClear=1;
+	// Drop a fever pattern on the field or increase feverchain amount & fevertime
+	// Implementation of allclear is inside player object (checkstartfever and checkendfever)
+	thisplayer->allClear = 1;
 }
 
 void ruleset_ENDLESSFEVERVS::onLose(player* thisplayer)
 {
-    thisplayer->losewin=LOSE;
-    thisplayer->currentphase=LOSEDROP;
+	thisplayer->losewin = LOSE;
+	thisplayer->currentphase = LOSEDROP;
 }
 
 void ruleset_ENDLESSFEVERVS::onWin(player* thisplayer)
 {
-    thisplayer->losewin=WIN;
-    thisplayer->currentphase=WIN_IDLE;
-    //sound
-    if (thisplayer==currentgame->players[0])
-        data->snd.win.Play(data);
-    else
-        data->snd.lose.Play(data);
+	thisplayer->losewin = WIN;
+	thisplayer->currentphase = WIN_IDLE;
+	// Sound
+	if (thisplayer == currentgame->players[0])
+		data->snd.win.Play(data);
+	else
+		data->snd.lose.Play(data);
 }
 
 void ruleset_ENDLESSFEVERVS::onChain(player*)
 {
-    //thisplayer->forgiveGarbage=true;
-    //thisplayer->feverColor=getRandom(5);
 }
 
 void ruleset_ENDLESSFEVERVS::onOffset(player* thisplayer)
 {
-    thisplayer->forgiveGarbage=true;
-    thisplayer->addFeverCount();
+	thisplayer->forgiveGarbage = true;
+	thisplayer->addFeverCount();
 }
 
 void ruleset_ENDLESSFEVERVS::onAttack(player* thisplayer)
 {
-    if (!thisplayer->feverMode && thisplayer->feverGauge.seconds<60*30)
-    {
-        thisplayer->feverGauge.addTime(60);
-        thisplayer->showSecondsObj(60);
-    }
+	if (!thisplayer->feverMode && thisplayer->feverGauge.seconds < 60 * 30)
+	{
+		thisplayer->feverGauge.addTime(60);
+		thisplayer->showSecondsObj(60);
+	}
 }
 
 int ruleset_ENDLESSFEVERVS::getLinkBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=11)
-        return linkBonus_FEVER[10];
-    else
-        return linkBonus_FEVER[n];
+	if (n >= 11)
+		return linkBonus_FEVER[10];
+	return linkBonus_FEVER[n];
 }
 
 int ruleset_ENDLESSFEVERVS::getColorBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=5)
-        return colorBonus_FEVER[4];
-    else
-        return colorBonus_FEVER[n];
+	if (n >= 5)
+		return colorBonus_FEVER[4];
+	return colorBonus_FEVER[n];
 }
 
 int ruleset_ENDLESSFEVERVS::getChainBonus(player* pl)
 {
-    int n=pl->chain;
-    int character=pl->getCharacter();
-    n--;
-    if (n<0)
-        return 0;
+	int n = pl->chain;
+	int character = pl->getCharacter();
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>23)
-        return 999;
-    else
-    {
-        if (pl->feverMode)
-            return chainBonus_FEVER[character][n];
-        else
-            return chainBonus_NORMAL[character][n];
-    }
+	if (n > 23)
+		return 999;
+	if (pl->feverMode)
+		return chainBonus_FEVER[character][n];
+	return chainBonus_NORMAL[character][n];
 }
 //}
 
@@ -1216,10 +1101,10 @@ int ruleset_ENDLESSFEVERVS::getChainBonus(player* pl)
 //==========================================================
 ruleset_TSU_ONLINE::ruleset_TSU_ONLINE()
 {
-    delayedFall=false;
-    doubleSpawn=false;
-    addDropBonus=true;
-    voicePatternFever=false;
+	delayedFall = false;
+	doubleSpawn = false;
+	addDropBonus = true;
+	voicePatternFever = false;
 }
 
 ruleset_TSU_ONLINE::~ruleset_TSU_ONLINE()
@@ -1228,163 +1113,151 @@ ruleset_TSU_ONLINE::~ruleset_TSU_ONLINE()
 }
 
 
-phase ruleset_TSU_ONLINE::endPhase(phase currentPhase,player* thisplayer)
+phase ruleset_TSU_ONLINE::endPhase(phase currentPhase, player* thisplayer)
 {
-    switch (currentPhase)
-    {
-        case GETREADY:
-            if (thisplayer->getPlayerType()==ONLINE)
-                return WAITGARBAGE;
-            else
-                return DROPGARBAGE;
-            break;
-        case PREPARE:
-            return MOVE;
-            break;
-        case MOVE:
-            thisplayer->createPuyo=true;
-            return CREATEPUYO;
-            break;
-        case CREATEPUYO:
-            return DROPPUYO;
-            break;
-        case DROPPUYO:
-            return FALLPUYO;
-            break;
-        case FALLPUYO:
-            return SEARCHCHAIN;
-            break;
-        case SEARCHCHAIN:
-            //continue to phase 40 if no chain found, else to 32
-            if (!thisplayer->foundChain)
-                return CHECKALLCLEAR;
-            else //found chain
-                thisplayer->destroyPuyosTimer=1;
-                return DESTROYPUYO;
-            break;
-        case DESTROYPUYO:
-            return GARBAGE;
-            break;
-        case GARBAGE:
-            return DROPPUYO;
-            break;
-        case CHECKALLCLEAR:
-            if (thisplayer->getPlayerType()==ONLINE)
-                return WAITGARBAGE;
-            else
-                return DROPGARBAGE;
-            break;
-        case WAITGARBAGE:
-            return FALLGARBAGE;
-            break;
-        case DROPGARBAGE:
-            return FALLGARBAGE;
-            break;
-        case FALLGARBAGE:
-            //expect other players to confirm your move
-            if (thisplayer->getPlayerType()==HUMAN)
-            {
-                return WAITCONFIRMGARBAGE;
-            }
-            else
-                return CHECKLOSER;
-            break;
-        case WAITCONFIRMGARBAGE:
-            return CHECKLOSER;
-            break;
-        case CHECKLOSER:
-            return PREPARE;
-            break;
+	switch (currentPhase)
+	{
+	case GETREADY:
+		{
+			if (thisplayer->getPlayerType() == ONLINE)
+				return WAITGARBAGE;
+			return DROPGARBAGE;
+		}
+	case PREPARE:
+		return MOVE;
+	case MOVE:
+		thisplayer->createPuyo = true;
+		return CREATEPUYO;
+	case CREATEPUYO:
+		return DROPPUYO;
+	case DROPPUYO:
+		return FALLPUYO;
+	case FALLPUYO:
+		return SEARCHCHAIN;
+	case SEARCHCHAIN:
+		// Continue to phase 40 if no chain found, else to 32
+		{
+			// Continue to phase 40 if no chain found, else to 32
+			if (!thisplayer->foundChain)
+				return CHECKALLCLEAR;
+				// Found chain
+			thisplayer->destroyPuyosTimer = 1;
+		}
+		return DESTROYPUYO;
+	case DESTROYPUYO:
+		return GARBAGE;
+	case GARBAGE:
+		return DROPPUYO;
+	case CHECKALLCLEAR:
+		{
+			if (thisplayer->getPlayerType() == ONLINE)
+				return WAITGARBAGE;
+			return DROPGARBAGE;
+		}
+	case WAITGARBAGE:
+		return FALLGARBAGE;
+	case DROPGARBAGE:
+		return FALLGARBAGE;
+	case FALLGARBAGE:
+		// Expect other players to confirm your move
+		{
+			// Expect other players to confirm your move
+			if (thisplayer->getPlayerType() == HUMAN)
+			{
+				return WAITCONFIRMGARBAGE;
+			}
+			return CHECKLOSER;
+		}
+	case WAITCONFIRMGARBAGE:
+		return CHECKLOSER;
+	case CHECKLOSER:
+		return PREPARE;
 
-        default:
-            return IDLE;
+	default:
+		return IDLE;
 
-    }
+	}
 }
 
 void ruleset_TSU_ONLINE::onInit(player* thisplayer)
 {
-    thisplayer->targetPoint=targetPoint;
-    thisplayer->feverGauge.setVisible(false);
-    thisplayer->useDropPattern=false;
+	thisplayer->targetPoint = targetPoint;
+	thisplayer->feverGauge.setVisible(false);
+	thisplayer->useDropPattern = false;
 }
 
-void ruleset_TSU_ONLINE::onAllClearPop(player *thisplayer)
+void ruleset_TSU_ONLINE::onAllClearPop(player* thisplayer)
 {
-    //add 30 nuisance puyos
-    //triggers during phase 30
-    if (thisplayer->currentphase==SEARCHCHAIN)
-    {
-        thisplayer->currentScore+=30*thisplayer->targetPoint;
-        thisplayer->allClear=0;
-    }
+	// Add 30 nuisance puyos
+	// Triggers during phase 30
+	if (thisplayer->currentphase == SEARCHCHAIN)
+	{
+		thisplayer->currentScore += 30 * thisplayer->targetPoint;
+		thisplayer->allClear = 0;
+	}
 }
 
 void ruleset_TSU_ONLINE::onWin(player* thisplayer)
 {
-    thisplayer->losewin=WIN;
-    thisplayer->currentphase=WIN_IDLE;
-    //sound if player 1 wins or loses
-    if (thisplayer==currentgame->players[0])
-        data->snd.win.Play(data);
-    else
-        data->snd.lose.Play(data);
+	thisplayer->losewin = WIN;
+	thisplayer->currentphase = WIN_IDLE;
+	// Sound if player 1 wins or loses
+	if (thisplayer == currentgame->players[0])
+		data->snd.win.Play(data);
+	else
+		data->snd.lose.Play(data);
 }
 
 void ruleset_TSU_ONLINE::onLose(player* thisplayer)
 {
-    //human online player: wait for confirmation
-    if (thisplayer->getPlayerType()==HUMAN)
-        thisplayer->losewin=LOSEWAIT;
-    else //no need to wait for anything
-        thisplayer->losewin=LOSE;
+	// Human online player: wait for confirmation
+	if (thisplayer->getPlayerType() == HUMAN)
+		thisplayer->losewin = LOSEWAIT;
+	else // No need to wait for anything
+		thisplayer->losewin = LOSE;
 
-    thisplayer->currentphase=LOSEDROP;
-    //sounds for losing (not player 1)
-    //debugstring=to_string(currentgame->getActivePlayers());
-    if (thisplayer!=currentgame->players[0] && currentgame->getActivePlayers()!=1)
-        data->snd.lose.Play(data);
+	thisplayer->currentphase = LOSEDROP;
+	// Sounds for losing (not player 1)
+	if (thisplayer != currentgame->players[0] && currentgame->getActivePlayers() != 1)
+		data->snd.lose.Play(data);
 }
 
 int ruleset_TSU_ONLINE::getLinkBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=11)
-        return linkBonus_TSU[10];
-    else
-        return linkBonus_TSU[n];
+	if (n >= 11)
+		return linkBonus_TSU[10];
+	return linkBonus_TSU[n];
 }
 
 int ruleset_TSU_ONLINE::getColorBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=5)
-        return colorBonus_TSU[4];
-    else
-        return colorBonus_TSU[n];
+	if (n >= 5)
+		return colorBonus_TSU[4];
+	return colorBonus_TSU[n];
 }
 
 int ruleset_TSU_ONLINE::getChainBonus(player* pl)
 {
-    int n=pl->chain;
-    n--;
-    if (n<0)
-            return 0;
-    if (n>=16)
-        return min(chainBonus_TSU[15]+32*(n - 15),999);
-    else
-        return chainBonus_TSU[n];
+	int n = pl->chain;
+	n--;
+	if (n < 0)
+		return 0;
+	if (n >= 16)
+		return min(chainBonus_TSU[15] + 32 * (n - 15), 999);
+	return chainBonus_TSU[n];
 }
 
 void ruleset_TSU_ONLINE::onOffset(player* thisplayer)
 {
-    thisplayer->forgiveGarbage=false;
+	thisplayer->forgiveGarbage = false;
 }
 
 //}
@@ -1393,11 +1266,11 @@ void ruleset_TSU_ONLINE::onOffset(player* thisplayer)
 //==========================================================
 ruleset_FEVER_ONLINE::ruleset_FEVER_ONLINE()
 {
-    delayedFall=true;
-    doubleSpawn=true;
-    allClearStart=false;
-    feverDeath=false;
-    bonusEQ=true;
+	delayedFall = true;
+	doubleSpawn = true;
+	allClearStart = false;
+	feverDeath = false;
+	bonusEQ = true;
 }
 
 ruleset_FEVER_ONLINE::~ruleset_FEVER_ONLINE()
@@ -1405,220 +1278,190 @@ ruleset_FEVER_ONLINE::~ruleset_FEVER_ONLINE()
 
 }
 
-phase ruleset_FEVER_ONLINE::endPhase(phase currentPhase,player* thisplayer)
+phase ruleset_FEVER_ONLINE::endPhase(phase currentPhase, player* thisplayer)
 {
-    switch (currentPhase)
-    {
-        case GETREADY:
-            if (thisplayer->getPlayerType()==ONLINE)
-                return WAITGARBAGE;
-            else
-                return DROPGARBAGE;
-            break;
-        case PREPARE:
-            return MOVE;
-            break;
-        case MOVE:
-            thisplayer->createPuyo=true;
-            return CREATEPUYO;
-            break;
-        case CREATEPUYO:
-            return DROPPUYO;
-            break;
-        case DROPPUYO:
-            return FALLPUYO;
-            break;
-        case FALLPUYO:
-            return SEARCHCHAIN;
-            break;
-        case SEARCHCHAIN:
-            //continue to phase 40 if no chain found, else to 32
-            if (!thisplayer->foundChain)
-                return CHECKALLCLEAR;
-            else //found chain
-                thisplayer->destroyPuyosTimer=1;
-                return DESTROYPUYO;
-            break;
-        case DESTROYPUYO:
-            //return DROPPUYO;
-            return GARBAGE;
-            break;
-        case GARBAGE:
-            return DROPPUYO;
-            break;
-        case CHECKALLCLEAR:
-            if (thisplayer->feverMode)
-            {
-                if (thisplayer->getPlayerType()==ONLINE)
-                    return CHECKENDFEVERONLINE;
-                else
-                    return CHECKENDFEVER;
-            }
-            else
-            {
-                //return DROPGARBAGE;
-                if (thisplayer->getPlayerType()==ONLINE)
-                    return WAITGARBAGE;
-                else
-                    return DROPGARBAGE;
-            }
-            break;
-        case WAITGARBAGE:
-            return FALLGARBAGE;
-            break;
-        case CHECKENDFEVERONLINE:
-            return CHECKENDFEVER;
-            break;
-        case CHECKENDFEVER:
-            if (thisplayer->feverEnd)
-            {
-                return ENDFEVER;
-            }
-            else
-            {
-                if (!thisplayer->poppedChain) //no chain popped: normal progression
-                {
-                    //return DROPGARBAGE;
-                    if (thisplayer->getPlayerType()==ONLINE)
-                        return WAITGARBAGE;
-                    else
-                        return DROPGARBAGE;
-                }
-                else //player popped a chain, drop a new feverchain
-                {
-                    thisplayer->poppedChain=false; //chain must be reset here
-                    return DROPFEVER;
-                }
-            }
-            break;
-        case ENDFEVER:
-                //return DROPGARBAGE;
-            if (thisplayer->getPlayerType()==ONLINE)
-                return WAITGARBAGE;
-            else
-                return DROPGARBAGE;
-            break;
+	switch (currentPhase)
+	{
+	case GETREADY:
+		{
+			if (thisplayer->getPlayerType() == ONLINE)
+				return WAITGARBAGE;
+			return DROPGARBAGE;
+		}
+	case PREPARE:
+		return MOVE;
+	case MOVE:
+		thisplayer->createPuyo = true;
+		return CREATEPUYO;
+	case CREATEPUYO:
+		return DROPPUYO;
+	case DROPPUYO:
+		return FALLPUYO;
+	case FALLPUYO:
+		return SEARCHCHAIN;
+	case SEARCHCHAIN:
+		// Continue to phase 40 if no chain found, else to 32
+		{
+			// Continue to phase 40 if no chain found, else to 32
+			if (!thisplayer->foundChain)
+				return CHECKALLCLEAR;
+				// Found chain
+			thisplayer->destroyPuyosTimer = 1;
+		}
+		return DESTROYPUYO;
+	case DESTROYPUYO:
+		return GARBAGE;
+	case GARBAGE:
+		return DROPPUYO;
+	case CHECKALLCLEAR:
+		{
+			if (thisplayer->feverMode)
+			{
+				if (thisplayer->getPlayerType() == ONLINE)
+					return CHECKENDFEVERONLINE;
+				return CHECKENDFEVER;
+			}
+			if (thisplayer->getPlayerType() == ONLINE)
+				return WAITGARBAGE;
+			return DROPGARBAGE;
+		}
+	case WAITGARBAGE:
+		return FALLGARBAGE;
+	case CHECKENDFEVERONLINE:
+		return CHECKENDFEVER;
+	case CHECKENDFEVER:
+		{
+			if (thisplayer->feverEnd)
+			{
+				return ENDFEVER;
+			}
+			if (!thisplayer->poppedChain) // No chain popped: normal progression
+			{
+				if (thisplayer->getPlayerType() == ONLINE)
+					return WAITGARBAGE;
+				return DROPGARBAGE;
+			}
+			// Player popped a chain, drop a new feverchain
+			thisplayer->poppedChain = false; // Chain must be reset here
+			return DROPFEVER;
+		}
+	case ENDFEVER:
+		{
+			if (thisplayer->getPlayerType() == ONLINE)
+				return WAITGARBAGE;
+			return DROPGARBAGE;
+		}
 
-        case DROPGARBAGE:
-            return FALLGARBAGE;
-            break;
-        case FALLGARBAGE:
-            //expect other players to confirm your move
-            if (thisplayer->getPlayerType()==HUMAN)
-            {
-                return WAITCONFIRMGARBAGE;
-            }
-            else
-                return CHECKLOSER;
-            break;
-        case WAITCONFIRMGARBAGE:
-            return CHECKLOSER;
-            break;
-        break;
-        case CHECKLOSER:
-            if (!thisplayer->feverMode)
-                return CHECKFEVER; //not in fever: check if fever should start
-            else
-                return PREPARE;
-            break;
-        case CHECKFEVER:
-            if (thisplayer->feverMode)
-                return PREPAREFEVER;
-            else
-            {
-                if (thisplayer->allClear==0)
-                    return PREPARE;
-                else
-                {
-                    thisplayer->allClear=0;
-                    return DROPPUYO;
-                }
-            }
-            break;
-        case PREPAREFEVER:
-            return DROPFEVER;
-            break;
-        case DROPFEVER:
-            return DROPPUYO;
+	case DROPGARBAGE:
+		return FALLGARBAGE;
+	case FALLGARBAGE:
+		// Expect other players to confirm your move
+		{
+			// Expect other players to confirm your move
+			if (thisplayer->getPlayerType() == HUMAN)
+			{
+				return WAITCONFIRMGARBAGE;
+			}
+			return CHECKLOSER;
+		}
+	case WAITCONFIRMGARBAGE:
+		return CHECKLOSER;
+	case CHECKLOSER:
+		{
+			if (!thisplayer->feverMode)
+				return CHECKFEVER; // Not in fever: check if fever should start
+			return PREPARE;
+		}
+	case CHECKFEVER:
+		{
+			if (thisplayer->feverMode)
+				return PREPAREFEVER;
+			if (thisplayer->allClear == 0)
+				return PREPARE;
+			thisplayer->allClear = 0;
+			return DROPPUYO;
+		}
+	case PREPAREFEVER:
+		return DROPFEVER;
+	case DROPFEVER:
+		return DROPPUYO;
 
-        case LOSEDROP:
-            return LOSEDROP; //in fever it's possible the game tries to call endphase in fever mode
-        case WAITLOSE:
-            return WAITLOSE;
+	case LOSEDROP:
+		return LOSEDROP; // In fever it's possible the game tries to call endphase in fever mode
+	case WAITLOSE:
+		return WAITLOSE;
 
-        default:
-            return IDLE;
-    }
+	default:
+		return IDLE;
+	}
 }
 
 void ruleset_FEVER_ONLINE::onSetGame()
 {
-    currentgame->legacyRandomizer = true;
-    currentgame->legacyNuisanceDrop = true;
+	currentgame->legacyRandomizer = true;
+	currentgame->legacyNuisanceDrop = true;
 }
 
 void ruleset_FEVER_ONLINE::onInit(player* thisplayer)
 {
-    thisplayer->targetPoint=targetPoint;
-    thisplayer->feverGauge.setVisible(true);
-    puyoToClear=4; //must be 4!
+	thisplayer->targetPoint = targetPoint;
+	thisplayer->feverGauge.setVisible(true);
+	puyoToClear = 4; // Must be 4!
 }
 
-void ruleset_FEVER_ONLINE::onAllClearPop(player *)
+void ruleset_FEVER_ONLINE::onAllClearPop(player*)
 {
-    //does nothing
+	// Does nothing
 }
 
 void ruleset_FEVER_ONLINE::onAllClear(player* thisplayer)
 {
-    //drop a fever pattern on the field or increase feverchain amount & fevertime
-    //implementation of allclear is inside player object (checkstartfever and checkendfever)
-    thisplayer->allClear=1;
+	// Drop a fever pattern on the field or increase feverchain amount & fevertime
+	// Implementation of allclear is inside player object (checkstartfever and checkendfever)
+	thisplayer->allClear = 1;
 }
 
 void ruleset_FEVER_ONLINE::onLose(player* thisplayer)
 {
-    //human online player: wait for confirmation
-    if (thisplayer->getPlayerType()==HUMAN)
-        thisplayer->losewin=LOSEWAIT;
-    else //no need to wait for anything
-        thisplayer->losewin=LOSE;
+	// Human online player: wait for confirmation
+	if (thisplayer->getPlayerType() == HUMAN)
+		thisplayer->losewin = LOSEWAIT;
+	else // No need to wait for anything
+		thisplayer->losewin = LOSE;
 
-    thisplayer->currentphase=LOSEDROP;
-    if (thisplayer!=currentgame->players[0] && currentgame->getActivePlayers()!=1)
-        data->snd.lose.Play(data);
+	thisplayer->currentphase = LOSEDROP;
+	if (thisplayer != currentgame->players[0] && currentgame->getActivePlayers() != 1)
+		data->snd.lose.Play(data);
 }
 
 void ruleset_FEVER_ONLINE::onWin(player* thisplayer)
 {
-    thisplayer->losewin=WIN;
-    thisplayer->currentphase=WIN_IDLE;
-    //sound
-    if (thisplayer==currentgame->players[0])
-        data->snd.win.Play(data);
-    else
-        data->snd.lose.Play(data);
+	thisplayer->losewin = WIN;
+	thisplayer->currentphase = WIN_IDLE;
+	// Sound
+	if (thisplayer == currentgame->players[0])
+		data->snd.win.Play(data);
+	else
+		data->snd.lose.Play(data);
 }
 
 void ruleset_FEVER_ONLINE::onChain(player*)
 {
-    //thisplayer->forgiveGarbage=true;
-    //thisplayer->feverColor=getRandom(5);
 }
 
 void ruleset_FEVER_ONLINE::onOffset(player* thisplayer)
 {
-    thisplayer->forgiveGarbage=true;
-    thisplayer->addFeverCount();
-    //add a second to last attacker
-    if (thisplayer->lastAttacker== nullptr)
-        return;
+	thisplayer->forgiveGarbage = true;
+	thisplayer->addFeverCount();
+	// Add a second to last attacker
+	if (thisplayer->lastAttacker == nullptr)
+		return;
 
-    if (!thisplayer->lastAttacker->feverMode && thisplayer->lastAttacker->feverGauge.seconds<60*30)
-    {
-        thisplayer->lastAttacker->feverGauge.addTime(60);
-        thisplayer->lastAttacker->showSecondsObj(60);
-    }
+	if (!thisplayer->lastAttacker->feverMode && thisplayer->lastAttacker->feverGauge.seconds < 60 * 30)
+	{
+		thisplayer->lastAttacker->feverGauge.addTime(60);
+		thisplayer->lastAttacker->showSecondsObj(60);
+	}
 }
 
 void ruleset_FEVER_ONLINE::onAttack(player*)
@@ -1628,48 +1471,46 @@ void ruleset_FEVER_ONLINE::onAttack(player*)
 
 int ruleset_FEVER_ONLINE::getLinkBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=11)
-        return linkBonus_FEVER[10];
-    else
-        return linkBonus_FEVER[n];
+	if (n >= 11)
+		return linkBonus_FEVER[10];
+	return linkBonus_FEVER[n];
 }
 
 int ruleset_FEVER_ONLINE::getColorBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=5)
-        return colorBonus_FEVER[4];
-    else
-        return colorBonus_FEVER[n];
+	if (n >= 5)
+		return colorBonus_FEVER[4];
+	return colorBonus_FEVER[n];
 }
 
 int ruleset_FEVER_ONLINE::getChainBonus(player* pl)
 {
-    const int character=pl->getCharacter();
-    int n = pl->chain;
+	const int character = pl->getCharacter();
+	int n = pl->chain;
 
 	n--;
 
 	if (n < 0)
-        return 0;
-	
-    if (n == 0)
-        return 0; // first value is 0 in PP20th
+		return 0;
 
-    if (n > 23)
-        return 999;
-	
-    if (pl->feverMode)
-        return (chainBonus_FEVER[character][n]*699)/999;
+	if (n == 0)
+		return 0; // First value is 0 in PP20th
 
-    return (chainBonus_NORMAL[character][n]*699)/999;
+	if (n > 23)
+		return 999;
+
+	if (pl->feverMode)
+		return (chainBonus_FEVER[character][n] * 699) / 999;
+
+	return (chainBonus_NORMAL[character][n] * 699) / 999;
 }
 //}
 
@@ -1677,10 +1518,10 @@ int ruleset_FEVER_ONLINE::getChainBonus(player* pl)
 //==========================================================
 ruleset_FEVER15_ONLINE::ruleset_FEVER15_ONLINE()
 {
-    delayedFall=true;
-    doubleSpawn=true;
-    allClearStart=false;
-    NFeverChains=12;
+	delayedFall = true;
+	doubleSpawn = true;
+	allClearStart = false;
+	NFeverChains = 12;
 }
 
 ruleset_FEVER15_ONLINE::~ruleset_FEVER15_ONLINE()
@@ -1688,274 +1529,265 @@ ruleset_FEVER15_ONLINE::~ruleset_FEVER15_ONLINE()
 
 }
 
-phase ruleset_FEVER15_ONLINE::endPhase(phase currentPhase,player* thisplayer)
+phase ruleset_FEVER15_ONLINE::endPhase(phase currentPhase, player* thisplayer)
 {
-    switch (currentPhase)
-    {
-        case GETREADY:
-            if (thisplayer->getPlayerType() == ONLINE)
-            {
-                return WAITGARBAGE;
-            }
-            return DROPGARBAGE;
+	switch (currentPhase)
+	{
+	case GETREADY:
+		if (thisplayer->getPlayerType() == ONLINE)
+		{
+			return WAITGARBAGE;
+		}
+		return DROPGARBAGE;
 
-    	case PREPARE:
-            return MOVE;
+	case PREPARE:
+		return MOVE;
 
-    	case MOVE:
-            thisplayer->createPuyo=true;
-            return CREATEPUYO;
+	case MOVE:
+		thisplayer->createPuyo = true;
+		return CREATEPUYO;
 
-    	case CREATEPUYO:
-            return DROPPUYO;
+	case CREATEPUYO:
+		return DROPPUYO;
 
-    	case DROPPUYO:
-            return FALLPUYO;
+	case DROPPUYO:
+		return FALLPUYO;
 
-        case FALLPUYO:
-            return SEARCHCHAIN;
+	case FALLPUYO:
+		return SEARCHCHAIN;
 
-        case SEARCHCHAIN:
-            //continue to phase 40 if no chain found, else to 32
-            if (!thisplayer->foundChain)
-                return CHECKALLCLEAR;
+	case SEARCHCHAIN:
+		// Continue to phase 40 if no chain found, else to 32
+		if (!thisplayer->foundChain)
+			return CHECKALLCLEAR;
 
-            thisplayer->destroyPuyosTimer=1;
-            return DESTROYPUYO;
+		thisplayer->destroyPuyosTimer = 1;
+		return DESTROYPUYO;
 
-        case DESTROYPUYO:
-            //return DROPPUYO;
-            return GARBAGE;
+	case DESTROYPUYO:
+		return GARBAGE;
 
-        case GARBAGE:
-            return DROPPUYO;
+	case GARBAGE:
+		return DROPPUYO;
 
-        case CHECKALLCLEAR:
-            if (thisplayer->feverMode)
-            {
-                if (thisplayer->getPlayerType() == ONLINE)
-                {
-                    return CHECKENDFEVERONLINE;
-                }
+	case CHECKALLCLEAR:
+		if (thisplayer->feverMode)
+		{
+			if (thisplayer->getPlayerType() == ONLINE)
+			{
+				return CHECKENDFEVERONLINE;
+			}
 
-                return CHECKENDFEVER;
-            }
+			return CHECKENDFEVER;
+		}
 
-            if (thisplayer->getPlayerType() == ONLINE)
-            {
-                return WAITGARBAGE;
-            }
+		if (thisplayer->getPlayerType() == ONLINE)
+		{
+			return WAITGARBAGE;
+		}
 
-            return DROPGARBAGE;
-            
-        case WAITGARBAGE:
-            return FALLGARBAGE;
+		return DROPGARBAGE;
 
-        case CHECKENDFEVERONLINE:
-            return CHECKENDFEVER;
+	case WAITGARBAGE:
+		return FALLGARBAGE;
 
-        case CHECKENDFEVER:
-            if (thisplayer->feverEnd)
-            {
-                return ENDFEVER;
-            }
-            if (!thisplayer->poppedChain) //no chain popped: normal progression
-            {
-                if (thisplayer->getPlayerType() == ONLINE)
-                {
-                    return WAITGARBAGE;
-                }
+	case CHECKENDFEVERONLINE:
+		return CHECKENDFEVER;
 
-                return DROPGARBAGE;
-            }
-            thisplayer->poppedChain=false; //chain must be reset here
-            return DROPFEVER;
+	case CHECKENDFEVER:
+		if (thisplayer->feverEnd)
+		{
+			return ENDFEVER;
+		}
+		if (!thisplayer->poppedChain) // No chain popped: normal progression
+		{
+			if (thisplayer->getPlayerType() == ONLINE)
+			{
+				return WAITGARBAGE;
+			}
 
-        case ENDFEVER:
-            if (thisplayer->getPlayerType()==ONLINE)
-            {
-                return WAITGARBAGE;
-            }
+			return DROPGARBAGE;
+		}
+		thisplayer->poppedChain = false; // C3hain must be reset here
+		return DROPFEVER;
 
-            return DROPGARBAGE;
+	case ENDFEVER:
+		if (thisplayer->getPlayerType() == ONLINE)
+		{
+			return WAITGARBAGE;
+		}
 
-        case DROPGARBAGE:
-            return FALLGARBAGE;
+		return DROPGARBAGE;
 
-        case FALLGARBAGE:
-            // expect other players to confirm your move
-            if (thisplayer->getPlayerType()==HUMAN)
-            {
-                return WAITCONFIRMGARBAGE;
-            }
+	case DROPGARBAGE:
+		return FALLGARBAGE;
 
-            return CHECKLOSER;
+	case FALLGARBAGE:
+		// Expect other players to confirm your move
+		if (thisplayer->getPlayerType() == HUMAN)
+		{
+			return WAITCONFIRMGARBAGE;
+		}
 
-        case WAITCONFIRMGARBAGE:
-            return CHECKLOSER;
+		return CHECKLOSER;
 
-        case CHECKLOSER:
-            // not in fever: check if fever should start
-            if (!thisplayer->feverMode)
-            {
-                return CHECKFEVER;
-            }
-            return PREPARE;
+	case WAITCONFIRMGARBAGE:
+		return CHECKLOSER;
 
-        case CHECKFEVER:
-            if (thisplayer->feverMode)
-            {
-                return PREPAREFEVER;
-            }
-			
-            if (thisplayer->allClear == 0)
-            {
-                return PREPARE;
-            }
+	case CHECKLOSER:
+		// Not in fever: check if fever should start
+		if (!thisplayer->feverMode)
+		{
+			return CHECKFEVER;
+		}
+		return PREPARE;
 
-            thisplayer->allClear=0;
-            return DROPPUYO;
+	case CHECKFEVER:
+		if (thisplayer->feverMode)
+		{
+			return PREPAREFEVER;
+		}
 
-    	case PREPAREFEVER:
-            return DROPFEVER;
+		if (thisplayer->allClear == 0)
+		{
+			return PREPARE;
+		}
 
-        case DROPFEVER:
-            return DROPPUYO;
+		thisplayer->allClear = 0;
+		return DROPPUYO;
 
-        case LOSEDROP:
-            return LOSEDROP; //in fever it's possible the game tries to call endphase in fever mode
+	case PREPAREFEVER:
+		return DROPFEVER;
 
-    	case WAITLOSE:
-            return WAITLOSE;
+	case DROPFEVER:
+		return DROPPUYO;
 
-        default:
-            return IDLE;
-    }
+	case LOSEDROP:
+		return LOSEDROP; // In fever it's possible the game tries to call endphase in fever mode
+
+	case WAITLOSE:
+		return WAITLOSE;
+
+	default:
+		return IDLE;
+	}
 }
 
 void ruleset_FEVER15_ONLINE::onSetGame()
 {
-    currentgame->legacyRandomizer = true;
-    currentgame->legacyNuisanceDrop = true;
+	currentgame->legacyRandomizer = true;
+	currentgame->legacyNuisanceDrop = true;
 }
 
 void ruleset_FEVER15_ONLINE::onInit(player* thisplayer)
 {
-    thisplayer->targetPoint=targetPoint;
-    thisplayer->feverGauge.setVisible(true);
-    puyoToClear=4; //must be 4!
+	thisplayer->targetPoint = targetPoint;
+	thisplayer->feverGauge.setVisible(true);
+	puyoToClear = 4; // Must be 4!
 }
 
-void ruleset_FEVER15_ONLINE::onAllClearPop(player *)
+void ruleset_FEVER15_ONLINE::onAllClearPop(player*)
 {
-    //does nothing
+	// Does nothing
 }
 
 void ruleset_FEVER15_ONLINE::onAllClear(player* thisplayer)
 {
-    //drop a fever pattern on the field or increase feverchain amount & fevertime
-    //implementation of allclear is inside player object (checkstartfever and checkendfever)
-    thisplayer->allClear=1;
+	// Drop a fever pattern on the field or increase feverchain amount & fevertime
+	// Implementation of allclear is inside player object (checkstartfever and checkendfever)
+	thisplayer->allClear = 1;
 }
 
 void ruleset_FEVER15_ONLINE::onLose(player* thisplayer)
 {
-    //human online player: wait for confirmation
-    if (thisplayer->getPlayerType()==HUMAN)
-        thisplayer->losewin=LOSEWAIT;
-    else //no need to wait for anything
-        thisplayer->losewin=LOSE;
+	// Human online player: wait for confirmation
+	if (thisplayer->getPlayerType() == HUMAN)
+		thisplayer->losewin = LOSEWAIT;
+	else // No need to wait for anything
+		thisplayer->losewin = LOSE;
 
-    thisplayer->currentphase=LOSEDROP;
-    if (thisplayer!=currentgame->players[0] && currentgame->getActivePlayers()!=1)
-        data->snd.lose.Play(data);
+	thisplayer->currentphase = LOSEDROP;
+	if (thisplayer != currentgame->players[0] && currentgame->getActivePlayers() != 1)
+		data->snd.lose.Play(data);
 }
 
 void ruleset_FEVER15_ONLINE::onWin(player* thisplayer)
 {
-    thisplayer->losewin=WIN;
-    thisplayer->currentphase=WIN_IDLE;
-    //sound
-    if (thisplayer==currentgame->players[0])
-        data->snd.win.Play(data);
-    else
-        data->snd.lose.Play(data);
+	thisplayer->losewin = WIN;
+	thisplayer->currentphase = WIN_IDLE;
+	// Sound
+	if (thisplayer == currentgame->players[0])
+		data->snd.win.Play(data);
+	else
+		data->snd.lose.Play(data);
 }
 
 void ruleset_FEVER15_ONLINE::onChain(player*)
 {
-    //thisplayer->forgiveGarbage=true;
-    //thisplayer->feverColor=getRandom(5);
 }
 
 void ruleset_FEVER15_ONLINE::onOffset(player* thisplayer)
 {
-    thisplayer->forgiveGarbage=true;
-    thisplayer->addFeverCount();
+	thisplayer->forgiveGarbage = true;
+	thisplayer->addFeverCount();
 }
 
 void ruleset_FEVER15_ONLINE::onAttack(player* thisplayer)
 {
-    if (!thisplayer->feverMode && thisplayer->feverGauge.seconds<60*30)
-    {
-        thisplayer->feverGauge.addTime(60);
-        thisplayer->showSecondsObj(60);
-    }
+	if (!thisplayer->feverMode && thisplayer->feverGauge.seconds < 60 * 30)
+	{
+		thisplayer->feverGauge.addTime(60);
+		thisplayer->showSecondsObj(60);
+	}
 }
 
 int ruleset_FEVER15_ONLINE::getLinkBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=11)
-        return linkBonus_FEVER[10];
-    else
-        return linkBonus_FEVER[n];
+	if (n >= 11)
+		return linkBonus_FEVER[10];
+	return linkBonus_FEVER[n];
 }
 
 int ruleset_FEVER15_ONLINE::getColorBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=5)
-        return colorBonus_FEVER[4];
-    else
-        return colorBonus_FEVER[n];
+	if (n >= 5)
+		return colorBonus_FEVER[4];
+	return colorBonus_FEVER[n];
 }
 
 int ruleset_FEVER15_ONLINE::getChainBonus(player* pl)
 {
-    int n=pl->chain;
-    int character=pl->getCharacter();
-    n--;
-    if (n<0)
-        return 0;
+	int n = pl->chain;
+	int character = pl->getCharacter();
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>23)
-        return 999;
-    else
-    {
-        if (pl->feverMode)
-            return chainBonus_FEVER[character][n];
-        else
-            return chainBonus_NORMAL[character][n];
-    }
+	if (n > 23)
+		return 999;
+	if (pl->feverMode)
+		return chainBonus_FEVER[character][n];
+	return chainBonus_NORMAL[character][n];
 }
 //}
 
 
-//{ENDLESSFEVERVS ONLINE
+//{ ENDLESSFEVERVS ONLINE
 //==========================================================
 ruleset_ENDLESSFEVERVS_ONLINE::ruleset_ENDLESSFEVERVS_ONLINE()
 {
-    delayedFall=true;
-    doubleSpawn=true;
-    allClearStart=false;
-    NFeverChains=12;
+	delayedFall = true;
+	doubleSpawn = true;
+	allClearStart = false;
+	NFeverChains = 12;
 }
 
 ruleset_ENDLESSFEVERVS_ONLINE::~ruleset_ENDLESSFEVERVS_ONLINE()
@@ -1963,266 +1795,235 @@ ruleset_ENDLESSFEVERVS_ONLINE::~ruleset_ENDLESSFEVERVS_ONLINE()
 
 }
 
-phase ruleset_ENDLESSFEVERVS_ONLINE::endPhase(phase currentPhase,player* thisplayer)
+phase ruleset_ENDLESSFEVERVS_ONLINE::endPhase(phase currentPhase, player* thisplayer)
 {
-    switch (currentPhase)
-    {
-        case GETREADY:
-            return CHECKFEVER;
-            break;
-        case PREPARE:
-            return MOVE;
-            break;
-        case MOVE:
-            thisplayer->createPuyo=true;
-            return CREATEPUYO;
-            break;
-        case CREATEPUYO:
-            return DROPPUYO;
-            break;
-        case DROPPUYO:
-            return FALLPUYO;
-            break;
-        case FALLPUYO:
-            return SEARCHCHAIN;
-            break;
-        case SEARCHCHAIN:
-            //continue to phase 40 if no chain found, else to 32
-            if (!thisplayer->foundChain)
-                return CHECKALLCLEAR;
-            else //found chain
-                thisplayer->destroyPuyosTimer=1;
-                return DESTROYPUYO;
-            break;
-        case DESTROYPUYO:
-            //return DROPPUYO;
-            return GARBAGE;
-            break;
-        case GARBAGE:
-            return DROPPUYO;
-            break;
-        case CHECKALLCLEAR:
-            if (thisplayer->feverMode)
-            {
-                if (thisplayer->getPlayerType()==ONLINE)
-                    return CHECKENDFEVERONLINE;
-                else
-                    return CHECKENDFEVER;
-            }
-            else
-            {
-                //return DROPGARBAGE;
-                if (thisplayer->getPlayerType()==ONLINE)
-                    return WAITGARBAGE;
-                else
-                    return DROPGARBAGE;
-            }
-            break;
-        case WAITGARBAGE:
-            return FALLGARBAGE;
-            break;
-        case CHECKENDFEVERONLINE:
-            return CHECKENDFEVER;
-            break;
-        case CHECKENDFEVER:
-            if (thisplayer->feverEnd)
-            {
-                return ENDFEVER;
-            }
-            else
-            {
-                if (!thisplayer->poppedChain) //no chain popped: normal progression
-                {
-                    //return DROPGARBAGE;
-                    if (thisplayer->getPlayerType()==ONLINE)
-                        return WAITGARBAGE;
-                    else
-                        return DROPGARBAGE;
-                }
-                else //player popped a chain, drop a new feverchain
-                {
-                    thisplayer->poppedChain=false; //chain must be reset here
-                    return DROPFEVER;
-                }
-            }
-            break;
-        case ENDFEVER:
-                //return DROPGARBAGE;
-            if (thisplayer->getPlayerType()==ONLINE)
-                return WAITGARBAGE;
-            else
-                return DROPGARBAGE;
-            break;
+	switch (currentPhase)
+	{
+	case GETREADY:
+		return CHECKFEVER;
+	case PREPARE:
+		return MOVE;
+	case MOVE:
+		thisplayer->createPuyo = true;
+		return CREATEPUYO;
+	case CREATEPUYO:
+		return DROPPUYO;
+	case DROPPUYO:
+		return FALLPUYO;
+	case FALLPUYO:
+		return SEARCHCHAIN;
+	case SEARCHCHAIN:
+		// Continue to phase 40 if no chain found, else to 32
+		{
+			// Continue to phase 40 if no chain found, else to 32
+			if (!thisplayer->foundChain)
+				return CHECKALLCLEAR;
+				// Found chain
+			thisplayer->destroyPuyosTimer = 1;
+		}
+		return DESTROYPUYO;
+	case DESTROYPUYO:
+		return GARBAGE;
+	case GARBAGE:
+		return DROPPUYO;
+	case CHECKALLCLEAR:
+		{
+			if (thisplayer->feverMode)
+			{
+				if (thisplayer->getPlayerType() == ONLINE)
+					return CHECKENDFEVERONLINE;
+				return CHECKENDFEVER;
+			}
+			if (thisplayer->getPlayerType() == ONLINE)
+				return WAITGARBAGE;
+			return DROPGARBAGE;
+		}
+	case WAITGARBAGE:
+		return FALLGARBAGE;
+	case CHECKENDFEVERONLINE:
+		return CHECKENDFEVER;
+	case CHECKENDFEVER:
+		{
+			if (thisplayer->feverEnd)
+			{
+				return ENDFEVER;
+			}
+			if (!thisplayer->poppedChain) // No chain popped: normal progression
+			{
+				if (thisplayer->getPlayerType() == ONLINE)
+					return WAITGARBAGE;
+				return DROPGARBAGE;
+			}
+			// Player popped a chain, drop a new feverchain
+			thisplayer->poppedChain = false; // Chain must be reset here
+			return DROPFEVER;
+		}
+	case ENDFEVER:
+		{
+			if (thisplayer->getPlayerType() == ONLINE)
+				return WAITGARBAGE;
+			return DROPGARBAGE;
+		}
 
-        case DROPGARBAGE:
-            return FALLGARBAGE;
-            break;
-        case FALLGARBAGE:
-            //expect other players to confirm your move
-            if (thisplayer->getPlayerType()==HUMAN)
-            {
-                return WAITCONFIRMGARBAGE;
-            }
-            else
-                return CHECKLOSER;
-            break;
-        case WAITCONFIRMGARBAGE:
-            return CHECKLOSER;
-            break;
-        break;
-        case CHECKLOSER:
-            if (!thisplayer->feverMode)
-                return CHECKFEVER; //not in fever: check if fever should start
-            else
-                return PREPARE;
-            break;
-        case CHECKFEVER:
-            if (thisplayer->feverMode)
-                return PREPAREFEVER;
-            else
-            {
-                if (thisplayer->allClear==0)
-                    return PREPARE;
-                else
-                {
-                    thisplayer->allClear=0;
-                    return DROPPUYO;
-                }
-            }
-            break;
-        case PREPAREFEVER:
-            return DROPFEVER;
-            break;
-        case DROPFEVER:
-            return DROPPUYO;
+	case DROPGARBAGE:
+		return FALLGARBAGE;
+	case FALLGARBAGE:
+		// Expect other players to confirm your move
+		{
+			// Expect other players to confirm your move
+			if (thisplayer->getPlayerType() == HUMAN)
+			{
+				return WAITCONFIRMGARBAGE;
+			}
+			return CHECKLOSER;
+		}
+	case WAITCONFIRMGARBAGE:
+		return CHECKLOSER;
+	case CHECKLOSER:
+		{
+			if (!thisplayer->feverMode)
+			{
+				return CHECKFEVER; // Not in fever: check if fever should start
+			}
+			return PREPARE;
+		}
+	case CHECKFEVER:
+		{
+			if (thisplayer->feverMode)
+			{
+				return PREPAREFEVER;
+			}
+			if (thisplayer->allClear == 0)
+			{
+				return PREPARE;
+			}
+			thisplayer->allClear = 0;
+			return DROPPUYO;
+		}
+	case PREPAREFEVER:
+		return DROPFEVER;
+	case DROPFEVER:
+		return DROPPUYO;
 
-        case LOSEDROP:
-            return LOSEDROP; //in fever it's possible the game tries to call endphase in fever mode
-        case WAITLOSE:
-            return WAITLOSE;
+	case LOSEDROP:
+		return LOSEDROP; // In fever it's possible the game tries to call endphase in fever mode
+	case WAITLOSE:
+		return WAITLOSE;
 
-        default:
-            return IDLE;
-    }
+	default:
+		return IDLE;
+	}
 }
 
 void ruleset_ENDLESSFEVERVS_ONLINE::onSetGame()
 {
-    currentgame->legacyRandomizer = true;
-    currentgame->legacyNuisanceDrop = true;
+	currentgame->legacyRandomizer = true;
+	currentgame->legacyNuisanceDrop = true;
 }
 
 void ruleset_ENDLESSFEVERVS_ONLINE::onInit(player* thisplayer)
 {
-    thisplayer->targetPoint=targetPoint;
-    thisplayer->feverGauge.setVisible(true);
-    puyoToClear=4; //must be 4!
-    thisplayer->feverGauge.setCount(7);
-    thisplayer->feverGauge.setSeconds(99*60);
-    thisplayer->feverGauge.endless=true;
-    thisplayer->normalGarbage.GQ=270;
-    thisplayer->updateTray();
-    thisplayer->nextPuyoActive=false;
+	thisplayer->targetPoint = targetPoint;
+	thisplayer->feverGauge.setVisible(true);
+	puyoToClear = 4; // Must be 4!
+	thisplayer->feverGauge.setCount(7);
+	thisplayer->feverGauge.setSeconds(99 * 60);
+	thisplayer->feverGauge.endless = true;
+	thisplayer->normalGarbage.GQ = 270;
+	thisplayer->updateTray();
+	thisplayer->nextPuyoActive = false;
 }
 
-void ruleset_ENDLESSFEVERVS_ONLINE::onAllClearPop(player *)
+void ruleset_ENDLESSFEVERVS_ONLINE::onAllClearPop(player*)
 {
-    //does nothing
+	// Does nothing
 }
 
 void ruleset_ENDLESSFEVERVS_ONLINE::onAllClear(player* thisplayer)
 {
-    //drop a fever pattern on the field or increase feverchain amount & fevertime
-    //implementation of allclear is inside player object (checkstartfever and checkendfever)
-    thisplayer->allClear=1;
+	// Drop a fever pattern on the field or increase feverchain amount & fevertime
+	// Implementation of allclear is inside player object (checkstartfever and checkendfever)
+	thisplayer->allClear = 1;
 }
 
 void ruleset_ENDLESSFEVERVS_ONLINE::onLose(player* thisplayer)
 {
-    //human online player: wait for confirmation
-    if (thisplayer->getPlayerType()==HUMAN)
-        thisplayer->losewin=LOSEWAIT;
-    else //no need to wait for anything
-        thisplayer->losewin=LOSE;
+	// Human online player: wait for confirmation
+	if (thisplayer->getPlayerType() == HUMAN)
+		thisplayer->losewin = LOSEWAIT;
+	else // No need to wait for anything
+		thisplayer->losewin = LOSE;
 
-    thisplayer->currentphase=LOSEDROP;
-    if (thisplayer!=currentgame->players[0] && currentgame->getActivePlayers()!=1)
-        data->snd.lose.Play(data);
+	thisplayer->currentphase = LOSEDROP;
+	if (thisplayer != currentgame->players[0] && currentgame->getActivePlayers() != 1)
+		data->snd.lose.Play(data);
 }
 
 void ruleset_ENDLESSFEVERVS_ONLINE::onWin(player* thisplayer)
 {
-    thisplayer->losewin=WIN;
-    thisplayer->currentphase=WIN_IDLE;
-    //sound
-    if (thisplayer==currentgame->players[0])
-        data->snd.win.Play(data);
-    else
-        data->snd.lose.Play(data);
+	thisplayer->losewin = WIN;
+	thisplayer->currentphase = WIN_IDLE;
+	// Sound
+	if (thisplayer == currentgame->players[0])
+		data->snd.win.Play(data);
+	else
+		data->snd.lose.Play(data);
 }
 
 void ruleset_ENDLESSFEVERVS_ONLINE::onChain(player*)
 {
-    //thisplayer->forgiveGarbage=true;
-    //thisplayer->feverColor=getRandom(5);
 }
 
 void ruleset_ENDLESSFEVERVS_ONLINE::onOffset(player* thisplayer)
 {
-    thisplayer->forgiveGarbage=true;
-    thisplayer->addFeverCount();
+	thisplayer->forgiveGarbage = true;
+	thisplayer->addFeverCount();
 }
 
 void ruleset_ENDLESSFEVERVS_ONLINE::onAttack(player* thisplayer)
 {
-    if (!thisplayer->feverMode && thisplayer->feverGauge.seconds<60*30)
-    {
-        thisplayer->feverGauge.addTime(60);
-        thisplayer->showSecondsObj(60);
-    }
+	if (!thisplayer->feverMode && thisplayer->feverGauge.seconds < 60 * 30)
+	{
+		thisplayer->feverGauge.addTime(60);
+		thisplayer->showSecondsObj(60);
+	}
 }
 
 int ruleset_ENDLESSFEVERVS_ONLINE::getLinkBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=11)
-        return linkBonus_FEVER[10];
-    else
-        return linkBonus_FEVER[n];
+	if (n >= 11)
+		return linkBonus_FEVER[10];
+	return linkBonus_FEVER[n];
 }
 
 int ruleset_ENDLESSFEVERVS_ONLINE::getColorBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=5)
-        return colorBonus_FEVER[4];
-    else
-        return colorBonus_FEVER[n];
+	if (n >= 5)
+		return colorBonus_FEVER[4];
+	return colorBonus_FEVER[n];
 }
 
 int ruleset_ENDLESSFEVERVS_ONLINE::getChainBonus(player* pl)
 {
-    int n=pl->chain;
-    int character=pl->getCharacter();
-    n--;
-    if (n<0)
-        return 0;
+	int n = pl->chain;
+	int character = pl->getCharacter();
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>23)
-        return 999;
-    else
-    {
-        if (pl->feverMode)
-            return chainBonus_FEVER[character][n];
-        else
-            return chainBonus_NORMAL[character][n];
-    }
+	if (n > 23)
+		return 999;
+	if (pl->feverMode)
+		return chainBonus_FEVER[character][n];
+	return chainBonus_NORMAL[character][n];
 }
 //}
 
@@ -2231,141 +2032,127 @@ int ruleset_ENDLESSFEVERVS_ONLINE::getChainBonus(player* pl)
 //==========================================================
 ruleset_EXCAVATION::ruleset_EXCAVATION()
 {
-    delayedFall=true;
-    doubleSpawn=true;
-    addDropBonus=true;
-    voicePatternFever=true;
+	delayedFall = true;
+	doubleSpawn = true;
+	addDropBonus = true;
+	voicePatternFever = true;
 }
 
 ruleset_EXCAVATION::~ruleset_EXCAVATION()
 {
-
 }
 
-
-phase ruleset_EXCAVATION::endPhase(phase currentPhase,player* thisplayer)
+phase ruleset_EXCAVATION::endPhase(phase currentPhase, player* thisplayer)
 {
-    switch (currentPhase)
-    {
-        case GETREADY:
-            return DROPPUYO;
-            break;
-        case PREPARE:
-            return MOVE;
-            break;
-        case MOVE:
-            thisplayer->createPuyo=true;
-            return CREATEPUYO;
-            break;
-        case CREATEPUYO:
-            return DROPPUYO;
-            break;
-        case DROPPUYO:
-            return FALLPUYO;
-            break;
-        case FALLPUYO:
-            return SEARCHCHAIN;
-            break;
-        case SEARCHCHAIN:
-            //continue to phase 40 if no chain found, else to 32
-            if (!thisplayer->foundChain)
-                return CHECKALLCLEAR;
-            else //found chain
-                thisplayer->destroyPuyosTimer=1;
-                return DESTROYPUYO;
-            break;
-        case DESTROYPUYO:
-            return GARBAGE;
-            break;
-        case GARBAGE:
-            return DROPPUYO;
-            break;
-        case CHECKALLCLEAR:
-            return DROPGARBAGE;
-            break;
-        case DROPGARBAGE:
-            return FALLGARBAGE;
-            break;
-        case FALLGARBAGE:
-            return CHECKLOSER;
-            break;
-        case CHECKLOSER:
-            return PREPARE;
-            break;
+	switch (currentPhase)
+	{
+	case GETREADY:
+		return DROPPUYO;
+	case PREPARE:
+		return MOVE;
+	case MOVE:
+		thisplayer->createPuyo = true;
+		return CREATEPUYO;
+	case CREATEPUYO:
+		return DROPPUYO;
+	case DROPPUYO:
+		return FALLPUYO;
+	case FALLPUYO:
+		return SEARCHCHAIN;
+	case SEARCHCHAIN:
+		// Continue to phase 40 if no chain found, else to 32
+		{
+			// Continue to phase 40 if no chain found, else to 32
+			if (!thisplayer->foundChain)
+				return CHECKALLCLEAR;
+				// Found chain
+			thisplayer->destroyPuyosTimer = 1;
+		}
+		return DESTROYPUYO;
+	case DESTROYPUYO:
+		return GARBAGE;
+	case GARBAGE:
+		return DROPPUYO;
+	case CHECKALLCLEAR:
+		return DROPGARBAGE;
+	case DROPGARBAGE:
+		return FALLGARBAGE;
+	case FALLGARBAGE:
+		return CHECKLOSER;
+	case CHECKLOSER:
+		return PREPARE;
 
-        default:
-            return IDLE;
+	default:
+		return IDLE;
 
-    }
+	}
 }
 
 void ruleset_EXCAVATION::onInit(player* thisplayer)
 {
-    thisplayer->targetPoint=targetPoint;
-    thisplayer->feverGauge.setVisible(false);
-    thisplayer->useDropPattern=false;
+	thisplayer->targetPoint = targetPoint;
+	thisplayer->feverGauge.setVisible(false);
+	thisplayer->useDropPattern = false;
 }
 
-void ruleset_EXCAVATION::onAllClearPop(player *thisplayer)
+void ruleset_EXCAVATION::onAllClearPop(player* thisplayer)
 {
 }
 
 void ruleset_EXCAVATION::onWin(player* thisplayer)
 {
-    thisplayer->losewin=WIN;
-    thisplayer->currentphase=WIN_IDLE;
-    //sound if player 1 wins or loses
-    if (thisplayer==currentgame->players[0])
-        data->snd.win.Play(data);
-    else
-        data->snd.lose.Play(data);
+	thisplayer->losewin = WIN;
+	thisplayer->currentphase = WIN_IDLE;
+
+	// Sound if player 1 wins or loses
+	if (thisplayer == currentgame->players[0])
+		data->snd.win.Play(data);
+	else
+		data->snd.lose.Play(data);
 }
 
 void ruleset_EXCAVATION::onLose(player* thisplayer)
 {
-    thisplayer->losewin=LOSE;
-    thisplayer->currentphase=LOSEDROP;
-    //sounds for losing (not player 1)
-    if (thisplayer!=currentgame->players[0] && currentgame->getActivePlayers()!=1)
-        data->snd.lose.Play(data);
+	thisplayer->losewin = LOSE;
+	thisplayer->currentphase = LOSEDROP;
+
+	// Sounds for losing (not player 1)
+	if (thisplayer != currentgame->players[0] && currentgame->getActivePlayers() != 1)
+		data->snd.lose.Play(data);
 }
 
 int ruleset_EXCAVATION::getLinkBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=11)
-        return linkBonus_TSU[10];
-    else
-        return linkBonus_TSU[n];
+	if (n >= 11)
+		return linkBonus_TSU[10];
+	return linkBonus_TSU[n];
 }
 
 int ruleset_EXCAVATION::getColorBonus(int n)
 {
-    n--;
-    if (n<0)
-        return 0;
+	n--;
+	if (n < 0)
+		return 0;
 
-    if (n>=5)
-        return colorBonus_TSU[4];
-    else
-        return colorBonus_TSU[n];
+	if (n >= 5)
+		return colorBonus_TSU[4];
+	return colorBonus_TSU[n];
 }
 
 int ruleset_EXCAVATION::getChainBonus(player* pl)
 {
-    int n=pl->chain;
-    n--;
-    if (n<0)
-            return 0;
-    if (n>=16)
-        return min(chainBonus_TSU[15]+32*(n - 15),999);
-    else
-        return chainBonus_TSU[n];
+	int n = pl->chain;
+	n--;
+	if (n < 0)
+		return 0;
+	if (n >= 16)
+		return min(chainBonus_TSU[15] + 32 * (n - 15), 999);
+	return chainBonus_TSU[n];
 }
 //}
-
 
 }

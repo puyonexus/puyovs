@@ -43,7 +43,6 @@ void ChatWindow::setQuickChat(bool quick)
 		ui->EntryTextEdit->setPalette(p);
 		mGameWidget->raise();
 		mGameWidget->activateWindow();
-		//mGameWidget->showNormal();
 		mGameWidget->setFocus();
 	}
 }
@@ -149,7 +148,7 @@ void ChatWindow::on_PlayMusicCheckBox_stateChanged(int arg1) const
 
 void ChatWindow::focusInEvent(QFocusEvent* ev)
 {
-	//reload global music settings
+	// Reload global music settings
 	ui->PlayMusicCheckBox->setChecked(pvsApp->settings().boolean("launcher", "enablemusic", true));
 	QWidget::focusInEvent(ev);
 }

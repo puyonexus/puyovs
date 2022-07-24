@@ -8,7 +8,7 @@
 
 namespace ilib {
 
-// not sure where to put this
+// Not sure where to put this
 enum HatPosition
 {
     HatCentered = 0, HatUp = 1, HatRight = 2, HatDown = 4, HatLeft = 8,

@@ -7,7 +7,6 @@ namespace ppvs
 
 menu::menu(game* g)
 {
-	//ctor
 	currentgame = g;
 	data = g->data;
 	background.setImage(nullptr);
@@ -18,7 +17,6 @@ menu::menu(game* g)
 	background.setPosition(p.offsetX - 192.f / 2.f, p.offsetY - 336.f / 4.f);
 	select = 0;
 
-	//options
 	option[0].setImage(data->imgMenu[0][0]);
 	option[1].setImage(data->imgMenu[1][0]);
 	option[2].setImage(data->imgMenu[2][0]);
@@ -30,7 +28,6 @@ menu::menu(game* g)
 
 menu::~menu()
 {
-	//dtor
 }
 
 void menu::draw()
@@ -45,34 +42,36 @@ void menu::draw()
 void menu::play()
 {
 	fieldProp p = currentgame->players[0]->activeField->getProperties();
-	//set option sprite
+
+	// Set option sprite
 	for (int i = 0; i < 3; i++)
 	{
-		//correct image
+		// Correct image
 		if (select == i)
-		{//selected
+		{
+			// Selected
 			option[i].setImage(data->imgMenu[i][1]);
 			option[i].setCenter();
 			option[i].setScale(option[i].getScaleX() + (1 - option[i].getScaleX()) / 3.f);
 		}
 		else
-		{//not selected
+		{
+			// Not selected
 			option[i].setImage(data->imgMenu[i][0]);
 			option[i].setCenter();
 			option[i].setScale(0.8f);
 		}
-		//position
-		//option[i].setPosition(320,180+i*40);
+		// Position
 		option[i].setPosition(p.offsetX + p.centerX, p.offsetY + p.centerY / 2 - 60 + i * 40);
 		option[i].setColor(255, 255, 255);
 	}
 
-	//enable/disable buttons
+	// Enable/disable buttons
 	if (!currentgame->settings->useCPUplayers)
 	{
 		disableRematch = false;
 		option[0].setTransparency(1);
-		//disable
+		// Disable
 		if (currentgame->currentGameStatus == GAMESTATUS_WAITING
 			|| currentgame->countBoundPlayers() < 2
 			|| currentgame->rankedState > 0)
@@ -84,7 +83,7 @@ void menu::play()
 
 	}
 
-	//set options
+	// Set options
 	controller* ctrls = &(currentgame->players[0]->controls);
 	if (ctrls->Down == 1 && select < 2)
 	{
@@ -96,15 +95,16 @@ void menu::play()
 		select--;
 		data->snd.cursor.Play(data);
 	}
-	//choose
+	// Choose
 	if (ctrls->A == 1)
 	{
 		ctrls->A++;
 		if (!(select == 0 && disableRematch))
 			data->snd.decide.Play(data);
 		if (select == 0)
-		{//rematch
-			//offline
+		{
+			// Rematch
+			// Offline
 			if (currentgame->settings->useCPUplayers)
 			{
 				currentgame->menuSelect = 0;
@@ -117,9 +117,10 @@ void menu::play()
 				{
 					if (currentgame->connected)
 					{
-						//find peers,
+						// Find peers,
 						std::string peers = "";
-						//set everyone in channel to active and add them to list
+
+						// Set everyone in channel to active and add them to list
 						for (size_t i = 0; i < currentgame->players.size(); i++)
 						{
 							if (currentgame->players[i]->onlineName != "")
@@ -128,27 +129,31 @@ void menu::play()
 								peers += "|" + to_string(currentgame->players[i]->onlineID);
 							}
 						}
-						//propose new random seed
+
+						// Propose new random seed
 						currentgame->players[0]->proposedRandomSeed = getRandom(1000000);
-						//send rematch message
-						//0[rematch]1[randomseed]2[wins]3....[player ids]
+
+						// Send rematch message
+						// 0[rematch]1[randomseed]2[wins]3....[player ids]
 						if (currentgame->channelName.compare("") != 0)
 						{
 							currentgame->network->sendToChannel(CHANNEL_GAME, "rematch|" + to_string(currentgame->players[0]->proposedRandomSeed) + "|" + to_string(currentgame->players[0]->wins)
 								+ peers, currentgame->channelName);
 							currentgame->network->sendToServer(CHANNEL_MATCH, "accept");
 						}
-						//set state to rematching
+
+						// Set state to rematching
 						currentgame->currentGameStatus = GAMESTATUS_REMATCHING;
-						//set own rematch value
+
+						// Set own rematch value
 						currentgame->players[0]->rematch = true;
 						currentgame->players[0]->rematchIcon.setVisible(true);
 						currentgame->players[0]->rematchIconTimer = 0;
 
-						//change channel description
+						// Change channel description
 						currentgame->sendDescription();
 
-						//do normal stuff
+						// Do normal stuff
 						currentgame->menuSelect = 0;
 						currentgame->loadMusic();
 					}
@@ -156,24 +161,29 @@ void menu::play()
 			}
 		}
 		else if (select == 1)
-		{//character select
+		{
+			// Character select
 			currentgame->menuSelect = 1;
 			currentgame->charSelectMenu->prepare();
 		}
 		else if (select == 2)
-		{//quit
+		{
+			// Quit
 			if (currentgame->settings->rankedMatch && currentgame->countBoundPlayers() > 1)
 			{
-				//cannot close
+				// Cannot close
 			}
 			else
+			{
 				currentgame->runGame = false;
+			}
 		}
-		//reset selection
+
+		// Reset selection
 		select = 0;
 	}
 
-	//disabled
+	// Disabled
 	if (!currentgame->settings->startWithCharacterSelect)
 	{
 		option[1].setColor(128, 128, 128);

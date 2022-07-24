@@ -40,7 +40,7 @@ public:
     void detach() { T* t = data.get(); if(!(t == 0 || data.unique())) { data = std::shared_ptr<T>(new T(*t)); } }
 };
 
-// convenience function
+// Convenience function
 static inline
 const char *copyString(const char *string)
 {
@@ -64,7 +64,6 @@ const char *copyString(const char *string)
 
 }
 
-// fuck you microsoft, no seriously
 #ifdef min
 #undef min
 #endif

@@ -166,16 +166,13 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
     alib::Device *device = alib::open();
 
-    // A couple of vorbis streams:
-    // http://46.165.213.4:80/technobase.ogg
-    // http://friends-of-radius.ethz.ch:80/kohina.ogg
-    //BufferedStream *stream = new BufferedStream(new HttpStream("http://friends-of-radius.ethz.ch:80/kohina.ogg"));
+    // BufferedStream *stream = new BufferedStream(new HttpStream("http://..."));
 
-    device->play(alib::Stream("/home/nmn/Music/loop-test.logg"));
+    device->play(alib::Stream("loop-test.logg"));
 
     while(1)
     {
-        //stream->prebuffer(4096);
+        // stream->prebuffer(4096);
 
         qApp->sendPostedEvents();
         qApp->processEvents();

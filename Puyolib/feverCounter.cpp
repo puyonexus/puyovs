@@ -24,13 +24,13 @@ feverCounter::~feverCounter()
 {
 }
 
-void feverCounter::init(float x, float y, float scale, bool orientation, gameData * g)
+void feverCounter::init(float x, float y, float scale, bool orientation, gameData* g)
 {
 	data = g;
 	m_init = true;
 	m_scale = scale;
 	m_orientation = orientation;
-	//set images
+	// Set images
 	for (int i = 0; i < 7; i++)
 	{
 		m_sprite[i].setImage(data->imgFeverGauge);
@@ -57,7 +57,7 @@ void feverCounter::init(float x, float y, float scale, bool orientation, gameDat
 	m_sprite[2].setScale(0.8f * m_scale); m_glow[2].setScale(0.8f * m_scale);
 	m_sprite[3].setScale(0.9f * m_scale); m_glow[3].setScale(0.9f * m_scale);
 
-	//align
+	// Align
 	const int dir = -1 + 2 * orientation;
 	constexpr int sy = 24;
 	constexpr int sx = 12;
@@ -96,10 +96,10 @@ void feverCounter::addTime(int t)
 
 void feverCounter::update()
 {
-	//update seconds
+	// Update seconds
 	setSecondsSprite(static_cast<int>(std::ceil(static_cast<float>(seconds) / 60.0f)));
 
-	//update gauge
+	// Update gauge
 	if (m_count != m_realCount)
 	{
 		updateTimer++;
@@ -161,15 +161,15 @@ void feverCounter::draw()
 		else if (m_count != 7 && i >= m_count)
 			m_sprite[i].setColor(255 - col, 255 - col, 255 - col);
 		else if (m_count >= 7)
-			m_sprite[i].setColor(180, 215 + 40 * sin(2 * i + data->globalTimer / 16.f), 0 + 0 * sin(data->globalTimer / 8.f));//fever
+			m_sprite[i].setColor(180, 215 + 40 * sin(2 * i + data->globalTimer / 16.f), 0 + 0 * sin(data->globalTimer / 8.f)); // Fever
 
 		m_sparkle.setPosition(m_sprite[i].getX(), m_sprite[i].getY());
 		m_sparkle.setRotation(m_sparkle.getAngle() + 1);
 
-		//flash
+		// Flash
 		if (data->glowShader)
 			data->glowShader->setParameter("color", 0.1f * ((1000 + i * -10 + data->globalTimer) % 400 < 10));
-		//draw
+		// Draw
 		m_sprite[i].draw(data->front);
 		m_glow[i].draw(data->front);
 	}

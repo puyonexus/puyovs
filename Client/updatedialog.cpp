@@ -125,7 +125,7 @@ UpdateDialog::UpdateDialog(QString binPath, QWidget* parent) :
 {
 	ui->setupUi(this);
 
-	// open the ldb
+	// Open the ldb
 	QFile ldbFile("update.ldb");
 	if (!ldbFile.open(QFile::ReadOnly))
 		qDebug() << "Could not open ldb.";
@@ -133,13 +133,13 @@ UpdateDialog::UpdateDialog(QString binPath, QWidget* parent) :
 		qDebug() << "Could not read ldb.";
 	else qDebug() << "Read ldb file.";
 
-	// update root
+	// Update root
 	updateUrl = "https://upd.puyovs.com";
 
-	// create a network access manager
+	// Create a network access manager
 	netMan = new QNetworkAccessManager(this);
 
-	// download the udb
+	// Download the udb
 	QNetworkRequest request;
 	request.setUrl(fullUrl("update.udb"));
 	request.setRawHeader("User-Agent", PUYOVS_USER_AGENT);

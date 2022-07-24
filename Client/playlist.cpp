@@ -350,7 +350,7 @@ PlaylistModel::PlaylistModel(Playlist* playlist, QObject* parent)
 {
 	p->playlist = playlist;
 
-	// hook up notifiers
+	// Hook up notifiers
 	connect(p->playlist, SIGNAL(aboutToInsertRow(int)),
 		SLOT(notifyAboutToInsertRow(int)));
 	connect(p->playlist, SIGNAL(rowInserted(int)),
@@ -406,8 +406,8 @@ QVariant PlaylistModel::data(const QModelIndex& index, int role) const
 	switch (role)
 	{
 	case Qt::DisplayRole:
-		// TODO: perhaps load into alib and get metadata?
-		// do not need alib driver loaded even!
+		// TODO: Perhaps load into alib and get metadata?
+		// Do not need alib driver loaded even!
 		return QFileInfo(entry->url.toLocalFile()).fileName();
 	case Qt::EditRole:
 		return entry->toString();

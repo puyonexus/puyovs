@@ -46,7 +46,8 @@ bool GameManager::closeAll()
 {
 	if (games.empty())
 		return false;
-	//I'm a little afraid of deleting the games list, so I'll "disconnect" the games for now
+
+	// I'm a little afraid of deleting the games list, so I'll "disconnect" the games for now
 	for (int i = 0; i < games.count(); i++)
 	{
 		games[i]->game()->connected = false;
@@ -135,10 +136,11 @@ GameWidget* GameManager::createGame(ppvs::gameSettings* gs, const QString& roomN
 		ppvs::puyoCharacter ch = ppvs::puyoCharacter(i);
 		gs->characterSetup[ch] = characters.at(i).toStdString();
 	}
-	//set default character
+
+	// Set default character
 	gs->defaultPuyoCharacter = ppvs::puyoCharacter(settings.integer("account", "defaultcharacter", 2));
 
-	//load controls
+	// Load controls
 	gs->controls["1a"] = settings.string("controlsp1", "a", "x").toStdString();
 	gs->controls["1b"] = settings.string("controlsp1", "b", "z").toStdString();
 	gs->controls["1up"] = settings.string("controlsp1", "up", "up").toStdString();
@@ -211,7 +213,7 @@ GameWidget* GameManager::findGame(const QString& roomName) const
 
 void GameManager::gameDestroyed(GameWidget* game)
 {
-	//ranked match: tell server
+	// Ranked match: tell server
 	network->sendMessageToServer(SUBCHANNEL_SERVERREQ_MATCH, "quit");
 
 	games.removeOne(game);
@@ -239,10 +241,10 @@ void GameManager::channelJoined(QString channel, NetPeerList peers) const
 	if (!getGame(channel, game, widget))
 		return;
 
-	// connected
+	// Connected
 	game->connected = true;
 
-	//count players (status==1)
+	// Count players (status==1)
 	int first = 1, players = 0, waiting = 0;
 	PVS_Client* client = network->client();
 	for (int i = peers.count() - 1; i >= 0; --i)
@@ -262,14 +264,11 @@ void GameManager::channelJoined(QString channel, NetPeerList peers) const
 			client->changeStatus(channel.toUtf8().data(), 1);
 			// Able to press rematch
 			game->currentGameStatus = GAMESTATUS_IDLE;
-			//chatwindow->statusMessage(wxT("First to enter room..."));
-			//chatwindow->statusMessage(frame->languageJSON[wxT("Messages")][wxT("JoiningGame")].AsString());
 		}
 		// There is room to join: just claim your spot
 		else if (players + waiting <= game->settings->Nplayers)
 		{
 			client->changeStatus(channel.toUtf8().data(), 1);
-			//chatwindow->statusMessage(frame->languageJSON[wxT("Messages")][wxT("JoiningGame")].AsString());
 		}
 		// Room is full: leave channel or join as spectator? (let's do the former)
 		else if (players + waiting > game->settings->Nplayers)
@@ -280,7 +279,6 @@ void GameManager::channelJoined(QString channel, NetPeerList peers) const
 			// Only one way to find out...
 			//   The reason: if we want to change the player into a spectator instead of kicking him out
 			//   then this variable should start at 0
-			//first=0;
 
 			QMessageBox* ms = new QMessageBox(QMessageBox::Critical, widget->windowTitle(),
 				tr("Room is full.", "Messages:JoinError"), QMessageBox::Ok);
@@ -461,7 +459,7 @@ void GameManager::channelMessageReceived(QString channel, uchar subchannel, QStr
 				}
 			}
 
-			//loop through ids and set all players to active in that list
+			// Loop through ids and set all players to active in that list
 			for (int i = 3; i < items.count(); i++)
 			{
 				unsigned id = items.at(i).toInt();
@@ -567,7 +565,7 @@ void GameManager::peerStatusReceived(QString channel, QString peer, uchar status
 		// Accepted as player
 		if (status == 1)
 		{
-			//set player 1 to human
+			// Set player 1 to human
 			if (game->players.size() > 0)
 			{
 				ppvs::puyoCharacter chara = ppvs::puyoCharacter(pvsApp->settings().integer("account", "defaultcharacter", 2));
@@ -579,7 +577,7 @@ void GameManager::peerStatusReceived(QString channel, QString peer, uchar status
 				game->players[0]->bindPlayer(peer.toStdString(), network->id(), true);
 				if (game->settings->rankedMatch)
 				{
-					// always able to press rematch
+					// Always able to press rematch
 					game->currentGameStatus = GAMESTATUS_IDLE;
 				}
 
@@ -589,7 +587,7 @@ void GameManager::peerStatusReceived(QString channel, QString peer, uchar status
 		}
 		else if (status == 2)
 		{
-			//accepted as spectator
+			// Accepted as spectator
 		}
 	}
 	// Everyone else
@@ -665,7 +663,7 @@ void GameManager::updateAllControls()
 
 void GameManager::rankedMatchmessageReceived(QString message)
 {
-	//get the ranked gamewidget
+	// Get the ranked gamewidget
 	GameWidget* g = nullptr;
 	for (int i = 0; i < games.count(); i++)
 	{
@@ -680,7 +678,7 @@ void GameManager::rankedMatchmessageReceived(QString message)
 
 	QStringList tokens = message.split('|');
 
-	//no match
+	// Mo match
 	if (tokens.front() == "empty")
 	{
 		g->chatWindow()->statusMessage(tr("Please wait while the server finds you an opponent...", "Messages:WaitMatch"));
@@ -707,13 +705,13 @@ void GameManager::rankedMatchmessageReceived(QString message)
 		g->replaceProxy(new NetChannelProxy(roomName, network));
 		network->createChannel(roomName, network->username() + " vs " + opponent, false);
 
-		//alert
+		// Alert
 		QApplication::beep();
 		QApplication::alert(g);
 	}
 	else if (tokens.count() == 1 && tokens.front() == "end")
 	{
-		//disconnect from channel
+		// Disconnect from channel
 		g->chatWindow()->statusMessage(tr("End of match.", "Messages:EndMatch"));
 		g->chatWindow()->clearUsers();
 		g->game()->connected = false;
@@ -724,7 +722,7 @@ void GameManager::rankedMatchmessageReceived(QString message)
 
 		g->replaceProxy(new NetChannelProxy("", network));
 
-		//request new match immediately
+		// Request new match immediately
 		ppvs::gameSettings* gs = g->game()->settings;
 		g->game()->newRankedMatchMessage = QString(QString("new|") + QString("%1|").arg(PVSVERSION)
 			+ QString(gs->rulesetInfo.rulesetType == TSU_ONLINE ? "0" : "1")).toStdString();

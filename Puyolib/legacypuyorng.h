@@ -2,17 +2,15 @@
 
 #include "puyorng.h"
 
-
 class MersenneTwister;
-
 
 class LegacyPuyoRNG : public PuyoRNG {
 public:
-    LegacyPuyoRNG(uint32_t seed, int index);
+	LegacyPuyoRNG(uint32_t seed, int index);
 
-    Piece next(int colors);
+	Piece next(int colors);
 
 private:
-    MersenneTwister *mt;
-    int index;
+	MersenneTwister* mt;
+	int index;
 };

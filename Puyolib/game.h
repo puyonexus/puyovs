@@ -60,7 +60,7 @@ public:
 
 	// Main loop
 	bool runGame;
-	
+
 	// Game related
 	void initGame(frontend* f);
 	void playGame();
@@ -101,7 +101,7 @@ public:
 	gameSettings* settings;
 	characterSelect* charSelectMenu;
 	menu* mainMenu;
-	unsigned int randomSeed_NextList; // all players should use the same random seed
+	unsigned int randomSeed_NextList; // All players should use the same random seed
 	std::deque<std::string> debugMessages;
 	bool forceStatusText;
 	TranslatableStrings translatableStrings;
@@ -116,12 +116,12 @@ public:
 	int replayState;
 	int replayBackwardsTimer;
 	bool backwardsOnce;
-	bool legacyRandomizer; // see loadReplay
+	bool legacyRandomizer; // See loadReplay
 	bool legacyNuisanceDrop;
 
 	// Ranked match
 	void rankedMatch();
-	int rankedTimer; // timer that waits until sending a new find opponent request
+	int rankedTimer; // Timer that waits until sending a new find opponent request
 	int rankedState;
 	std::string newRankedMatchMessage;
 

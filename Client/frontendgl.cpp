@@ -182,7 +182,7 @@ void FrontendGL::drawRect(ppvs::fimage* image, double subx, double suby, double 
 	}
 	else glBindTexture(GL_TEXTURE_2D, 0);
 
-	double off = 0.0, toff = 0.0; // bleed a bit
+	double off = 0.0, toff = 0.0; // Bleed a bit
 	glBegin(GL_QUADS); {
 		glTexCoord2d(u1, v2); glVertex2d(0 + 0.25, 0 + 0.25);
 		glTexCoord2d(u2, v2); glVertex2d(w - 0.25, 0 + 0.25);

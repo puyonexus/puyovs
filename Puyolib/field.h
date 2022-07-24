@@ -34,8 +34,7 @@ public:
 
 	player* getPlayer() { return m_player; }
 
-	//============================
-	//Puyo field related functions
+	// Puyo field related functions
 	bool isEmpty(int x, int y) const;
 	bool isPuyo(int x, int y) const;
 	int getColor(int x, int y) const;
@@ -58,17 +57,15 @@ public:
 	void removePuyo(int x, int y);
 	void clearField() const;
 
-	//============================
-	//Sprite related functions
+	// Sprite related functions
 	void setVisible(bool);
 	void clear();
 	void drawField() const;
 	void draw() const;
 
-	//============================
-	//Gameplay related functions
-	void createPuyo(); //Phase 20
-	void searchFallDelay() const; //Phase 20
+	// Gameplay related functions
+	void createPuyo(); // Phase 20
+	void searchFallDelay() const; // Phase 20
 	void unsetLinkAll(int x, int y) const;
 	void dropPuyo();
 	void fallPuyo();
@@ -76,18 +73,16 @@ public:
 	void searchBounce(int x, int y, int posy) const;
 	void searchLink(int x, int y) const;
 	void endFallPuyoPhase() const;
-	void searchChain(); //Phase 30
-	void popPuyoAnim(); //Phase 32
-	void dropGarbage(bool automatic = true, int dropAmount = 0); //Phase 41
-	void loseDrop() const; //Phase 44
+	void searchChain(); // Phase 30
+	void popPuyoAnim(); // Phase 32
+	void dropGarbage(bool automatic = true, int dropAmount = 0); // Phase 41
+	void loseDrop() const; // Phase 44
 	void dropField(const std::string& fieldstring);
 	void setFieldFromString(const std::string& fieldstring);
 	std::string getFieldString() const;
 	void throwAwayField();
 
-
-	//============================
-	//Other objects
+	// Other objects
 	void createParticle(float x, float y, int color);
 	void createParticleThrow(puyo* p);
 	void animateParticle();
@@ -108,18 +103,17 @@ private:
 	fieldProp m_properties;
 	float m_centerX, m_centerY;
 	puyo*** fieldPuyoArray;
-	puyo*** fieldPuyoArrayCopy; //useful for predicting chain
+	puyo*** fieldPuyoArrayCopy; // Useful for predicting chain
 
-	//sprite related values
-	sprite m_fieldSpriteFinal; //drawn onto screen
+	// Sprite related values
+	sprite m_fieldSpriteFinal; // Drawn onto screen
 	bool m_visible;
-	float m_posXreal, m_posYreal; //position of the  fieldsprite
-	float m_transformScale; //fever transition
+	float m_posXreal, m_posYreal; // Position of the  fieldsprite
+	float m_transformScale; // Fever transition
 
-	//gameplay related values
+	// Gameplay related values
 	float m_sweepFall;
 	std::vector<posVectorInt> m_vector;
-
 };
 
 }

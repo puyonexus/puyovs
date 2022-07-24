@@ -9,42 +9,13 @@ namespace ppvs
 
 characterSelect::characterSelect(game* g)
 {
-	firstStart = true;
 	currentgame = g;
 	data = g->data;
 
 	background.setImage(nullptr);
-	background.setScale(2 * 640, 480);
-	background.setPosition(-640 / 2, -480 / 4);
-	background.setColor(0, 0, 0);
-
-	//character order
-	order[0] = ARLE;
-	order[1] = SCHEZO;
-	order[2] = RULUE;
-	order[3] = DRACO;
-	order[4] = AMITIE;
-	order[5] = RAFFINE;
-	order[6] = SIG;
-	order[7] = RIDER;
-
-	order[8] = WITCH;
-	order[9] = SATAN;
-	order[10] = SUKETOUDARA;
-	order[11] = CARBUNCLE;
-	order[12] = ACCORD;
-	order[13] = KLUG;
-	order[14] = DONGURIGAERU;
-	order[15] = OCEAN_PRINCE;
-
-	order[16] = RINGO;
-	order[17] = MAGURO;
-	order[18] = RISUKUMA;
-	order[19] = ECOLO;
-	order[20] = FELI;
-	order[21] = LEMRES;
-	order[22] = OSHARE_BONES;
-	order[23] = YU_REI;
+	background.setScale(2.f * 640.f, 480.f);
+	background.setPosition(-640.f / 2.f, -480.f / 4.f);
+	background.setColor(0.f, 0.f, 0.f);
 
 	constexpr int height = 3;
 	for (int i = 0; i < height; i++)
@@ -66,20 +37,6 @@ characterSelect::characterSelect(game* g)
 			);
 		}
 	}
-	timer = 0;
-
-	selectSprite = nullptr;
-	selectedCharacter = nullptr;
-	dropset = nullptr;
-	name = nullptr;
-	nameHolder = nullptr;
-	nameHolderNumber = nullptr;
-	playernumber = nullptr;
-	sel = nullptr;
-	madeChoice = nullptr;
-
-	scale = 1;
-	Nplayers = 0;
 }
 
 characterSelect::~characterSelect()
@@ -100,12 +57,12 @@ void characterSelect::draw()
 	// Set colors
 	for (auto& i : charSprite)
 	{
-		i.setColor(128, 128, 128);
+		i.setColor(128.f, 128.f, 128.f);
 	}
-	
+
 	for (int i = 0; i < Nplayers; i++)
 	{
-		charSprite[sel[i]].setColor(255, 255, 255);
+		charSprite[sel[i]].setColor(255.f, 255.f, 255.f);
 	}
 
 	// Draw the rest
@@ -124,7 +81,7 @@ void characterSelect::draw()
 	for (int i = 0; i < Nplayers; i++)
 	{
 		selectSprite[i].draw(data->front);
-		if (Nplayers <= 4) //only draw characters if players>4
+		if (Nplayers <= 4) // Only draw characters if players>4
 		{
 			selectedCharacter[i].draw(data->front);
 		}
@@ -149,12 +106,15 @@ void characterSelect::play()
 	const int Nplayers = static_cast<int>(currentgame->players.size());
 
 	if (timer != 0)
+	{
 		timer++;
+	}
 
 	if (timer <= 60 && timer > 0)
 	{
 		background.setTransparency(static_cast<float>(interpolate("linear", 0.0, 0.5, timer / 60.0)));
 	}
+
 	if (timer <= 80 && timer > 0)
 	{
 		constexpr int height = 3;
@@ -184,15 +144,16 @@ void characterSelect::play()
 		}
 	}
 
-	//move in
+	// Move in
 	if (timer <= 160 && timer > 0)
 	{
 		for (int i = 0; i < Nplayers; i++)
 		{
-			//normal display
+			// Normal display
 			float posX = 640.f / static_cast<float>(Nplayers * 2) * static_cast<float>(i * 2 + 1);
 			float posY = 480.f;
-			//display only name
+
+			// Display only name
 			if (Nplayers > 4)
 			{
 				const int width = static_cast<int>(ceil(sqrt(static_cast<double>(Nplayers))));
@@ -224,13 +185,15 @@ void characterSelect::play()
 			nameHolderNumber[i * 3 + 2].setVisible(true);
 			selectedCharacter[i].setVisible(true);
 			for (int j = 0; j < 16; j++)
+			{
 				dropset[i * 16 + j].setVisible(true);
+			}
 		}
 	}
 
 	// Count players that made a choice
 	int allChoice = 0;
-	bool endnow = false; // override: end character selection immediately
+	bool endnow = false; // Override: end character selection immediately
 	for (int i = 0; i < Nplayers; i++)
 	{
 		if (madeChoice[i])
@@ -245,33 +208,39 @@ void characterSelect::play()
 		{
 			int currentplayer = i;
 
-			//ONLINE: don't care about CPU players
+			// ONLINE: don't care about CPU players
 			if (currentgame->settings->useCPUplayers)
 			{
-				//move CPU with player 1
+				// Move CPU with player 1
 				if (currentgame->players[currentplayer]->getPlayerType() == CPU && i == allChoice)
 					currentplayer = 0;
 
-				//TEMP chance to cancel
+				// TEMP chance to cancel
 				if (madeChoice[i])
 				{
 					if (currentgame->players[currentplayer]->controls.B == 1)
 					{
 						int j = i;
 
-						//check if CPU should be canceled first
+						// Check if CPU should be canceled first
 						if (currentplayer == 0)
+						{
 							for (int ii = 0; ii < Nplayers; ii++)
 							{
 								if (currentgame->players[ii]->getPlayerType() == CPU && madeChoice[ii])
+								{
 									j = ii;
+								}
 							}
+						}
 						data->snd.cancel.Play(data);
 						currentgame->players[currentplayer]->controls.B++;
 						madeChoice[j] = false;
 						selectSprite[j].setVisible(true);
 						if (j > 8)
+						{
 							playernumber[j * 3 + 0].setVisible(true);
+						}
 						playernumber[j * 3 + 1].setVisible(true);
 						playernumber[j * 3 + 2].setVisible(true);
 
@@ -289,7 +258,6 @@ void characterSelect::play()
 					currentgame->players[currentplayer]->controls.Right > 16 &&
 					currentgame->players[currentplayer]->controls.Right % 3 == 0)
 				{
-					//sel[i]++;
 					selX++;
 					moved = true;
 				}
@@ -297,7 +265,6 @@ void characterSelect::play()
 					currentgame->players[currentplayer]->controls.Left > 16 &&
 					currentgame->players[currentplayer]->controls.Left % 3 == 0)
 				{
-					//sel[i]--;
 					selX--;
 					moved = true;
 				}
@@ -305,7 +272,6 @@ void characterSelect::play()
 					currentgame->players[currentplayer]->controls.Down > 16 &&
 					currentgame->players[currentplayer]->controls.Down % 3 == 0)
 				{
-					//sel[i]+=8;
 					selY++;
 					moved = true;
 				}
@@ -313,20 +279,25 @@ void characterSelect::play()
 					currentgame->players[currentplayer]->controls.Up > 16 &&
 					currentgame->players[currentplayer]->controls.Up % 3 == 0)
 				{
-					//sel[i]-=8;
 					selY--;
 					moved = true;
 				}
 			}
 
 			if (sel[i] < 0)
+			{
 				sel[i] += 24;
+			}
 
 			if (selX < 0)
+			{
 				selX += 8;
+			}
 
 			if (selY < 0)
+			{
 				selY += 3;
+			}
 
 			selX %= 8;
 			selY %= 3;
@@ -338,10 +309,11 @@ void characterSelect::play()
 			// Normal display
 			float posX = 640.f / static_cast<float>(Nplayers * 2) * static_cast<float>(i * 2 + 1);
 			float posY = 480.f;
+
 			// Display only name
 			if (Nplayers > 4)
 			{
-				int width = static_cast<int>(ceil(sqrt(static_cast<double>(Nplayers))));
+				const int width = static_cast<int>(ceil(sqrt(static_cast<double>(Nplayers))));
 				posX = 640.f / static_cast<float>(width * 2) * static_cast<float>(i % width * 2 + 1);
 				posY = 480.f - static_cast<float>(i / width) * 128.f * scale;
 			}
@@ -357,7 +329,7 @@ void characterSelect::play()
 				playernumber[i * 3 + 0].setVisible(false);
 				playernumber[i * 3 + 1].setVisible(false);
 				playernumber[i * 3 + 2].setVisible(false);
-				
+
 				// ONLINE: send message
 				if (currentgame->connected)
 				{
@@ -370,7 +342,9 @@ void characterSelect::play()
 			{
 				data->snd.cursor.Play(data);
 				if (currentgame->settings->useCharacterField)
+				{
 					currentgame->players[i]->setFieldImage(order[sel[i]]);
+				}
 
 				selectSprite[i].setPosition(
 					static_cast<float>(64 + jj * 66),
@@ -383,10 +357,11 @@ void characterSelect::play()
 				selectedCharacter[i].setPosition(posX, posY - 38 * scale);
 				selectedCharacter[i].setScale(scale);
 				if (selectedCharacter[i].getImage() == nullptr)
+				{
 					selectedCharacter[i].setVisible(false);
+				}
 
 				name[i].setImage(data->imgCharName[static_cast<unsigned char>(order[sel[i]])]);
-				//name[i].setSubRect(0,0,width,48);
 				name[i].setCenterBottom();
 				name[i].setPosition(posX, posY);
 				name[i].setScale(scale);
@@ -403,7 +378,8 @@ void characterSelect::play()
 					currentgame->network->sendToChannel(CHANNEL_GAME, std::string("select|") + to_string((int)order[sel[i]]), currentgame->channelName);
 				}
 			}
-			//player number
+
+			// Player number
 			float xx = playernumber[i * 3].getX() + (selectSprite[i].getX() - playernumber[i * 3].getX()) / 3.f + 2.f;
 			float yy = playernumber[i * 3].getY() + (selectSprite[i].getY() - playernumber[i * 3].getY()) / 3.f + 6.f;
 			playernumber[i * 3 + 0].setPosition(xx, yy + 1.f * static_cast<float>(sin(data->globalTimer / 30.0 + i * 10.0)));
@@ -425,7 +401,7 @@ void characterSelect::play()
 			static_cast<float>(interpolate("linear", 0.0, 0.5, -timer / 60.0))
 		);
 
-		//set invisible
+		// Set invisible
 		for (int i = 0; i < Nplayers; i++)
 		{
 			selectSprite[i].setVisible(false);
@@ -438,7 +414,9 @@ void characterSelect::play()
 			nameHolderNumber[i * 3 + 1].setTransparency(1 - t);
 			nameHolderNumber[i * 3 + 2].setTransparency(1 - t);
 			for (int j = 0; j < 16; j++)
+			{
 				dropset[i * 16 + j].setTransparency(1 - t);
+			}
 			nameHolder[i].setTransparency(1 - t);
 		}
 		for (int i = 0; i < 24; i++)
@@ -459,9 +437,13 @@ void characterSelect::play()
 				float move = static_cast<float>(interpolate("exponential", 1, 0, tt, -2, 1));
 
 				if (move > 1)
+				{
 					move = 1;
+				}
 				else if (move < 0)
+				{
 					move = 0;
+				}
 
 				holder[i * width + j].setPosition(
 					static_cast<float>(64 + j * 66) + 640.f * move,
@@ -481,6 +463,7 @@ void characterSelect::play()
 			// Normal display
 			float posX = 640.f / static_cast<float>(Nplayers * 2) * static_cast<float>(i * 2 + 1);
 			float posY = 480.f;
+
 			// Display only name
 			if (Nplayers > 4)
 			{
@@ -490,7 +473,10 @@ void characterSelect::play()
 			}
 			const double tt = static_cast<double>(-timer) / 30.0 - static_cast<double>(i) / static_cast<double>(Nplayers);
 			float move = static_cast<float>(interpolate("elastic", 1, 0, tt, -5, 0.5));
-			if (move > -0.001f && move < 0.001f) move = 0;
+			if (move > -0.001f && move < 0.001f)
+			{
+				move = 0;
+			}
 			nameHolder[i].setPosition(posX, posY + 2.f + 320.f * move);
 		}
 	}
@@ -511,7 +497,9 @@ void characterSelect::play()
 			nameHolderNumber[i * 3 + 2].setVisible(false);
 			selectedCharacter[i].setVisible(false);
 			for (int j = 0; j < 16; j++)
+			{
 				dropset[i * 16 + j].setVisible(false);
+			}
 		}
 		end();
 	}
@@ -538,7 +526,9 @@ void characterSelect::end()
 			if (currentgame->settings->pickColors)
 			{
 				for (int i = 0; i < Nplayers; i++)
+				{
 					currentgame->players[i]->currentphase = PICKCOLORS;
+				}
 			}
 			else
 			{
@@ -605,8 +595,8 @@ void characterSelect::prepare()
 		{
 			sel[i] = findCurrentCharacter(i);
 		}
-		int jj = sel[i] % 8;
-		int ii = sel[i] / 8;
+		const int jj = sel[i] % 8;
+		const int ii = sel[i] / 8;
 		madeChoice[i] = false;
 
 		// Set initial field image
@@ -655,7 +645,7 @@ void characterSelect::prepare()
 			playernumber[i * 3 + j].setImage(data->imgPlayerNumber);
 			nameHolderNumber[i * 3 + j].setImage(data->imgPlayerNumber);
 		}
-		//number
+		// Number
 		playernumber[i * 3 + 0].setSubRect((i + 1) / 10 * 24, 0, 24, 32);
 		playernumber[i * 3 + 0].setCenterBottom();
 		playernumber[i * 3 + 0].setScale(0.5);
@@ -675,7 +665,9 @@ void characterSelect::prepare()
 		nameHolderNumber[i * 3 + 2].setCenterBottom();
 		nameHolderNumber[i * 3 + 2].setScale(scale);
 		if (i < 9)
+		{
 			nameHolderNumber[i * 3 + 0].setVisible(false);
+		}
 		playernumber[i * 3 + 0].setPosition(static_cast<float>(64 + jj * 66 + 4), static_cast<float>(64 + ii * 52 + 6));
 		playernumber[i * 3 + 1].setPosition(static_cast<float>(64 + jj * 66 + 4), static_cast<float>(64 + ii * 52 + 6));
 		playernumber[i * 3 + 2].setPosition(static_cast<float>(64 + jj * 66 + 4), static_cast<float>(64 + ii * 52 + 6));
@@ -697,9 +689,8 @@ void characterSelect::prepare()
 		nameHolder[i].setCenterBottom();
 		nameHolder[i].setPosition(posX, posY);
 		nameHolder[i].setScale(scale);
-		//nameHolder[i].setVisible(false);
 		setDropset(static_cast<int>(posX), static_cast<int>(posY - 48.f * scale), i);
-		//set visible
+		// Set visible
 		for (int k = 0; k < Nplayers; k++)
 		{
 			selectedCharacter[k].setTransparency(1);
@@ -711,7 +702,9 @@ void characterSelect::prepare()
 			nameHolderNumber[k * 3 + 1].setTransparency(1);
 			nameHolderNumber[k * 3 + 2].setTransparency(1);
 			for (int j = 0; j < 16; j++)
+			{
 				dropset[k * 16 + j].setTransparency(1);
+			}
 			nameHolder[k].setTransparency(1);
 		}
 		for (auto& i : holder)
@@ -730,18 +723,6 @@ void characterSelect::prepare()
 void characterSelect::setDropset(int x, int y, int pl)
 {
 	puyoCharacter pc = order[sel[pl]];
-	//get total width and center dropset
-	//float xx = 0;
-	//float length=0;
-	//for (int j=0;j<16;j++)
-	//{
-	//    movePuyoType mpt=getFromDropPattern(pc,j);
-	//    if (mpt==DOUBLET)
-	//        length+=10;
-	//    else
-	//        length+=18;
-	//}
-	//xx=-length/2.0-5;
 	float xx = -128;
 
 	for (int j = 0; j < 16; j++)
@@ -783,25 +764,30 @@ void characterSelect::setDropset(int x, int y, int pl)
 
 int characterSelect::findCurrentCharacter(int i)
 {
-	puyoCharacter pc = currentgame->players[i]->getCharacter();
-	//find selection
+	// Find selection
+	const puyoCharacter pc = currentgame->players[i]->getCharacter();
 	for (int j = 0; j < 24; j++)
 	{
 		if (order[j] == pc)
+		{
 			return j;
+		}
 	}
 	return -1;
 }
 
+// Sets animation for setting a character, does not actually set the player character if charactersleect is not active!
 void characterSelect::setCharacter(int playernum, int selection, bool choice)
-{//sets animation for setting a character, does not actually set the player character if charactersleect is not active!
-	if (playernum >= (int)currentgame->players.size())
+{
+	if (playernum >= static_cast<int>(currentgame->players.size()))
+	{
 		return;
+	}
 
 	if (timer > 40)
 	{
-		int i = playernum;
-		//find selection from character order
+		const int i = playernum;
+		// Find selection from character order
 		int s = 0;
 		for (int j = 0; j < 24; j++)
 		{
@@ -813,24 +799,28 @@ void characterSelect::setCharacter(int playernum, int selection, bool choice)
 		sel[i] = s;
 		const int jj = sel[i] % 8;
 		const int ii = sel[i] / 8;
-		// normal display
+
+		// Normal display
 		float posX = 640.f / static_cast<float>(Nplayers * 2) * static_cast<float>(i * 2 + 1);
 		float posY = 480.f;
-		// display only name
+
+		// Display only name
 		if (Nplayers > 4)
 		{
-			int width = static_cast<int>(ceil(sqrt(static_cast<double>(Nplayers))));
+			const int width = static_cast<int>(ceil(sqrt(static_cast<double>(Nplayers))));
 			posX = 640.f / (width * 2) * (i % width * 2 + 1);
 			posY = 480.f - static_cast<float>(i / width) * 128.f * scale;
 		}
 
-		//move
+		// Move
 		if (!choice)
 		{
 			data->snd.cursor.Play(data);
 			madeChoice[i] = false;
 			if (currentgame->settings->useCharacterField)
+			{
 				currentgame->players[i]->setFieldImage(order[sel[i]]);
+			}
 
 			selectSprite[i].setPosition(static_cast<float>(64 + jj * 66), static_cast<float>(64 + ii * 52));
 
@@ -840,7 +830,9 @@ void characterSelect::setCharacter(int playernum, int selection, bool choice)
 			selectedCharacter[i].setPosition(posX, posY - 38 * scale);
 			selectedCharacter[i].setScale(scale);
 			if (selectedCharacter[i].getImage() == nullptr)
+			{
 				selectedCharacter[i].setVisible(false);
+			}
 
 			name[i].setImage(data->imgCharName[static_cast<unsigned char>(order[sel[i]])]);
 			name[i].setCenterBottom();
@@ -848,10 +840,10 @@ void characterSelect::setCharacter(int playernum, int selection, bool choice)
 			name[i].setScale(scale);
 
 			setDropset(static_cast<int>(posX), static_cast<int>(posY - 48 * scale), i);
-
 		}
 		else
-		{//made choice
+		{
+			// Made choice
 			data->snd.decide.Play(data);
 			madeChoice[i] = true;
 			currentgame->players[i]->setCharacter(order[sel[i]]);

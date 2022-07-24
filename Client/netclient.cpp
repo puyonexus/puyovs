@@ -238,7 +238,7 @@ void NetClient::onGetPeerList(std::vector<std::string>* v)
 		peers.append(QString::fromStdString(peer));
 	}
 
-	//emit peerListReceived(peers);
+	// emit peerListReceived(peers);
 }
 
 void NetClient::onGetChannelList(std::vector<std::string>* names, std::vector<std::string>* descriptions)

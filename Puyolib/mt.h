@@ -39,14 +39,14 @@ public:
 private:
     static const int N                    = 624;
     static const int M                    = 397;
-    // constant vector a
+    // Constant vector a
     static const unsigned long MATRIX_A   = 0x9908b0dfUL;
-    // most significant w-r bits
+    // Most significant w-r bits
     static const unsigned long UPPER_MASK = 0x80000000UL;
-    // least significant r bits
+    // Least significant r bits
     static const unsigned long LOWER_MASK = 0x7fffffffUL;
 
-    unsigned long* mt_;                  // the state vector
+    unsigned long* mt_;                  // The state vector
     int mti_;                            // mti == N+1 means mt not initialized
 
     unsigned long* init_key_;            // Storage for the seed vector

@@ -51,7 +51,7 @@ void SettingsDialog::load()
 {
 	Settings& settings = pvsApp->settings();
 
-	// general
+	// General
 	ui->LanguageComboBox->setCurrentIndex(languageManager->currentLanguageIndex());
 
 	ui->EnableMusicCheckBox->setChecked(settings.boolean("launcher", "enablemusic", true));
@@ -67,7 +67,7 @@ void SettingsDialog::load()
 	ui->AllowCrashDumpsCheckBox->setChecked(settings.boolean("telemetry", "collectdebugdata", false));
 	ui->AllowUsageStatisticsCheckBox->setChecked(settings.boolean("telemetry", "collectusagedata", false));
 
-	// rules
+	// Rules
 	ui->BaseRulesComboBox->setCurrentIndex(settings.integer("rules", "baserules", 0));
 	ui->DefaultRulesCheckbox->setChecked(settings.boolean("rules", "default", true));
 	ui->MarginTimeSpinBox->setValue(settings.integer("rules", "margintime", 192));
@@ -81,7 +81,7 @@ void SettingsDialog::load()
 	ui->NumberOfPlayersSpinBox->setValue(settings.integer("rules", "numplayers", 2));
 	ui->QuickDropCheckBox->setChecked(settings.boolean("rules", "quickdrop", false));
 
-	// controls
+	// Controls
 	ui->UpInput->setText(settings.string("controlsp1", "up", "up"));
 	ui->DownInput->setText(settings.string("controlsp1", "down", "down"));
 	ui->LeftInput->setText(settings.string("controlsp1", "left", "left"));
@@ -90,7 +90,7 @@ void SettingsDialog::load()
 	ui->BInput->setText(settings.string("controlsp1", "b", "z"));
 	ui->StartInput->setText(settings.string("controlsp1", "start", "return"));
 
-	//customization
+	// Customization
 	fetchFileLists();
 	ui->BackgroundComboBox->setCurrentIndex(ui->BackgroundComboBox->findText(settings.string("custom", "background", "Forest")));
 	ui->PuyoComboBox->setCurrentIndex(ui->PuyoComboBox->findText(settings.string("custom", "puyo", "Default")));
@@ -104,7 +104,7 @@ void SettingsDialog::load()
 		combobox->setCurrentIndex(combobox->findText(currentChar));
 	}
 
-	// music
+	// Music
 	ui->MusicAdvanceAtRoundStartCheckbox->setChecked(settings.boolean("music", "advance", true));
 	ui->MusicAtLeastOnceCheckBox->setChecked(settings.boolean("music", "looponce", true));
 	ui->MusicStopAfterRoundCheckBox->setChecked(settings.boolean("music", "stopmusicafterround", false));
@@ -116,7 +116,7 @@ void SettingsDialog::save()
 {
 	Settings& settings = pvsApp->settings();
 
-	// general
+	// General
 	QString langFn = languageManager->currentLanguageFileName();
 	if (langFn.startsWith("Language/"))
 		langFn.remove(0, 9);
@@ -137,7 +137,7 @@ void SettingsDialog::save()
 	settings.setBoolean("telemetry", "collectdebugdata", ui->AllowCrashDumpsCheckBox->isChecked());
 	settings.setBoolean("telemetry", "collectusagedata", ui->AllowUsageStatisticsCheckBox->isChecked());
 
-	// rules
+	// Rules
 	settings.setInteger("rules", "baserules", ui->BaseRulesComboBox->currentIndex());
 	settings.setBoolean("rules", "default", ui->DefaultRulesCheckbox->isChecked());
 	settings.setInteger("rules", "margintime", ui->MarginTimeSpinBox->value());
@@ -151,7 +151,7 @@ void SettingsDialog::save()
 	settings.setInteger("rules", "numplayers", ui->NumberOfPlayersSpinBox->value());
 	settings.setBoolean("rules", "quickdrop", ui->QuickDropCheckBox->isChecked());
 
-	// controls
+	// Controls
 	settings.setString("controlsp1", "up", ui->UpInput->text());
 	settings.setString("controlsp1", "down", ui->DownInput->text());
 	settings.setString("controlsp1", "left", ui->LeftInput->text());
@@ -160,7 +160,7 @@ void SettingsDialog::save()
 	settings.setString("controlsp1", "b", ui->BInput->text());
 	settings.setString("controlsp1", "start", ui->StartInput->text());
 
-	//customization
+	// Customization
 	settings.setString("custom", "background", ui->BackgroundComboBox->currentText());
 	settings.setString("custom", "puyo", ui->PuyoComboBox->currentText());
 	settings.setString("custom", "sound", ui->SoundComboBox->currentText());
@@ -170,7 +170,7 @@ void SettingsDialog::save()
 	settings.setCharMap(characters);
 	settings.setBoolean("custom", "characterfield", ui->ApplyCharacterCheckBox->isChecked());
 
-	//music    
+	// Music    
 	settings.setBoolean("music", "advance", ui->MusicAdvanceAtRoundStartCheckbox->isChecked());
 	settings.setBoolean("music", "looponce", ui->MusicAtLeastOnceCheckBox->isChecked());
 	settings.setBoolean("music", "stopmusicafterround", ui->MusicStopAfterRoundCheckBox->isChecked());
@@ -271,21 +271,24 @@ void SettingsDialog::characterSlotIndexChanged(QString) const
 {
 	QComboBox* comboBox = qobject_cast<QComboBox*>(sender());
 	QString senderName = comboBox->objectName();
-	//retrieve number
+	// Retrieve number
+	// TODO: something supposed to go here...?
 }
 
 void SettingsDialog::fetchFileLists()
 {
-	//backgrounds
+	// Backgrounds
 	QDir dirB(QString("User/Backgrounds/"), "*", QDir::Name, QDir::AllDirs | QDir::Readable | QDir::NoDotAndDotDot);
 	backgroundsList = dirB.entryList();
 	ui->BackgroundComboBox->addItems(backgroundsList);
-	//puyo
+
+	// Puyo
 	QDir dirP(QString("User/Puyo/"), "*.png", QDir::Name, QDir::Files | QDir::Readable);
 	QFileInfoList flist = dirP.entryInfoList();
 	foreach(QFileInfo fi, flist)
 		ui->PuyoComboBox->addItem(fi.baseName());
-	//characters
+
+	// Characters
 	QDir dirC(QString("User/Characters/"), "*", QDir::Name, QDir::AllDirs | QDir::Readable | QDir::NoDotAndDotDot);
 	charactersList = dirC.entryList();
 	foreach(QComboBox * combobox, characterComboBoxList)
@@ -293,7 +296,8 @@ void SettingsDialog::fetchFileLists()
 		combobox->addItem("");
 		combobox->addItems(charactersList);
 	}
-	//sound
+
+	// Sound
 	QDir dirS(QString("User/Sounds/"), "*", QDir::Name, QDir::AllDirs | QDir::Readable | QDir::NoDotAndDotDot);
 	soundsList = dirS.entryList();
 	ui->SoundComboBox->addItems(soundsList);

@@ -29,7 +29,7 @@ int nextPuyo::getOrientation() const
 void nextPuyo::init(float x, float y, float scale, bool orientation, gameData* globalp)
 {
 	gamedata = globalp;
-	
+
 	initImage();
 	m_offsetX = x; m_offsetY = y;
 	m_scale = scale;
@@ -52,7 +52,7 @@ void nextPuyo::init(float x, float y, float scale, bool orientation, gameData* g
 	}
 
 	m_background.setSubRect(0, 0, 65, 124);
-	
+
 	initialize = true;
 	resetPuyoPos();
 	m_sprite31.setScale(33.0 / 48.0);

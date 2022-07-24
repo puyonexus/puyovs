@@ -6,7 +6,6 @@ StartupDialog::StartupDialog(QString motd, QWidget* parent) :
 	ui(new Ui::StartupDialog)
 {
 	ui->setupUi(this);
-	//ui->textEdit->setHtml(motd);
 	ui->textBrowser->setHtml(motd);
 }
 

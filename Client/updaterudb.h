@@ -19,7 +19,7 @@ enum UDBFileFlags
 struct UDBHeader
 {
 	quint32 magicnum;
-	quint16 version; // if the updater is too old it should update the launcher blindly
+	quint16 version; // If the updater is too old it should update the launcher blindly
 	quint16 revision;
 	quint16 numfiles;
 	quint16 reserved1;

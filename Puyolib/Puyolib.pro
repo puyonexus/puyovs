@@ -24,7 +24,6 @@ HEADERS += \
     field.h \
     feverCounter.h \
     dropPattern.h \
-    dictionary.h \
     controller.h \
     characterSelect.h \
     animation.h \

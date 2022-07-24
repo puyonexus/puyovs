@@ -18,7 +18,7 @@ InputDialog::InputDialog(QWidget* parent) :
 
 	ilib::InputEvent e;
 
-	// drain events
+	// Drain events
 	while (drv->getEvent(&e));
 
 	QTimer* processTimer = new QTimer(this);
@@ -34,7 +34,7 @@ InputDialog::~InputDialog()
 
 	ilib::InputEvent e;
 
-	// drain events
+	// Drain events
 	drv->process();
 	while (drv->getEvent(&e));
 

@@ -14,7 +14,7 @@ puyo::puyo(int Xindex, int Yindex, int color, field* f, float spriteXreal, float
 	data = globalp;
 	fieldProp prop = m_field->getProperties();
 
-	//set position and color
+	// Set position and color
 	m_posX = Xindex;
 	m_posY = Yindex;
 	m_color = color;
@@ -29,12 +29,13 @@ puyo::puyo(int Xindex, int Yindex, int color, field* f, float spriteXreal, float
 	m_accelY = 0;
 	m_targetY = 0;
 
-	//set sprite
+	// Set sprite
 	m_sprite.setImage(data->imgPuyo);
-	//correction factor in Y
+
+	// Correction factor in Y
 	m_scaleYcor = (prop.gridHeight / float((PUYOY + prop.gridHeight) / 2.01f));
 
-	//other stuff
+	// Other stuff
 	dropable = true;
 	m_type = NOPUYO;
 	m_targetY = 0;
@@ -59,8 +60,8 @@ puyo::puyo(int Xindex, int Yindex, int color, field* f, float spriteXreal, float
 
 puyo::puyo(const puyo& self)
 {
-	// initialize copy of base class
-    // copy only important things, no sprite stuff
+	// Initialize copy of base class
+	// Copy only important things, no sprite stuff
 	m_posX = self.GetindexX();
 	m_posY = self.GetindexY();
 	m_type = self.getType();
@@ -73,25 +74,24 @@ puyo::puyo(const puyo& self)
 
 puyo::~puyo()
 {
-    //dtor
 }
 
 puyo* puyo::clone()
 {
-    return new puyo(*this);
+	return new puyo(*this);
 }
 
 // Add to acceleration and set position
 void puyo::AddAccelY(float val)
 {
-    m_accelY+=val;
-    m_spriteY+=m_accelY;
+	m_accelY += val;
+	m_spriteY += m_accelY;
 }
 
 // Only colorpuyo return something valid
 int puyo::getColor()const
 {
-    return -1;
+	return -1;
 }
 
 void puyo::updateSprite()
@@ -99,13 +99,13 @@ void puyo::updateSprite()
 	// Bugfixes
 	if (fallFlag != 0)
 	{
-		// there is a memory effect, nasty effects
+		// There is a memory effect, nasty effects
 		m_scaleX = 1.0f;
 		m_scaleY = 1.0f;
 		bounceY = 0;
 	}
 
-	// weird scaling events
+	// Weird scaling events
 	if (m_scaleX > 3.0 || m_scaleY > 3.0 || m_scaleX < 0.1)
 	{
 		m_scaleX = 1.0f;
@@ -120,9 +120,9 @@ void puyo::updateSprite()
 	// Position
 	fieldProp prop = m_field->getProperties();
 
-	// note: puyo width is now 30 (to remove artifacts)
+	// Note: puyo width is now 30 (to remove artifacts)
 	m_sprite.setPosition(m_spriteX - m_posX * 2 + prop.gridX / 2, m_spriteY + bounceY);
-	
+
 	// Scale
 	m_sprite.setScale(m_scaleX * m_scaleXd, m_scaleY * m_scaleYd * m_scaleYcor);
 }
@@ -222,12 +222,12 @@ void puyo::unsetLink(direction dir)
 // Don't remember what this is for actually, see MMF source code
 void puyo::landProper()
 {
-    fallFlag=0;
-    m_spriteY=m_targetY;
-    m_accelY=0;
-    bounceFlag=1;
-    bounceTimer=2;
-    searchBounce=1;
+	fallFlag = 0;
+	m_spriteY = m_targetY;
+	m_accelY = 0;
+	bounceFlag = 1;
+	bounceTimer = 2;
+	searchBounce = 1;
 }
 
 // Do the bounce animation
@@ -237,9 +237,9 @@ void puyo::bounce()
 
 	if (hard == true)
 	{
-		// hard puyos do not bounce
+		// Hard puyos do not bounce
 		if (bounceTimer > 0)
-			bounceTimer += 20; //even hard puyos need to end their bounce
+			bounceTimer += 20; // Even hard puyos need to end their bounce
 
 		return;
 	}
@@ -265,7 +265,7 @@ void puyo::bounce()
 				bounceMultiplier
 			) * cos(
 				(bounceTimer * 6 - 45) * PI / 180.f) + 1 + exp(bounceTimer * -1.0f / 2.f
-			);
+				);
 	}
 	else if (fallFlag != 0)
 	{
@@ -292,7 +292,7 @@ void puyo::neighbourPop(field*, bool)
 }
 
 //=======================================
-//colorpuyo
+// colorPuyo
 //=======================================
 
 colorPuyo::colorPuyo(int Xindex, int Yindex, int color, field* f, float spriteXreal, float spriteYreal, gameData* globalp)
@@ -336,7 +336,7 @@ void colorPuyo::updateSprite()
 }
 
 // Draw puyo on screen
-void colorPuyo::draw(frendertarget *target)
+void colorPuyo::draw(frendertarget* target)
 {
 	updateSprite();
 
@@ -353,7 +353,7 @@ void colorPuyo::draw(frendertarget *target)
 		}
 		else
 		{
-			// without shaders
+			// Without shaders
 			m_sprite.setBlendMode(alphaBlending);
 			m_sprite.draw(target);
 			m_sprite.setBlendMode(additiveBlending);
@@ -418,12 +418,12 @@ bool colorPuyo::destroyPuyo()
 }
 
 // What should happen if a neighbouring puyo is popped
-void colorPuyo::neighbourPop(field *,bool /*virt*/)
+void colorPuyo::neighbourPop(field*, bool /*virt*/)
 {
 }
 
 //=======================================
-//nuiancepuyo
+// nuiancePuyo
 //=======================================
 
 nuisancePuyo::nuisancePuyo(int Xindex, int Yindex, int color, field* f, float spriteXreal, float spriteYreal, gameData* globalp)
@@ -498,12 +498,12 @@ void nuisancePuyo::pop()
 
 bool nuisancePuyo::destroyPuyo()
 {
-    if (m_destroyTimer>m_field->getPlayer()->chainPopSpeed)
-    {
-        destroy=false;
-        return true;
-    }
-    return false;
+	if (m_destroyTimer > m_field->getPlayer()->chainPopSpeed)
+	{
+		destroy = false;
+		return true;
+	}
+	return false;
 }
 
 // What should happen if a neighbouring puyo is popped
@@ -524,7 +524,7 @@ void nuisancePuyo::neighbourPop(field* f, bool v)
 }
 
 //=======================================
-//hardpuyo
+// hardPuyo
 //=======================================
 
 hardPuyo::hardPuyo(int Xindex, int Yindex, int color, field* f, float spriteXreal, float spriteYreal, gameData* globalp)
@@ -573,15 +573,15 @@ void hardPuyo::updateSprite()
 	puyo::updateSprite();
 }
 
-void hardPuyo::draw(frendertarget *target)
+void hardPuyo::draw(frendertarget* target)
 {
-    updateSprite();
-    m_sprite.draw(target);
+	updateSprite();
+	m_sprite.draw(target);
 }
 
 int hardPuyo::getColor() const
 {
-    return -1;
+	return -1;
 }
 
 // Popping animation

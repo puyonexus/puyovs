@@ -172,7 +172,7 @@ void animation::init(gameData* g, posVectorFloat offsetPos, float scale, std::st
 						if (path_child->ToElement()->Attribute("x", &x) &&
 							path_child->ToElement()->Attribute("y", &y))
 						{
-							//add node
+							// Add node
 							posVectorFloat pv(static_cast<float>(x), static_cast<float>(y));
 							paths[pathname].push_back(pv);
 						}
@@ -202,7 +202,7 @@ void animation::init(gameData* g, posVectorFloat offsetPos, float scale, std::st
 					if (sprite_child->ValueStr() == "file")
 					{
 						imagename = sprite_child->ToElement()->GetText();
-						//now we can add the sprite
+						// Now we can add the sprite
 						newSound(spritename, imagename);
 					}
 				}
@@ -292,7 +292,7 @@ void animation::playAnimation()
 						// Set subrectangle
 						if (kf_child->ValueStr() == "rect")
 						{
-							//find x, y, width and height attributes.
+							// Find x, y, width and height attributes.
 							int x, y, width, height;
 							if (kf_child->ToElement()->Attribute("x", &x) &&
 								kf_child->ToElement()->Attribute("y", &y) &&

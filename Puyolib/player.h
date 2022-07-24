@@ -48,11 +48,11 @@ struct replay_player_header
 	char playernum;
 	playerType playertype;// (HUMAN or ONLINE)
 	puyoCharacter character;
-	char active; //active at start
+	char active; // Active at start
 	char colors;
-	int vectorsize_movement; //size of vector in bytes
+	int vectorsize_movement; // Size of vector in bytes
 	int vectorsize_message;
-	int vectorsizecomp_movement; //size of compressed vector in bytes
+	int vectorsizecomp_movement; // Size of compressed vector in bytes
 	int vectorsizecomp_message;
 };
 
@@ -65,10 +65,6 @@ struct messageEvent
 class player
 {
 public:
-	/*****************
-	*Functions
-	******************/
-
 	player(playerType type, int playernum, int totalPlayers, game*);
 	~player();
 
@@ -124,30 +120,30 @@ public:
 	void endPhase();
 	void prepareVoice(int chain, int predicted);
 	void playVoice();
-	void getReady();//phase 0
+	void getReady();// Phase 0
 	void chooseColor();
-	void prepare(); //phase 1
-	void cpuMove(); //phase 10
-	void destroyPuyos(); //phase 31
-	void startGarbage(); //phase 33
-	void garbagePhase(); //phase 34
+	void prepare(); // Phase 1
+	void cpuMove(); // Phase 10
+	void destroyPuyos(); // Phase 31
+	void startGarbage(); // Phase 33
+	void garbagePhase(); // Phase 34
 	void counterGarbage();
-	void endGarbage(); //phase 35
-	void checkAllClear(); //phase 41
-	void checkLoser(bool endphase = true); //phase 43
+	void endGarbage(); // Phase 35
+	void checkAllClear(); // Phase 41
+	void checkLoser(bool endphase = true); // Phase 43
 	void checkWinner();
 	void loseGame();
 	void winGame();
-	void checkFever();//phase 50
-	void startFever();//phase 51
-	void checkEndFever();//phase 50
+	void checkFever();// Phase 50
+	void startFever();// Phase 51
+	void checkEndFever();// Phase 50
 	void checkEndFeverOnline();
-	void dropFeverChain(); //phase 52
-	void endFever(); //phase 54
+	void dropFeverChain(); // Phase 52
+	void endFever(); // Phase 54
 	void playFever();
 	void setLose();
 
-	//Draw code
+	// Draw code
 	void draw();
 	void drawEffect();
 	void drawFieldBack(posVectorFloat position, float rotation);
@@ -221,10 +217,10 @@ public:
 	bool feverMode = false;
 	bool feverEnd = false;
 	int currentFeverChainAmount = 0;
-	bool poppedChain = false; // is reset during PREPARE phase
-	int feverColor = 0; // use enum?
+	bool poppedChain = false; // Is reset during PREPARE phase
+	int feverColor = 0; // Use enum?
 	float feverColorR = 0.f, feverColorG = 0.f, feverColorB = 0.f; // RGB values used
-	int feverSuccess = 0; // used for playing voice
+	int feverSuccess = 0; // Used for playing voice
 	void checkAllClearStart();
 
 	// Garbage variables
@@ -308,7 +304,7 @@ private:
 	std::vector<int> m_nuisanceList;
 	long m_randomseed = 0l;
 	int m_playernum = 0;
-	float m_globalScale = 0.f; //global scale for certain objects (for example sprite animations)
+	float m_globalScale = 0.f; // Global scale for certain objects (for example sprite animations)
 
 	playerType m_type;
 	scoreCounter m_scoreCounter;
@@ -330,7 +326,7 @@ private:
 	float m_nextPuyoScale = 0.f;
 
 	// FIX: garbage bug
-	bool hasMoved = false; // if player went into move phase as indication an attack had ended
+	bool hasMoved = false; // If player went into move phase as indication an attack had ended
 
 	int debugCounter = 0;
 };

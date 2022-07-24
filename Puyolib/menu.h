@@ -5,23 +5,25 @@
 
 namespace ppvs
 {
+
 class game;
 
 class menu
 {
-    public:
-        menu(game*);
-        virtual ~menu();
+public:
+	menu(game*);
+	virtual ~menu();
 
-        void draw();
-        void play();
-        int select;
+	void draw();
+	void play();
+	int select;
 
-    private:
-        game* currentgame;
-        gameData *data;
-        sprite background;
-        sprite option[3];
-        bool disableRematch;
+private:
+	game* currentgame;
+	gameData* data;
+	sprite background;
+	sprite option[3];
+	bool disableRematch;
 };
+
 }

@@ -50,10 +50,10 @@ QString getCryptographicHash(QString str)
 QString getDataLocation()
 {
 #if QT_VERSION >= 0x050000
-	//qt5: QStandardPaths::StandardLocation
+	// Qt5: QStandardPaths::StandardLocation
 	return QStandardPaths::writableLocation(QStandardPaths::DataLocation);
 #else
-	//qt4
+	// Qt4
 	return QDesktopServices::storageLocation(QDesktopServices::DataLocation);
 #endif
 }

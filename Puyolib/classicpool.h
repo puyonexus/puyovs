@@ -2,13 +2,11 @@
 
 #include "puyorng.h"
 
-
 class ClassicRNG;
-
 
 class ClassicPool {
 public:
-    explicit ClassicPool(ClassicRNG *rng);
+	explicit ClassicPool(ClassicRNG* rng);
 
-    Piece pool[3][256];
+	Piece pool[3][256];
 };

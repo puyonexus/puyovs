@@ -231,7 +231,7 @@ void GameWidget::closeEvent(QCloseEvent* event)
 	if (mGame && mGame->settings->rankedMatch
 		&& mGame->countBoundPlayers() > 1)
 	{
-		//do not close
+		// Do not close
 		event->ignore();
 	}
 	else

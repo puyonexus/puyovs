@@ -57,7 +57,7 @@ protected: void resizeEvent(QResizeEvent*) override
 	int diffh = windowHeight - int(h);
 	int diffw = windowWidth - int(w);
 
-	//snap to 640 x 480
+	// Snap to 640 x 480
 	if (abs(windowWidth - 640) < 32 && abs(windowHeight) < 32)
 	{
 		w = 640.0f;
@@ -80,7 +80,7 @@ protected: void resizeEvent(QResizeEvent*) override
 	glViewport(diffw / 2, diffh / 2, int(w), int(h));
 #if defined(Q_OS_MAC)
 	// Workaround for MacOSX resize. 
-	guard = false; // prevents reentry from setGeometry()
+	guard = false; // Prevents reentry from setGeometry()
 #endif
 }
 };
@@ -135,7 +135,7 @@ GameWidgetGL::~GameWidgetGL()
 {
 	if (!mGame->channelName.empty())
 	{
-		//before leaving the channel, check if you're the last player
+		// Before leaving the channel, check if you're the last player
 		if (mGame->countBoundPlayers() < 2 && mGame->network->connected)
 			mGame->network->requestChannelDescription(mGame->channelName, std::string(""));
 		mGame->network->leaveChannel(mGame->channelName);
@@ -162,9 +162,9 @@ void GameWidgetGL::keyPressEvent(QKeyEvent* k)
 	HANDLEKEY(6, start);
 #undef HANDLEKEY
 
-	//i'm putting this here for the moment
-	//this is not part of puyolib, because it may be hard
-	//to notify the client when a replay is changed
+	// I'm putting this here for the moment.
+	// This is not part of Puyolib, because it may be hard
+	// to notify the client when a replay is changed
 	if (mGame->settings->recording == PVS_REPLAYING)
 	{
 		if (k->key() == Qt::Key_Left)
@@ -173,17 +173,19 @@ void GameWidgetGL::keyPressEvent(QKeyEvent* k)
 			mGame->nextReplay();
 	}
 
-	//pressing tab opens chatwindow
+	// Pressing tab opens chatwindow
 	if (chatWindow() && k->key() == Qt::Key_Space)
 	{
 		chatWindow()->setQuickChat(true);
 	}
-	//pressing esc return window in normal state
+
+	// Pressing esc return window in normal state
 	if (k->key() == Qt::Key_Escape)
 	{
 		showNormal();
 	}
-	//replay
+
+	// Replay
 	if (mGame && mGame->settings->recording == PVS_REPLAYING && k->key() == Qt::Key_Space)
 	{
 		if (mGame->replayState != REPLAYSTATE_PAUSED)
@@ -239,7 +241,7 @@ void GameWidgetGL::closeEvent(QCloseEvent* event)
 {
 	if (mGame && mGame->settings->rankedMatch && mGame->countBoundPlayers() > 1)
 	{
-		//do not close
+		// Do not close
 		event->ignore();
 	}
 	else
@@ -313,7 +315,7 @@ void GameWidgetGL::process()
 			}
 		}
 
-		// frameskipping
+		// Frameskipping
 		while (now > d->nextFrame)
 		{
 			mGame->playGame();

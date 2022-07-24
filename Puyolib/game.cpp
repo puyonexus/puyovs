@@ -239,7 +239,7 @@ void game::loadImages() const
 	{
 		for (int j = 0; j < 2; ++j)
 		{
-			// safe (because i/j have defined ranges)
+			// Safe (because i/j have defined ranges)
 			char buffer[128];
 			sprintf(buffer, "Data/Menu/menu%i%i.png", i, j);
 			data->imgMenu[i][j] = data->front->loadImage(buffer);
@@ -370,7 +370,7 @@ void game::initGame(frontend* f)
 	readyGoObj.init(data, posVectorFloat(320, 240), 1, folder_user_backgrounds + data->gUserSettings.str_background + "/Animation/", "ready.xml", 3 * 60);
 	backgroundAnimation.init(data, posVectorFloat(320, 240), 1, folder_user_backgrounds + data->gUserSettings.str_background + "/Animation/", "animation.xml", 30 * 60);
 	backgroundAnimation.prepareAnimation("background");
-	
+
 	// Other stuff
 	charSelectMenu = new characterSelect(this);
 	charSelectMenu->prepare();
@@ -719,7 +719,7 @@ void game::playGame()
 			players[i]->setStatusText(str.c_str());
 		}
 	}
-	
+
 	changeMusicVolume();
 
 	data->globalTimer++;
@@ -756,10 +756,10 @@ void game::playGame()
 			data->playSounds = false;
 
 			loadReplay(settings->oldReplayPlayList.back());
-			// get ready to play
+			// Get ready to play
 			resetPlayers();
 			data->matchTimer = 0;
-			// loop until time is reached
+			// Loop until time is reached
 			while (data->matchTimer < replayBackwardsTimer)
 			{
 				replayState = REPLAYSTATE_NORMAL;
@@ -793,7 +793,7 @@ void game::playGame()
 
 void game::renderGame()
 {
-	//tunnel shader
+	// Tunnel shader
 	if (data->tunnelShader)
 	{
 		data->tunnelShader->setParameter("time", data->globalTimer / 60.0f);
@@ -846,7 +846,7 @@ void game::renderGame()
 		mainMenu->draw();
 	}
 
-	// darken screen
+	// Darken screen
 	if (rankedState >= 3)
 	{
 		black.draw(data->front);
@@ -902,11 +902,11 @@ void game::Loop()
 	{
 		// Frame limiter
 		endTime = timeGetTime();
-		deltaTime = (endTime - startTime) / 1000.0; // convert to second
+		deltaTime = (endTime - startTime) / 1000.0; // Convert to second
 		startTime = endTime;
 		accumulator += deltaTime;
 
-		// fps counter (screen refresh rate)
+		// FPS counter (screen refresh rate)
 		second += deltaTime;
 		if (second > 1)
 		{
@@ -925,19 +925,19 @@ void game::Loop()
 			// Update framelimiter variables
 			t += dt;
 			accumulator -= dt;
-			// fps
+			// FPS
 			fpscounter++;
 
 			// Draw frame in the last loop
 			if (accumulator < dt)
 			{
-				// screen refresh rate
+				// Screen refresh rate
 				fps++;
 
-				// innner loop render
+				// Innner loop render
 				renderGame();
 
-				//Display
+				// Display
 				data->front->swapBuffers();
 			}
 		}
@@ -978,7 +978,7 @@ void game::resetPlayers()
 		}
 	}
 
-	// reset players
+	// Reset players
 	winsString = "";
 	for (const auto& player : players)
 	{
@@ -1022,7 +1022,7 @@ void game::checkEnd()
 			timerEndMatch++;
 			if (timerEndMatch == 120)
 			{
-				//go to menu
+				// Go to menu
 				menuSelect = 2;
 				if (settings->rankedMatch) {
 					choiceTimer = 5 * 60;
@@ -1033,33 +1033,33 @@ void game::checkEnd()
 				colorTimer = 10 * 60;
 				rankedTimer = 15 * 60;
 
-				// online game: reset state if you were a player
+				// Online game: reset state if you were a player
 				if (connected)
 				{
 					currentGameStatus = GAMESTATUS_IDLE;
 				}
 
-				// release everyone's buttons (otherwise online players start choosing stuff)
+				// Release everyone's buttons (otherwise online players start choosing stuff)
 				for (const auto& player : players)
 				{
 					player->controls.release();
 				}
-				
-				// change channel description
+
+				// Change channel description
 				if (checkLowestID())
 					sendDescription();
 			}
 		}
 		else if (settings->spectating)
 		{
-			// just wait until next match starts
+			// Just wait until next match starts
 			menuSelect = -1;
 			if (connected)
 			{
 				currentGameStatus = GAMESTATUS_REMATCHING;
 			}
 
-			// play next replay
+			// Play next replay
 			if (!settings->replayPlayList.empty())
 			{
 				replayTimer = 3 * 60;
@@ -1094,19 +1094,20 @@ int game::countBoundPlayers() const
 }
 
 bool game::checkLowestID() const
-{//check if active player has the lowest ID
+{
+	// Check if active player has the lowest ID
 	if (!connected)
 		return false;
 
-	// only player
+	// Only player
 	bool returnval = false;
 	const PVS_Channel* ch = network->channelManager.getChannel(channelName);
 	if (ch != nullptr && network->channelManager.getStatus(channelName, network->getPVS_Peer()) == 1)
 	{
-		// active
+		// Active
 		if (currentGameStatus != GAMESTATUS_WAITING && currentGameStatus != GAMESTATUS_SPECTATING)
 		{
-			// lowest id?
+			// Lowest id?
 			for (size_t i = 1; i < players.size(); i++)
 			{
 				if (players[i]->active && players[i]->onlineID > players[0]->onlineID)
@@ -1126,14 +1127,14 @@ void game::sendDescription() const
 		return;
 	}
 
-	// player?
+	// Player?
 	const PVS_Channel* ch = network->channelManager.getChannel(channelName);
 	if (ch != nullptr && network->channelManager.getStatus(channelName, network->getPVS_Peer()) == 1)
 	{
 		if (!settings->rankedMatch)
 		{
-			// send message about game
-			std::string str = "type:friendly|"; // temp
+			// Send message about game
+			std::string str = "type:friendly|"; // Temp
 
 			std::string ruleString = "rules:Tsu";
 			const rulesetInfo_t* rs = &(settings->rulesetInfo);
@@ -1157,7 +1158,7 @@ void game::sendDescription() const
 			else
 				str += "|custom:0";
 			str += "|channelname:" + channelName;
-			//add all peers
+			// Add all peers
 			std::string scr;
 			for (size_t i = 0; i < players.size(); i++)
 			{
@@ -1172,14 +1173,15 @@ void game::sendDescription() const
 
 std::string game::sendUpdate() const
 {
-	//0[spectate]1[currentphase]2[fieldstringnormal]3[fevermode]4[fieldfever]5[fevercount]
-	//6[rng seed]7[fever rng called]8[turns]9[colors]
-	//10[margintimer]11[chain]12[currentFeverChainAmount]13[normal GQ]14[fever GQ]
-	//15[predictedchain]16[allclear]
+	// 0[spectate]1[currentphase]2[fieldstringnormal]3[fevermode]4[fieldfever]5[fevercount]
+	// 6[rng seed]7[fever rng called]8[turns]9[colors]
+	// 10[margintimer]11[chain]12[currentFeverChainAmount]13[normal GQ]14[fever GQ]
+	// 15[predictedchain]16[allclear]
 	std::string str = "spectate|";
 	player* pl = players[0];
 	str += to_string(static_cast<int>(pl->currentphase)) + "|";
-	// get normal field
+
+	// Get normal field
 	str += pl->getNormalField()->getFieldString() + " |";
 	str += to_string(pl->feverMode) + "|";
 	str += pl->getFeverField()->getFieldString() + " |";
@@ -1215,10 +1217,11 @@ void game::saveReplay() const
 	time(&rawtime);
 	timeinfo = localtime(&rawtime);
 
-	// open file
+	// Open file
 	std::ofstream outfile;
 	std::string replayfolder = "User/Replays/";
-	// create userfolder
+
+	// Create userfolder
 	if (!settings->spectating)
 	{
 		if (players.size() > 2)
@@ -1236,13 +1239,13 @@ void game::saveReplay() const
 	}
 	createFolder(replayfolder);
 
-	// create datefolder
+	// Create datefolder
 	char dt[20];
 	strftime(dt, 20, "%Y-%m-%d", timeinfo);
 	replayfolder += std::string(dt) + "/";
 	createFolder(replayfolder);
 
-	// rulesname
+	// Rulesname
 	std::string rulesname = "TSU_";
 	if (settings->rulesetInfo.rulesetType == FEVER_ONLINE)
 		rulesname = "FEVER_";
@@ -1264,17 +1267,16 @@ void game::saveReplay() const
 	{
 		scorename = winsString;
 	}
-	// createFolder(replayfolder);
 	std::string filename = rulesname + ft + playersname + scorename;
 	outfile.open((replayfolder + filename + ".rvs").c_str(), std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
 
-	// construct header
+	// Construct header
 	replay_header rh =
 	{
 		{'R','P','V','S'},
 		PVS_REPLAYVERSION,
-		"",//date
-		"",//time
+		"", // Date
+		"", // Time
 		data->matchTimer,
 		static_cast<char>(activeAtStart),
 		randomSeed_NextList
@@ -1300,15 +1302,15 @@ void game::saveReplay() const
 
 	outfile.write(reinterpret_cast<char*>(&rrh), sizeof(replay_ruleset_header));
 
-	// go through all players
+	// Go through all players
 	for (auto& player : players)
 	{
-		// player header
+		// Player header
 		int n = player->getPlayerNum();
 
 		replay_player_header rph =
 		{
-			"",//name
+			"", // Name
 			static_cast<short>(player->wins),
 			static_cast<int>(player->onlineID),
 			static_cast<char>(n),
@@ -1322,11 +1324,11 @@ void game::saveReplay() const
 			0
 		};
 
-		// copy name
+		// Copy name
 		std::string name = player->previousName.substr(0, 31);
 		strcpy(rph.name, name.c_str());
 
-		// compress move vector
+		// Compress move vector
 		int movLength = static_cast<int>(player->controls.recordEvents.size() * sizeof(controllerEvent));
 		auto movComprLength = static_cast<unsigned long>(static_cast<float>(movLength) * 1.1f + 12);
 		auto* movcompressed = new unsigned char[movComprLength];
@@ -1338,15 +1340,15 @@ void game::saveReplay() const
 				reinterpret_cast<unsigned char*>(&player->controls.recordEvents[0]),
 				movLength);
 
-			// check result
+			// Check result
 			if (z_result != Z_OK)
 			{
-				// stop
+				// Stop
 				outfile.close();
 				remove((replayfolder + filename + ".rvs").c_str());
 				return;
 			}
-			// update size
+			// Update size
 			rph.vectorsizecomp_movement = static_cast<int>(movComprLength);
 
 			encode("pvs2424", reinterpret_cast<char*>(movcompressed), movComprLength);
@@ -1354,7 +1356,7 @@ void game::saveReplay() const
 		else
 			movComprLength = 0;
 
-		//compress messages
+		// Compress messages
 		int mesLength = static_cast<int>(player->recordMessages.size() * sizeof(messageEvent));
 		auto mesComprLength = static_cast<unsigned long>((static_cast<float>(mesLength) * 1.1f) + 12);
 		auto* mescompressed = new unsigned char[mesComprLength];
@@ -1366,32 +1368,32 @@ void game::saveReplay() const
 				reinterpret_cast<unsigned char*>(&player->recordMessages[0]),
 				mesLength);
 
-			//check result
+			// Check result
 			if (z_result != Z_OK)
 			{
-				//stop
+				// Stop
 				outfile.close();
 				remove((replayfolder + filename + ".rvs").c_str());
 				return;
 			}
-			//update size
+			// Update size
 			rph.vectorsizecomp_message = static_cast<int>(mesComprLength);
 			encode("pvs2424", reinterpret_cast<char*>(mescompressed), mesComprLength);
 		}
 		else
 			mesComprLength = 0;
 
-		// write compressed
+		// Write compressed
 		outfile.write(reinterpret_cast<char*>(&rph), sizeof(replay_player_header));
 		if (movLength != 0)
 			outfile.write(reinterpret_cast<char*>(movcompressed), movComprLength);
 		if (mesLength != 0)
 			outfile.write(reinterpret_cast<char*>(mescompressed), mesComprLength);
 
-		// remove compressed
+		// Remove compressed
 		delete[] movcompressed;
 		player->controls.recordEvents.clear();
-		// remove compressed
+		// Remove compressed
 		delete[] mescompressed;
 		player->recordMessages.clear();
 	}
@@ -1411,11 +1413,11 @@ void game::loadReplay(std::string replayfile)
 		return;
 	}
 
-	// read header
+	// Read header
 	replay_header rh;
 	infile.read(reinterpret_cast<char*>(&rh), sizeof(replay_header));
 
-	// check version
+	// Check version
 	if (PVS_REPLAYVERSION < rh.versionNumber)
 	{
 		return;
@@ -1423,7 +1425,7 @@ void game::loadReplay(std::string replayfile)
 
 	currentReplayVersion = rh.versionNumber;
 
-	// backwards compatibility for randomizer: version 3 introduces the pp2 randomizer
+	// Backwards compatibility for randomizer: version 3 introduces the pp2 randomizer
 	if (currentReplayVersion < 3) {
 		legacyRandomizer = true;
 		legacyNuisanceDrop = true;
@@ -1433,10 +1435,10 @@ void game::loadReplay(std::string replayfile)
 		legacyNuisanceDrop = false;
 	}
 
-	// set
+	// Set
 	randomSeed_NextList = rh.randomseed;
 
-	// read rules header
+	// Read rules header
 	replay_ruleset_header rrh;
 	infile.seekg(sizeof(replay_header), std::ios::beg);
 	infile.read(reinterpret_cast<char*>(&rrh), sizeof(replay_ruleset_header));
@@ -1452,10 +1454,10 @@ void game::loadReplay(std::string replayfile)
 	settings->rulesetInfo.Nplayers = rrh.Nplayers;
 	settings->Nplayers = rrh.Nplayers;
 
-	//set rules
+	// Set rules
 	setRules();
 
-	//set up players
+	// Set up players
 	if (static_cast<int>(players.size()) != rrh.Nplayers)
 	{
 		while (!players.empty())
@@ -1466,19 +1468,19 @@ void game::loadReplay(std::string replayfile)
 		initPlayers();
 	}
 
-	// by now the number of players should be correct
+	// By now the number of players should be correct
 	if (rrh.Nplayers != static_cast<int>(players.size()))
 		return;
 
 	unsigned int sizePrevious = sizeof(replay_header) + sizeof(replay_ruleset_header);
 	for (const auto& player : players)
 	{
-		// read player header
+		// Read player header
 		replay_player_header rph;
 		infile.seekg(sizePrevious, std::ios::beg);
 		infile.read((char*)&rph, sizeof(replay_player_header));
 
-		// update player
+		// Update player
 		player->bindPlayer(rph.name, rph.onlineID, true);
 		player->wins = rph.currentwins;
 		player->setPlayerType(rph.playertype);
@@ -1488,13 +1490,13 @@ void game::loadReplay(std::string replayfile)
 		player->controls.recordEvents.clear();
 		player->recordMessages.clear();
 
-		// size of vectors
+		// Size of vectors
 		unsigned long movSize = rph.vectorsize_movement;
 		unsigned long mesSize = rph.vectorsize_message;
 		const unsigned long movSizeComp = rph.vectorsizecomp_movement;
 		const unsigned long mesSizeComp = rph.vectorsizecomp_message;
 
-		// prepare vec
+		// Prepare vec
 		if (movSize > 0)
 		{
 			player->controls.recordEvents.resize(movSize / sizeof(controllerEvent));
@@ -1504,7 +1506,7 @@ void game::loadReplay(std::string replayfile)
 			player->recordMessages.resize(mesSize / sizeof(messageEvent));
 		}
 
-		// read compressed data
+		// Read compressed data
 		const auto movcompressed = new unsigned char[movSizeComp];
 		const auto mescompressed = new unsigned char[mesSizeComp];
 		if (movSize > 0)
@@ -1521,29 +1523,29 @@ void game::loadReplay(std::string replayfile)
 			encode("pvs2424", reinterpret_cast<char*>(mescompressed), mesSizeComp);
 		}
 
-		// decompress into vectors
+		// Decompress into vectors
 		if (movSize > 0)
 		{
 			uncompress(
 				reinterpret_cast<unsigned char*>(&player->controls.recordEvents[0]),
 				&movSize,
-				movcompressed, // source buffer - the compressed data
-				movSizeComp); // length of compressed data in bytes
+				movcompressed, // Source buffer - the compressed data
+				movSizeComp); // Length of compressed data in bytes
 		}
 		if (mesSize > 0)
 		{
 			uncompress(
 				reinterpret_cast<unsigned char*>(&player->recordMessages[0]),
 				&mesSize,
-				mescompressed, // source buffer - the compressed data
-				mesSizeComp); // length of compressed data in bytes
+				mescompressed, // Source buffer - the compressed data
+				mesSizeComp); // Length of compressed data in bytes
 		}
 
-		// delete temporary buffer
+		// Delete temporary buffer
 		delete[] movcompressed;
 		delete[] mescompressed;
 
-		// update size
+		// Update size
 		sizePrevious += sizeof(replay_player_header) + movSizeComp + mesSizeComp;
 	}
 	infile.close();
@@ -1568,7 +1570,7 @@ void game::nextReplay()
 		loadReplay(settings->replayPlayList.front());
 		settings->oldReplayPlayList.push_back(settings->replayPlayList.front());
 		settings->replayPlayList.pop_front();
-		//get ready to play
+		// Get ready to play
 		resetPlayers();
 	}
 	else
@@ -1598,7 +1600,7 @@ void game::previousReplay()
 		settings->replayPlayList.push_front(settings->oldReplayPlayList.back());
 		loadReplay(settings->replayPlayList.front());
 		settings->oldReplayPlayList.pop_back();
-		// get ready to play
+		// Get ready to play
 		resetPlayers();
 	}
 	else
@@ -1623,14 +1625,14 @@ void game::rankedMatch()
 
 	if (rankedTimer == 0)
 	{
-		//the client is expected to have applied you for ranked match
+		// The client is expected to have applied you for ranked match
 		if (rankedState == 0 && channelName.empty())
 		{
 			network->sendToServer(CHANNEL_MATCH, settings->rulesetInfo.rulesetType == TSU_ONLINE ? "find|0" : "find|1");
-			// upon matching again, the timer is reduced
+			// Upon matching again, the timer is reduced
 			rankedTimer = 5 * 60;
 		}
-		if (rankedState == 2) //geting ready to close match
+		if (rankedState == 2) // Getting ready to close match
 		{
 			for (const auto& player : players)
 			{
@@ -1642,7 +1644,7 @@ void game::rankedMatch()
 		else
 			rankedTimer = 15 * 60;
 	}
-	// wait for player input
+	// Wait for player input
 	if (rankedState == 3)
 	{
 		setStatusText(translatableStrings.rankedWaiting.c_str());
@@ -1650,7 +1652,7 @@ void game::rankedMatch()
 		{
 			if (!newRankedMatchMessage.empty())
 			{
-				// apply for new match
+				// Apply for new match
 				network->sendToServer(CHANNEL_MATCH, newRankedMatchMessage.c_str());
 				newRankedMatchMessage = "";
 			}
@@ -1706,7 +1708,8 @@ void game::loadMusic()
 	data->front->musicEvent(music_continue);
 	targetVolumeNormal = 100;
 	targetVolumeFever = 100;
-	//force to set volume
+
+	// Force to set volume
 	currentVolumeNormal -= 1;
 	currentVolumeFever -= 1;
 }
