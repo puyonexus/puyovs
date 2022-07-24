@@ -50,8 +50,9 @@ void particle::draw(frendertarget *ri)
     m_sprite.draw(ri);
 }
 
+// Particle's main function
 void particle::play()
-{//particle's main function
+{
     m_timer++;
     m_scale=1.2f-m_timer*0.05f;
     if (m_scale<0.1f)
@@ -59,19 +60,11 @@ void particle::play()
     gravityTimer+=0.3f;
     m_posY+=gravityTimer;
     m_posX+=m_speedX;
-    //destroy
-    //if (m_timer>100)
-    //{
-        //delete this;
-    //}
 }
 
 bool particle::destroy()
 {
-    if (m_timer>60)
-        return true;
-    else
-        return false;
+    return m_timer > 60;
 }
 
 

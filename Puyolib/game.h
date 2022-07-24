@@ -27,8 +27,6 @@
 
 #define PVS_REPLAYVERSION   3
 
-//use of threads?
-//#define USETHREADS
 struct PVS_Client;
 
 namespace ppvs
@@ -36,11 +34,11 @@ namespace ppvs
 
 struct replay_header
 {
-	char mw[4];//={'R','P','V','S'}
+	char mw[4]; // = {'R','P','V','S'}
 	short versionNumber;
-	char date[11];//="YYYY:MM:DD"
-	char time[9];//="HH:MM:SS"
-	int duration;//(number of frames)
+	char date[11]; // = "YYYY:MM:DD"
+	char time[9]; // = "HH:MM:SS"
+	int duration; // (number of frames)
 	char numberOfActivePlayers;
 	unsigned int randomseed;
 };
@@ -60,40 +58,40 @@ public:
 
 	void close();
 
-	//main loop
+	// Main loop
 	bool runGame;
-
-	//Game related
+	
+	// Game related
 	void initGame(frontend* f);
 	void playGame();
 	void renderGame();
-	void setWindowFocus(bool focus);
+	void setWindowFocus(bool focus) const;
 	void setRules();
-	bool isFever();
+	bool isFever() const;
 
-	//Other
+	// Other
 	void checkEnd();
 	void addPlayer(playerType type, int playernum, int Nplayers);
 	void resetPlayers();
-	int getActivePlayers();
+	int getActivePlayers() const;
 
-	//Online
+	// Online
 	PVS_Client* network;
 	std::string channelName;
 	bool connected;
 	std::deque<networkMessage> messageCenter;
 	int currentGameStatus;
-	int countActivePlayers(); //do not confuse with "getActivePlayers()"
-	int countBoundPlayers();
-	bool stopChaining; //set true to stop all players from chaining
-	bool checkLowestID();
-	void sendDescription();
-	std::string sendUpdate(); //send the state of player 1 to update spectators
+	int countActivePlayers() const; // Do not confuse with "getActivePlayers()"
+	int countBoundPlayers() const;
+	bool stopChaining; // Set true to stop all players from chaining
+	bool checkLowestID() const;
+	void sendDescription() const;
+	std::string sendUpdate() const; // Send the state of player 1 to update spectators
 	int choiceTimer;
 	int colorTimer;
 	int activeAtStart;
 
-	//Public variables
+	// Public variables
 	int menuSelect;
 	animation readyGoObj;
 	animation backgroundAnimation;
@@ -103,12 +101,12 @@ public:
 	gameSettings* settings;
 	characterSelect* charSelectMenu;
 	menu* mainMenu;
-	unsigned int randomSeed_NextList; //all players should use the same random seed
+	unsigned int randomSeed_NextList; // all players should use the same random seed
 	std::deque<std::string> debugMessages;
 	bool forceStatusText;
 	TranslatableStrings translatableStrings;
 
-	void saveReplay();
+	void saveReplay() const;
 	void loadReplay(std::string filename);
 	int replayTimer;
 	std::string winsString;
@@ -121,13 +119,13 @@ public:
 	bool legacyRandomizer; // see loadReplay
 	bool legacyNuisanceDrop;
 
-	//ranked match
+	// Ranked match
 	void rankedMatch();
 	int rankedTimer; // timer that waits until sending a new find opponent request
 	int rankedState;
 	std::string newRankedMatchMessage;
 
-	//music
+	// Music
 	int targetVolumeNormal;
 	int currentVolumeNormal;
 	int targetVolumeFever;
@@ -135,32 +133,32 @@ public:
 	float globalVolume;
 	void changeMusicVolume();
 	void loadMusic();
-protected:
+
 private:
-	//main loop
+	// Main loop
 	void Loop();
 
-	//init
+	// Init
 	void loadGlobal();
 	void initPlayers();
-	void loadSounds();
-	void loadImages();
+	void loadSounds() const;
+	void loadImages() const;
 
-	//Timers
+	// Timers
 	int timerEndMatch;
 	sprite timerSprite[2];
 
-	//Game objects
+	// Game objects
 	sprite m_spriteBackground;
 	sprite black;
 
-	//text
+	// Text
 	ffont* statusFont;
 	ftext* statusText;
 	std::string lastText;
 	void setStatusText(const char* utf8);
 
-	bool playNext; //helper variable for replays
+	bool playNext; // Helper variable for replays
 };
 
 }
