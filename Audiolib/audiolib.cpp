@@ -35,7 +35,7 @@ struct Device::Priv
 	static void callback(Priv* p, Uint8* samples, int len)
 	{
 		p->mixmutex.lock();
-		if (p->quitsignal) return; // inside mutex for a reason
+		if (p->quitsignal) return; // Inside mutex for a reason
 		len /= (sizeof(float) * p->mixer.numChannels());
 		p->mixer.read((float*)samples, len);
 		p->mixmutex.unlock();

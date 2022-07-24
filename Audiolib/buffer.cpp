@@ -297,7 +297,7 @@ bool FileStream::eof()
 
 bool FileStream::hasEof()
 {
-	// not if you open /dev/random, i guess
+	// Not if you open /dev/random, i guess
 	return true;
 }
 

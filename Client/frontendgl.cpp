@@ -4,43 +4,43 @@
 #include "ffontgl.h"
 #include "fsoundalib.h"
 
-FrontendGL::FrontendGL(QGLWidget* gl, GameAudio* audio, ppvs::finput& input, GLExtensions& ext, QObject* parent)
+FrontendGL::FrontendGL(QGLWidget* gl, GameAudio* audio, ppvs::FeInput& input, GLExtensions& ext, QObject* parent)
 	: QObject(parent), gl(gl), audio(audio), input(input), ext(ext)
 {
 }
 
-ppvs::fimage* FrontendGL::loadImage(const char* nameu8)
+ppvs::FeImage* FrontendGL::loadImage(const char* nameu8)
 {
 	return new FImageGL(nameu8, gl, this);
 }
 
-ppvs::fimage* FrontendGL::loadImage(const std::string& nameu8)
+ppvs::FeImage* FrontendGL::loadImage(const std::string& nameu8)
 {
 	return loadImage(nameu8.c_str());
 }
 
-ppvs::fshader* FrontendGL::loadShader(const char* source)
+ppvs::FeShader* FrontendGL::loadShader(const char* source)
 {
 	if (ext.haveGLSL) return new FShaderGL(source, ext, this);
 	return nullptr;
 }
 
-ppvs::ffont* FrontendGL::loadFont(const char* nameu8, double fontSize)
+ppvs::FeFont* FrontendGL::loadFont(const char* nameu8, double fontSize)
 {
 	return new FFontGL(nameu8, fontSize, gl, this);
 }
 
-ppvs::fsound* FrontendGL::loadSound(const char* nameu8)
+ppvs::FeSound* FrontendGL::loadSound(const char* nameu8)
 {
 	return new FSoundAlib(nameu8, audio, this);
 }
 
-ppvs::fsound* FrontendGL::loadSound(const std::string& nameu8)
+ppvs::FeSound* FrontendGL::loadSound(const std::string& nameu8)
 {
 	return loadSound(nameu8.c_str());
 }
 
-void FrontendGL::musicEvent(ppvs::fmusicevent event)
+void FrontendGL::musicEvent(ppvs::FeMusicEvent event)
 {
 	emit musicStateChanged(int(event));
 }
@@ -50,10 +50,10 @@ void FrontendGL::musicVolume(float volume, bool fever)
 	emit musicVolumeChanged(volume, fever);
 }
 
-ppvs::finput FrontendGL::inputState(int pl)
+ppvs::FeInput FrontendGL::inputState(int pl)
 {
 	if (pl == 0) return input;
-	return ppvs::finput();
+	return ppvs::FeInput();
 }
 
 void FrontendGL::pushMatrix()
@@ -86,9 +86,9 @@ void FrontendGL::scale(float x, float y, float z)
 	glScalef(x, y, z);
 }
 
-ppvs::viewportGeometry FrontendGL::viewport()
+ppvs::ViewportGeometry FrontendGL::viewport()
 {
-	return ppvs::viewportGeometry(gl->width(), gl->height());
+	return ppvs::ViewportGeometry(gl->width(), gl->height());
 }
 
 bool FrontendGL::hasShaders()
@@ -96,21 +96,21 @@ bool FrontendGL::hasShaders()
 	return ext.haveGLSL;
 }
 
-void FrontendGL::setBlendMode(ppvs::blendingMode b)
+void FrontendGL::setBlendMode(ppvs::BlendingMode b)
 {
 	switch (b) {
-	case ppvs::noBlending:
+	case ppvs::NoBlending:
 		glDisable(GL_BLEND);
 		break;
-	case ppvs::alphaBlending:
+	case ppvs::AlphaBlending:
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		break;
-	case ppvs::additiveBlending:
+	case ppvs::AdditiveBlending:
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 		break;
-	case ppvs::multiplyBlending:
+	case ppvs::MultiplyBlending:
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_DST_COLOR, GL_ZERO);
 		break;
@@ -127,22 +127,22 @@ void FrontendGL::unsetColor()
 	glColor4f(1.f, 1.f, 1.f, 1.f);
 }
 
-void FrontendGL::setDepthFunction(ppvs::depthFunction d) {
+void FrontendGL::setDepthFunction(ppvs::DepthFunction d) {
 	switch (d)
 	{
-	case ppvs::always:
+	case ppvs::Always:
 		glDisable(GL_DEPTH_TEST);
 		glDepthFunc(GL_ALWAYS);
 		break;
-	case ppvs::lessOrEqual:
+	case ppvs::LessOrEqual:
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		break;
-	case ppvs::greaterOrEqual:
+	case ppvs::GreaterOrEqual:
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_GEQUAL);
 		break;
-	case ppvs::equal:
+	case ppvs::Equal:
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_EQUAL);
 		break;
@@ -165,7 +165,7 @@ void FrontendGL::disableAlphaTesting()
 	glDisable(GL_ALPHA_TEST);
 }
 
-void FrontendGL::drawRect(ppvs::fimage* image, double subx, double suby, double subw, double subh)
+void FrontendGL::drawRect(ppvs::FeImage* image, double subx, double suby, double subw, double subh)
 {
 	FImageGL* qimg = (FImageGL*)image;
 	double u1, v1, u2, v2, w = subw, h = subh;
@@ -182,7 +182,7 @@ void FrontendGL::drawRect(ppvs::fimage* image, double subx, double suby, double 
 	}
 	else glBindTexture(GL_TEXTURE_2D, 0);
 
-	double off = 0.0, toff = 0.0; // bleed a bit
+	double off = 0.0, toff = 0.0; // Bleed a bit
 	glBegin(GL_QUADS); {
 		glTexCoord2d(u1, v2); glVertex2d(0 + 0.25, 0 + 0.25);
 		glTexCoord2d(u2, v2); glVertex2d(w - 0.25, 0 + 0.25);

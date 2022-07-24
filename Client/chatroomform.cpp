@@ -9,7 +9,7 @@
 #include "chatroomform.h"
 #include "settings.h"
 #include "ui_chatroomform.h"
-#include "../Puyolib/gameSettings.h"
+#include "../Puyolib/GameSettings.h"
 #include "chatroomtextedit.h"
 
 ChatroomForm::ChatroomForm(NetPeerList peers, NetChannelProxy* proxy, GameManager* manager, QWidget* parent) :
@@ -50,7 +50,7 @@ ChatroomForm::ChatroomForm(NetPeerList peers, NetChannelProxy* proxy, GameManage
 
 ChatroomForm::~ChatroomForm()
 {
-	//save chat
+	// Save chat
 	Settings& settings = pvsApp->settings();
 	if (settings.boolean("launcher", "savechat", false))
 	{
@@ -62,7 +62,7 @@ ChatroomForm::~ChatroomForm()
 			QFile file(path + now.toString("yyyy-M-d") + ".html");
 			file.open(QIODevice::WriteOnly | QIODevice::Append);
 			QTextStream stream(&file);
-			stream << ui->ChatTextEdit->toPlainText();//ui->ChatTextEdit->toHtml();
+			stream << ui->ChatTextEdit->toPlainText();
 		}
 	}
 	delete mProxy;
@@ -138,7 +138,7 @@ void ChatroomForm::updateChallengeButton() const
 	else
 		ui->ChallengeButton->setEnabled(false);
 
-	// also check private room button: user must set a room password in settings
+	// Also check private room button: user must set a room password in settings
 	Settings& settings = pvsApp->settings();
 	if (settings.string("launcher", "roompassword", "").isEmpty())
 		ui->PrivateCheckBox->setEnabled(false);
@@ -225,9 +225,9 @@ bool ChatroomForm::isAutoRejectEnabled() const
 	return ui->AutoRejectCheckBox->isChecked();
 }
 
-ppvs::rulesetInfo_t ChatroomForm::createRules() const
+ppvs::RuleSetInfo ChatroomForm::createRules() const
 {
-	ppvs::rulesetInfo_t rs = gameManager->createRules();
+	ppvs::RuleSetInfo rs = gameManager->createRules();
 	return rs;
 }
 
@@ -239,10 +239,10 @@ void ChatroomForm::closeEvent(QCloseEvent* e)
 
 void ChatroomForm::urlClicked(QString url)
 {
-	// read rules to determine number of players
+	// Read rules to determine number of players
 	readRulesetString(url, &challenge.rules);
 
-	// get roomname
+	// Get roomname
 	QStringList items = url.split('|');
 	foreach(QString item, items)
 	{
@@ -257,7 +257,7 @@ void ChatroomForm::urlClicked(QString url)
 
 
 
-	challenge.game = gameManager->createGame(new ppvs::gameSettings(challenge.rules), challenge.room, true);
+	challenge.game = gameManager->createGame(new ppvs::GameSettings(challenge.rules), challenge.room, true);
 	challenge.game->show();
 	challenge.game->raise();
 	challenge = ChallengeState();
@@ -405,7 +405,7 @@ void ChatroomForm::peerMessageReceived(uchar subchannel, QString nick, QString m
 				challenge.challengedList.clear();
 				if (challenge.rules.Nplayers == 2)
 				{
-					challenge.game = gameManager->createGame(new ppvs::gameSettings(challenge.rules), challenge.room);
+					challenge.game = gameManager->createGame(new ppvs::GameSettings(challenge.rules), challenge.room);
 					challenge.game->show();
 					challenge.game->raise();
 					challenge = ChallengeState();
@@ -566,7 +566,7 @@ void ChatroomForm::on_ChallengeButton_clicked()
 	// For >2, create game now.
 	if (challenge.rules.Nplayers > 2 && challenge.challengedList.empty())
 	{
-		challenge.game = gameManager->createGame(new ppvs::gameSettings(challenge.rules), challenge.room);
+		challenge.game = gameManager->createGame(new ppvs::GameSettings(challenge.rules), challenge.room);
 		challenge.game->hide();
 	}
 
@@ -593,7 +593,7 @@ void ChatroomForm::on_ChallengeYesButton_clicked()
 	if (challenge.beingChallenged)
 	{
 		mProxy->sendMessage(CHANNEL_CHALLENGERESPONSE, challenge.challenger, "accept");
-		challenge.game = gameManager->createGame(new ppvs::gameSettings(challenge.rules), challenge.room);
+		challenge.game = gameManager->createGame(new ppvs::GameSettings(challenge.rules), challenge.room);
 		challenge.game->show();
 		challenge.game->raise();
 		challenge = ChallengeState();
@@ -651,10 +651,10 @@ void ChatroomForm::on_ReviewRulesButton_clicked()
 	reviewRulesDialog(challenge.rules);
 }
 
-void ChatroomForm::reviewRulesDialog(ppvs::rulesetInfo_t& rs)
+void ChatroomForm::reviewRulesDialog(ppvs::RuleSetInfo& rs)
 {
-	//mainwindow contains the exact same function
-	//don't know where i can move this function so both classes can call this
+	// MainWindow contains the exact same function
+	// Don't know where I can move this function so both classes can call this
 	QString ruleStr;
 	ruleStr = QString::asprintf(tr("Margin Time: %i\nTarget Point: %i\nRequired Chain: %i\n"
 		"Initial Fever Count: %i\nFever Power: %i\nPuyo To Clear: %i\n"
@@ -673,7 +673,7 @@ void ChatroomForm::inviteToMatch()
 {
 	QString rules = createRulesetString(&challenge.rules);
 
-	// check if challenge roomName contains a password
+	// Check if challenge roomName contains a password
 	QStringList items = challenge.room.split(
 		':',
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
@@ -686,8 +686,8 @@ void ChatroomForm::inviteToMatch()
 		return;
 	}
 
-	//additional info
-	//[roomName:...][namep1:...][namep2...]
+	// Additional info
+	// [roomName:...][namep1:...][namep2...]
 	QString add = QString("roomName:") + challenge.room + "|namep1:" + mProxy->nick() + "|namep2:" + challenge.challengedUser + "|";
 	QString invite = add + rules;
 	mProxy->sendChallengeMessage(invite);
@@ -695,11 +695,11 @@ void ChatroomForm::inviteToMatch()
 
 void ChatroomForm::getInvitation(QString invite) const
 {
-	//read rules to determine number of players
-	ppvs::rulesetInfo_t rs;
+	// Read rules to determine number of players
+	ppvs::RuleSetInfo rs;
 	readRulesetString(invite, &rs);
 
-	//get additional info out (p1 name and p2 name)
+	// Get additional info out (p1 name and p2 name)
 	QString namep1;
 	QString namep2;
 	QStringList items = invite.split('|');
@@ -715,9 +715,9 @@ void ChatroomForm::getInvitation(QString invite) const
 		if (subitem[0] == "namep2" && subitem.count() != 1)
 			namep2 = subitem[1];
 	}
-	//display message
+	// Display message
 	QString players;
-	//case 2p: namep1 vs namep2, otherwise show number of players
+	// Case 2p: namep1 vs namep2, otherwise show number of players
 	if (rs.Nplayers == 2)
 		players = namep1 + " VS " + namep2;
 	else

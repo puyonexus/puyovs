@@ -4,24 +4,24 @@
 #include <QObject>
 #include "glextensions.h"
 #include "gameaudio.h"
-#include "../Puyolib/frontend.h"
+#include "../Puyolib/Frontend.h"
 
-class FrontendGL : public QObject, public ppvs::frontend
+class FrontendGL : public QObject, public ppvs::Frontend
 {
 	Q_OBJECT
 
 public:
-	FrontendGL(QGLWidget* gl, GameAudio* audio, ppvs::finput& input, GLExtensions& ext, QObject* parent = nullptr);
-	ppvs::fimage* loadImage(const char* nameu8) override;
-	ppvs::fimage* loadImage(const std::string& nameu8) override;
-	ppvs::fshader* loadShader(const char* source) override;
-	ppvs::ffont* loadFont(const char* nameu8, double fontSize) override;
-	ppvs::fsound* loadSound(const char* nameu8) override;
-	ppvs::fsound* loadSound(const std::string& nameu8) override;
+	FrontendGL(QGLWidget* gl, GameAudio* audio, ppvs::FeInput& input, GLExtensions& ext, QObject* parent = nullptr);
+	ppvs::FeImage* loadImage(const char* nameu8) override;
+	ppvs::FeImage* loadImage(const std::string& nameu8) override;
+	ppvs::FeShader* loadShader(const char* source) override;
+	ppvs::FeFont* loadFont(const char* nameu8, double fontSize) override;
+	ppvs::FeSound* loadSound(const char* nameu8) override;
+	ppvs::FeSound* loadSound(const std::string& nameu8) override;
 
-	void musicEvent(ppvs::fmusicevent event) override;
+	void musicEvent(ppvs::FeMusicEvent event) override;
 	void musicVolume(float volume, bool fever) override;
-	ppvs::finput inputState(int pl) override;
+	ppvs::FeInput inputState(int pl) override;
 
 	void pushMatrix() override;
 	void popMatrix() override;
@@ -30,17 +30,17 @@ public:
 	void rotate(float v, float x, float y, float z) override;
 	void scale(float x, float y, float z) override;
 
-	ppvs::viewportGeometry viewport() override;
+	ppvs::ViewportGeometry viewport() override;
 	bool hasShaders() override;
 
-	void setBlendMode(ppvs::blendingMode b) override;
+	void setBlendMode(ppvs::BlendingMode b) override;
 	void setColor(int r, int g, int b, int a) override;
 	void unsetColor() override;
-	void setDepthFunction(ppvs::depthFunction d) override;
+	void setDepthFunction(ppvs::DepthFunction d) override;
 	void clearDepth() override;
 	void enableAlphaTesting(float tolerance) override;
 	void disableAlphaTesting() override;
-	void drawRect(ppvs::fimage* image, double subx, double suby, double subw, double subh) override;
+	void drawRect(ppvs::FeImage* image, double subx, double suby, double subw, double subh) override;
 
 	void clear() override;
 	void swapBuffers() override;
@@ -52,6 +52,6 @@ signals:
 private:
 	QGLWidget* gl;
 	GameAudio* audio;
-	ppvs::finput& input;
+	ppvs::FeInput& input;
 	GLExtensions& ext;
 };

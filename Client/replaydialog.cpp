@@ -50,7 +50,7 @@ void ReplayDialog::on_PlayPushButton_clicked() const
 	Settings& settings = pvsApp->settings();
 	int hide = ui->ReplayOption1RadioButton->isChecked() * 1 + ui->ReplayOption2RadioButton->isChecked() * 2;
 	settings.setInteger("launcher", "hidenames", hide);
-	ppvs::gameSettings* gs = new ppvs::gameSettings();
+	ppvs::GameSettings* gs = new ppvs::GameSettings();
 
 	for (int i = 0; i < ui->PlaylistListWidget->count(); i++)
 		gs->replayPlayList.push_back(ui->PlaylistListWidget->item(i)->text().toStdString());
@@ -65,7 +65,7 @@ void ReplayDialog::on_PlaySelectedPushButton_clicked() const
 	Settings& settings = pvsApp->settings();
 	int hide = ui->ReplayOption1RadioButton->isChecked() * 1 + ui->ReplayOption2RadioButton->isChecked() * 2;
 	settings.setInteger("launcher", "hidenames", hide);
-	ppvs::gameSettings* gs = new ppvs::gameSettings();
+	ppvs::GameSettings* gs = new ppvs::GameSettings();
 	QList<QListWidgetItem*> selected = ui->PlaylistListWidget->selectedItems();
 
 	for (int i = 0; i < selected.count(); i++)

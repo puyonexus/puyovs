@@ -3,11 +3,11 @@
 #include <QImage>
 #include <QString>
 
-#include "../Puyolib/frontend.h"
+#include "../Puyolib/Frontend.h"
 
 class QGLWidget;
 
-class FImageGL : public ppvs::fimage, public QObject
+class FImageGL : public ppvs::FeImage, public QObject
 {
 public:
 	FImageGL(const QString& fn, QGLWidget* gl, QObject* parent);
@@ -17,10 +17,10 @@ public:
 	int height() override;
 	void bind() const;
 
-	ppvs::fpixel pixel(int x, int y) override;
+	ppvs::FePixel pixel(int x, int y) override;
 
 	bool error() override;
-	void setFilter(ppvs::filterType) override;
+	void setFilter(ppvs::FilterType) override;
 
 private:
 

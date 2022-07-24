@@ -27,8 +27,8 @@ class CacheDB
 public:
 	static CacheDB& get();
 
-	// returns true if the hash code was inserted
-	// otherwise, it was already there
+	// Returns true if the hash code was inserted
+	// Otherwise, it was already there
 	bool registerHashCode(unsigned hash);
 	void removeHashCode(unsigned hash);
 

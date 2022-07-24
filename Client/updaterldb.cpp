@@ -12,11 +12,11 @@ bool UpdaterLDB::read(QIODevice* stream)
 	char magic[4];
 	uint magicLen = 4;
 
-	// magic number
+	// Magic number
 	dataStream.readRawData(magic, magicLen);
 	if (memcmp(magic, "LDBV", 4)) return false;
 
-	// number of entries
+	// Number of entries
 	dataStream >> numEntries;
 
 	while (numEntries--)
@@ -42,10 +42,10 @@ bool UpdaterLDB::write(QIODevice* stream) const
 	QDataStream dataStream(stream);
 	dataStream.setByteOrder(QDataStream::LittleEndian);
 
-	// magic number
+	// Magic number
 	dataStream.writeRawData("LDBV", 4);
 
-	// number of entries
+	// Number of entries
 	dataStream << quint32(fileVersions.count());
 
 	QMapIterator<QString, quint32> it(fileVersions);

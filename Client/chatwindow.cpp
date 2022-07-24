@@ -4,9 +4,9 @@
 #include "ui_chatwindow.h"
 #include "netclient.h"
 #include "settings.h"
-#include "../Puyolib/game.h"
+#include "../Puyolib/Game.h"
 
-ChatWindow::ChatWindow(NetChannelProxy* proxy, ppvs::game* game, GameWidget* widget, QWidget* parent) :
+ChatWindow::ChatWindow(NetChannelProxy* proxy, ppvs::Game* game, GameWidget* widget, QWidget* parent) :
 	QWidget(parent), mProxy(proxy), mGame(game), mGameWidget(widget), quickchat(false),
 	ui(new Ui::ChatWindow)
 {
@@ -43,7 +43,6 @@ void ChatWindow::setQuickChat(bool quick)
 		ui->EntryTextEdit->setPalette(p);
 		mGameWidget->raise();
 		mGameWidget->activateWindow();
-		//mGameWidget->showNormal();
 		mGameWidget->setFocus();
 	}
 }
@@ -149,7 +148,7 @@ void ChatWindow::on_PlayMusicCheckBox_stateChanged(int arg1) const
 
 void ChatWindow::focusInEvent(QFocusEvent* ev)
 {
-	//reload global music settings
+	// Reload global music settings
 	ui->PlayMusicCheckBox->setChecked(pvsApp->settings().boolean("launcher", "enablemusic", true));
 	QWidget::focusInEvent(ev);
 }

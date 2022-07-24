@@ -4,9 +4,9 @@
 #include <QObject>
 #include <QFont>
 
-#include "../Puyolib/frontend.h"
+#include "../Puyolib/Frontend.h"
 
-class FTextGL : public ppvs::ftext, public QObject
+class FTextGL : public ppvs::FeText, public QObject
 {
 public:
 	FTextGL(GLuint id, GLuint w, GLuint h, QObject* parent = nullptr);
@@ -18,13 +18,13 @@ private:
 	GLuint id, w, h;
 };
 
-class FFontGL : public ppvs::ffont, public QObject
+class FFontGL : public ppvs::FeFont, public QObject
 {
 public:
 	FFontGL(const QString& fn, double fontSize, QGLWidget* gl, QObject* parent = nullptr);
 
 	QImage renderTextline(const QString& line) const;
-	ppvs::ftext* render(const char* str) override;
+	ppvs::FeText* render(const char* str) override;
 
 private:
 	QGLWidget* gl;

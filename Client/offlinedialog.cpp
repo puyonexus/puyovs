@@ -2,11 +2,11 @@
 #include "offlinedialog.h"
 #include "ui_offlinedialog.h"
 #include "common.h"
-#include "../Puyolib/game.h"
-#include "../Puyolib/gameSettings.h"
+#include "../Puyolib/Game.h"
+#include "../Puyolib/GameSettings.h"
 #include "settings.h"
 
-OfflineDialog::OfflineDialog(ppvs::gameSettings* gameSettings, QWidget* parent) :
+OfflineDialog::OfflineDialog(ppvs::GameSettings* gameSettings, QWidget* parent) :
 	QDialog(parent), ui(new Ui::OfflineDialog), mModeList(getModeList()), mGameSettings(gameSettings)
 {
 	Settings& settings = pvsApp->settings();

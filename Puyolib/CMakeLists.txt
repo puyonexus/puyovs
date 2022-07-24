@@ -4,32 +4,32 @@ add_library(Puyolib
     tinyxmlerror.cpp
     tinyxml.cpp
     tinystr.cpp
-    sprite.cpp
-    sound.cpp
-    ruleset.cpp
-    puyo.cpp
-    player.cpp
-    otherObjects.cpp
-    nextPuyo.cpp
-    mt.cc
-    movePuyo.cpp
-    menu.cpp
+    Sprite.cpp
+    Sound.cpp
+    "RuleSet/RuleSet.cpp"
+    Puyo.cpp
+    Player.cpp
+    OtherObjects.cpp
+    NextPuyo.cpp
+    MovePuyo.cpp
+    Menu.cpp
     main.cpp
     global.cpp
-    gameSettings.cpp
-    game.cpp
-    field.cpp
-    feverCounter.cpp
-    dropPattern.cpp
-    controller.cpp
-    characterSelect.cpp
-    animation.cpp
+    GameSettings.cpp
+    Game.cpp
+    Field.cpp
+    FeverCounter.cpp
+    DropPattern.cpp
+    Controller.cpp
+    CharacterSelect.cpp
+    Animation.cpp
     AI.cpp
-    classicpool.cpp
-    classicpuyorng.cpp
-    classicrng.cpp
-    legacypuyorng.cpp
-    puyorng.cpp
+    RNG/ClassicPool.cpp
+    RNG/ClassicPuyoRNG.cpp
+    RNG/ClassicRNG.cpp
+    RNG/LegacyPuyoRNG.cpp
+    RNG/MersenneTwister.cpp
+    RNG/PuyoRNG.cpp
 )
 
 target_compile_features(Puyolib PUBLIC cxx_std_17)

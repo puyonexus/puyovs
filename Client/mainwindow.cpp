@@ -26,7 +26,7 @@
 #include "gamewidget.h"
 #include "gamemanager.h"
 #include "glmanager.h"
-#include "../Puyolib/gameSettings.h"
+#include "../Puyolib/GameSettings.h"
 #include "chatwindow.h"
 #include "telemetrydialog.h"
 
@@ -57,7 +57,7 @@ MainWindow::MainWindow(QWidget* parent) :
 	profileMenu->addAction(ui->ActionLogOut);
 	ui->ProfileToolButton->setMenu(profileMenu);
 
-	// show admin console when
+	// Show admin console when
 	ui->AdminToolButton->hide();
 	userLevel = 0;
 
@@ -85,10 +85,10 @@ MainWindow::MainWindow(QWidget* parent) :
 	connect(client, SIGNAL(motdMessageReceived(QString)), SLOT(motdMessageReceived(QString)));
 	connect(client, SIGNAL(updateRankedPlayerCount(QString)), SLOT(playerCountMessageReceived(QString)));
 
-	// update ranked counter every 10 seconds
+	// Update ranked counter every 10 seconds
 	QTimer* timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), SLOT(updateRankedCount()));
-	timer->start(10000); //time specified in ms
+	timer->start(10000); // Time specified in ms
 
 	// Setup languages
 	connect(languageManager, SIGNAL(languagesModified()), SLOT(refreshLanguages()));
@@ -109,7 +109,7 @@ MainWindow::MainWindow(QWidget* parent) :
 	updateActions();
 	updateJoinButton();
 
-	// update server list
+	// Update server list
 	updateServerList();
 
 	// Install game timer
@@ -121,9 +121,6 @@ MainWindow::MainWindow(QWidget* parent) :
 
 	// Initialize OpenGL.
 	GlobalGLInit();
-
-	// Testing.
-	//QMetaObject::invokeMethod(this, "on_EndlessToolButton_clicked", Qt::QueuedConnection);
 }
 
 MainWindow::~MainWindow()
@@ -165,7 +162,7 @@ void MainWindow::connectToServer()
 
 	if (settings.string("account", "password", "").isEmpty() || passEdited)
 	{
-		//check password length
+		// Check password length
 		QString password = ui->PasswordLineEdit->text();
 		if (password.count() < 3)
 		{
@@ -219,7 +216,7 @@ void MainWindow::closeEvent(QCloseEvent* e)
 	}
 	settings.save();
 
-	//destroy tabs to force destructor
+	// Destroy tabs to force destructor
 	while (ui->tabWidget->count() > 0)
 		delete ui->tabWidget->widget(ui->tabWidget->count() - 1);
 
@@ -286,21 +283,20 @@ void MainWindow::addMatchRoom(NetChannel channel)
 		else if (subitem[0] == "channelname")
 		{
 			// WHY WOULD YOU TELL US THAT
-			//item->setData(5, Qt::DisplayRole, subitem[1]);
 		}
 	}
 
 	if (friendly)
 		ui->FriendlyMatchesTreeWidget->addTopLevelItem(item);
 
-	//reselected
+	// Reselected
 	if (!rememberSelectedFriendly.isNull())
 	{
 		QList<QTreeWidgetItem*> items = ui->FriendlyMatchesTreeWidget->findItems(rememberSelectedFriendly.name, Qt::MatchCaseSensitive, 0);
 		if (!items.empty())
 		{
 			QTreeWidgetItem* olditem = items.at(0);
-			//select that one
+			// Select that one
 			ui->FriendlyMatchesTreeWidget->setCurrentItem(olditem);
 		}
 	}
@@ -451,7 +447,7 @@ void MainWindow::logOut() const
 	ui->AdminToolButton->hide();
 }
 
-// public slots
+// Public slots
 
 void MainWindow::updateActions() const
 {
@@ -507,7 +503,7 @@ void MainWindow::on_SettingsDialog_Finished(int result)
 {
 	if (result == QDialog::Accepted)
 	{
-		//update chatroomforms
+		// Update chatroomforms
 		for (int i = 0; i < ui->tabWidget->count(); ++i)
 		{
 			ChatroomForm* chatroom = qobject_cast<ChatroomForm*>(ui->tabWidget->widget(i));
@@ -549,7 +545,7 @@ void MainWindow::refreshLanguages()
 	}
 }
 
-// private slots
+// Private slots
 
 void MainWindow::networkError(QString e)
 {
@@ -561,14 +557,14 @@ void MainWindow::loginResponse(uchar subchannel, QString message)
 	Settings& settings = pvsApp->settings();
 	if (subchannel == SUBCHANNEL_SERVERREQ_LOGIN)
 	{
-		//successful login
+		// Successful login
 		if (message == "ok:0")
 		{
 			loggedIn();
 		}
 		else if (message == "ok:1" || message == "ok:2")
 		{
-			//you are admin or moderator
+			// You are admin or moderator
 			loggedIn();
 			ui->AdminToolButton->show();
 			if (message == "ok:1")
@@ -607,7 +603,7 @@ void MainWindow::loginResponse(uchar subchannel, QString message)
 			}
 		}
 	}
-	else //register
+	else // Register
 	{
 		if (message == "ok")
 		{
@@ -641,7 +637,6 @@ void MainWindow::loggedIn() const
 
 void MainWindow::connected() const
 {
-	//client->setUsername(ui->UsernameLineEdit->text());
 	logIn();
 }
 
@@ -656,7 +651,7 @@ void MainWindow::nameSet(QString) const
 	ui->ConnectButton->setEnabled(true);
 	updateActions();
 
-	//request motd
+	// Request motd
 	client->sendMessageToServer(SUBCHANNEL_SERVERREQ_MOTD, "");
 }
 
@@ -790,7 +785,6 @@ void MainWindow::motdMessageReceived(QString message)
 
 void MainWindow::playerCountMessageReceived(QString message) const
 {
-	// split
 	QStringList strings = message.split("|");
 	ui->RankedTsuGroupBox->setTitle(tr("Ranked Matches: Tsu", "TitleRankedTsu") + " (" + strings[1] + ")");
 	ui->RankedFeverGroupBox->setTitle(tr("Ranked Matches: Fever", "TitleRankedFever") + " (" + strings[2] + ")");
@@ -830,7 +824,7 @@ void MainWindow::on_CreateChatroomButton_clicked()
 	createChatDlg->show();
 }
 
-// private
+// Private
 
 void MainWindow::showError(QString message)
 {
@@ -842,11 +836,11 @@ void MainWindow::startRankedMatch(bool tsu) const
 	if (gameManager->rankedMatch())
 		return;
 
-	ppvs::gameSettings* settings;
+	ppvs::GameSettings* settings;
 	if (tsu)
-		settings = new ppvs::gameSettings(ppvs::rulesetInfo_t(TSU_ONLINE));
+		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(TSU_ONLINE));
 	else
-		settings = new ppvs::gameSettings(ppvs::rulesetInfo_t(FEVER_ONLINE));
+		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(FEVER_ONLINE));
 	settings->rankedMatch = true;
 	GameWidget* game = gameManager->createGame(settings, "");
 
@@ -877,11 +871,11 @@ void MainWindow::spectateRankedMatch(bool tsu) const
 		return;
 	}
 
-	ppvs::gameSettings* settings;
+	ppvs::GameSettings* settings;
 	if (tsu)
-		settings = new ppvs::gameSettings(ppvs::rulesetInfo_t(TSU_ONLINE));
+		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(TSU_ONLINE));
 	else
-		settings = new ppvs::gameSettings(ppvs::rulesetInfo_t(FEVER_ONLINE));
+		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(FEVER_ONLINE));
 
 	GameWidget* game = gameManager->createGame(settings, chan.name, true);
 
@@ -894,17 +888,17 @@ void MainWindow::spectateRankedMatch(bool tsu) const
 	chatWindow->setChatEnabled(false);
 }
 
-#include "../Puyolib/gameSettings.h"
-#include "../Puyolib/game.h"
+#include "../Puyolib/GameSettings.h"
+#include "../Puyolib/Game.h"
 
 void MainWindow::on_OfflineToolButton_clicked()
 {
 	if (mGameSettings)
 	{
-		//dialog already opened
+		// Dialog already opened
 		return;
 	}
-	mGameSettings = new ppvs::gameSettings();
+	mGameSettings = new ppvs::GameSettings();
 	OfflineDialog* dlg = new OfflineDialog(mGameSettings);
 	connect(dlg, SIGNAL(finished(int)), this, SLOT(on_OfflineDialog_Finished(int)));
 	dlg->show();
@@ -986,7 +980,7 @@ void MainWindow::on_SpectateFriendlyButton_clicked()
 		return;
 	}
 
-	// ask for password (if any)
+	// Ask for password (if any)
 	QStringList items = chan.name.split(':');
 	if (items.count() > 1)
 	{
@@ -1017,7 +1011,7 @@ void MainWindow::on_ReviewRulesFriendlyButton_clicked()
 	if (chan.isNull())
 		return;
 
-	ppvs::rulesetInfo_t rs;
+	ppvs::RuleSetInfo rs;
 	readRulesetString(chan.description, &rs);
 	reviewRulesDialog(rs);
 }
@@ -1049,7 +1043,7 @@ void MainWindow::on_ReplaysToolButton_clicked()
 	dlg->activateWindow();
 }
 
-void MainWindow::reviewRulesDialog(ppvs::rulesetInfo_t& rs)
+void MainWindow::reviewRulesDialog(ppvs::RuleSetInfo& rs)
 {
 	QString ruleStr;
 	ruleStr = QString::asprintf(tr("Margin Time: %i\nTarget Point: %i\nRequired Chain: %i\n"
@@ -1065,7 +1059,7 @@ void MainWindow::reviewRulesDialog(ppvs::rulesetInfo_t& rs)
 
 void MainWindow::updateServerList()
 {
-	// download list from puyovs.com
+	// Download list from puyovs.com
 	netMan = new QNetworkAccessManager(this);
 	QNetworkRequest request;
 	request.setUrl(QUrl("https://puyovs.com/files/servers.txt"));
@@ -1163,7 +1157,7 @@ void MainWindow::getServerList() const
 	QByteArray replyArray = serverListReply->readAll();
 	QString replyString = QString(replyArray);
 
-	// parse
+	// Parse
 	QStringList servers = replyString.split(
 		QRegExp("\n|\r\n|\r"),
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
@@ -1174,7 +1168,7 @@ void MainWindow::getServerList() const
 	);
 
 	foreach(QString server, servers) {
-		// add to combo box
+		// Add to combo box
 		ui->ServerComboBox->addItem(server);
 	}
 }

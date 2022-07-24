@@ -9,7 +9,7 @@ struct GameWidgetGLPriv;
 
 namespace ppvs
 {
-    class game;
+    class Game;
 };
 
 class GameWidgetGL : public GameWidget
@@ -18,7 +18,7 @@ class GameWidgetGL : public GameWidget
 
     Q_OBJECT
 public:
-    explicit GameWidgetGL(ppvs::game *game, NetChannelProxy *proxy, GameAudio *audio, QWidget *parent = nullptr);
+    explicit GameWidgetGL(ppvs::Game *game, NetChannelProxy *proxy, GameAudio *audio, QWidget *parent = nullptr);
     ~GameWidgetGL() override;
 
 protected:
