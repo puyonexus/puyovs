@@ -7,10 +7,10 @@ namespace ppvs
 AI::AI(Player* pl)
 {
 	m_player = pl;
-	bestPos = 0;
-	bestRot = 0;
-	timer = 0;
-	pinch = false;
+	m_bestPos = 0;
+	m_bestRot = 0;
+	m_timer = 0;
+	m_pinch = false;
 }
 
 AI::~AI()
@@ -22,7 +22,7 @@ void AI::prepare(MovePuyoType mpt, int color1, int color2)
 	m_type = mpt;
 	m_color1 = color1; m_color2 = color2;
 	m_bigColor = color1;
-	timer = 0;
+	m_timer = 0;
 	m_player->controls.Down = 0;
 }
 
@@ -47,25 +47,25 @@ void AI::findLargest()
 
 			if (current > remember)
 			{
-				bestPos = i;
-				bestRot = j;
+				m_bestPos = i;
+				m_bestRot = j;
 				remember = current;
 			}
 		}
 	}
-	if ((remember == 0 || remember == 1) && !pinch)
+	if ((remember == 0 || remember == 1) && !m_pinch)
 	{
 		// Randomize
-		bestPos = getRandom(prop.gridX);
-		bestRot = getRandom(4);
+		m_bestPos = getRandom(prop.gridX);
+		m_bestRot = getRandom(4);
 
 		// Reduce chances of bestpos being 2 or 3
 		for (int i = 0; i < 2; i++)
-			if (bestPos == 2 || bestPos == 3)
-				bestPos = getRandom(prop.gridX);
+			if (m_bestPos == 2 || m_bestPos == 3)
+				m_bestPos = getRandom(prop.gridX);
 
 	}
-	bestChain = remember;
+	m_bestChain = remember;
 }
 
 void AI::setRotation()

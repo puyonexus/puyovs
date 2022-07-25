@@ -1292,7 +1292,7 @@ void Player::prepare()
 	{
 		// Determine best chain
 		cpuAI->prepare(mpt, color1, color2);
-		cpuAI->pinch = activeGarbage->GQ > 0 ? true : false;
+		cpuAI->m_pinch = activeGarbage->GQ > 0 ? true : false;
 		cpuAI->findLargest();
 	}
 
@@ -1313,27 +1313,27 @@ void Player::cpuMove()
 	// Get current rotation
 	if (movePuyos.getType() == BIG)
 	{
-		if (movePuyos.getColorBig() != cpuAI->bestRot)
+		if (movePuyos.getColorBig() != cpuAI->m_bestRot)
 		{
-			controls.A = cpuAI->timer % 12;
+			controls.A = cpuAI->m_timer % 12;
 		}
 	}
 	else
 	{
-		if (movePuyos.getRotation() != cpuAI->bestRot)
+		if (movePuyos.getRotation() != cpuAI->m_bestRot)
 		{
-			controls.A = cpuAI->timer % 12;
+			controls.A = cpuAI->m_timer % 12;
 		}
 	}
 
-	if (cpuAI->timer > 30)
+	if (cpuAI->m_timer > 30)
 	{
 		controls.Down++;
 	}
 
-	cpuAI->timer++;
+	cpuAI->m_timer++;
 
-	if (movePuyos.getPosX1() == cpuAI->bestPos)
+	if (movePuyos.getPosX1() == cpuAI->m_bestPos)
 	{
 		controls.A = 0;
 		controls.Left = 0;
@@ -1341,12 +1341,12 @@ void Player::cpuMove()
 		return;
 	}
 
-	if (movePuyos.getPosX1() < cpuAI->bestPos && cpuAI->timer > 10)
+	if (movePuyos.getPosX1() < cpuAI->m_bestPos && cpuAI->m_timer > 10)
 	{
 		controls.Right++;
 	}
 
-	if (movePuyos.getPosX1() > cpuAI->bestPos && cpuAI->timer > 10)
+	if (movePuyos.getPosX1() > cpuAI->m_bestPos && cpuAI->m_timer > 10)
 	{
 		controls.Left++;
 	}

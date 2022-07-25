@@ -2,14 +2,13 @@
 
 #include <utility>
 
-namespace ppvs
-{
+namespace ppvs {
 
 Animation::Animation()
 {
-	t = 1000;
-	duration = 120;
-	error = true;
+	m_t = 1000;
+	m_duration = 120;
+	m_error = true;
 }
 
 Animation::~Animation()
@@ -20,444 +19,373 @@ Animation::~Animation()
 
 void Animation::init(GameData* g, PosVectorFloat offsetPos, float scale, std::string folder, const std::string& scriptName, int maxTime)
 {
-	gamedata = g;
+	m_gameData = g;
 	clearSprites();
-	paths.clear();
-	sourceFolder = std::move(folder);
-	offset = offsetPos;
-	globalScale = scale;
-	duration = maxTime;
-	error = false;
+	m_paths.clear();
+	m_sourceFolder = std::move(folder);
+	m_offset = offsetPos;
+	m_globalScale = scale;
+	m_duration = maxTime;
+	m_error = false;
 
-	bool loadOK = doc.LoadFile(sourceFolder + scriptName);
-	if (!loadOK)
-	{
-		error = true;
-		std::cout << sourceFolder + scriptName + " could not be loaded\n" << std::endl;
+	if (bool loadOk = m_doc.LoadFile(m_sourceFolder + scriptName); !loadOk) {
+		m_error = true;
+		std::cout << m_sourceFolder + scriptName + " could not be loaded\n"
+				  << std::endl;
 		return;
 	}
 
 	// Initialize sprites etc.
-	TiXmlHandle docHandle(&doc);
+	TiXmlHandle docHandle(&m_doc);
 
 	// Find init
-	TiXmlElement* init = docHandle.FirstChild("animations").FirstChild("init").ToElement();
-	if (init)
-	{
+	if (TiXmlElement* init = docHandle.FirstChild("animations").FirstChild("init").ToElement()) {
 		// Traverse through init's inner elements
-		TiXmlNode* init_child = nullptr;
-		while ((init_child = init->IterateChildren(init_child)) != nullptr)
-		{
-			if (init_child->ValueStr() == "sprite")
-			{
+		TiXmlNode* initChild = nullptr;
+		while ((initChild = init->IterateChildren(initChild)) != nullptr) {
+			if (initChild->ValueStr() == "sprite") {
 				// Get sprite name
-				std::string spritename;
-				if (init_child->ToElement()->Attribute("name"))
-				{
-					spritename = init_child->ToElement()->Attribute("name");
-				}
-				else
-				{
-					// Cannot find spritename
+				std::string spriteName;
+				if (initChild->ToElement()->Attribute("name")) {
+					spriteName = initChild->ToElement()->Attribute("name");
+				} else {
+					// Cannot find sprite name
 					continue; // Must have a name!
 				}
 
 				// Check if before something else
-				std::string before = "";
-				if (init_child->ToElement()->Attribute("before"))
-				{
-					before = init_child->ToElement()->Attribute("before");
+				std::string before;
+				if (initChild->ToElement()->Attribute("before")) {
+					before = initChild->ToElement()->Attribute("before");
 				}
 
 				// Traverse through sprite's elements
-				TiXmlNode* sprite_child = nullptr;
-				while ((sprite_child = init_child->IterateChildren(sprite_child)) != nullptr)
-				{
+				TiXmlNode* spriteChild = nullptr;
+				while ((spriteChild = initChild->IterateChildren(spriteChild)) != nullptr) {
 					// Get image name
-					std::string imagename;
-					if (sprite_child->ValueStr() == "image")
-					{
-						imagename = sprite_child->ToElement()->GetText();
+					if (spriteChild->ValueStr() == "image") {
+						std::string imageName = spriteChild->ToElement()->GetText();
 						// Now we can add the sprite
-						newSprite(spritename, imagename, before);
+						newSprite(spriteName, imageName, before);
 					}
 
-					// Get subrectangle
-					if (sprite_child->ValueStr() == "rect")
-					{
+					// Get sub-rectangle
+					if (spriteChild->ValueStr() == "rect") {
 						// Find x, y, width and height attributes.
 						int x, y, width, height;
-						if (sprite_child->ToElement()->Attribute("x", &x) &&
-							sprite_child->ToElement()->Attribute("y", &y) &&
-							sprite_child->ToElement()->Attribute("width", &width) &&
-							sprite_child->ToElement()->Attribute("height", &height)) {
+						if (spriteChild->ToElement()->Attribute("x", &x) && spriteChild->ToElement()->Attribute("y", &y) && spriteChild->ToElement()->Attribute("width", &width) && spriteChild->ToElement()->Attribute("height", &height)) {
 							setRect(
-								spritename,
+								spriteName,
 								static_cast<float>(x),
 								static_cast<float>(y),
 								static_cast<float>(width),
-								static_cast<float>(height)
-							);
+								static_cast<float>(height));
 						}
 					}
 
 					// Get center
-					if (sprite_child->ValueStr() == "center")
-					{
+					if (spriteChild->ValueStr() == "center") {
 						// Find x, y, width and height attributes.
 						int x, y;
-						if (sprite_child->ToElement()->Attribute("x", &x) &&
-							sprite_child->ToElement()->Attribute("y", &y))
-							setCenter(spritename, static_cast<float>(x), static_cast<float>(y));
+						if (spriteChild->ToElement()->Attribute("x", &x) && spriteChild->ToElement()->Attribute("y", &y)) {
+							setCenter(spriteName, static_cast<float>(x), static_cast<float>(y));
+						}
 					}
 
 					// Bound sprite
-					if (sprite_child->ValueStr() == "bind")
-					{
+					if (spriteChild->ValueStr() == "bind") {
 						// Find x, y, width and height attributes.
-						std::string parent;
 						int x, y;
-						if (sprite_child->ToElement()->Attribute("parent") &&
-							sprite_child->ToElement()->Attribute("x", &x) &&
-							sprite_child->ToElement()->Attribute("y", &y))
-						{
-							parent = sprite_child->ToElement()->Attribute("parent");
+						if (spriteChild->ToElement()->Attribute("parent") && spriteChild->ToElement()->Attribute("x", &x) && spriteChild->ToElement()->Attribute("y", &y)) {
+							std::string parent = spriteChild->ToElement()->Attribute("parent");
 
 							// Set parent and add self to parent as child
-							sprites[spritename].parent = parent;
+							m_sprites[spriteName].parent = parent;
 							addChild(
 								parent,
-								spritename,
+								spriteName,
 								static_cast<float>(x),
-								static_cast<float>(y)
-							);
+								static_cast<float>(y));
 						}
 					}
 
-					if (sprite_child->ValueStr() == "blend")
-					{
-						std::string mode;
-						if (sprite_child->ToElement()->Attribute("mode"))
-						{
-							mode = sprite_child->ToElement()->Attribute("mode");
-							setBlendmode(spritename, mode);
+					if (spriteChild->ValueStr() == "blend") {
+						if (spriteChild->ToElement()->Attribute("mode")) {
+							std::string mode = spriteChild->ToElement()->Attribute("mode");
+							setBlendMode(spriteName, mode);
 						}
 					}
-
 				}
-			}
-			else if (init_child->ValueStr() == "path")
-			{
+			} else if (initChild->ValueStr() == "path") {
 				std::string pathname;
 
 				// Get path name
-				if (init_child->ToElement()->Attribute("name"))
-				{
-					pathname = init_child->ToElement()->Attribute("name");
-				}
-				else
-				{
+				if (initChild->ToElement()->Attribute("name")) {
+					pathname = initChild->ToElement()->Attribute("name");
+				} else {
 					// Cannot find name
 					continue; // Must have a name!
 				}
 
 				// Traverse through path's elements
-				TiXmlNode* path_child = nullptr;
-				while ((path_child = init_child->IterateChildren(path_child)) != nullptr)
-				{
+				TiXmlNode* pathChild = nullptr;
+				while ((pathChild = initChild->IterateChildren(pathChild)) != nullptr) {
 					// Add nodes
-					if (path_child->ValueStr() == "node")
-					{
+					if (pathChild->ValueStr() == "node") {
 						int x, y;
-						if (path_child->ToElement()->Attribute("x", &x) &&
-							path_child->ToElement()->Attribute("y", &y))
-						{
+						if (pathChild->ToElement()->Attribute("x", &x) && pathChild->ToElement()->Attribute("y", &y)) {
 							// Add node
 							PosVectorFloat pv(static_cast<float>(x), static_cast<float>(y));
-							paths[pathname].push_back(pv);
+							m_paths[pathname].push_back(pv);
 						}
 					}
 				}
-			}
-			else if (init_child->ValueStr() == "sound")
-			{
-				std::string spritename;
+			} else if (initChild->ValueStr() == "sound") {
+				std::string spriteName;
 				// Get sprite name
-				if (init_child->ToElement()->Attribute("name"))
-				{
-					spritename = init_child->ToElement()->Attribute("name");
-				}
-				else
-				{
+				if (initChild->ToElement()->Attribute("name")) {
+					spriteName = initChild->ToElement()->Attribute("name");
+				} else {
 					// Cannot find sprite name
 					continue; // Must have a name!
 				}
 
 				// Traverse through sprite's elements
-				TiXmlNode* sprite_child = nullptr;
-				while ((sprite_child = init_child->IterateChildren(sprite_child)) != nullptr)
-				{
+				TiXmlNode* spriteChild = nullptr;
+				while ((spriteChild = initChild->IterateChildren(spriteChild)) != nullptr) {
 					// Get file name
-					std::string imagename;
-					if (sprite_child->ValueStr() == "file")
-					{
-						imagename = sprite_child->ToElement()->GetText();
+					if (spriteChild->ValueStr() == "file") {
+						std::string imageName = spriteChild->ToElement()->GetText();
 						// Now we can add the sprite
-						newSound(spritename, imagename);
+						newSound(spriteName, imageName);
 					}
 				}
 			}
-
 		}
-	}
-	else
-	{
-		error = true;
+	} else {
+		m_error = true;
 	}
 }
 
 void Animation::playAnimation()
 {
-	if (error)
+	if (m_error) {
 		return;
+	}
 
 	// The timer t runs from 0 to 120 (2 seconds)
-	if (t <= duration)
-	{
+	if (m_t <= m_duration) {
 		// animationName must be set beforehand
-		if (animationName == "")
+		if (m_animationName.empty()) {
 			return;
+		}
 
-		TiXmlHandle docHandle(&doc);
+		TiXmlHandle docHandle(&m_doc);
 		// Find animation element
-		TiXmlElement* anim = docHandle.FirstChild("animations").FirstChild(animationName.c_str()).ToElement();
-		if (anim)
-		{
+		if (TiXmlElement* anim = docHandle.FirstChild("animations").FirstChild(m_animationName.c_str()).ToElement()) {
 			// Traverse through keyframes
-			TiXmlNode* anim_child = nullptr;
-			while ((anim_child = anim->IterateChildren(anim_child)) != nullptr)
-			{
-				if (anim_child->ValueStr() == "event")
-				{
+			TiXmlNode* animChild = nullptr;
+			while ((animChild = anim->IterateChildren(animChild)) != nullptr) {
+				if (animChild->ValueStr() == "event") {
 					// Get start time
-					int starttime;
-					if (anim_child->ToElement()->Attribute("start", &starttime))
-					{
+					int startTime;
+					if (animChild->ToElement()->Attribute("start", &startTime)) {
 						// Check if keyframe is started
-						if (starttime > t)
+						if (startTime > m_t)
 							continue;
-					}
-					else
-					{
+					} else {
 						// Erroneous keyframe element: start time must be defined
 						continue;
 					}
 
 					// Traverse through keyframes' elements
-					TiXmlNode* kf_child = nullptr;
-					while ((kf_child = anim_child->IterateChildren(kf_child)) != nullptr)
-					{
+					TiXmlNode* keyFrameChild = nullptr;
+					while ((keyFrameChild = animChild->IterateChildren(keyFrameChild)) != nullptr) {
 						// Play sound
-						if (starttime == t)
-							if (kf_child->ValueStr() == "playSound")
-							{
-								std::string soundName;
-								if (kf_child->ToElement()->Attribute("name"))
-								{
-									soundName = kf_child->ToElement()->Attribute("name");
+						if (startTime == m_t) {
+							if (keyFrameChild->ValueStr() == "playSound") {
+								if (keyFrameChild->ToElement()->Attribute("name")) {
+									std::string soundName = keyFrameChild->ToElement()->Attribute("name");
 									playSound(soundName);
 								}
 							}
+						}
 
 						// Set loop point
-						if (kf_child->ValueStr() == "loop")
-						{
-							int time = t;
-							if (kf_child->ToElement()->Attribute("t", &time))
-								t = time;
+						if (keyFrameChild->ValueStr() == "loop") {
+							int time = m_t;
+							if (keyFrameChild->ToElement()->Attribute("t", &time))
+								m_t = time;
 						}
 						// Get sprite name
-						std::string spritename;
-						if (kf_child->ToElement()->Attribute("name"))
-						{
-							spritename = kf_child->ToElement()->Attribute("name");
-						}
-						else
-						{
+						std::string spriteName;
+						if (keyFrameChild->ToElement()->Attribute("name")) {
+							spriteName = keyFrameChild->ToElement()->Attribute("name");
+						} else {
 							// All animation functions must point to a sprite name!
 							continue;
 						}
 
 						// Instantly change sprite property
-						// Set subrectangle
-						if (kf_child->ValueStr() == "rect")
-						{
+						// Set sub-rectangle
+						if (keyFrameChild->ValueStr() == "rect") {
 							// Find x, y, width and height attributes.
 							int x, y, width, height;
-							if (kf_child->ToElement()->Attribute("x", &x) &&
-								kf_child->ToElement()->Attribute("y", &y) &&
-								kf_child->ToElement()->Attribute("width", &width) &&
-								kf_child->ToElement()->Attribute("height", &height)) {
+							if (keyFrameChild->ToElement()->Attribute("x", &x) && keyFrameChild->ToElement()->Attribute("y", &y) && keyFrameChild->ToElement()->Attribute("width", &width) && keyFrameChild->ToElement()->Attribute("height", &height)) {
 								setRect(
-									spritename,
+									spriteName,
 									static_cast<float>(x),
 									static_cast<float>(y),
 									static_cast<float>(width),
-									static_cast<float>(height)
-								);
+									static_cast<float>(height));
 							}
 						}
 
 						// Set center
-						if (kf_child->ValueStr() == "center")
-						{
+						if (keyFrameChild->ValueStr() == "center") {
 							// Find x and y attributes.
 							int x, y;
-							if (kf_child->ToElement()->Attribute("x", &x) &&
-								kf_child->ToElement()->Attribute("y", &y))
+							if (keyFrameChild->ToElement()->Attribute("x", &x) && keyFrameChild->ToElement()->Attribute("y", &y))
 								setCenter(
-									spritename,
+									spriteName,
 									static_cast<float>(x),
-									static_cast<float>(y)
-								);
+									static_cast<float>(y));
 						}
 
 						// Set position
-						if (kf_child->ValueStr() == "position")
-						{
+						if (keyFrameChild->ValueStr() == "position") {
 							int x, y;
-							if (kf_child->ToElement()->Attribute("x", &x) &&
-								kf_child->ToElement()->Attribute("y", &y)) {
+							if (keyFrameChild->ToElement()->Attribute("x", &x) && keyFrameChild->ToElement()->Attribute("y", &y)) {
 								setPosition(
-									spritename,
+									spriteName,
 									static_cast<float>(x),
-									static_cast<float>(y)
-								);
+									static_cast<float>(y));
 							}
 						}
-						if (kf_child->ValueStr() == "blend")
-						{
-							if (kf_child->ToElement()->Attribute("mode"))
-							{
-								std::string mode = kf_child->ToElement()->Attribute("mode");
-								setBlendmode(spritename, mode);
+						if (keyFrameChild->ValueStr() == "blend") {
+							if (keyFrameChild->ToElement()->Attribute("mode")) {
+								std::string mode = keyFrameChild->ToElement()->Attribute("mode");
+								setBlendMode(spriteName, mode);
 							}
 						}
 
 						// Is the animation ready to be played?
-						int duration;
-						if (kf_child->ToElement()->Attribute("duration", &duration))
-						{
-							if (t > starttime + duration) {
+						int keyFrameDuration;
+						if (keyFrameChild->ToElement()->Attribute("duration", &keyFrameDuration)) {
+							if (m_t > startTime + keyFrameDuration) {
 								// The duration has passed
 								continue;
 							}
-						}
-						else
-						{
+						} else {
 							// Duration of a function must be defined!
 							continue;
 						}
 
 						// Get type
 						std::string type;
-						if (kf_child->ToElement()->Attribute("type"))
-						{
-							type = kf_child->ToElement()->Attribute("type");
-						}
-						else
-						{
+						if (keyFrameChild->ToElement()->Attribute("type")) {
+							type = keyFrameChild->ToElement()->Attribute("type");
+						} else {
 							// Default type
 							type = "none";
 						}
 
 						// Animation
 						// Transform scale
-						if (kf_child->ValueStr() == "scaleX")
-						{
+						if (keyFrameChild->ValueStr() == "scaleX") {
 							double startVal, endVal, alpha, beta;
-							if (!kf_child->ToElement()->Attribute("alpha", &alpha))alpha = 0;
-							if (!kf_child->ToElement()->Attribute("beta", &beta))beta = 0;
-							if (kf_child->ToElement()->Attribute("startVal", &startVal) &&
-								kf_child->ToElement()->Attribute("endVal", &endVal))
-								setScaleX(spritename, static_cast<float>(getLocalTimer(type, startVal, endVal, (t - starttime) * 1.0 / duration, alpha, beta)));
+							if (!keyFrameChild->ToElement()->Attribute("alpha", &alpha)) {
+								alpha = 0;
+							}
+							if (!keyFrameChild->ToElement()->Attribute("beta", &beta)) {
+								beta = 0;
+							}
+							if (keyFrameChild->ToElement()->Attribute("startVal", &startVal) && keyFrameChild->ToElement()->Attribute("endVal", &endVal)) {
+								setScaleX(spriteName, static_cast<float>(getLocalTimer(type, startVal, endVal, (m_t - startTime) * 1.0 / keyFrameDuration, alpha, beta)));
+							}
 						}
-						if (kf_child->ValueStr() == "scaleY")
-						{
+						if (keyFrameChild->ValueStr() == "scaleY") {
 							double startVal, endVal, alpha, beta;
-							if (!kf_child->ToElement()->Attribute("alpha", &alpha))alpha = 0;
-							if (!kf_child->ToElement()->Attribute("beta", &beta))beta = 0;
-							if (kf_child->ToElement()->Attribute("startVal", &startVal) &&
-								kf_child->ToElement()->Attribute("endVal", &endVal))
-								setScaleY(spritename, static_cast<float>(getLocalTimer(type, startVal, endVal, (t - starttime) * 1.0 / duration, alpha, beta)));
+							if (!keyFrameChild->ToElement()->Attribute("alpha", &alpha)) {
+								alpha = 0;
+							}
+							if (!keyFrameChild->ToElement()->Attribute("beta", &beta)) {
+								beta = 0;
+							}
+							if (keyFrameChild->ToElement()->Attribute("startVal", &startVal) && keyFrameChild->ToElement()->Attribute("endVal", &endVal)) {
+								setScaleY(spriteName, static_cast<float>(getLocalTimer(type, startVal, endVal, (m_t - startTime) * 1.0 / keyFrameDuration, alpha, beta)));
+							}
 						}
 
 						// Set transparency
-						if (kf_child->ValueStr() == "transparency")
-						{
+						if (keyFrameChild->ValueStr() == "transparency") {
 							double startVal, endVal, alpha, beta;
-							if (!kf_child->ToElement()->Attribute("alpha", &alpha))alpha = 0;
-							if (!kf_child->ToElement()->Attribute("beta", &beta))beta = 0;
-							if (kf_child->ToElement()->Attribute("startVal", &startVal) &&
-								kf_child->ToElement()->Attribute("endVal", &endVal))
-								setTransparency(spritename, static_cast<float>(getLocalTimer(type, startVal, endVal, (t - starttime) * 1.0 / duration, alpha, beta)));
+							if (!keyFrameChild->ToElement()->Attribute("alpha", &alpha)) {
+								alpha = 0;
+							}
+							if (!keyFrameChild->ToElement()->Attribute("beta", &beta)) {
+								beta = 0;
+							}
+							if (keyFrameChild->ToElement()->Attribute("startVal", &startVal) && keyFrameChild->ToElement()->Attribute("endVal", &endVal)) {
+								setTransparency(spriteName, static_cast<float>(getLocalTimer(type, startVal, endVal, (m_t - startTime) * 1.0 / keyFrameDuration, alpha, beta)));
+							}
 						}
 
-						if (kf_child->ValueStr() == "rotation")
-						{
+						if (keyFrameChild->ValueStr() == "rotation") {
 							double startVal, endVal, alpha, beta;
-							if (!kf_child->ToElement()->Attribute("alpha", &alpha))alpha = 0;
-							if (!kf_child->ToElement()->Attribute("beta", &beta))beta = 0;
-							if (kf_child->ToElement()->Attribute("startVal", &startVal) &&
-								kf_child->ToElement()->Attribute("endVal", &endVal))
-								setAngle(spritename, static_cast<float>(getLocalTimer(type, startVal, endVal, (t - starttime) * 1.0 / duration, alpha, beta)));
+							if (!keyFrameChild->ToElement()->Attribute("alpha", &alpha)) {
+								alpha = 0;
+							}
+							if (!keyFrameChild->ToElement()->Attribute("beta", &beta)) {
+								beta = 0;
+							}
+							if (keyFrameChild->ToElement()->Attribute("startVal", &startVal) && keyFrameChild->ToElement()->Attribute("endVal", &endVal)) {
+								setAngle(spriteName, static_cast<float>(getLocalTimer(type, startVal, endVal, (m_t - startTime) * 1.0 / keyFrameDuration, alpha, beta)));
+							}
 						}
 
-						if (kf_child->ValueStr() == "move")
-						{
-							std::string pathname;
+						if (keyFrameChild->ValueStr() == "move") {
 							double startVal, endVal, alpha, beta;
-							if (!kf_child->ToElement()->Attribute("alpha", &alpha))alpha = 0;
-							if (!kf_child->ToElement()->Attribute("beta", &beta))beta = 0;
-							if (kf_child->ToElement()->Attribute("startVal", &startVal) &&
-								kf_child->ToElement()->Attribute("endVal", &endVal) &&
-								kf_child->ToElement()->Attribute("path"))
-							{
-								pathname = kf_child->ToElement()->Attribute("path");
-								move(spritename, pathname, static_cast<float>(getLocalTimer(type, startVal, endVal, (t - starttime) * 1.0 / duration, alpha, beta)));
+							if (!keyFrameChild->ToElement()->Attribute("alpha", &alpha)) {
+								alpha = 0;
+							}
+							if (!keyFrameChild->ToElement()->Attribute("beta", &beta)) {
+								beta = 0;
+							}
+							if (keyFrameChild->ToElement()->Attribute("startVal", &startVal) && keyFrameChild->ToElement()->Attribute("endVal", &endVal) && keyFrameChild->ToElement()->Attribute("path")) {
+								std::string pathName = keyFrameChild->ToElement()->Attribute("path");
+								move(spriteName, pathName, static_cast<float>(getLocalTimer(type, startVal, endVal, (m_t - startTime) * 1.0 / keyFrameDuration, alpha, beta)));
 							}
 						}
 
 						// Color
-						if (kf_child->ValueStr() == "color")
-						{
+						if (keyFrameChild->ValueStr() == "color") {
 							double startVal, endVal, alpha, beta;
-							if (!kf_child->ToElement()->Attribute("alpha", &alpha))alpha = 0;
-							if (!kf_child->ToElement()->Attribute("beta", &beta))beta = 0;
-							if (kf_child->ToElement()->Attribute("startVal", &startVal) &&
-								kf_child->ToElement()->Attribute("endVal", &endVal) &&
-								kf_child->ToElement()->Attribute("rgb"))
-							{
+							if (!keyFrameChild->ToElement()->Attribute("alpha", &alpha)) {
+								alpha = 0;
+							}
+							if (!keyFrameChild->ToElement()->Attribute("beta", &beta)) {
+								beta = 0;
+							}
+							if (keyFrameChild->ToElement()->Attribute("startVal", &startVal) && keyFrameChild->ToElement()->Attribute("endVal", &endVal) && keyFrameChild->ToElement()->Attribute("rgb")) {
 								// Split into two
-								std::string rgb = kf_child->ToElement()->Attribute("rgb");
-								setColor(spritename, rgb, static_cast<float>(getLocalTimer(type, startVal, endVal, (t - starttime) * 1.0 / duration, alpha, beta)));
+								std::string rgb = keyFrameChild->ToElement()->Attribute("rgb");
+								setColor(spriteName, rgb, static_cast<float>(getLocalTimer(type, startVal, endVal, (m_t - startTime) * 1.0 / keyFrameDuration, alpha, beta)));
 							}
 						}
 					}
 				}
 			}
-			t++;
+			m_t++;
 		}
 	}
 
-	if (t > duration && t < 900)
-	{
+	if (m_t > m_duration && m_t < 900) {
 		// End animation: hide all sprites
-		for (auto& sprite : sprites)
-		{
+		for (auto& sprite : m_sprites) {
 			sprite.second.transparency = 0;
 		}
-		t = 1000;
+		m_t = 1000;
 	}
 }
 
@@ -465,279 +393,272 @@ void Animation::playAnimation()
 void Animation::draw()
 {
 	updateSprites();
-	for (const auto& drawSprite : drawSprites)
-	{
-		drawSprite->spr->draw(gamedata->front);
+	for (const auto& drawSprite : m_drawSprites) {
+		drawSprite->sprite->draw(m_gameData->front);
 	}
 }
 
 // Define new sprite
-void Animation::newSprite(std::string& name, std::string& image, std::string& before)
+void Animation::newSprite(const std::string& name, const std::string& image, const std::string& before)
 {
-	sprites[name].spr = new Sprite();
-	sprites[name].spr->setImage(gamedata->front->loadImage(sourceFolder + image));
-	gamedata->front->loadImage(sourceFolder + image)->setFilter(LinearFilter);
-	sprites[name].angle = 0;
-	sprites[name].transparency = 0;
-	sprites[name].position.x = 0;
-	sprites[name].position.y = 0;
-	sprites[name].pathPos.x = 0;
-	sprites[name].pathPos.y = 0;
-	sprites[name].scale.x = 1;
-	sprites[name].scale.y = 1;
-	sprites[name].childOffset.x = 0;
-	sprites[name].childOffset.y = 0;
-	sprites[name].parent = "";
+	m_sprites[name].sprite = new Sprite();
+	m_sprites[name].sprite->setImage(m_gameData->front->loadImage(m_sourceFolder + image));
+	m_gameData->front->loadImage(m_sourceFolder + image)->setFilter(LinearFilter);
+	m_sprites[name].angle = 0;
+	m_sprites[name].transparency = 0;
+	m_sprites[name].position.x = 0;
+	m_sprites[name].position.y = 0;
+	m_sprites[name].pathPos.x = 0;
+	m_sprites[name].pathPos.y = 0;
+	m_sprites[name].scale.x = 1;
+	m_sprites[name].scale.y = 1;
+	m_sprites[name].childOffset.x = 0;
+	m_sprites[name].childOffset.y = 0;
+	m_sprites[name].parent = "";
 
-	if (before == "")
-	{
+	if (before.empty()) {
 		// Add sprite at the end
-		drawSprites.push_back(&sprites[name]);
-	}
-	else
-	{
+		m_drawSprites.push_back(&m_sprites[name]);
+	} else {
 		// Find other sprite and insert at that position
-		drawSprites.insert(std::find(drawSprites.begin(), drawSprites.end(), &sprites[before]), &sprites[name]);
+		m_drawSprites.insert(std::find(m_drawSprites.begin(), m_drawSprites.end(), &m_sprites[before]), &m_sprites[name]);
 	}
-
 }
 
-void Animation::newSound(std::string& name, std::string& buffer)
+void Animation::newSound(const std::string& name, const std::string& buffer)
 {
-	sounds[name] = new Sound;
-	setBuffer(*sounds[name], gamedata->front->loadSound(sourceFolder + buffer));
+	m_sounds[name] = new Sound;
+	setBuffer(*m_sounds[name], m_gameData->front->loadSound(m_sourceFolder + buffer));
 }
 
 // Add child to parent
-void Animation::addChild(std::string& parent, std::string& child, float x, float y)
+void Animation::addChild(const std::string& parent, const std::string& child, const float x, const float y)
 {
-	sprites[parent].children.push_back(child);
-	sprites[child].transparency = 1; // Child's transparency is 1 by default
-	sprites[child].childOffset.x = x;
-	sprites[child].childOffset.y = y;
+	m_sprites[parent].children.push_back(child);
+	m_sprites[child].transparency = 1; // Child's transparency is 1 by default
+	m_sprites[child].childOffset.x = x;
+	m_sprites[child].childOffset.y = y;
 }
 
-void Animation::setRect(std::string& name, float x, float y, float width, float height)
+void Animation::setRect(const std::string& name, const float x, const float y, const float width, const float height)
 {
-	if (!spriteExists(name)) return;
-	sprites[name].spr->setSubRect(
+	if (!spriteExists(name))
+		return;
+	m_sprites[name].sprite->setSubRect(
 		static_cast<int>(x),
 		static_cast<int>(y),
 		static_cast<int>(width),
-		static_cast<int>(height)
-	);
+		static_cast<int>(height));
 }
 
-void Animation::setCenter(std::string& name, float x, float y)
+void Animation::setCenter(const std::string& name, const float x, const float y)
 {
-	if (!spriteExists(name)) return;
-	sprites[name].spr->setCenter(
+	if (!spriteExists(name))
+		return;
+	m_sprites[name].sprite->setCenter(
 		static_cast<int>(x),
-		static_cast<int>(y)
-	);
+		static_cast<int>(y));
 }
 
-void Animation::setPosition(std::string& name, float x, float y)
+void Animation::setPosition(const std::string& name, const float x, const float y)
 {
-	if (!spriteExists(name)) return;
-	sprites[name].position.x = x;
-	sprites[name].position.y = y;
+	if (!spriteExists(name))
+		return;
+	m_sprites[name].position.x = x;
+	m_sprites[name].position.y = y;
 }
 
-void Animation::setBlendmode(std::string& name, std::string& blend)
+void Animation::setBlendMode(const std::string& name, std::string blend)
 {
-	if (!spriteExists(name)) return;
+	if (!spriteExists(name))
+		return;
 	blend = Lower(blend);
 	if (blend == "none")
-		sprites[name].spr->setBlendMode(NoBlending);
+		m_sprites[name].sprite->setBlendMode(NoBlending);
 	else if (blend == "add")
-		sprites[name].spr->setBlendMode(AdditiveBlending);
+		m_sprites[name].sprite->setBlendMode(AdditiveBlending);
 	else if (blend == "multiply")
-		sprites[name].spr->setBlendMode(MultiplyBlending);
+		m_sprites[name].sprite->setBlendMode(MultiplyBlending);
 	else if (blend == "alpha")
-		sprites[name].spr->setBlendMode(AlphaBlending);
+		m_sprites[name].sprite->setBlendMode(AlphaBlending);
 }
 
-void Animation::setScaleX(std::string& name, float x)
+void Animation::setScaleX(const std::string& name, const float x)
 {
-	if (!spriteExists(name)) return;
-	sprites[name].scale.x = x;
+	if (!spriteExists(name))
+		return;
+	m_sprites[name].scale.x = x;
 }
 
-void Animation::setScaleY(std::string& name, float y)
+void Animation::setScaleY(const std::string& name, const float y)
 {
-	if (!spriteExists(name)) return;
-	sprites[name].scale.y = y;
+	if (!spriteExists(name))
+		return;
+	m_sprites[name].scale.y = y;
 }
 
-void Animation::setAngle(std::string& name, float x)
+void Animation::setAngle(const std::string& name, const float x)
 {
-	if (!spriteExists(name)) return;
-	sprites[name].angle = x;
+	if (!spriteExists(name))
+		return;
+	m_sprites[name].angle = x;
 }
 
-void Animation::setTransparency(std::string& name, float x)
+void Animation::setTransparency(const std::string& name, const float x)
 {
-	if (!spriteExists(name)) return;
-	sprites[name].transparency = x;
+	if (!spriteExists(name))
+		return;
+	m_sprites[name].transparency = x;
 }
 
-void Animation::setVisible(std::string& name, bool x)
+void Animation::setVisible(const std::string& name, const bool x)
 {
-	if (!spriteExists(name)) return;
-	sprites[name].spr->setVisible(x);
+	if (!spriteExists(name))
+		return;
+	m_sprites[name].sprite->setVisible(x);
 }
 
-void Animation::setColor(std::string& name, std::string& color, float x)
+void Animation::setColor(const std::string& name, const std::string& color, float x)
 {
-	if (!spriteExists(name)) return;
+	if (!spriteExists(name))
+		return;
 
 	// Get rgb values from string
 	int r1, g1, b1, r2, g2, b2;
 	sscanf(color.c_str(), "#%2x%2x%2x#%2x%2x%2x", &r1, &g1, &b1, &r2, &g2, &b2);
 
 	// Set color
-	sprites[name].spr->setColor(
+	m_sprites[name].sprite->setColor(
 		static_cast<float>(r1) + x * static_cast<float>(r2 - r1),
 		static_cast<float>(g1) + x * static_cast<float>(g2 - g1),
-		static_cast<float>(b1) + x * static_cast<float>(b2 - b1)
-	);
+		static_cast<float>(b1) + x * static_cast<float>(b2 - b1));
 }
 
 // Set position according to path
-void Animation::move(std::string& name, std::string& path, float x)
+void Animation::move(const std::string& name, const std::string& path, float x)
 {
 	// Check if path has more than 1 node
-	if (!spriteExists(name)) return;
-
-	if (paths[path].empty())
+	if (!spriteExists(name)) {
 		return;
+	}
 
-	if (paths[path].size() == 1)
-	{
-		sprites[name].pathPos.x = paths[path][0].x;
-		sprites[name].pathPos.y = paths[path][0].y;
+	if (m_paths[path].empty()) {
+		return;
+	}
+
+	if (m_paths[path].size() == 1) {
+		m_sprites[name].pathPos.x = m_paths[path][0].x;
+		m_sprites[name].pathPos.y = m_paths[path][0].y;
 		return;
 	}
 
 	// Get total distance of path
 	const float totalDist = getTotalDistance(path);
-	if (totalDist == 0) return; // Danger of dividing by 0
+	if (totalDist == 0)
+		return; // Danger of dividing by 0
 
 	// x must be between 0 and 1
-	if (x >= 0 && x < 1)
-	{
+	if (x >= 0 && x < 1) {
 		const PosVectorFloat pv = getPosition(path, x * totalDist);
-		sprites[name].pathPos.x = pv.x;
-		sprites[name].pathPos.y = pv.y;
-	}
-	else if (x < 0)
-	{
+		m_sprites[name].pathPos.x = pv.x;
+		m_sprites[name].pathPos.y = pv.y;
+	} else if (x < 0) {
 		// Extrapolate from start
 		const PosVectorFloat pv = getPositionExtra(path, x, totalDist, true);
-		sprites[name].pathPos.x = pv.x;
-		sprites[name].pathPos.y = pv.y;
-	}
-	else if (x >= 1)
-	{
+		m_sprites[name].pathPos.x = pv.x;
+		m_sprites[name].pathPos.y = pv.y;
+	} else if (x >= 1) {
 		// Extrapolate from end
 		const PosVectorFloat pv = getPositionExtra(path, x - 1, totalDist, false);
-		sprites[name].pathPos.x = pv.x;
-		sprites[name].pathPos.y = pv.y;
+		m_sprites[name].pathPos.x = pv.x;
+		m_sprites[name].pathPos.y = pv.y;
 	}
 }
 
-void Animation::playSound(std::string& name)
+void Animation::playSound(const std::string& name)
 {
-	if (gamedata && gamedata->playSounds)
-		sounds[name]->play(gamedata);
+	if (m_gameData && m_gameData->playSounds)
+		m_sounds[name]->play(m_gameData);
 }
 
 bool Animation::spriteExists(const std::string& name)
 {
-	return sprites.find(name) == sprites.end() ? false : true;
+	return m_sprites.find(name) == m_sprites.end() ? false : true;
 }
 
 void Animation::clearSprites()
 {
-	for (const auto& sprite : sprites)
-	{
-		delete sprite.second.spr;
+	for (const auto& sprite : m_sprites) {
+		delete sprite.second.sprite;
 	}
-	sprites.clear();
-	drawSprites.clear();
+	m_sprites.clear();
+	m_drawSprites.clear();
 }
 
 void Animation::clearSounds()
 {
-	for (const auto& it : sounds)
-	{
+	for (const auto& it : m_sounds) {
 		delete it.second;
 	}
 	// Clear sounds map
-	sounds.clear();
+	m_sounds.clear();
 }
 
 // Updates all properties of the sprite
 void Animation::updateSprites()
 {
-	for (auto& [name, sprite] : sprites)
-	{
+	for (auto& [name, sprite] : m_sprites) {
 		// Do not update if it's a child
-		if (!sprite.parent.empty())
-		{
+		if (!sprite.parent.empty()) {
 			continue;
 		}
 
-		sprite.spr->setPosition(
-			(sprite.position.x + sprite.pathPos.x) * globalScale + offset.x,
-			(sprite.position.y + sprite.pathPos.y) * globalScale + offset.y
-		);
-		sprite.spr->setScaleX(sprite.scale.x * globalScale);
-		sprite.spr->setScaleY(sprite.scale.y * globalScale);
-		sprite.spr->setRotation(sprite.angle);
-		sprite.spr->setTransparency(sprite.transparency);
+		sprite.sprite->setPosition(
+			(sprite.position.x + sprite.pathPos.x) * m_globalScale + m_offset.x,
+			(sprite.position.y + sprite.pathPos.y) * m_globalScale + m_offset.y);
+		sprite.sprite->setScaleX(sprite.scale.x * m_globalScale);
+		sprite.sprite->setScaleY(sprite.scale.y * m_globalScale);
+		sprite.sprite->setRotation(sprite.angle);
+		sprite.sprite->setTransparency(sprite.transparency);
 		updateChildren(name);
 	}
 }
 
 void Animation::updateChildren(const std::string& parent)
 {
-	AnimationSprite& parentSprite = sprites[parent];
-	for (size_t i = 0; i < parentSprite.children.size(); i++)
-	{
+	AnimationSprite& parentSprite = m_sprites[parent];
+	for (size_t i = 0; i < parentSprite.children.size(); i++) {
 		std::string& child = parentSprite.children[i];
-		const AnimationSprite& childSprite = sprites[child];
+		const AnimationSprite& childSprite = m_sprites[child];
 
 		// Scale
-		const float psx = parentSprite.spr->getScaleX();
-		const float psy = parentSprite.spr->getScaleY();
+		const float psx = parentSprite.sprite->getScaleX();
+		const float psy = parentSprite.sprite->getScaleY();
 		const float csx = childSprite.scale.x;
 		const float csy = childSprite.scale.y;
-		childSprite.spr->setScaleX(psx * csx);
-		childSprite.spr->setScaleY(psy * csy);
+		childSprite.sprite->setScaleX(psx * csx);
+		childSprite.sprite->setScaleY(psy * csy);
 
 		// Rotation
-		const float pr = parentSprite.spr->getAngle();
+		const float pr = parentSprite.sprite->getAngle();
 		const float cr = childSprite.angle;
-		childSprite.spr->setRotation(pr + cr);
+		childSprite.sprite->setRotation(pr + cr);
 
 		// Transparency
-		const float pt = parentSprite.spr->getTransparency();
+		const float pt = parentSprite.sprite->getTransparency();
 		const float ct = childSprite.transparency;
-		childSprite.spr->setTransparency(pt * ct);
+		childSprite.sprite->setTransparency(pt * ct);
 
 		// Position
-		const float px = (parentSprite.spr->getX() - offset.x) / globalScale;
-		const float py = (parentSprite.spr->getY() - offset.y) / globalScale;
+		const float px = (parentSprite.sprite->getX() - m_offset.x) / m_globalScale;
+		const float py = (parentSprite.sprite->getY() - m_offset.y) / m_globalScale;
 		const float cx = childSprite.position.x + childSprite.pathPos.x + childSprite.childOffset.x;
 		const float cy = childSprite.position.y + childSprite.pathPos.y + childSprite.childOffset.y;
 		const float r = sqrt(cx * cx * psx * psx + cy * cy * psy * psy);
 		const float a = atan2(-cy * psy, cx * psx) * 180 / PI;
-		childSprite.spr->setPosition(
-			offset.x + (px + r * cos((pr + a) * PI / 180)) * globalScale,
-			offset.y + (py + r * sin((pr + a) * PI / -180)) * globalScale
-		);
+		childSprite.sprite->setPosition(
+			m_offset.x + (px + r * cos((pr + a) * PI / 180)) * m_globalScale,
+			m_offset.y + (py + r * sin((pr + a) * PI / -180)) * m_globalScale);
 
 		// Update children
 		updateChildren(child);
@@ -746,8 +667,7 @@ void Animation::updateChildren(const std::string& parent)
 
 void Animation::resetSprites()
 {
-	for (auto& sprite : sprites)
-	{
+	for (auto& sprite : m_sprites) {
 		sprite.second.pathPos.x = 0;
 		sprite.second.pathPos.y = 0;
 		sprite.second.position.x = 0;
@@ -756,12 +676,13 @@ void Animation::resetSprites()
 		sprite.second.scale.y = 1;
 		sprite.second.angle = 0;
 		sprite.second.transparency = 0;
-		if (!sprite.second.parent.empty())
+		if (!sprite.second.parent.empty()) {
 			sprite.second.transparency = 1;
+		}
 	}
 }
 
-double Animation::getLocalTimer(const std::string& type, double s, double e, double t, double alpha, double beta)
+double Animation::getLocalTimer(const std::string& type, double s, double e, double t, double alpha, double beta) const
 {
 	// Input t must go from 0 to 1
 	double out = 0;
@@ -777,46 +698,43 @@ double Animation::getLocalTimer(const std::string& type, double s, double e, dou
 		out = (e - s) * pow(t, 1.0 / 3.0) + s;
 	else if (type == "exponential")
 		out = (e - s) / (exp(alpha) - 1) * exp(alpha * t) + s - (e - s) / (exp(alpha) - 1);
-	else if (type == "elastic") // beta=wavenumber
+	else if (type == "elastic") // beta=wave number
 		out = (e - s) / (exp(alpha) - 1) * cos(beta * t * 2 * PI) * exp(alpha * t) + s - (e - s) / (exp(alpha) - 1);
 	else if (type == "sin")
-		out = s + e * sin(alpha * t * 2 * PI); // s=offset, e=amplitude, alpha=wavenumber
+		out = s + e * sin(alpha * t * 2 * PI); // s=offset, e=amplitude, alpha=wave number
 	else if (type == "cos")
-		out = s + e * cos(alpha * t * 2 * PI); // s=offset, e=amplitude, alpha=wavenumber
+		out = s + e * cos(alpha * t * 2 * PI); // s=offset, e=amplitude, alpha=wave number
 	return out;
 }
 
-float Animation::getTotalDistance(std::string& path)
+float Animation::getTotalDistance(const std::string& path)
 {
-	if (paths[path].size() <= 1) return 0;
+	if (m_paths[path].size() <= 1) {
+		return 0;
+	}
 	float distance = 0;
 
-	PosVectorFloat previous(0, 0);
-	for (auto it = paths[path].begin() + 1; it < paths[path].end(); ++it)
-	{
+	for (auto it = m_paths[path].begin() + 1; it < m_paths[path].end(); ++it) {
 		const PosVectorFloat diff = *(it - 1) - *it;
 		distance += sqrt(diff.x * diff.x + diff.y * diff.y);
 	}
 	return distance;
 }
 
-PosVectorFloat Animation::getPosition(std::string& path, float target)
+PosVectorFloat Animation::getPosition(const std::string& path, float target)
 {
 	float distance = 0;
 
-	PosVectorFloat previous(0, 0);
-	for (auto it = paths[path].begin() + 1; it < paths[path].end(); ++it)
-	{
+	for (auto it = m_paths[path].begin() + 1; it < m_paths[path].end(); ++it) {
 		const PosVectorFloat diff = *(it - 1) - *it;
 		const float nodeDistance = sqrt(diff.x * diff.x + diff.y * diff.y);
 		distance += nodeDistance;
 
 		// Distance reached: interpolate
-		if (distance > target)
-		{
+		if (distance > target) {
 			const float overshoot = distance - target;
 			const float ratio = overshoot / nodeDistance;
-			PosVectorFloat out(0, 0);
+			PosVectorFloat out;
 			out.x = (*it).x - ratio * ((*it).x - (*(it - 1)).x);
 			out.y = (*it).y - ratio * ((*it).y - (*(it - 1)).y);
 			return out;
@@ -826,22 +744,19 @@ PosVectorFloat Animation::getPosition(std::string& path, float target)
 	return {};
 }
 
-PosVectorFloat Animation::getPositionExtra(std::string& path, float target, float totalDist, bool start)
+PosVectorFloat Animation::getPositionExtra(const std::string& path, const float target, const float totalDist, const bool start)
 {
 	PosVectorFloat diff;
 	std::vector<PosVectorFloat>::iterator it;
 	int x = 0;
-	if (start)
-	{
+	if (start) {
 		// Get first nodes
-		it = paths[path].begin() + 1;
+		it = m_paths[path].begin() + 1;
 		diff = *(it - 1) - *it;
 		x = -1;
-	}
-	else
-	{
+	} else {
 		// Get end nodes
-		it = paths[path].end() - 1;
+		it = m_paths[path].end() - 1;
 		diff = *(it - 1) - *it;
 	}
 

@@ -1,26 +1,25 @@
 #pragma once
 
-#include "FieldProp.h"
 #include "DropPattern.h"
+#include "FieldProp.h"
 
-namespace ppvs
-{
+namespace ppvs {
 
 class Player;
 
-class AI
-{
+class AI {
 public:
-	AI(Player* pl);
+    explicit AI(Player* pl);
 	virtual ~AI();
-	void prepare(MovePuyoType mpt, int color1, int color2);
+
+    void prepare(MovePuyoType mpt, int color1, int color2);
 	void findLargest();
 
-	int bestPos;
-	int bestRot;
-	int bestChain;
-	int timer;
-	bool pinch;
+	int m_bestPos;
+	int m_bestRot;
+	int m_bestChain;
+	int m_timer;
+	bool m_pinch;
 
 private:
 	int predictChain();
