@@ -10,6 +10,7 @@
 		"Server":			"Server",
 		"ButtonConnect":	"Connect",
 		"ButtonDisconnect":	"Disconnect",
+		"CheckboxAutologin":"Auto-login",
 		"Status":			"Status",
 		"ButtonProfile":	"Profile",
 		"LogOut":			"Log out",
