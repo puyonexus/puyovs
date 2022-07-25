@@ -219,7 +219,7 @@ void MainWindow::closeEvent(QCloseEvent* e)
 		QString passhash = QString(QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md5).toHex());
 		settings.setString("account", "password", passhash);
 	}
-	settings.setBoolean("launcher","autologin",bool(ui->AutoLoginCheckbox->isChecked()));
+	settings.setBoolean("launcher","autologin",ui->AutoLoginCheckbox->isChecked());
 	settings.save();
 
 	// Destroy tabs to force destructor
