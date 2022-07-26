@@ -29,11 +29,11 @@ HEADERS += \
     AI.h \
     Frontend.h \
     RNG/ClassicPool.h \
-    RNG/ClassicPuyoRNG.h \
-    RNG/ClassicRNG.h \
-    RNG/LegacyPuyoRNG.h \
+    RNG/ClassicPuyoRng.h \
+    RNG/ClassicRng.h \
+    RNG/LegacyPuyoRng.h \
     RNG/MersenneTwister.h \
-    RNG/PuyoRNG.h
+    RNG/PuyoRng.h
 
 SOURCES += \
     tinyxmlparser.cpp \
@@ -61,11 +61,11 @@ SOURCES += \
     Animation.cpp \
     AI.cpp \
     RNG/ClassicPool.cpp \
-    RNG/ClassicPuyoRNG.cpp \
-    RNG/ClassicRNG.cpp \
-    RNG/LegacyPuyoRNG.cpp \
-    RNG/MersenneTwister.cc \
-    RNG/PuyoRNG.cpp
+    RNG/ClassicPuyoRng.cpp \
+    RNG/ClassicRng.cpp \
+    RNG/LegacyPuyoRng.cpp \
+    RNG/MersenneTwister.cpp \
+    RNG/PuyoRng.cpp
 
 include(../Zlib/Zlib.pri)
 include(../ENet/ENet.pri)

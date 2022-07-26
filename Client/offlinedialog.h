@@ -10,7 +10,8 @@ namespace Ui {
 }
 
 namespace ppvs {
-	struct GameSettings;
+enum class Rules : int;
+struct GameSettings;
 }
 
 class Settings;
@@ -31,6 +32,6 @@ private slots:
 
 private:
 	Ui::OfflineDialog* ui;
-	const QList<QPair<int, QString>> mModeList;
+	const QList<QPair<ppvs::Rules, QString>> mModeList;
 	ppvs::GameSettings* mGameSettings;
 };

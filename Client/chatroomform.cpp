@@ -155,22 +155,22 @@ void ChatroomForm::updateChallengeDisplay()
 		// Show rules.
 		QString challengeRules;
 		bool custom = challenge.rules.custom;
-		int numPlayers = challenge.rules.Nplayers;
-		switch (challenge.rules.rulesetType)
+		int numPlayers = challenge.rules.numPlayers;
+		switch (challenge.rules.ruleSetType)
 		{
-		case TSU_ONLINE:
+		case ppvs::Rules::TSU_ONLINE:
 			challengeRules = QString::asprintf(tr("", custom ? "Messages:RulesTsuCustom" : "Messages:RulesTsuDefault").toUtf8().data(), numPlayers);
 			ui->ChallengeIcon->setPixmap(QPixmap(!custom ? "Data/Lobby/tsu.png" : "Data/Lobby/tsu_cust.png"));
 			break;
-		case FEVER_ONLINE:
+		case ppvs::Rules::FEVER_ONLINE:
 			challengeRules = QString::asprintf(tr("", custom ? "Messages:RulesFeverCustom" : "Messages:RulesFeverDefault").toUtf8().data(), numPlayers);
 			ui->ChallengeIcon->setPixmap(QPixmap(!custom ? "Data/Lobby/fever.png" : "Data/Lobby/fever_cust.png"));
 			break;
-		case FEVER15_ONLINE:
+		case ppvs::Rules::FEVER15_ONLINE:
 			challengeRules = QString::asprintf(tr("", custom ? "Messages:RulesFever15Custom" : "Messages:RulesFever15Default").toUtf8().data(), numPlayers);
 			ui->ChallengeIcon->setPixmap(QPixmap(!custom ? "Data/Lobby/fever15.png" : "Data/Lobby/fever15_cust.png"));
 			break;
-		case ENDLESSFEVERVS_ONLINE:
+		case ppvs::Rules::ENDLESSFEVERVS_ONLINE:
 			challengeRules = QString::asprintf(tr("", custom ? "Messages:RulesEndlessFeverCustom" : "Messages:RulesEndlessFeverDefault").toUtf8().data(), numPlayers);
 			ui->ChallengeIcon->setPixmap(QPixmap(!custom ? "Data/Lobby/endlessfever.png" : "Data/Lobby/endlessfever_cust.png"));
 			break;
@@ -203,7 +203,7 @@ void ChatroomForm::updateChallengeDisplay()
 			else
 			{
 				int n = challenge.challengedList.count();
-				int total = challenge.rules.Nplayers - 1;
+				int total = challenge.rules.numPlayers - 1;
 				challengeQuestion = QString::asprintf(tr("You challenged %i out of %i\nYou can challenge more users.\nOr start game now?", "Messages:ChallengeNumber").toUtf8().data(),
 					n, total);
 				ui->ChallengeYesButton->setVisible(true);
@@ -325,9 +325,9 @@ void ChatroomForm::peerMessageReceived(uchar subchannel, QString nick, QString m
 		{
 			challenge.challengedUser = QString();
 
-			if (challenge.rules.Nplayers == 2)
+			if (challenge.rules.numPlayers == 2)
 				challenge = ChallengeState();
-			else if (challenge.rules.Nplayers >= 2 && challenge.challengedList.isEmpty())
+			else if (challenge.rules.numPlayers >= 2 && challenge.challengedList.isEmpty())
 			{
 				delete challenge.game;
 				challenge = ChallengeState();
@@ -375,9 +375,9 @@ void ChatroomForm::peerMessageReceived(uchar subchannel, QString nick, QString m
 			statusMessage(MatchDeclineEvent);
 			challenge.challengedUser = QString();
 
-			if (challenge.rules.Nplayers == 2)
+			if (challenge.rules.numPlayers == 2)
 				challenge = ChallengeState();
-			else if (challenge.rules.Nplayers >= 2 && challenge.challengedList.isEmpty())
+			else if (challenge.rules.numPlayers >= 2 && challenge.challengedList.isEmpty())
 			{
 				delete challenge.game;
 				challenge = ChallengeState();
@@ -388,7 +388,7 @@ void ChatroomForm::peerMessageReceived(uchar subchannel, QString nick, QString m
 			challenge.challengedList.push_back(challenge.challengedUser);
 
 			// Maximum number of players
-			if (challenge.challengedList.count() >= challenge.rules.Nplayers - 1)
+			if (challenge.challengedList.count() >= challenge.rules.numPlayers - 1)
 			{
 				challenge.challenging = false;
 				statusMessage(MatchAcceptEvent);
@@ -403,7 +403,7 @@ void ChatroomForm::peerMessageReceived(uchar subchannel, QString nick, QString m
 				mProxy->sendChallengeMessage((QStringList() << match << challenge.room << createRulesetString(&challenge.rules)).join("|"));
 				*/
 				challenge.challengedList.clear();
-				if (challenge.rules.Nplayers == 2)
+				if (challenge.rules.numPlayers == 2)
 				{
 					challenge.game = gameManager->createGame(new ppvs::GameSettings(challenge.rules), challenge.room);
 					challenge.game->show();
@@ -498,9 +498,9 @@ void ChatroomForm::peerParted(QString peer)
 		else if (challenge.challenging)
 		{
 			challenge.challengedUser = QString();
-			if (challenge.rules.Nplayers == 2)
+			if (challenge.rules.numPlayers == 2)
 				challenge = ChallengeState();
-			else if (challenge.rules.Nplayers >= 2 && challenge.challengedList.isEmpty())
+			else if (challenge.rules.numPlayers >= 2 && challenge.challengedList.isEmpty())
 			{
 				delete challenge.game;
 				challenge = ChallengeState();
@@ -564,7 +564,7 @@ void ChatroomForm::on_ChallengeButton_clicked()
 	challenge.challenging = true;
 
 	// For >2, create game now.
-	if (challenge.rules.Nplayers > 2 && challenge.challengedList.empty())
+	if (challenge.rules.numPlayers > 2 && challenge.challengedList.empty())
 	{
 		challenge.game = gameManager->createGame(new ppvs::GameSettings(challenge.rules), challenge.room);
 		challenge.game->hide();
@@ -662,7 +662,7 @@ void ChatroomForm::reviewRulesDialog(ppvs::RuleSetInfo& rs)
 		, rs.marginTime
 		, rs.targetPoint
 		, rs.requiredChain, rs.initialFeverCount
-		, rs.feverPower, rs.puyoToClear, rs.quickDrop, rs.Nplayers, rs.colors);
+		, rs.feverPower, rs.puyoToClear, rs.quickDrop, rs.numPlayers, rs.colors);
 	QMessageBox* msgBox = new QMessageBox(this);
 	msgBox->setText(ruleStr);
 	msgBox->setWindowTitle("Rules");
@@ -718,10 +718,10 @@ void ChatroomForm::getInvitation(QString invite) const
 	// Display message
 	QString players;
 	// Case 2p: namep1 vs namep2, otherwise show number of players
-	if (rs.Nplayers == 2)
+	if (rs.numPlayers == 2)
 		players = namep1 + " VS " + namep2;
 	else
-		players = QString("%1 player match").arg(rs.Nplayers);
+		players = QString("%1 player match").arg(rs.numPlayers);
 	QString mes = tr("A match is starting:", "Messages:MatchStarting") + " (" + players + ")";
 #if QT_VERSION < 0x050000
 	mes = Qt::escape(mes);

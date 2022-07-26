@@ -16,15 +16,15 @@ public:
 	~Sprite();
 
 	bool m_visible;
-	bool flipX;
-	bool flipY;
-	float posX, posY;
-	float scaleX, scaleY;
-	int subRectX, subRectY, subRectW, subRectH;
-	int centerX, centerY;
-	int colorA, colorR, colorG, colorB;
-	float rotation;
-	BlendingMode blendMode;
+	bool m_flipX;
+	bool m_flipY;
+	float m_posX, m_posY;
+	float m_scaleX, m_scaleY;
+	int m_subRectX, m_subRectY, m_subRectW, m_subRectH;
+	int m_centerX, m_centerY;
+	int m_colorA, m_colorR, m_colorG, m_colorB;
+	float m_rotation;
+	BlendingMode m_blendMode;
 
 	// Setters
 	void setImage(FeImage* img);
@@ -42,7 +42,7 @@ public:
 	void setScaleY(float scale);
 	void setScale(float x, float y);
 	void setSize(float x, float y);
-	void setSize(PosVectorFloat x);
+	void setSize(PosVectorFloat pv);
 	void setPosition(float, float);
 	void setPosition(PosVectorFloat pv);
 	void setRotation(float);
@@ -54,8 +54,8 @@ public:
 	void setFlipX(bool f);
 	void setFlipY(bool f);
 
-	void draw(FeRenderTarget* t, FeShader* s = nullptr);
-	void redraw(FeRenderTarget* t); // Draw again with blendmode add
+	void draw(FeRenderTarget* target, FeShader* shader = nullptr);
+	void redraw(FeRenderTarget* target); // Draw again with blend mode add
 
 	[[nodiscard]] float getSizeX() const;
 	[[nodiscard]] float getSizeY() const;
@@ -69,10 +69,9 @@ public:
 	[[nodiscard]] FeImage* getImage() const;
 
 private:
-	void properFlip(bool x, bool y);
 	void setColor();
 	FeImage* m_image;
-	int m_colorR, m_colorG, m_colorB, m_colorA;
+	int m_colorRInternal, m_colorGInternal, m_colorBInternal, m_colorAInternal;
 };
 
 }

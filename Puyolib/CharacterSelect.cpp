@@ -1,143 +1,124 @@
-#include <algorithm>
 #include "CharacterSelect.h"
-#include "Game.h"
 #include "../PVS_ENet/PVS_Client.h"
+#include "DropPattern.h"
+#include "Game.h"
+#include <algorithm>
+#include <cmath>
+
 using namespace std;
 
-namespace ppvs
-{
+namespace ppvs {
 
 CharacterSelect::CharacterSelect(Game* g)
 {
-	currentgame = g;
-	data = g->data;
+	m_currentGame = g;
+	m_data = g->m_data;
 
-	background.setImage(nullptr);
-	background.setScale(2.f * 640.f, 480.f);
-	background.setPosition(-640.f / 2.f, -480.f / 4.f);
-	background.setColor(0.f, 0.f, 0.f);
+	m_background.setImage(nullptr);
+	m_background.setScale(2.f * 640.f, 480.f);
+	m_background.setPosition(-640.f / 2.f, -480.f / 4.f);
+	m_background.setColor(0.f, 0.f, 0.f);
 
 	constexpr int height = 3;
-	for (int i = 0; i < height; i++)
-	{
+	for (int i = 0; i < height; i++) {
 		constexpr int width = 8;
-		for (int j = 0; j < width; j++)
-		{
-			holder[i * width + j].setImage(g->data->imgCharHolder);
-			holder[i * width + j].setCenter(0, 0);
-			holder[i * width + j].setPosition(
+		for (int j = 0; j < width; j++) {
+			m_holder[i * width + j].setImage(g->m_data->imgCharHolder);
+			m_holder[i * width + j].setCenter(0, 0);
+			m_holder[i * width + j].setPosition(
 				static_cast<float>(64 + j * 66),
-				static_cast<float>(64 + i * 52)
-			);
-			charSprite[i * width + j].setImage(g->data->front->loadImage(folder_user_character + currentgame->settings->characterSetup[order[i * width + j]] + "/icon.png"));
-			charSprite[i * width + j].setCenter(0, 0);
-			charSprite[i * width + j].setPosition(
+				static_cast<float>(64 + i * 52));
+			m_charSprite[i * width + j].setImage(g->m_data->front->loadImage(kFolderUserCharacter + m_currentGame->m_settings->characterSetup[m_order[i * width + j]] + "/icon.png"));
+			m_charSprite[i * width + j].setCenter(0, 0);
+			m_charSprite[i * width + j].setPosition(
 				static_cast<float>(64 + j * 66 + 1),
-				static_cast<float>(64 + i * 52 + 1)
-			);
+				static_cast<float>(64 + i * 52 + 1));
 		}
 	}
 }
 
 CharacterSelect::~CharacterSelect()
 {
-	delete[] selectSprite;
-	delete[] selectedCharacter;
-	delete[] name;
-	delete[] nameHolder;
-	delete[] nameHolderNumber;
-	delete[] dropset;
-	delete[] playernumber;
-	delete[] sel;
-	delete[] madeChoice;
+	delete[] m_selectSprite;
+	delete[] m_selectedCharacter;
+	delete[] m_name;
+	delete[] m_nameHolder;
+	delete[] m_nameHolderNumber;
+	delete[] m_dropSet;
+	delete[] m_playerNumber;
+	delete[] m_sel;
+	delete[] m_madeChoice;
 }
 
 void CharacterSelect::draw()
 {
 	// Set colors
-	for (auto& i : charSprite)
-	{
+	for (auto& i : m_charSprite) {
 		i.setColor(128.f, 128.f, 128.f);
 	}
 
-	for (int i = 0; i < Nplayers; i++)
-	{
-		charSprite[sel[i]].setColor(255.f, 255.f, 255.f);
+	for (int i = 0; i < m_numPlayers; i++) {
+		m_charSprite[m_sel[i]].setColor(255.f, 255.f, 255.f);
 	}
 
 	// Draw the rest
-	background.draw(data->front);
+	m_background.draw(m_data->front);
 
-	for (auto& i : holder)
-	{
-		i.draw(data->front);
+	for (auto& i : m_holder) {
+		i.draw(m_data->front);
 	}
 
-	for (auto& i : charSprite)
-	{
-		i.draw(data->front);
+	for (auto& i : m_charSprite) {
+		i.draw(m_data->front);
 	}
 
-	for (int i = 0; i < Nplayers; i++)
-	{
-		selectSprite[i].draw(data->front);
-		if (Nplayers <= 4) // Only draw characters if players>4
+	for (int i = 0; i < m_numPlayers; i++) {
+		m_selectSprite[i].draw(m_data->front);
+		if (m_numPlayers <= 4) // Only draw characters if players>4
 		{
-			selectedCharacter[i].draw(data->front);
+			m_selectedCharacter[i].draw(m_data->front);
 		}
-		nameHolder[i].draw(data->front);
-		name[i].draw(data->front);
-		for (int j = 0; j < 16; j++)
-		{
-			dropset[i * 16 + j].draw(data->front);
+		m_nameHolder[i].draw(m_data->front);
+		m_name[i].draw(m_data->front);
+		for (int j = 0; j < 16; j++) {
+			m_dropSet[i * 16 + j].draw(m_data->front);
 		}
 
-		for (int j = 0; j < 3; j++)
-		{
-			playernumber[i * 3 + j].draw(data->front);
-			nameHolderNumber[i * 3 + j].draw(data->front);
+		for (int j = 0; j < 3; j++) {
+			m_playerNumber[i * 3 + j].draw(m_data->front);
+			m_nameHolderNumber[i * 3 + j].draw(m_data->front);
 		}
 	}
-
 }
 
 void CharacterSelect::play()
 {
-	const int Nplayers = static_cast<int>(currentgame->players.size());
+	const int numPlayers = static_cast<int>(m_currentGame->m_players.size());
 
-	if (timer != 0)
-	{
-		timer++;
+	if (m_timer != 0) {
+		m_timer++;
 	}
 
-	if (timer <= 60 && timer > 0)
-	{
-		background.setTransparency(static_cast<float>(interpolate("linear", 0.0, 0.5, timer / 60.0)));
+	if (m_timer <= 60 && m_timer > 0) {
+		m_background.setTransparency(static_cast<float>(interpolate("linear", 0.0, 0.5, m_timer / 60.0)));
 	}
 
-	if (timer <= 80 && timer > 0)
-	{
+	if (m_timer <= 80 && m_timer > 0) {
 		constexpr int height = 3;
-		for (int i = 0; i < height; i++)
-		{
+		for (int i = 0; i < height; i++) {
 			constexpr int width = 8;
-			for (int j = 0; j < width; j++)
-			{
-				const double tt = timer / 20.0 - (i * width + j) / 12.0;
+			for (int j = 0; j < width; j++) {
+				const double tt = m_timer / 20.0 - (i * width + j) / 12.0;
 				float move = static_cast<float>(interpolate("exponential", 1, 0, tt, -2, 1));
-				if (move > 1)
-				{
+				if (move > 1) {
 					move = 1;
-				}
-				else if (move < 0)
-				{
+				} else if (move < 0) {
 					move = 0;
 				}
-				holder[i * width + j].setPosition(
+				m_holder[i * width + j].setPosition(
 					static_cast<float>(64 + j * 66) + 640.f * move,
-					static_cast<float>(64 + i * 52)
-				);
-				charSprite[i * width + j].setPosition(
+					static_cast<float>(64 + i * 52));
+				m_charSprite[i * width + j].setPosition(
 					static_cast<float>(64 + j * 66) + 1.f + 640.f * move,
 					static_cast<float>(64 + i * 52) + 1.f);
 			}
@@ -145,715 +126,607 @@ void CharacterSelect::play()
 	}
 
 	// Move in
-	if (timer <= 160 && timer > 0)
-	{
-		for (int i = 0; i < Nplayers; i++)
-		{
+	if (m_timer <= 160 && m_timer > 0) {
+		for (int i = 0; i < numPlayers; i++) {
 			// Normal display
-			float posX = 640.f / static_cast<float>(Nplayers * 2) * static_cast<float>(i * 2 + 1);
+			float posX = 640.f / static_cast<float>(numPlayers * 2) * static_cast<float>(i * 2 + 1);
 			float posY = 480.f;
 
 			// Display only name
-			if (Nplayers > 4)
-			{
-				const int width = static_cast<int>(ceil(sqrt(static_cast<double>(Nplayers))));
+			if (numPlayers > 4) {
+				const int width = static_cast<int>(ceil(sqrt(static_cast<double>(numPlayers))));
 				posX = 640.f / static_cast<float>(width * 2) * static_cast<float>(i % width * 2 + 1);
-				posY = 480.f - static_cast<float>(i / width) * 128.f * scale;
+				posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale;
 			}
-			double tt = static_cast<double>(timer) / 30.0 - static_cast<double>(i) * 1.0 / static_cast<double>(Nplayers);
+			const double tt = static_cast<double>(m_timer) / 30.0 - static_cast<double>(i) * 1.0 / static_cast<double>(numPlayers);
 			float move = static_cast<float>(interpolate("elastic", 1, 0, tt, -5, 0.5));
-			if (move > -0.001f && move < 0.001f) move = 0;
-			nameHolder[i].setPosition(posX, posY + 2.f + 320.f * move);
+			if (move > -0.001f && move < 0.001f)
+				move = 0;
+			m_nameHolder[i].setPosition(posX, posY + 2.f + 320.f * move);
 		}
 	}
 
-	if (timer == 80)
-	{
-		for (int i = 0; i < Nplayers; i++)
-		{
-			selectSprite[i].setVisible(true);
-			if (i > 8)
-			{
-				playernumber[i * 3 + 0].setVisible(true);
-				nameHolderNumber[i * 3 + 0].setVisible(true);
+	if (m_timer == 80) {
+		for (int i = 0; i < numPlayers; i++) {
+			m_selectSprite[i].setVisible(true);
+			if (i > 8) {
+				m_playerNumber[i * 3 + 0].setVisible(true);
+				m_nameHolderNumber[i * 3 + 0].setVisible(true);
 			}
-			playernumber[i * 3 + 1].setVisible(true);
-			playernumber[i * 3 + 2].setVisible(true);
-			name[i].setVisible(true);
-			nameHolder[i].setVisible(true);
-			nameHolderNumber[i * 3 + 1].setVisible(true);
-			nameHolderNumber[i * 3 + 2].setVisible(true);
-			selectedCharacter[i].setVisible(true);
-			for (int j = 0; j < 16; j++)
-			{
-				dropset[i * 16 + j].setVisible(true);
+			m_playerNumber[i * 3 + 1].setVisible(true);
+			m_playerNumber[i * 3 + 2].setVisible(true);
+			m_name[i].setVisible(true);
+			m_nameHolder[i].setVisible(true);
+			m_nameHolderNumber[i * 3 + 1].setVisible(true);
+			m_nameHolderNumber[i * 3 + 2].setVisible(true);
+			m_selectedCharacter[i].setVisible(true);
+			for (int j = 0; j < 16; j++) {
+				m_dropSet[i * 16 + j].setVisible(true);
 			}
 		}
 	}
 
 	// Count players that made a choice
 	int allChoice = 0;
-	bool endnow = false; // Override: end character selection immediately
-	for (int i = 0; i < Nplayers; i++)
-	{
-		if (madeChoice[i])
-		{
+	bool endNow = false; // Override: end character selection immediately
+	for (int i = 0; i < numPlayers; i++) {
+		if (m_madeChoice[i]) {
 			allChoice++;
 		}
 	}
 
-	if (timer > 40)
-	{
-		for (int i = 0; i < Nplayers; i++)
-		{
-			int currentplayer = i;
+	if (m_timer > 40) {
+		for (int i = 0; i < numPlayers; i++) {
+			int currentPlayer = i;
 
 			// ONLINE: don't care about CPU players
-			if (currentgame->settings->useCPUplayers)
-			{
+			if (m_currentGame->m_settings->useCpuPlayers) {
 				// Move CPU with player 1
-				if (currentgame->players[currentplayer]->getPlayerType() == CPU && i == allChoice)
-					currentplayer = 0;
+				if (m_currentGame->m_players[currentPlayer]->getPlayerType() == CPU && i == allChoice)
+					currentPlayer = 0;
 
 				// TEMP chance to cancel
-				if (madeChoice[i])
-				{
-					if (currentgame->players[currentplayer]->controls.B == 1)
-					{
+				if (m_madeChoice[i]) {
+					if (m_currentGame->m_players[currentPlayer]->m_controls.m_b == 1) {
 						int j = i;
 
 						// Check if CPU should be canceled first
-						if (currentplayer == 0)
-						{
-							for (int ii = 0; ii < Nplayers; ii++)
-							{
-								if (currentgame->players[ii]->getPlayerType() == CPU && madeChoice[ii])
-								{
+						if (currentPlayer == 0) {
+							for (int ii = 0; ii < numPlayers; ii++) {
+								if (m_currentGame->m_players[ii]->getPlayerType() == CPU && m_madeChoice[ii]) {
 									j = ii;
 								}
 							}
 						}
-						data->snd.cancel.play(data);
-						currentgame->players[currentplayer]->controls.B++;
-						madeChoice[j] = false;
-						selectSprite[j].setVisible(true);
-						if (j > 8)
-						{
-							playernumber[j * 3 + 0].setVisible(true);
+						m_data->snd.cancel.play(m_data);
+						m_currentGame->m_players[currentPlayer]->m_controls.m_b++;
+						m_madeChoice[j] = false;
+						m_selectSprite[j].setVisible(true);
+						if (j > 8) {
+							m_playerNumber[j * 3 + 0].setVisible(true);
 						}
-						playernumber[j * 3 + 1].setVisible(true);
-						playernumber[j * 3 + 2].setVisible(true);
-
+						m_playerNumber[j * 3 + 1].setVisible(true);
+						m_playerNumber[j * 3 + 2].setVisible(true);
 					}
 					continue;
 				}
 			}
 
 			bool moved = false;
-			int selX = sel[i] % 8;
-			int selY = sel[i] / 8;
-			if (currentgame->players[currentplayer]->getPlayerType() != ONLINE)
-			{
-				if (currentgame->players[currentplayer]->controls.Right == 1 ||
-					currentgame->players[currentplayer]->controls.Right > 16 &&
-					currentgame->players[currentplayer]->controls.Right % 3 == 0)
-				{
+			int selX = m_sel[i] % 8;
+			int selY = m_sel[i] / 8;
+			if (m_currentGame->m_players[currentPlayer]->getPlayerType() != ONLINE) {
+				if (m_currentGame->m_players[currentPlayer]->m_controls.m_right == 1 || m_currentGame->m_players[currentPlayer]->m_controls.m_right > 16 && m_currentGame->m_players[currentPlayer]->m_controls.m_right % 3 == 0) {
 					selX++;
 					moved = true;
 				}
-				if (currentgame->players[currentplayer]->controls.Left == 1 ||
-					currentgame->players[currentplayer]->controls.Left > 16 &&
-					currentgame->players[currentplayer]->controls.Left % 3 == 0)
-				{
+				if (m_currentGame->m_players[currentPlayer]->m_controls.m_left == 1 || m_currentGame->m_players[currentPlayer]->m_controls.m_left > 16 && m_currentGame->m_players[currentPlayer]->m_controls.m_left % 3 == 0) {
 					selX--;
 					moved = true;
 				}
-				if (currentgame->players[currentplayer]->controls.Down == 1 ||
-					currentgame->players[currentplayer]->controls.Down > 16 &&
-					currentgame->players[currentplayer]->controls.Down % 3 == 0)
-				{
+				if (m_currentGame->m_players[currentPlayer]->m_controls.m_down == 1 || m_currentGame->m_players[currentPlayer]->m_controls.m_down > 16 && m_currentGame->m_players[currentPlayer]->m_controls.m_down % 3 == 0) {
 					selY++;
 					moved = true;
 				}
-				if (currentgame->players[currentplayer]->controls.Up == 1 ||
-					currentgame->players[currentplayer]->controls.Up > 16 &&
-					currentgame->players[currentplayer]->controls.Up % 3 == 0)
-				{
+				if (m_currentGame->m_players[currentPlayer]->m_controls.m_up == 1 || m_currentGame->m_players[currentPlayer]->m_controls.m_up > 16 && m_currentGame->m_players[currentPlayer]->m_controls.m_up % 3 == 0) {
 					selY--;
 					moved = true;
 				}
 			}
 
-			if (sel[i] < 0)
-			{
-				sel[i] += 24;
+			if (m_sel[i] < 0) {
+				m_sel[i] += 24;
 			}
 
-			if (selX < 0)
-			{
+			if (selX < 0) {
 				selX += 8;
 			}
 
-			if (selY < 0)
-			{
+			if (selY < 0) {
 				selY += 3;
 			}
 
 			selX %= 8;
 			selY %= 3;
 
-			sel[i] = selY * 8 + selX;
-			const int jj = sel[i] % 8;
-			const int ii = sel[i] / 8;
+			m_sel[i] = selY * 8 + selX;
+			const int jj = m_sel[i] % 8;
+			const int ii = m_sel[i] / 8;
 
 			// Normal display
-			float posX = 640.f / static_cast<float>(Nplayers * 2) * static_cast<float>(i * 2 + 1);
+			float posX = 640.f / static_cast<float>(numPlayers * 2) * static_cast<float>(i * 2 + 1);
 			float posY = 480.f;
 
 			// Display only name
-			if (Nplayers > 4)
-			{
-				const int width = static_cast<int>(ceil(sqrt(static_cast<double>(Nplayers))));
+			if (numPlayers > 4) {
+				const int width = static_cast<int>(ceil(sqrt(static_cast<double>(numPlayers))));
 				posX = 640.f / static_cast<float>(width * 2) * static_cast<float>(i % width * 2 + 1);
-				posY = 480.f - static_cast<float>(i / width) * 128.f * scale;
+				posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale;
 			}
 
 			// Make choice
-			if (currentgame->players[currentplayer]->controls.A == 1 && timer > 80)
-			{
-				data->snd.decide.play(data);
-				madeChoice[i] = true;
-				currentgame->players[i]->setCharacter(order[sel[i]]);
-				currentgame->players[i]->characterVoices.choose.play(data);
-				selectSprite[i].setVisible(false);
-				playernumber[i * 3 + 0].setVisible(false);
-				playernumber[i * 3 + 1].setVisible(false);
-				playernumber[i * 3 + 2].setVisible(false);
+			if (m_currentGame->m_players[currentPlayer]->m_controls.m_a == 1 && m_timer > 80) {
+				m_data->snd.decide.play(m_data);
+				m_madeChoice[i] = true;
+				m_currentGame->m_players[i]->setCharacter(m_order[m_sel[i]]);
+				m_currentGame->m_players[i]->m_characterVoices.choose.play(m_data);
+				m_selectSprite[i].setVisible(false);
+				m_playerNumber[i * 3 + 0].setVisible(false);
+				m_playerNumber[i * 3 + 1].setVisible(false);
+				m_playerNumber[i * 3 + 2].setVisible(false);
 
 				// ONLINE: send message
-				if (currentgame->connected)
-				{
-					currentgame->network->sendToChannel(CHANNEL_GAME, std::string("choice|") + to_string((int)order[sel[i]]), currentgame->channelName);
-					endnow = true;
+				if (m_currentGame->m_connected) {
+					m_currentGame->m_network->sendToChannel(CHANNEL_GAME, std::string("choice|") + toString(static_cast<int>(m_order[m_sel[i]])), m_currentGame->m_channelName);
+					endNow = true;
 				}
 			}
 
-			if (moved)
-			{
-				data->snd.cursor.play(data);
-				if (currentgame->settings->useCharacterField)
-				{
-					currentgame->players[i]->setFieldImage(order[sel[i]]);
+			if (moved) {
+				m_data->snd.cursor.play(m_data);
+				if (m_currentGame->m_settings->useCharacterField) {
+					m_currentGame->m_players[i]->setFieldImage(m_order[m_sel[i]]);
 				}
 
-				selectSprite[i].setPosition(
+				m_selectSprite[i].setPosition(
 					static_cast<float>(64 + jj * 66),
-					static_cast<float>(64 + ii * 52)
-				);
+					static_cast<float>(64 + ii * 52));
 
-				selectedCharacter[i].setImage(data->imgCharSelect[static_cast<unsigned char>(order[sel[i]])]);
-				selectedCharacter[i].setSubRect(0, 0, 256, 256);
-				selectedCharacter[i].setCenterBottom();
-				selectedCharacter[i].setPosition(posX, posY - 38 * scale);
-				selectedCharacter[i].setScale(scale);
-				if (selectedCharacter[i].getImage() == nullptr)
-				{
-					selectedCharacter[i].setVisible(false);
+				m_selectedCharacter[i].setImage(m_data->imgCharSelect[static_cast<unsigned char>(m_order[m_sel[i]])]);
+				m_selectedCharacter[i].setSubRect(0, 0, 256, 256);
+				m_selectedCharacter[i].setCenterBottom();
+				m_selectedCharacter[i].setPosition(posX, posY - 38 * m_scale);
+				m_selectedCharacter[i].setScale(m_scale);
+				if (m_selectedCharacter[i].getImage() == nullptr) {
+					m_selectedCharacter[i].setVisible(false);
 				}
 
-				name[i].setImage(data->imgCharName[static_cast<unsigned char>(order[sel[i]])]);
-				name[i].setCenterBottom();
-				name[i].setPosition(posX, posY);
-				name[i].setScale(scale);
+				m_name[i].setImage(m_data->imgCharName[static_cast<unsigned char>(m_order[m_sel[i]])]);
+				m_name[i].setCenterBottom();
+				m_name[i].setPosition(posX, posY);
+				m_name[i].setScale(m_scale);
 
 				setDropset(
 					static_cast<int>(posX),
-					static_cast<int>(posY - 48 * scale),
-					i
-				);
+					static_cast<int>(posY - 48 * m_scale),
+					i);
 
 				// ONLINE: send message
-				if (currentgame->connected)
-				{
-					currentgame->network->sendToChannel(CHANNEL_GAME, std::string("select|") + to_string((int)order[sel[i]]), currentgame->channelName);
+				if (m_currentGame->m_connected) {
+					m_currentGame->m_network->sendToChannel(CHANNEL_GAME, std::string("select|") + toString(static_cast<int>(m_order[m_sel[i]])), m_currentGame->m_channelName);
 				}
 			}
 
 			// Player number
-			float xx = playernumber[i * 3].getX() + (selectSprite[i].getX() - playernumber[i * 3].getX()) / 3.f + 2.f;
-			float yy = playernumber[i * 3].getY() + (selectSprite[i].getY() - playernumber[i * 3].getY()) / 3.f + 6.f;
-			playernumber[i * 3 + 0].setPosition(xx, yy + 1.f * static_cast<float>(sin(data->globalTimer / 30.0 + i * 10.0)));
-			playernumber[i * 3 + 1].setPosition(xx + 10, yy + 1.f * static_cast<float>(sin(data->globalTimer / 30.0 + i * 10.0)));
-			playernumber[i * 3 + 2].setPosition(xx + 20, yy + 1.f * static_cast<float>(sin(data->globalTimer / 30.0 + i * 10.0)));
+			const float xx = m_playerNumber[i * 3].getX() + (m_selectSprite[i].getX() - m_playerNumber[i * 3].getX()) / 3.f + 2.f;
+			const float yy = m_playerNumber[i * 3].getY() + (m_selectSprite[i].getY() - m_playerNumber[i * 3].getY()) / 3.f + 6.f;
+			m_playerNumber[i * 3 + 0].setPosition(xx, yy + 1.f * static_cast<float>(sin(m_data->globalTimer / 30.0 + i * 10.0)));
+			m_playerNumber[i * 3 + 1].setPosition(xx + 10, yy + 1.f * static_cast<float>(sin(m_data->globalTimer / 30.0 + i * 10.0)));
+			m_playerNumber[i * 3 + 2].setPosition(xx + 20, yy + 1.f * static_cast<float>(sin(m_data->globalTimer / 30.0 + i * 10.0)));
 		}
 	}
 
 	// All choices made
-	if (allChoice == Nplayers && timer > 0 || endnow)
-	{
+	if (allChoice == numPlayers && m_timer > 0 || endNow) {
 		// Fade out
-		timer = -120;
+		m_timer = -120;
 	}
-	if (timer<0 && timer>-60)
-	{
-		const float t = static_cast<float>(timer + 60) / 60.0f; // From 0 to 1
-		background.setTransparency(
-			static_cast<float>(interpolate("linear", 0.0, 0.5, -timer / 60.0))
-		);
+	if (m_timer < 0 && m_timer > -60) {
+		const float t = static_cast<float>(m_timer + 60) / 60.0f; // From 0 to 1
+		m_background.setTransparency(
+			static_cast<float>(interpolate("linear", 0.0, 0.5, -m_timer / 60.0)));
 
 		// Set invisible
-		for (int i = 0; i < Nplayers; i++)
-		{
-			selectSprite[i].setVisible(false);
-			selectedCharacter[i].setTransparency(1 - t);
-			name[i].setTransparency(1 - t);
-			playernumber[i * 3 + 0].setTransparency(1 - t);
-			playernumber[i * 3 + 1].setTransparency(1 - t);
-			playernumber[i * 3 + 2].setTransparency(1 - t);
-			nameHolderNumber[i * 3 + 0].setTransparency(1 - t);
-			nameHolderNumber[i * 3 + 1].setTransparency(1 - t);
-			nameHolderNumber[i * 3 + 2].setTransparency(1 - t);
-			for (int j = 0; j < 16; j++)
-			{
-				dropset[i * 16 + j].setTransparency(1 - t);
+		for (int i = 0; i < numPlayers; i++) {
+			m_selectSprite[i].setVisible(false);
+			m_selectedCharacter[i].setTransparency(1 - t);
+			m_name[i].setTransparency(1 - t);
+			m_playerNumber[i * 3 + 0].setTransparency(1 - t);
+			m_playerNumber[i * 3 + 1].setTransparency(1 - t);
+			m_playerNumber[i * 3 + 2].setTransparency(1 - t);
+			m_nameHolderNumber[i * 3 + 0].setTransparency(1 - t);
+			m_nameHolderNumber[i * 3 + 1].setTransparency(1 - t);
+			m_nameHolderNumber[i * 3 + 2].setTransparency(1 - t);
+			for (int j = 0; j < 16; j++) {
+				m_dropSet[i * 16 + j].setTransparency(1 - t);
 			}
-			nameHolder[i].setTransparency(1 - t);
+			m_nameHolder[i].setTransparency(1 - t);
 		}
-		for (int i = 0; i < 24; i++)
-		{
-			holder[i].setTransparency(1 - t);
-			charSprite[i].setTransparency(1 - t);
+		for (int i = 0; i < 24; i++) {
+			m_holder[i].setTransparency(1 - t);
+			m_charSprite[i].setTransparency(1 - t);
 		}
 	}
-	if (timer<0 && timer>-80)
-	{
+	if (m_timer < 0 && m_timer > -80) {
 		constexpr int height = 3;
-		for (int i = 0; i < height; i++)
-		{
+		for (int i = 0; i < height; i++) {
 			constexpr int width = 8;
-			for (int j = 0; j < width; j++)
-			{
-				double tt = static_cast<double>(-timer) / 20.0 - static_cast<double>(i * width + j) / 12.0;
+			for (int j = 0; j < width; j++) {
+				const double tt = static_cast<double>(-m_timer) / 20.0 - static_cast<double>(i * width + j) / 12.0;
 				float move = static_cast<float>(interpolate("exponential", 1, 0, tt, -2, 1));
 
-				if (move > 1)
-				{
+				if (move > 1) {
 					move = 1;
-				}
-				else if (move < 0)
-				{
+				} else if (move < 0) {
 					move = 0;
 				}
 
-				holder[i * width + j].setPosition(
+				m_holder[i * width + j].setPosition(
 					static_cast<float>(64 + j * 66) + 640.f * move,
-					static_cast<float>(64 + i * 52)
-				);
-				charSprite[i * width + j].setPosition(
+					static_cast<float>(64 + i * 52));
+				m_charSprite[i * width + j].setPosition(
 					static_cast<float>(64 + j * 66 + 1) + 640.f * move,
-					static_cast<float>(64 + i * 52 + 1)
-				);
+					static_cast<float>(64 + i * 52 + 1));
 			}
 		}
 	}
-	if (timer < 0 && timer >= -160)
-	{
-		for (int i = 0; i < Nplayers; i++)
-		{
+	if (m_timer < 0 && m_timer >= -160) {
+		for (int i = 0; i < numPlayers; i++) {
 			// Normal display
-			float posX = 640.f / static_cast<float>(Nplayers * 2) * static_cast<float>(i * 2 + 1);
+			float posX = 640.f / static_cast<float>(numPlayers * 2) * static_cast<float>(i * 2 + 1);
 			float posY = 480.f;
 
 			// Display only name
-			if (Nplayers > 4)
-			{
-				const int width = static_cast<int>(ceil(sqrt(static_cast<double>(Nplayers))));
+			if (numPlayers > 4) {
+				const int width = static_cast<int>(ceil(sqrt(static_cast<double>(numPlayers))));
 				posX = 640.f / static_cast<float>(width * 2) * static_cast<float>(i % width * 2 + 1);
-				posY = 480.f - static_cast<float>(i / width) * 128.f * scale;
+				posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale;
 			}
-			const double tt = static_cast<double>(-timer) / 30.0 - static_cast<double>(i) / static_cast<double>(Nplayers);
+			const double tt = static_cast<double>(-m_timer) / 30.0 - static_cast<double>(i) / static_cast<double>(numPlayers);
 			float move = static_cast<float>(interpolate("elastic", 1, 0, tt, -5, 0.5));
-			if (move > -0.001f && move < 0.001f)
-			{
+			if (move > -0.001f && move < 0.001f) {
 				move = 0;
 			}
-			nameHolder[i].setPosition(posX, posY + 2.f + 320.f * move);
+			m_nameHolder[i].setPosition(posX, posY + 2.f + 320.f * move);
 		}
 	}
-	if (timer == -1)
-	{
-		for (int i = 0; i < Nplayers; i++)
-		{
-			selectSprite[i].setVisible(false);
-			if (i > 8)
-			{
-				playernumber[i * 3 + 0].setVisible(false);
-				nameHolderNumber[i * 3 + 0].setVisible(false);
+	if (m_timer == -1) {
+		for (int i = 0; i < numPlayers; i++) {
+			m_selectSprite[i].setVisible(false);
+			if (i > 8) {
+				m_playerNumber[i * 3 + 0].setVisible(false);
+				m_nameHolderNumber[i * 3 + 0].setVisible(false);
 			}
-			playernumber[i * 3 + 1].setVisible(false);
-			playernumber[i * 3 + 2].setVisible(false);
-			name[i].setVisible(false);
-			nameHolderNumber[i * 3 + 1].setVisible(false);
-			nameHolderNumber[i * 3 + 2].setVisible(false);
-			selectedCharacter[i].setVisible(false);
-			for (int j = 0; j < 16; j++)
-			{
-				dropset[i * 16 + j].setVisible(false);
+			m_playerNumber[i * 3 + 1].setVisible(false);
+			m_playerNumber[i * 3 + 2].setVisible(false);
+			m_name[i].setVisible(false);
+			m_nameHolderNumber[i * 3 + 1].setVisible(false);
+			m_nameHolderNumber[i * 3 + 2].setVisible(false);
+			m_selectedCharacter[i].setVisible(false);
+			for (int j = 0; j < 16; j++) {
+				m_dropSet[i * 16 + j].setVisible(false);
 			}
 		}
 		end();
 	}
-
 }
 
 // End of character select
 void CharacterSelect::end()
 {
-	timer = 0;
-	size_t Nplayers = currentgame->players.size();
+	m_timer = 0;
+	const size_t numPlayers = m_currentGame->m_players.size();
 
-	if (!currentgame->settings->useCPUplayers)
-	{
+	if (!m_currentGame->m_settings->useCpuPlayers) {
 		// ONLINE: do nothing, just go back to menu
-		currentgame->menuSelect = 2;
-	}
-	else
-	{
+		m_currentGame->m_menuSelect = 2;
+	} else {
 		// This state is only at start
-		if (currentgame->players[0]->losewin == NOWIN)
-		{
+		if (m_currentGame->m_players[0]->m_loseWin == LoseWinState::NOWIN) {
 			// Set all players to pick colors, or play game now
-			if (currentgame->settings->pickColors)
-			{
-				for (int i = 0; i < Nplayers; i++)
-				{
-					currentgame->players[i]->currentphase = PICKCOLORS;
+			if (m_currentGame->m_settings->pickColors) {
+				for (size_t i = 0; i < numPlayers; i++) {
+					m_currentGame->m_players[i]->m_currentPhase = Phase::PICKCOLORS;
 				}
-			}
-			else
-			{
+			} else {
 				// Play game right now
-				for (int i = 0; i < Nplayers; i++)
-				{
-					currentgame->players[i]->currentphase = GETREADY;
+				for (size_t i = 0; i < numPlayers; i++) {
+					m_currentGame->m_players[i]->m_currentPhase = Phase::GETREADY;
 				}
-				currentgame->readyGoObj.prepareAnimation("readygo");
-				data->matchTimer = 0;
+				m_currentGame->m_readyGoObj.prepareAnimation("readygo");
+				m_data->matchTimer = 0;
 			}
-			currentgame->menuSelect = 0;
-			currentgame->loadMusic();
-		}
-		else
-		{
+			m_currentGame->m_menuSelect = 0;
+			m_currentGame->loadMusic();
+		} else {
 			// Return to menu
-			currentgame->menuSelect = 2;
+			m_currentGame->m_menuSelect = 2;
 		}
 	}
-
 }
 
 void CharacterSelect::prepare()
 {
-	timer = 1;
-	delete[] selectSprite;
-	delete[] selectedCharacter;
-	delete[] name;
-	delete[] nameHolder;
-	delete[] nameHolderNumber;
-	delete[] dropset;
-	delete[] playernumber;
-	delete[] sel;
-	delete[] madeChoice;
+	m_timer = 1;
+	delete[] m_selectSprite;
+	delete[] m_selectedCharacter;
+	delete[] m_name;
+	delete[] m_nameHolder;
+	delete[] m_nameHolderNumber;
+	delete[] m_dropSet;
+	delete[] m_playerNumber;
+	delete[] m_sel;
+	delete[] m_madeChoice;
 
-	Nplayers = static_cast<int>(currentgame->players.size());
-	scale = static_cast<float>(min(2.0 / Nplayers, 1.0));
-	selectSprite = new Sprite[Nplayers];
-	selectedCharacter = new Sprite[Nplayers];
-	name = new Sprite[Nplayers];
-	nameHolder = new Sprite[Nplayers];
-	nameHolderNumber = new Sprite[Nplayers * 3];
-	dropset = new Sprite[Nplayers * 16];
-	playernumber = new Sprite[Nplayers * 3];
+	m_numPlayers = static_cast<int>(m_currentGame->m_players.size());
+	m_scale = static_cast<float>(min(2.0 / m_numPlayers, 1.0));
+	m_selectSprite = new Sprite[m_numPlayers];
+	m_selectedCharacter = new Sprite[m_numPlayers];
+	m_name = new Sprite[m_numPlayers];
+	m_nameHolder = new Sprite[m_numPlayers];
+	m_nameHolderNumber = new Sprite[m_numPlayers * 3];
+	m_dropSet = new Sprite[m_numPlayers * 16];
+	m_playerNumber = new Sprite[m_numPlayers * 3];
 
-	sel = new int[Nplayers];
-	madeChoice = new bool[Nplayers];
+	m_sel = new int[m_numPlayers];
+	m_madeChoice = new bool[m_numPlayers];
 
 	// Objects for every player
-	for (int i = 0; i < Nplayers; i++)
-	{
+	for (int i = 0; i < m_numPlayers; i++) {
 		// Release buttons for cpu
-		if (currentgame->players[i]->getPlayerType() == CPU)
-		{
-			currentgame->players[i]->controls.release();
+		if (m_currentGame->m_players[i]->getPlayerType() == CPU) {
+			m_currentGame->m_players[i]->m_controls.release();
 		}
 
-		if (firstStart)
-		{
-			sel[i] = i % 24;
+		if (m_firstStart) {
+			m_sel[i] = i % 24;
+		} else {
+			m_sel[i] = findCurrentCharacter(i);
 		}
-		else
-		{
-			sel[i] = findCurrentCharacter(i);
-		}
-		const int jj = sel[i] % 8;
-		const int ii = sel[i] / 8;
-		madeChoice[i] = false;
+		const int jj = m_sel[i] % 8;
+		const int ii = m_sel[i] / 8;
+		m_madeChoice[i] = false;
 
 		// Set initial field image
-		if (currentgame->settings->useCharacterField)
-		{
-			currentgame->players[i]->setFieldImage(order[sel[i]]);
+		if (m_currentGame->m_settings->useCharacterField) {
+			m_currentGame->m_players[i]->setFieldImage(m_order[m_sel[i]]);
 		}
 
 		// Normal display
-		float posX = 640.f / static_cast<float>(Nplayers * 2) * static_cast<float>(i * 2 + 1);
+		float posX = 640.f / static_cast<float>(m_numPlayers * 2) * static_cast<float>(i * 2 + 1);
 		float posY = 480.f;
 
 		// Display only name
-		if (Nplayers > 4)
-		{
-			const int width = static_cast<int>(ceil(sqrt(static_cast<double>(Nplayers))));
-			scale = 2.0f / static_cast<float>(width);
+		if (m_numPlayers > 4) {
+			const int width = static_cast<int>(ceil(sqrt(static_cast<double>(m_numPlayers))));
+			m_scale = 2.0f / static_cast<float>(width);
 			posX = 640.f / static_cast<float>(width * 2) * static_cast<float>(i % width * 2 + 1);
-			posY = 480.f - static_cast<float>(i / width) * 128.f * scale;
+			posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale;
 		}
 
-		selectSprite[i].setImage(data->imgPlayerCharSelect);
-		selectSprite[i].setCenter(1, 1);
-		selectSprite[i].setPosition(
+		m_selectSprite[i].setImage(m_data->imgPlayerCharSelect);
+		m_selectSprite[i].setCenter(1, 1);
+		m_selectSprite[i].setPosition(
 			static_cast<float>(64 + jj * 66),
-			static_cast<float>(64 + ii * 52)
-		);
-		selectSprite[i].setVisible(false);
+			static_cast<float>(64 + ii * 52));
+		m_selectSprite[i].setVisible(false);
 
-		selectedCharacter[i].setImage(data->imgSelect[static_cast<unsigned char>(order[sel[i]])]);
-		selectedCharacter[i].setCenterBottom();
-		selectedCharacter[i].setScale(scale);
-		selectedCharacter[i].setPosition(posX, posY - 38.f * scale);
-		selectedCharacter[i].setVisible(false);
-		if (selectedCharacter[i].getImage() == nullptr)
-			selectedCharacter[i].setVisible(false);
+		m_selectedCharacter[i].setImage(m_data->imgSelect[static_cast<unsigned char>(m_order[m_sel[i]])]);
+		m_selectedCharacter[i].setCenterBottom();
+		m_selectedCharacter[i].setScale(m_scale);
+		m_selectedCharacter[i].setPosition(posX, posY - 38.f * m_scale);
+		m_selectedCharacter[i].setVisible(false);
+		if (m_selectedCharacter[i].getImage() == nullptr)
+			m_selectedCharacter[i].setVisible(false);
 
-		for (int j = 0; j < 16; j++)
-		{
-			dropset[i * 16 + j].setImage(data->imgDropset);
-			dropset[i * 16 + j].setVisible(false);
+		for (int j = 0; j < 16; j++) {
+			m_dropSet[i * 16 + j].setImage(m_data->imgDropSet);
+			m_dropSet[i * 16 + j].setVisible(false);
 		}
 
-		for (int j = 0; j < 3; j++)
-		{
-			playernumber[i * 3 + j].setImage(data->imgPlayerNumber);
-			nameHolderNumber[i * 3 + j].setImage(data->imgPlayerNumber);
+		for (int j = 0; j < 3; j++) {
+			m_playerNumber[i * 3 + j].setImage(m_data->imgPlayerNumber);
+			m_nameHolderNumber[i * 3 + j].setImage(m_data->imgPlayerNumber);
 		}
 		// Number
-		playernumber[i * 3 + 0].setSubRect((i + 1) / 10 * 24, 0, 24, 32);
-		playernumber[i * 3 + 0].setCenterBottom();
-		playernumber[i * 3 + 0].setScale(0.5);
-		playernumber[i * 3 + 1].setSubRect((i + 1) % 10 * 24, 0, 24, 32);
-		playernumber[i * 3 + 1].setCenterBottom();
-		playernumber[i * 3 + 1].setScale(0.5);
-		playernumber[i * 3 + 2].setSubRect(240, 0, 24, 32);
-		playernumber[i * 3 + 2].setCenterBottom();
-		playernumber[i * 3 + 2].setScale(0.5);
-		nameHolderNumber[i * 3 + 0].setSubRect((i + 1) / 10 * 24, 0, 24, 32);
-		nameHolderNumber[i * 3 + 0].setCenterBottom();
-		nameHolderNumber[i * 3 + 0].setScale(scale);
-		nameHolderNumber[i * 3 + 1].setSubRect((i + 1) % 10 * 24, 0, 24, 32);
-		nameHolderNumber[i * 3 + 1].setCenterBottom();
-		nameHolderNumber[i * 3 + 1].setScale(scale);
-		nameHolderNumber[i * 3 + 2].setSubRect(240, 0, 24, 32);
-		nameHolderNumber[i * 3 + 2].setCenterBottom();
-		nameHolderNumber[i * 3 + 2].setScale(scale);
-		if (i < 9)
-		{
-			nameHolderNumber[i * 3 + 0].setVisible(false);
+		m_playerNumber[i * 3 + 0].setSubRect((i + 1) / 10 * 24, 0, 24, 32);
+		m_playerNumber[i * 3 + 0].setCenterBottom();
+		m_playerNumber[i * 3 + 0].setScale(0.5);
+		m_playerNumber[i * 3 + 1].setSubRect((i + 1) % 10 * 24, 0, 24, 32);
+		m_playerNumber[i * 3 + 1].setCenterBottom();
+		m_playerNumber[i * 3 + 1].setScale(0.5);
+		m_playerNumber[i * 3 + 2].setSubRect(240, 0, 24, 32);
+		m_playerNumber[i * 3 + 2].setCenterBottom();
+		m_playerNumber[i * 3 + 2].setScale(0.5);
+		m_nameHolderNumber[i * 3 + 0].setSubRect((i + 1) / 10 * 24, 0, 24, 32);
+		m_nameHolderNumber[i * 3 + 0].setCenterBottom();
+		m_nameHolderNumber[i * 3 + 0].setScale(m_scale);
+		m_nameHolderNumber[i * 3 + 1].setSubRect((i + 1) % 10 * 24, 0, 24, 32);
+		m_nameHolderNumber[i * 3 + 1].setCenterBottom();
+		m_nameHolderNumber[i * 3 + 1].setScale(m_scale);
+		m_nameHolderNumber[i * 3 + 2].setSubRect(240, 0, 24, 32);
+		m_nameHolderNumber[i * 3 + 2].setCenterBottom();
+		m_nameHolderNumber[i * 3 + 2].setScale(m_scale);
+		if (i < 9) {
+			m_nameHolderNumber[i * 3 + 0].setVisible(false);
 		}
-		playernumber[i * 3 + 0].setPosition(static_cast<float>(64 + jj * 66 + 4), static_cast<float>(64 + ii * 52 + 6));
-		playernumber[i * 3 + 1].setPosition(static_cast<float>(64 + jj * 66 + 4), static_cast<float>(64 + ii * 52 + 6));
-		playernumber[i * 3 + 2].setPosition(static_cast<float>(64 + jj * 66 + 4), static_cast<float>(64 + ii * 52 + 6));
-		playernumber[i * 3 + 0].setVisible(false);
-		playernumber[i * 3 + 1].setVisible(false);
-		playernumber[i * 3 + 2].setVisible(false);
-		nameHolderNumber[i * 3 + 0].setPosition(posX + 00 * scale, posY - 70 * scale);
-		nameHolderNumber[i * 3 + 1].setPosition(posX + 20 * scale, posY - 70 * scale);
-		nameHolderNumber[i * 3 + 2].setPosition(posX + 40 * scale, posY - 70 * scale);
-		nameHolderNumber[i * 3 + 0].setVisible(false);
-		nameHolderNumber[i * 3 + 1].setVisible(false);
-		nameHolderNumber[i * 3 + 2].setVisible(false);
-		name[i].setImage(data->imgCharName[(int)order[sel[i]]]);
-		name[i].setCenterBottom();
-		name[i].setPosition(posX, posY);
-		name[i].setScale(scale);
-		name[i].setVisible(false);
-		nameHolder[i].setImage(data->imgNameHolder);
-		nameHolder[i].setCenterBottom();
-		nameHolder[i].setPosition(posX, posY);
-		nameHolder[i].setScale(scale);
-		setDropset(static_cast<int>(posX), static_cast<int>(posY - 48.f * scale), i);
+		m_playerNumber[i * 3 + 0].setPosition(static_cast<float>(64 + jj * 66 + 4), static_cast<float>(64 + ii * 52 + 6));
+		m_playerNumber[i * 3 + 1].setPosition(static_cast<float>(64 + jj * 66 + 4), static_cast<float>(64 + ii * 52 + 6));
+		m_playerNumber[i * 3 + 2].setPosition(static_cast<float>(64 + jj * 66 + 4), static_cast<float>(64 + ii * 52 + 6));
+		m_playerNumber[i * 3 + 0].setVisible(false);
+		m_playerNumber[i * 3 + 1].setVisible(false);
+		m_playerNumber[i * 3 + 2].setVisible(false);
+		m_nameHolderNumber[i * 3 + 0].setPosition(posX + 00 * m_scale, posY - 70 * m_scale);
+		m_nameHolderNumber[i * 3 + 1].setPosition(posX + 20 * m_scale, posY - 70 * m_scale);
+		m_nameHolderNumber[i * 3 + 2].setPosition(posX + 40 * m_scale, posY - 70 * m_scale);
+		m_nameHolderNumber[i * 3 + 0].setVisible(false);
+		m_nameHolderNumber[i * 3 + 1].setVisible(false);
+		m_nameHolderNumber[i * 3 + 2].setVisible(false);
+		m_name[i].setImage(m_data->imgCharName[(int)m_order[m_sel[i]]]);
+		m_name[i].setCenterBottom();
+		m_name[i].setPosition(posX, posY);
+		m_name[i].setScale(m_scale);
+		m_name[i].setVisible(false);
+		m_nameHolder[i].setImage(m_data->imgNameHolder);
+		m_nameHolder[i].setCenterBottom();
+		m_nameHolder[i].setPosition(posX, posY);
+		m_nameHolder[i].setScale(m_scale);
+		setDropset(static_cast<int>(posX), static_cast<int>(posY - 48.f * m_scale), i);
 		// Set visible
-		for (int k = 0; k < Nplayers; k++)
-		{
-			selectedCharacter[k].setTransparency(1);
-			name[k].setTransparency(1);
-			playernumber[k * 3 + 0].setTransparency(1);
-			playernumber[k * 3 + 1].setTransparency(1);
-			playernumber[k * 3 + 2].setTransparency(1);
-			nameHolderNumber[k * 3 + 0].setTransparency(1);
-			nameHolderNumber[k * 3 + 1].setTransparency(1);
-			nameHolderNumber[k * 3 + 2].setTransparency(1);
-			for (int j = 0; j < 16; j++)
-			{
-				dropset[k * 16 + j].setTransparency(1);
+		for (int k = 0; k < m_numPlayers; k++) {
+			m_selectedCharacter[k].setTransparency(1);
+			m_name[k].setTransparency(1);
+			m_playerNumber[k * 3 + 0].setTransparency(1);
+			m_playerNumber[k * 3 + 1].setTransparency(1);
+			m_playerNumber[k * 3 + 2].setTransparency(1);
+			m_nameHolderNumber[k * 3 + 0].setTransparency(1);
+			m_nameHolderNumber[k * 3 + 1].setTransparency(1);
+			m_nameHolderNumber[k * 3 + 2].setTransparency(1);
+			for (int j = 0; j < 16; j++) {
+				m_dropSet[k * 16 + j].setTransparency(1);
 			}
-			nameHolder[k].setTransparency(1);
+			m_nameHolder[k].setTransparency(1);
 		}
-		for (auto& i : holder)
-		{
+		for (auto& i : m_holder) {
 			i.setTransparency(1);
 		}
-		for (auto& i : charSprite)
-		{
+		for (auto& i : m_charSprite) {
 			i.setTransparency(1);
 		}
 	}
-	firstStart = false;
-
+	m_firstStart = false;
 }
 
-void CharacterSelect::setDropset(int x, int y, int pl)
+void CharacterSelect::setDropset(const int x, const int y, const int pl)
 {
-	PuyoCharacter pc = order[sel[pl]];
+	const PuyoCharacter pc = m_order[m_sel[pl]];
 	float xx = -128;
 
-	for (int j = 0; j < 16; j++)
-	{
-		MovePuyoType mpt = getFromDropPattern(pc, j);
-		dropset[pl * 16 + j].setPosition(static_cast<float>(x) + xx * scale, static_cast<float>(y));
-		dropset[pl * 16 + j].setScale(scale);
-		switch (mpt)
-		{
+	for (int j = 0; j < 16; j++) {
+		const MovePuyoType mpt = getFromDropPattern(pc, j);
+		m_dropSet[pl * 16 + j].setPosition(static_cast<float>(x) + xx * m_scale, static_cast<float>(y));
+		m_dropSet[pl * 16 + j].setScale(m_scale);
+		switch (mpt) {
 		case DOUBLET:
-			dropset[pl * 16 + j].setSubRect(0, 0, 16, 24);
-			dropset[pl * 16 + j].setCenter(0, 24);
+			m_dropSet[pl * 16 + j].setSubRect(0, 0, 16, 24);
+			m_dropSet[pl * 16 + j].setCenter(0, 24);
 			xx += 10;
 			break;
 		case TRIPLET:
-			dropset[pl * 16 + j].setSubRect(16, 0, 24, 24);
-			dropset[pl * 16 + j].setCenter(0, 24);
+			m_dropSet[pl * 16 + j].setSubRect(16, 0, 24, 24);
+			m_dropSet[pl * 16 + j].setCenter(0, 24);
 			xx += 18;
 			break;
-		case TRIPLETR:
-			dropset[pl * 16 + j].setSubRect(40, 0, 24, 24);
-			dropset[pl * 16 + j].setCenter(0, 24);
+		case TRIPLET_R:
+			m_dropSet[pl * 16 + j].setSubRect(40, 0, 24, 24);
+			m_dropSet[pl * 16 + j].setCenter(0, 24);
 			xx += 18;
 			break;
 		case QUADRUPLET:
-			dropset[pl * 16 + j].setSubRect(64, 0, 24, 24);
-			dropset[pl * 16 + j].setCenter(0, 24);
+			m_dropSet[pl * 16 + j].setSubRect(64, 0, 24, 24);
+			m_dropSet[pl * 16 + j].setCenter(0, 24);
 			xx += 18;
 			break;
 		case BIG:
-			dropset[pl * 16 + j].setSubRect(88, 0, 24, 24);
-			dropset[pl * 16 + j].setCenter(0, 24);
+			m_dropSet[pl * 16 + j].setSubRect(88, 0, 24, 24);
+			m_dropSet[pl * 16 + j].setCenter(0, 24);
 			xx += 18;
 			break;
 		}
 	}
-
 }
 
-int CharacterSelect::findCurrentCharacter(int i)
+int CharacterSelect::findCurrentCharacter(const int i) const
 {
 	// Find selection
-	const PuyoCharacter pc = currentgame->players[i]->getCharacter();
-	for (int j = 0; j < 24; j++)
-	{
-		if (order[j] == pc)
-		{
+	const PuyoCharacter pc = m_currentGame->m_players[i]->getCharacter();
+	for (int j = 0; j < 24; j++) {
+		if (m_order[j] == pc) {
 			return j;
 		}
 	}
 	return -1;
 }
 
-// Sets animation for setting a character, does not actually set the player character if charactersleect is not active!
-void CharacterSelect::setCharacter(int playernum, int selection, bool choice)
+// Sets animation for setting a character, does not actually set the player character if character select is not active!
+void CharacterSelect::setCharacter(const int playerNum, const int selection, const bool choice)
 {
-	if (playernum >= static_cast<int>(currentgame->players.size()))
-	{
+	if (playerNum >= static_cast<int>(m_currentGame->m_players.size())) {
 		return;
 	}
 
-	if (timer > 40)
-	{
-		const int i = playernum;
+	if (m_timer > 40) {
+		const int i = playerNum;
+
 		// Find selection from character order
 		int s = 0;
-		for (int j = 0; j < 24; j++)
-		{
-			if (selection == static_cast<int>(order[j]))
-			{
-				s = j; break;
+		for (int j = 0; j < 24; j++) {
+			if (selection == static_cast<int>(m_order[j])) {
+				s = j;
+				break;
 			}
 		}
-		sel[i] = s;
-		const int jj = sel[i] % 8;
-		const int ii = sel[i] / 8;
+		m_sel[i] = s;
+		const int jj = m_sel[i] % 8;
+		const int ii = m_sel[i] / 8;
 
 		// Normal display
-		float posX = 640.f / static_cast<float>(Nplayers * 2) * static_cast<float>(i * 2 + 1);
+		float posX = 640.f / static_cast<float>(m_numPlayers * 2) * static_cast<float>(i * 2 + 1);
 		float posY = 480.f;
 
 		// Display only name
-		if (Nplayers > 4)
-		{
-			const int width = static_cast<int>(ceil(sqrt(static_cast<double>(Nplayers))));
+		if (m_numPlayers > 4) {
+			const int width = static_cast<int>(ceil(sqrt(static_cast<double>(m_numPlayers))));
 			posX = 640.f / (width * 2) * (i % width * 2 + 1);
-			posY = 480.f - static_cast<float>(i / width) * 128.f * scale;
+			posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale;
 		}
 
 		// Move
-		if (!choice)
-		{
-			data->snd.cursor.play(data);
-			madeChoice[i] = false;
-			if (currentgame->settings->useCharacterField)
-			{
-				currentgame->players[i]->setFieldImage(order[sel[i]]);
+		if (!choice) {
+			m_data->snd.cursor.play(m_data);
+			m_madeChoice[i] = false;
+			if (m_currentGame->m_settings->useCharacterField) {
+				m_currentGame->m_players[i]->setFieldImage(m_order[m_sel[i]]);
 			}
 
-			selectSprite[i].setPosition(static_cast<float>(64 + jj * 66), static_cast<float>(64 + ii * 52));
+			m_selectSprite[i].setPosition(static_cast<float>(64 + jj * 66), static_cast<float>(64 + ii * 52));
 
-			selectedCharacter[i].setImage(data->front->loadImage(folder_user_character + currentgame->settings->characterSetup[order[sel[i]]] + "/select.png"));
-			selectedCharacter[i].setSubRect(0, 0, 256, 256);
-			selectedCharacter[i].setCenterBottom();
-			selectedCharacter[i].setPosition(posX, posY - 38 * scale);
-			selectedCharacter[i].setScale(scale);
-			if (selectedCharacter[i].getImage() == nullptr)
-			{
-				selectedCharacter[i].setVisible(false);
+			m_selectedCharacter[i].setImage(m_data->front->loadImage(kFolderUserCharacter + m_currentGame->m_settings->characterSetup[m_order[m_sel[i]]] + "/select.png"));
+			m_selectedCharacter[i].setSubRect(0, 0, 256, 256);
+			m_selectedCharacter[i].setCenterBottom();
+			m_selectedCharacter[i].setPosition(posX, posY - 38 * m_scale);
+			m_selectedCharacter[i].setScale(m_scale);
+			if (m_selectedCharacter[i].getImage() == nullptr) {
+				m_selectedCharacter[i].setVisible(false);
 			}
 
-			name[i].setImage(data->imgCharName[static_cast<unsigned char>(order[sel[i]])]);
-			name[i].setCenterBottom();
-			name[i].setPosition(posX, posY);
-			name[i].setScale(scale);
+			m_name[i].setImage(m_data->imgCharName[static_cast<unsigned char>(m_order[m_sel[i]])]);
+			m_name[i].setCenterBottom();
+			m_name[i].setPosition(posX, posY);
+			m_name[i].setScale(m_scale);
 
-			setDropset(static_cast<int>(posX), static_cast<int>(posY - 48 * scale), i);
-		}
-		else
-		{
+			setDropset(static_cast<int>(posX), static_cast<int>(posY - 48 * m_scale), i);
+		} else {
 			// Made choice
-			data->snd.decide.play(data);
-			madeChoice[i] = true;
-			currentgame->players[i]->setCharacter(order[sel[i]]);
-			currentgame->players[i]->characterVoices.choose.play(data);
-			selectSprite[i].setVisible(false);
-			playernumber[i * 3 + 0].setVisible(false);
-			playernumber[i * 3 + 1].setVisible(false);
-			playernumber[i * 3 + 2].setVisible(false);
+			m_data->snd.decide.play(m_data);
+			m_madeChoice[i] = true;
+			m_currentGame->m_players[i]->setCharacter(m_order[m_sel[i]]);
+			m_currentGame->m_players[i]->m_characterVoices.choose.play(m_data);
+			m_selectSprite[i].setVisible(false);
+			m_playerNumber[i * 3 + 0].setVisible(false);
+			m_playerNumber[i * 3 + 1].setVisible(false);
+			m_playerNumber[i * 3 + 2].setVisible(false);
 		}
-
 	}
 }
 

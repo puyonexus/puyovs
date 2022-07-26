@@ -50,7 +50,7 @@ bool GameManager::closeAll()
 	// I'm a little afraid of deleting the games list, so I'll "disconnect" the games for now
 	for (int i = 0; i < games.count(); i++)
 	{
-		games[i]->game()->connected = false;
+		games[i]->game()->m_connected = false;
 	}
 	return true;
 }
@@ -73,13 +73,13 @@ ppvs::RuleSetInfo GameManager::createRules()
 	unsigned int ruleId = settings.integer("rules", "baserules", 0);
 	switch (ruleId)
 	{
-	case 0: rs.setRules(TSU_ONLINE); break;
-	case 1: rs.setRules(FEVER_ONLINE); break;
-	case 2: rs.setRules(FEVER15_ONLINE); break;
-	case 3: rs.setRules(ENDLESSFEVERVS_ONLINE); break;
+	case 0: rs.setRules(ppvs::Rules::TSU_ONLINE); break;
+	case 1: rs.setRules(ppvs::Rules::FEVER_ONLINE); break;
+	case 2: rs.setRules(ppvs::Rules::FEVER15_ONLINE); break;
+	case 3: rs.setRules(ppvs::Rules::ENDLESSFEVERVS_ONLINE); break;
 	}
 
-	rs.Nplayers = settings.integer("rules", "numplayers", 2);
+	rs.numPlayers = settings.integer("rules", "numplayers", 2);
 
 	// Defaults?
 	rs.custom = !settings.boolean("rules", "default", true);
@@ -120,13 +120,13 @@ GameWidget* GameManager::createGame(ppvs::GameSettings* gs, const QString& roomN
 	gs->sfx = settings.string("custom", "sound", "Default").toUtf8().data();
 	gs->useCharacterField = settings.boolean("custom", "characterfield", true);
 
-	gs->Nplayers = gs->rulesetInfo.Nplayers;
-	gs->Nhumans = spectating || replay ? 0 : 1;
+	gs->numPlayers = gs->ruleSetInfo.numPlayers;
+	gs->numHumans = spectating || replay ? 0 : 1;
 	gs->spectating = spectating || replay;
 
 	if (replay)
 	{
-		gs->recording = PVS_REPLAYING;
+		gs->recording = ppvs::RecordState::REPLAYING;
 		gs->pickColors = false;
 		gs->showNames = settings.integer("launcher", "hidenames", 0);
 	}
@@ -154,43 +154,43 @@ GameWidget* GameManager::createGame(ppvs::GameSettings* gs, const QString& roomN
 
 	ppvs::Game* game = new ppvs::Game(gs);
 
-	game->translatableStrings.waitingForPlayer = tr("Waiting for player...", "Messages:GameWaitingForPlayer").toStdString();
-	game->translatableStrings.disconnected = tr("Player disconnected.", "Messages:GameDisconnected").toStdString();
-	game->translatableStrings.rankedWaiting = tr("Please press the Start button\n to find a new opponent. (default: Enter button)", "Messages:GameRankedWaiting").toStdString();
-	game->translatableStrings.rankedSearching = tr("Searching for opponent...", "Messages:GameRankedSearching").toStdString();
+	game->m_translatableStrings.waitingForPlayer = tr("Waiting for player...", "Messages:GameWaitingForPlayer").toStdString();
+	game->m_translatableStrings.disconnected = tr("Player disconnected.", "Messages:GameDisconnected").toStdString();
+	game->m_translatableStrings.rankedWaiting = tr("Please press the Start button\n to find a new opponent. (default: Enter button)", "Messages:GameRankedWaiting").toStdString();
+	game->m_translatableStrings.rankedSearching = tr("Searching for opponent...", "Messages:GameRankedSearching").toStdString();
 
 
 	if (!roomName.isNull() || gs->rankedMatch)
 	{
-		game->channelName = roomName.toStdString();
-		game->network = network->client();
-		game->forceStatusText = spectating;
+		game->m_channelName = roomName.toStdString();
+		game->m_network = network->client();
+		game->m_forceStatusText = spectating;
 
 		if (settings.boolean("launcher", "savereplays", true))
-			gs->recording = PVS_RECORDING;
+			gs->recording = ppvs::RecordState::RECORDING;
 
 		proxy = new NetChannelProxy(roomName, network);
 	}
 	else
 	{
-		game->channelName = std::string();
-		game->network = nullptr;
+		game->m_channelName = std::string();
+		game->m_network = nullptr;
 		if (!replay)
 		{
 			gs->startWithCharacterSelect = true;
-			gs->useCPUplayers = true;
+			gs->useCpuPlayers = true;
 		}
 		else
 		{
 			gs->startWithCharacterSelect = false;
-			gs->useCPUplayers = false;
+			gs->useCpuPlayers = false;
 		}
 	}
 
 	if (gs->rankedMatch)
 	{
 		network->sendMessageToServer(SUBCHANNEL_SERVERREQ_MATCH,
-			QString("new|") + QString("%1|").arg(PVSVERSION) + QString(gs->rulesetInfo.rulesetType == TSU_ONLINE ? "0" : "1"));
+			QString("new|") + QString("%1|").arg(PVSVERSION) + QString(gs->ruleSetInfo.ruleSetType == ppvs::Rules::TSU_ONLINE ? "0" : "1"));
 	}
 
 	GameWidget* widget = new GameWidgetGL(game, proxy, audio, static_cast<QWidget*>(parent()));
@@ -204,7 +204,7 @@ GameWidget* GameManager::findGame(const QString& roomName) const
 	std::string roomNameStd = roomName.toStdString();
 	for (int i = games.count() - 1; i >= 0; --i)
 	{
-		if (roomNameStd == games.at(i)->game()->channelName)
+		if (roomNameStd == games.at(i)->game()->m_channelName)
 			return games.at(i);
 	}
 
@@ -227,7 +227,7 @@ bool GameManager::rankedMatch() const
 {
 	for (int i = 0; i < games.count(); i++)
 	{
-		if (games.at(i)->game()->settings->rankedMatch)
+		if (games.at(i)->game()->m_settings->rankedMatch)
 			return true;
 	}
 	return false;
@@ -242,7 +242,7 @@ void GameManager::channelJoined(QString channel, NetPeerList peers) const
 		return;
 
 	// Connected
-	game->connected = true;
+	game->m_connected = true;
 
 	// Count players (status==1)
 	int first = 1, players = 0, waiting = 0;
@@ -256,22 +256,22 @@ void GameManager::channelJoined(QString channel, NetPeerList peers) const
 	}
 
 	// Attempt to join match
-	if (game->settings->spectating == false)
+	if (game->m_settings->spectating == false)
 	{
 		// First person to join room
 		if (players + waiting == 1)
 		{
 			client->changeStatus(channel.toUtf8().data(), 1);
 			// Able to press rematch
-			game->currentGameStatus = GAMESTATUS_IDLE;
+			game->m_currentGameStatus = GameStatus::IDLE;
 		}
 		// There is room to join: just claim your spot
-		else if (players + waiting <= game->settings->Nplayers)
+		else if (players + waiting <= game->m_settings->numPlayers)
 		{
 			client->changeStatus(channel.toUtf8().data(), 1);
 		}
 		// Room is full: leave channel or join as spectator? (let's do the former)
-		else if (players + waiting > game->settings->Nplayers)
+		else if (players + waiting > game->m_settings->numPlayers)
 		{
 			client->changeStatus(channel.toUtf8().data(), 2);
 
@@ -304,12 +304,12 @@ void GameManager::channelJoined(QString channel, NetPeerList peers) const
 		NetPeer peer = peers.at(i);
 		if (peer.status == 1)
 		{
-			for (unsigned j = first; j < game->players.size(); j++)
+			for (unsigned j = first; j < game->m_players.size(); j++)
 			{
-				if (game->players[j]->onlineName.compare("") == 0)
+				if (game->m_players[j]->m_onlineName.compare("") == 0)
 				{
 					playernum = j + 1;
-					game->players[j]->bindPlayer(peer.username.toStdString(), peer.id, true);
+					game->m_players[j]->bindPlayer(peer.username.toStdString(), peer.id, true);
 					widget->chatWindow()->statusMessage(QString::asprintf(tr("%s was set to player %i", "Messages:SetPlayer").toUtf8().data(), peer.username.toUtf8().data(), playernum));
 					break;
 				}
@@ -343,13 +343,13 @@ void GameManager::peerJoinedChannel(QString channel, QString peer) const
 	// As player, send them your status.
 	if (network->getStatus(channel) == 1)
 	{
-		ppvs::Player* player = game->players[0];
+		ppvs::Player* player = game->m_players[0];
 		network->sendMessageToPeer(channel, CHANNEL_GAME,
 			(QStringList() << "update"
 				<< QString::number((int)player->getCharacter())
-				<< QString::number(player->proposedRandomSeed)
-				<< QString::number(game->currentGameStatus == GAMESTATUS_REMATCHING ? 1 : 0)
-				<< QString::number(player->wins)).join("|"),
+				<< QString::number(player->m_proposedRandomSeed)
+				<< QString::number(game->m_currentGameStatus == GameStatus::REMATCHING ? 1 : 0)
+				<< QString::number(player->m_wins)).join("|"),
 			peer);
 
 		std::string send = game->sendUpdate();
@@ -374,11 +374,11 @@ void GameManager::peerPartedChannel(QString channel, QString peer) const
 		widget->chatWindow()->statusMessage(QString::asprintf(langStr.toUtf8().data(), peer.toUtf8().data()));
 
 		// Find the player
-		for (unsigned i = 0; i < game->players.size(); i++)
+		for (unsigned i = 0; i < game->m_players.size(); i++)
 		{
-			if (game->players[i]->onlineName.compare(peerStd) == 0)
+			if (game->m_players[i]->m_onlineName.compare(peerStd) == 0)
 			{
-				game->players[i]->unbindPlayer();
+				game->m_players[i]->unbindPlayer();
 				game->sendDescription();
 
 				break;
@@ -413,9 +413,9 @@ void GameManager::channelMessageReceived(QString channel, uchar subchannel, QStr
 		std::string peerStd = peer.toStdString();
 
 		int playernum = -1;
-		for (int i = static_cast<int>(game->players.size() - 1); i >= 0; i--)
+		for (int i = static_cast<int>(game->m_players.size() - 1); i >= 0; i--)
 		{
-			if (game->players[i]->onlineName.compare(peerStd) == 0)
+			if (game->m_players[i]->m_onlineName.compare(peerStd) == 0)
 			{
 				playernum = i;
 				break;
@@ -426,35 +426,35 @@ void GameManager::channelMessageReceived(QString channel, uchar subchannel, QStr
 		if (items.at(0) == "select")
 		{
 			int c = items.at(1).toInt();
-			game->charSelectMenu->setCharacter(playernum, c, false);
-			game->players[playernum]->setCharacter(static_cast<ppvs::PuyoCharacter>(c), true);
-			game->players[playernum]->pickingCharacter = true;
+			game->m_charSelectMenu->setCharacter(playernum, c, false);
+			game->m_players[playernum]->setCharacter(static_cast<ppvs::PuyoCharacter>(c), true);
+			game->m_players[playernum]->m_pickingCharacter = true;
 		}
 		else if (items.at(0) == "choice")
 		{
 			int c = items.at(1).toInt();
-			game->charSelectMenu->setCharacter(playernum, c, true);
-			game->players[playernum]->setCharacter(static_cast<ppvs::PuyoCharacter>(c), true);
-			game->players[playernum]->pickingCharacter = false;
+			game->m_charSelectMenu->setCharacter(playernum, c, true);
+			game->m_players[playernum]->setCharacter(static_cast<ppvs::PuyoCharacter>(c), true);
+			game->m_players[playernum]->m_pickingCharacter = false;
 		}
 		else if (items.at(0) == "rematch")
 		{
-			if (game->settings->spectating == false && game->currentGameStatus == GAMESTATUS_WAITING)
-				game->currentGameStatus = GAMESTATUS_IDLE;
-			else if (game->settings->spectating == true)
-				game->currentGameStatus = GAMESTATUS_REMATCHING;
+			if (game->m_settings->spectating == false && game->m_currentGameStatus == GameStatus::WAITING)
+				game->m_currentGameStatus = GameStatus::IDLE;
+			else if (game->m_settings->spectating == true)
+				game->m_currentGameStatus = GameStatus::REMATCHING;
 
-			for (unsigned i = 0; i < game->players.size(); i++)
+			for (unsigned i = 0; i < game->m_players.size(); i++)
 			{
-				if (game->players[i]->onlineName.compare(peerStd) == 0)
+				if (game->m_players[i]->m_onlineName.compare(peerStd) == 0)
 				{
-					game->players[i]->rematch = true;
-					game->players[i]->rematchIcon.setVisible(true);
-					game->players[i]->rematchIconTimer = 0;
-					game->players[i]->messages.clear();
+					game->m_players[i]->m_rematch = true;
+					game->m_players[i]->m_rematchIcon.setVisible(true);
+					game->m_players[i]->m_rematchIconTimer = 0;
+					game->m_players[i]->m_messages.clear();
 					int rnd = items.at(1).toInt();
-					game->players[i]->proposedRandomSeed = rnd;
-					game->players[i]->wins = items.at(2).toInt();
+					game->m_players[i]->m_proposedRandomSeed = rnd;
+					game->m_players[i]->m_wins = items.at(2).toInt();
 					break;
 				}
 			}
@@ -463,11 +463,11 @@ void GameManager::channelMessageReceived(QString channel, uchar subchannel, QStr
 			for (int i = 3; i < items.count(); i++)
 			{
 				unsigned id = items.at(i).toInt();
-				for (unsigned j = 0; j < game->players.size(); j++)
+				for (unsigned j = 0; j < game->m_players.size(); j++)
 				{
-					if (game->players[j]->onlineID == id && game->players[j]->active == false)
+					if (game->m_players[j]->m_onlineId == id && game->m_players[j]->m_active == false)
 					{
-						game->players[j]->prepareActive = true;
+						game->m_players[j]->m_prepareActive = true;
 						break;
 					}
 				}
@@ -476,7 +476,7 @@ void GameManager::channelMessageReceived(QString channel, uchar subchannel, QStr
 		else
 		{
 			qDebug("Passing %s", message.toUtf8().data());
-			game->players[playernum]->addMessage(message.toUtf8().data());
+			game->m_players[playernum]->addMessage(message.toUtf8().data());
 		}
 	}
 }
@@ -496,9 +496,9 @@ void GameManager::peerChannelMessageReceived(QString channel, uchar subchannel, 
 
 	// Find player number
 	int playernum = -1;
-	for (int i = static_cast<int>(game->players.size() - 1); i >= 0; i--)
+	for (int i = static_cast<int>(game->m_players.size() - 1); i >= 0; i--)
 	{
-		if (game->players[i]->onlineName.compare(peerStd) == 0)
+		if (game->m_players[i]->m_onlineName.compare(peerStd) == 0)
 		{
 			playernum = i;
 			break;
@@ -510,43 +510,43 @@ void GameManager::peerChannelMessageReceived(QString channel, uchar subchannel, 
 	if (items.at(0) == "choice")
 	{
 		int c = items.at(1).toInt();
-		game->charSelectMenu->setCharacter(playernum, c, true);
-		game->players[playernum]->setCharacter(static_cast<ppvs::PuyoCharacter>(c), true);
+		game->m_charSelectMenu->setCharacter(playernum, c, true);
+		game->m_players[playernum]->setCharacter(static_cast<ppvs::PuyoCharacter>(c), true);
 	}
 	else if (items.at(0) == "update")
 	{
 		// Update character choice
 		int c = items.at(1).toInt();
-		game->charSelectMenu->setCharacter(playernum, c, true);
-		game->players[playernum]->setCharacter(static_cast<ppvs::PuyoCharacter>(c), true);
+		game->m_charSelectMenu->setCharacter(playernum, c, true);
+		game->m_players[playernum]->setCharacter(static_cast<ppvs::PuyoCharacter>(c), true);
 
 		// Get propesed random seed
 		int rnd = items.at(2).toInt();
-		game->players[playernum]->proposedRandomSeed = rnd;
+		game->m_players[playernum]->m_proposedRandomSeed = rnd;
 
 		// Update rematching status
 		int r = items.at(3).toInt();
 		if (r == 1)
 		{
-			game->players[playernum]->rematch = true;
-			game->players[playernum]->rematchIcon.setVisible(true);
-			game->players[playernum]->rematchIconTimer = 0;
+			game->m_players[playernum]->m_rematch = true;
+			game->m_players[playernum]->m_rematchIcon.setVisible(true);
+			game->m_players[playernum]->m_rematchIconTimer = 0;
 		}
 
 		// Update wins
 		int wins = items.at(4).toInt();
-		game->players[playernum]->wins = wins;
+		game->m_players[playernum]->m_wins = wins;
 	}
 	else if (items.at(0) == "spectate")
 	{
 		// Update player
-		game->players[playernum]->getUpdate(message.toUtf8().data());
+		game->m_players[playernum]->getUpdate(message.toUtf8().data());
 	}
 	else
 	{
 		// Pass to player
 		if (subchannel == CHANNEL_GAME)
-			game->players[playernum]->addMessage(message.toUtf8().data());
+			game->m_players[playernum]->addMessage(message.toUtf8().data());
 	}
 }
 
@@ -566,19 +566,19 @@ void GameManager::peerStatusReceived(QString channel, QString peer, uchar status
 		if (status == 1)
 		{
 			// Set player 1 to human
-			if (game->players.size() > 0)
+			if (game->m_players.size() > 0)
 			{
 				ppvs::PuyoCharacter chara = ppvs::PuyoCharacter(pvsApp->settings().integer("account", "defaultcharacter", 2));
 				pln = 1;
 
-				game->players[0]->setPlayerType(HUMAN);
-				game->menuSelect = 2;
-				game->players[0]->setCharacter(chara);
-				game->players[0]->bindPlayer(peer.toStdString(), network->id(), true);
-				if (game->settings->rankedMatch)
+				game->m_players[0]->setPlayerType(ppvs::HUMAN);
+				game->m_menuSelect = 2;
+				game->m_players[0]->setCharacter(chara);
+				game->m_players[0]->bindPlayer(peer.toStdString(), network->id(), true);
+				if (game->m_settings->rankedMatch)
 				{
 					// Always able to press rematch
-					game->currentGameStatus = GAMESTATUS_IDLE;
+					game->m_currentGameStatus = GameStatus::IDLE;
 				}
 
 				widget->chatWindow()->statusMessage(tr("Joined game.", "Messages:JoinedGame"));
@@ -603,16 +603,16 @@ void GameManager::peerStatusReceived(QString channel, QString peer, uchar status
 		else
 		{
 			int first = 1;
-			if (game->settings->spectating)
+			if (game->m_settings->spectating)
 				first = 0;
 			// Player joined
-			for (unsigned i = first; i < game->players.size(); i++)
+			for (unsigned i = first; i < game->m_players.size(); i++)
 			{
-				if (game->players[i]->onlineName.empty())
+				if (game->m_players[i]->m_onlineName.empty())
 				{
 					pln = i + 1;
 					found = true;
-					game->players[i]->bindPlayer(peer.toStdString(), network->id(channel, peer), false);
+					game->m_players[i]->bindPlayer(peer.toStdString(), network->id(channel, peer), false);
 
 					QString langStr = tr("%s was set to player %i", "Messages:SetPlayer");
 					widget->chatWindow()->statusMessage(QString::asprintf(langStr.toUtf8().data(), peer.toUtf8().data(), pln));
@@ -667,7 +667,7 @@ void GameManager::rankedMatchmessageReceived(QString message)
 	GameWidget* g = nullptr;
 	for (int i = 0; i < games.count(); i++)
 	{
-		if (games[i]->game()->settings->rankedMatch)
+		if (games[i]->game()->m_settings->rankedMatch)
 		{
 			g = games[i];
 			break;
@@ -695,13 +695,13 @@ void GameManager::rankedMatchmessageReceived(QString message)
 		QString maxwins = tokens[7];
 		int maxwinsInt = maxwins.toInt();
 
-		g->game()->settings->maxWins = maxwinsInt;
+		g->game()->m_settings->maxWins = maxwinsInt;
 		g->chatWindow()->statusMessage(tr("Opponent: ", "Messages:Opponent") + opponent);
 		g->chatWindow()->statusMessage(tr("R: %1", "Messages:RatingElo").arg(rating));
 		g->chatWindow()->statusMessage(tr("W: %1", "Messages:Wins").arg(wins));
 		g->chatWindow()->statusMessage(tr("L: %1", "Messages:Losses").arg(losses));
 		g->chatWindow()->statusMessage(tr("First to %1 match", "Messages:FirstTo").arg(maxwinsInt));
-		g->game()->channelName = roomName.toStdString();
+		g->game()->m_channelName = roomName.toStdString();
 		g->replaceProxy(new NetChannelProxy(roomName, network));
 		network->createChannel(roomName, network->username() + " vs " + opponent, false);
 
@@ -714,18 +714,18 @@ void GameManager::rankedMatchmessageReceived(QString message)
 		// Disconnect from channel
 		g->chatWindow()->statusMessage(tr("End of match.", "Messages:EndMatch"));
 		g->chatWindow()->clearUsers();
-		g->game()->connected = false;
-		g->game()->channelName = "";
-		g->game()->currentGameStatus = GAMESTATUS_WAITING;
-		g->game()->rankedTimer = 5 * 60;
-		g->game()->rankedState = 2;
+		g->game()->m_connected = false;
+		g->game()->m_channelName = "";
+		g->game()->m_currentGameStatus = GameStatus::WAITING;
+		g->game()->m_rankedTimer = 5 * 60;
+		g->game()->m_rankedState = 2;
 
 		g->replaceProxy(new NetChannelProxy("", network));
 
 		// Request new match immediately
-		ppvs::GameSettings* gs = g->game()->settings;
-		g->game()->newRankedMatchMessage = QString(QString("new|") + QString("%1|").arg(PVSVERSION)
-			+ QString(gs->rulesetInfo.rulesetType == TSU_ONLINE ? "0" : "1")).toStdString();
+		ppvs::GameSettings* gs = g->game()->m_settings;
+		g->game()->m_newRankedMatchMessage = QString(QString("new|") + QString("%1|").arg(PVSVERSION)
+			+ QString(gs->ruleSetInfo.ruleSetType == ppvs::Rules::TSU_ONLINE ? "0" : "1")).toStdString();
 	}
 	else if (tokens.count() == 3 && tokens.front() == "result")
 	{

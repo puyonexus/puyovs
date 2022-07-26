@@ -1,30 +1,29 @@
 #include "Sound.h"
-#include "global.h"
 #include "Game.h"
+#include "global.h"
 
-namespace ppvs
-{
+namespace ppvs {
 
-Sound::Sound()
-	: m_sound(nullptr)
-{
-}
+Sound::Sound() = default;
 
 Sound::~Sound() = default;
 
-void Sound::play(GameData* global)
+void Sound::play(const GameData* data)
 {
-	if (global == nullptr || !global->playSounds || !global->windowFocus)
+	if (data == nullptr || !data->playSounds || !data->windowFocus) {
 		return;
+	}
 
-	if (m_sound)
+	if (m_sound) {
 		m_sound->play();
+	}
 }
 
 void Sound::stop(GameData*)
 {
-	if (m_sound)
+	if (m_sound) {
 		m_sound->stop();
+	}
 }
 
 void Sound::setBuffer(FeSound* sound)
@@ -32,7 +31,7 @@ void Sound::setBuffer(FeSound* sound)
 	m_sound = sound;
 }
 
-FeSound* Sound::getBuffer()
+FeSound* Sound::getBuffer() const
 {
 	return m_sound;
 }

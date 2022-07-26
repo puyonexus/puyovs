@@ -20,13 +20,14 @@
 
 namespace ppvs
 {
+enum class Rules : int;
 struct RuleSetInfo;
 }
 
-// Modelist
-typedef QPair<int, QString> GameModePair;
+// Mode list
+typedef QPair<ppvs::Rules, QString> GameModePair;
 typedef QList<GameModePair> GameModeList;
-typedef QListIterator<QPair<int, QString> > GameModeListIterator;
+typedef QListIterator<QPair<ppvs::Rules, QString>> GameModeListIterator;
 GameModeList getModeList();
 void readRulesetString(QString str, ppvs::RuleSetInfo* rs);
 QString getDataLocation();

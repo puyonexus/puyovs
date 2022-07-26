@@ -2,51 +2,79 @@
 
 #include <string>
 
-namespace ppvs
-{
+namespace ppvs {
 
-enum FilterType
-{
+enum FilterType {
 	NearestFilter,
 	LinearFilter
 };
 
-enum BlendingMode
-{
+enum BlendingMode {
 	NoBlending,
 	AlphaBlending,
 	AdditiveBlending,
 	MultiplyBlending
 };
 
-enum DepthFunction
-{
+enum DepthFunction {
 	Always,
 	LessOrEqual,
 	GreaterOrEqual,
 	Equal
 };
 
-struct ViewportGeometry
-{
-	ViewportGeometry() : w(0), h(0) { }
-	ViewportGeometry(int w, int h) : w(w), h(h) { }
+struct ViewportGeometry {
+	ViewportGeometry()
+		: w(0)
+		, h(0)
+	{
+	}
+	ViewportGeometry(const int w, const int h)
+		: w(w)
+		, h(h)
+	{
+	}
 	int w, h;
 };
 
-struct RectGeometry
-{
-	RectGeometry() : x(0.), y(0.), w(0.), h(0.) { }
-	RectGeometry(double x, double y, double w, double h) : x(x), y(y), w(w), h(h) { }
+struct RectGeometry {
+	RectGeometry()
+		: x(0.)
+		, y(0.)
+		, w(0.)
+		, h(0.)
+	{
+	}
+	RectGeometry(double x, double y, double w, double h)
+		: x(x)
+		, y(y)
+		, w(w)
+		, h(h)
+	{
+	}
 	double x, y, w, h;
 };
 
-struct FePixel { unsigned char a, r, g, b; FePixel(unsigned char a, unsigned char r, unsigned char g, unsigned char b) :a(a), r(r), g(g), b(b) {} };
+struct FePixel {
+	unsigned char a, r, g, b;
+	FePixel(unsigned char a, unsigned char r, unsigned char g, unsigned char b)
+		: a(a)
+		, r(r)
+		, g(g)
+		, b(b)
+	{
+	}
+};
 
-class FeImage
-{
+class FeImage {
 public:
-	virtual ~FeImage() { }
+	FeImage() = default;
+	virtual ~FeImage() = default;
+
+	FeImage(const FeImage&) = delete;
+	FeImage& operator=(const FeImage&) = delete;
+	FeImage(FeImage&&) = delete;
+	FeImage& operator=(FeImage&&) = delete;
 
 	virtual int width() = 0;
 	virtual int height() = 0;
@@ -56,10 +84,15 @@ public:
 	virtual void setFilter(FilterType) = 0;
 };
 
-class FeShader
-{
+class FeShader {
 public:
-	virtual ~FeShader() { }
+	FeShader() = default;
+	virtual ~FeShader() = default;
+
+	FeShader(const FeShader&) = delete;
+	FeShader& operator=(const FeShader&) = delete;
+	FeShader(FeShader&&) = delete;
+	FeShader& operator=(FeShader&&) = delete;
 
 	virtual bool setSource(const char* src) = 0;
 	virtual bool setParameter(const char* param, double value) = 0;
@@ -71,52 +104,71 @@ public:
 	virtual void unbind() = 0;
 };
 
-class FeSound
-{
+class FeSound {
 public:
-	virtual ~FeSound() { }
+	FeSound() = default;
+	virtual ~FeSound() = default;
+
+	FeSound(const FeSound&) = delete;
+	FeSound& operator=(const FeSound&) = delete;
+	FeSound(FeSound&&) = delete;
+	FeSound& operator=(FeSound&&) = delete;
 
 	virtual void play() = 0;
 	virtual void stop() = 0;
 };
 
-enum FeMusicEvent
-{
+enum FeMusicEvent {
 	MusicCanStop,
 	MusicContinue,
 	MusicEnterFever,
 	MusicExitFever
 };
 
-class FeText
-{
+class FeText {
 public:
+	FeText() = default;
+	virtual ~FeText() = default;
+
+	FeText(const FeText&) = delete;
+	FeText& operator=(const FeText&) = delete;
+	FeText(FeText&&) = delete;
+	FeText& operator=(FeText&&) = delete;
+
 	virtual void draw(float x, float y) = 0;
-	virtual ~FeText() { }
 };
 
-class FeFont
-{
+class FeFont {
 public:
-	virtual ~FeFont() { }
+	FeFont() = default;
+	virtual ~FeFont() = default;
+
+	FeFont(const FeFont&) = delete;
+	FeFont& operator=(const FeFont&) = delete;
+	FeFont(FeFont&&) = delete;
+	FeFont& operator=(FeFont&&) = delete;
 
 	virtual FeText* render(const char* str) = 0;
 };
 
-struct FeInput
-{
+struct FeInput {
 	bool up, down, left, right, a, b, start;
 };
 
-class FeRenderTarget
-{
+class FeRenderTarget {
 public:
-	virtual ~FeRenderTarget() { }
+	FeRenderTarget() = default;
+	virtual ~FeRenderTarget() = default;
+
+	FeRenderTarget(const FeRenderTarget&) = delete;
+	FeRenderTarget& operator=(const FeRenderTarget&) = delete;
+	FeRenderTarget(FeRenderTarget&&) = delete;
+	FeRenderTarget& operator=(FeRenderTarget&&) = delete;
 
 	// - Graphics -
-	virtual FeImage* loadImage(const char* nameu8) = 0;
-	virtual FeImage* loadImage(const std::string& nameu8) = 0;
-	virtual FeFont* loadFont(const char* nameu8, double fontSize) = 0;
+	virtual FeImage* loadImage(const char* nameU8) = 0;
+	virtual FeImage* loadImage(const std::string& nameU8) = 0;
+	virtual FeFont* loadFont(const char* nameU8, double fontSize) = 0;
 
 	// Matrix
 	virtual void pushMatrix() = 0;
@@ -147,21 +199,25 @@ public:
 	virtual void disableAlphaTesting() = 0;
 
 	// Drawing
-	virtual void drawRect(FeImage* image, double subx, double suby, double subw, double subh) = 0;
+	virtual void drawRect(FeImage* image, double subX, double subY, double subW, double subH) = 0;
 
 	virtual void clear() = 0;
 	virtual void swapBuffers() = 0;
 };
 
-
-class Frontend : public FeRenderTarget
-{
+class Frontend : public FeRenderTarget {
 public:
-	virtual ~Frontend() { }
+	Frontend() = default;
+	~Frontend() override = default;
+
+	Frontend(const Frontend&) = delete;
+	Frontend& operator=(const Frontend&) = delete;
+	Frontend(Frontend&&) = delete;
+	Frontend& operator=(Frontend&&) = delete;
 
 	// - Audio -
-	virtual FeSound* loadSound(const char* nameu8) = 0;
-	virtual FeSound* loadSound(const std::string& nameu8) = 0;
+	virtual FeSound* loadSound(const char* nameU8) = 0;
+	virtual FeSound* loadSound(const std::string& nameU8) = 0;
 	virtual void musicEvent(FeMusicEvent event) = 0;
 	virtual void musicVolume(float volume, bool fever) = 0;
 

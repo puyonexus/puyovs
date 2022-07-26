@@ -4,8 +4,6 @@
 #include "Sprite.h"
 #include "global.h"
 #include "tinyxml.h"
-#include <algorithm>
-#include <cmath>
 #include <list>
 #include <map>
 #include <string>
@@ -13,28 +11,31 @@
 namespace ppvs {
 
 struct AnimationSprite {
-	AnimationSprite() = default;
-
 	Sprite* sprite = nullptr;
 	std::string parent;
-	PosVectorFloat position;
-	PosVectorFloat childOffset;
-	PosVectorFloat pathPos;
-	PosVectorFloat scale;
+	PosVectorFloat position {};
+	PosVectorFloat childOffset {};
+	PosVectorFloat pathPos {};
+	PosVectorFloat scale {};
 	float angle = 0.f;
 	float transparency = 0.f;
 	std::vector<std::string> children;
 };
 
-typedef std::vector<PosVectorFloat> nodes;
+typedef std::vector<PosVectorFloat> Nodes;
 
 class Animation final {
 public:
 	Animation();
 	~Animation();
 
+	Animation(const Animation&) = delete;
+	Animation& operator=(const Animation&) = delete;
+	Animation(Animation&&) = delete;
+	Animation& operator=(Animation&&) = delete;
+
 	void init(GameData* g, PosVectorFloat offsetPos, float scale, std::string folder = "", const std::string& scriptName = "animation.xml", int maxTime = 120);
-	void prepareAnimation(std::string c)
+	void prepareAnimation(const std::string& c)
 	{
 		m_t = 0;
 		m_animationName = c;
@@ -73,14 +74,14 @@ private:
 	[[nodiscard]] double getLocalTimer(const std::string& type, double startVal, double endVal, double t, double alpha = 1, double beta = 1) const;
 	float getTotalDistance(const std::string& path);
 	PosVectorFloat getPosition(const std::string& path, float target);
-	PosVectorFloat getPositionExtra(const std::string& path, float target, float total, bool start);
+	PosVectorFloat getPositionExtra(const std::string& path, float target, float totalDist, bool start);
 
 	int m_t;
 	int m_duration;
 	std::string m_animationName;
 	std::map<std::string, AnimationSprite> m_sprites;
 	std::list<AnimationSprite*> m_drawSprites;
-	std::map<std::string, nodes> m_paths;
+	std::map<std::string, Nodes> m_paths;
 	std::map<std::string, Sound*> m_sounds;
 	GameData* m_gameData = nullptr;
 	std::string m_sourceFolder;

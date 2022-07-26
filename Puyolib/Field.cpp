@@ -1,45 +1,33 @@
-#include <algorithm>
 #include "Field.h"
+#include "../PVS_ENet/PVS_Client.h"
 #include "Game.h"
 #include "Player.h"
-#include "../PVS_ENet/PVS_Client.h"
+#include <algorithm>
+#include <utility>
+#include <cmath>
 
 using namespace std;
 
-namespace ppvs
-{
+namespace ppvs {
 
-Field::Field()
-{
-	m_visible = false;
-	m_sweepFall = 0;
-	m_fieldInit = false;
-	m_transformScale = 1;
-	m_player = nullptr;
-	m_centerX = 0; m_centerY = 0;
-	m_posXreal = 0; m_posYreal = 0;
-}
+Field::Field() = default;
 
 Field::~Field()
 {
 	// Destroy particles, throw puyo, destroying puyos
-	while (!m_particles.empty())
-	{
+	while (!m_particles.empty()) {
 		delete m_particles.back();
 		m_particles.pop_back();
 	}
-	while (!m_particlesThrow.empty())
-	{
+	while (!m_particlesThrow.empty()) {
 		delete m_particlesThrow.back();
 		m_particlesThrow.pop_back();
 	}
-	while (!m_deletedPuyo.empty())
-	{
+	while (!m_deletedPuyo.empty()) {
 		delete m_deletedPuyo.back();
 		m_deletedPuyo.pop_back();
 	}
-	if (m_fieldInit)
-	{
+	if (m_fieldInit) {
 		freePuyo(true);
 		freePuyo(false);
 		freePuyoArray();
@@ -55,15 +43,15 @@ Field& Field::operator=(const Field& rhs)
 	return *this;
 }
 
-void Field::init(FieldProp properties, Player* pl)
+void Field::init(const FieldProp properties, Player* pl)
 {
 	m_player = pl;
-	data = m_player->data;
+	m_data = m_player->m_data;
 
 	m_visible = true;
 	m_properties = properties;
 
-	// Calculate center (does not include x,y scale)
+	// Calculate center (does not include x, y scale)
 	m_centerX = static_cast<float>(properties.gridX * properties.gridWidth) / 2.0f;
 	m_centerY = static_cast<float>((properties.gridY - 3) * properties.gridHeight);
 	m_properties.centerX = m_centerX;
@@ -71,31 +59,28 @@ void Field::init(FieldProp properties, Player* pl)
 
 	// Create the puyo array
 	createPuyoArray();
-	
+
 	// Recalculate position (global screen position)
-	m_posXreal = properties.offsetX + m_centerX;
-	m_posYreal = properties.offsetY + m_centerY;
+	m_posXReal = properties.offsetX + m_centerX;
+	m_posYReal = properties.offsetY + m_centerY;
 }
 
-// Initializes both puyo array and puyoarray copy
+// Initializes both puyo array and puyo array copy
 void Field::createPuyoArray()
 {
-	fieldPuyoArray = new Puyo * *[m_properties.gridX];
-	fieldPuyoArrayCopy = new Puyo * *[m_properties.gridX];
-	int i, j;
-	for (i = 0; i < m_properties.gridX; i++)
-	{
-		fieldPuyoArray[i] = new Puyo * [m_properties.gridY];
-		fieldPuyoArrayCopy[i] = new Puyo * [m_properties.gridY];
+	m_fieldPuyoArray = new Puyo**[m_properties.gridX];
+	m_fieldPuyoArrayCopy = new Puyo**[m_properties.gridX];
+
+	for (int i = 0; i < m_properties.gridX; i++) {
+		m_fieldPuyoArray[i] = new Puyo*[m_properties.gridY];
+		m_fieldPuyoArrayCopy[i] = new Puyo*[m_properties.gridY];
 	}
 
 	// Initialize the puyo array with null
-	for (i = 0; i < m_properties.gridX; i++)
-	{
-		for (j = 0; j < m_properties.gridY; j++)
-		{
-			fieldPuyoArray[i][j] = nullptr;
-			fieldPuyoArrayCopy[i][j] = nullptr;
+	for (int i = 0; i < m_properties.gridX; i++) {
+		for (int j = 0; j < m_properties.gridY; j++) {
+			m_fieldPuyoArray[i][j] = nullptr;
+			m_fieldPuyoArrayCopy[i][j] = nullptr;
 		}
 	}
 
@@ -103,21 +88,16 @@ void Field::createPuyoArray()
 }
 
 // Delete all puyo in array or copy
-void Field::freePuyo(bool copy)
+void Field::freePuyo(const bool copy)
 {
-	for (int i = 0; i < m_properties.gridX; i++)
-	{
-		for (int j = 0; j < m_properties.gridY; j++)
-		{
-			if (!copy)
-			{
-				delete fieldPuyoArray[i][j];
-				fieldPuyoArray[i][j] = nullptr;
-			}
-			else
-			{
-				delete fieldPuyoArrayCopy[i][j];
-				fieldPuyoArrayCopy[i][j] = nullptr;
+	for (int i = 0; i < m_properties.gridX; i++) {
+		for (int j = 0; j < m_properties.gridY; j++) {
+			if (!copy) {
+				delete m_fieldPuyoArray[i][j];
+				m_fieldPuyoArray[i][j] = nullptr;
+			} else {
+				delete m_fieldPuyoArrayCopy[i][j];
+				m_fieldPuyoArrayCopy[i][j] = nullptr;
 			}
 		}
 	}
@@ -127,53 +107,49 @@ void Field::freePuyo(bool copy)
 // Delete array and array copy
 void Field::freePuyoArray()
 {
-	for (int i = 0; i < m_properties.gridX; i++)
-	{
-		delete[]fieldPuyoArray[i];
-		delete[]fieldPuyoArrayCopy[i];
+	for (int i = 0; i < m_properties.gridX; i++) {
+		delete[] m_fieldPuyoArray[i];
+		delete[] m_fieldPuyoArrayCopy[i];
 	}
-	delete[]fieldPuyoArray;
-	delete[]fieldPuyoArrayCopy;
+	delete[] m_fieldPuyoArray;
+	delete[] m_fieldPuyoArrayCopy;
 	m_fieldInit = false;
 }
 
 // Get screen coordinates of top, with an offset
-PosVectorFloat Field::getTopCoord(float offset) const
+PosVectorFloat Field::getTopCoordinates(float offset) const
 {
 	PosVectorFloat pv;
 	pv.x = m_properties.offsetX + m_properties.centerX * m_properties.scaleX * m_player->getGlobalScale();
-	pv.y = m_properties.offsetY + offset * PUYOY * m_properties.scaleY * m_player->getGlobalScale();
+	pv.y = m_properties.offsetY + offset * kPuyoY * m_properties.scaleY * m_player->getGlobalScale();
 	return pv;
 }
 
 // Get screen coordinates of bottom
-PosVectorFloat Field::getBottomCoord(bool relative) const
+PosVectorFloat Field::getBottomCoordinates(bool relative) const
 {
 	PosVectorFloat pv;
-	if (relative)
-	{
+	if (relative) {
 		pv.x = m_properties.centerX * m_properties.scaleX;
-		pv.y = (m_properties.gridHeight * (m_properties.gridY - 3 - 0)) * m_properties.scaleY;
-	}
-	else
-	{
+		pv.y = static_cast<float>(m_properties.gridHeight * (m_properties.gridY - 3 - 0)) * m_properties.scaleY;
+	} else {
 		pv.x = m_properties.offsetX + m_properties.centerX * m_properties.scaleX * m_player->getGlobalScale();
-		pv.y = m_properties.offsetY + (m_properties.gridHeight * (m_properties.gridY - 3 - 0)) * m_properties.scaleY * m_player->getGlobalScale();
+		pv.y = m_properties.offsetY + static_cast<float>(m_properties.gridHeight * (m_properties.gridY - 3 - 0)) * m_properties.scaleY * m_player->getGlobalScale();
 	}
 	return pv;
 }
 
 // Convert an indexed position to screen position
-PosVectorFloat Field::getGlobalCoord(int x, int y) const
+PosVectorFloat Field::getGlobalCoordinates(int x, int y) const
 {
 	PosVectorFloat pv;
-	pv.x = m_properties.offsetX + (m_properties.gridWidth * x) * m_properties.scaleX * m_player->getGlobalScale();
-	pv.y = m_properties.offsetY + (m_properties.gridHeight * (m_properties.gridY - 3 - y)) * m_properties.scaleY * m_player->getGlobalScale();
+	pv.x = m_properties.offsetX + static_cast<float>(m_properties.gridWidth * x) * m_properties.scaleX * m_player->getGlobalScale();
+	pv.y = m_properties.offsetY + static_cast<float>(m_properties.gridHeight * (m_properties.gridY - 3 - y)) * m_properties.scaleY * m_player->getGlobalScale();
 	return pv;
 }
 
 // Convert an indexed position to field position
-PosVectorFloat Field::getLocalCoord(int x, int y) const
+PosVectorFloat Field::getLocalCoordinates(int x, int y) const
 {
 	PosVectorFloat pv;
 	pv.x = static_cast<float>(m_properties.gridWidth * x);
@@ -184,15 +160,15 @@ PosVectorFloat Field::getLocalCoord(int x, int y) const
 // Returns current field size
 PosVectorFloat Field::getFieldSize() const
 {
-	return PosVectorFloat(
+	return {
 		static_cast<float>(m_properties.gridX * m_properties.gridWidth),
 		static_cast<float>((m_properties.gridY - 3) * m_properties.gridHeight)
-	);
+	};
 }
 
 PosVectorFloat Field::getFieldScale() const
 {
-	return PosVectorFloat(m_properties.scaleX, m_properties.scaleY);
+	return { m_properties.scaleX, m_properties.scaleY };
 }
 
 //============================
@@ -200,307 +176,309 @@ PosVectorFloat Field::getFieldScale() const
 //============================
 
 // Check if a position in field is an empty space
-bool Field::isEmpty(int x, int y) const
+bool Field::isEmpty(const int x, const int y) const
 {
 	// Special case: uninitialized position -> just say it's empty
-	if (x < -2 && y < -2)
+	if (x < -2 && y < -2) {
 		return true;
+	}
 
 	// x or y is outside the field
-	// Outside the field is regarded as nonempty! that doesnt mean there is a puyo there -> use isPuyo instead
-	if (x > m_properties.gridX - 1 || x < 0 || y < 0)
+	// Outside the field is regarded as nonempty! that doesn't mean there is a puyo there -> use isPuyo instead
+	if (x > m_properties.gridX - 1 || x < 0 || y < 0) {
 		return false;
+	}
 
 	// Exception: the upper field stretches out to infinity
-	if (y > m_properties.gridY - 1 && x > 0 && x < m_properties.gridX - 1)
+	if (y > m_properties.gridY - 1 && x > 0 && x < m_properties.gridX - 1) {
 		return true;
+	}
 
-	if (fieldPuyoArray[x][y] == nullptr)
+	if (m_fieldPuyoArray[x][y] == nullptr) {
 		return true;
+	}
 
 	return false;
 }
 
 // Check if a puyo exist in this position
-bool Field::isPuyo(int x, int y) const
+bool Field::isPuyo(const int x, const int y) const
 {
 	// Outside the field are no puyos
-	if (x > m_properties.gridX - 1 || x<0 || y>m_properties.gridY - 1 || y < 0)
+	if (x > m_properties.gridX - 1 || x < 0 || y > m_properties.gridY - 1 || y < 0) {
 		return false;
+	}
 
-	if (fieldPuyoArray[x][y] == nullptr)
+	if (m_fieldPuyoArray[x][y] == nullptr) {
 		return false;
+	}
 
 	return true;
 }
 
-// Retrieves color from field (if puyo is a colorpuyo anyway)
-int Field::getColor(int x, int y) const
+// Retrieves color from field (if puyo is a color puyo anyway)
+int Field::getColor(const int x, const int y) const
 {
 	// x or y is outside the field
-	if (x > m_properties.gridX - 1 || x<0 || y>m_properties.gridY - 1 || y < 0)
-		return -1;
-
-	// Ask the corresponding puyo what color it is
-	if (isPuyo(x, y))
-	{
-		if (fieldPuyoArray[x][y]->getType() == COLORPUYO)
-			return fieldPuyoArray[x][y]->getColor();
-
+	if (x > m_properties.gridX - 1 || x < 0 || y > m_properties.gridY - 1 || y < 0) {
 		return -1;
 	}
-	return -1;
+
+	if (!isPuyo(x, y)) {
+		return -1;
+	}
+
+	if (m_fieldPuyoArray[x][y]->getType() != COLORPUYO) {
+		return -1;
+	}
+
+	// Ask the corresponding puyo what color it is
+	return m_fieldPuyoArray[x][y]->getColor();
 }
 
 // This function creates a colored puyo on the field
-bool Field::addColorPuyo(int x, int y, int color, int fallFlag, int offset, int fallDelay)
+bool Field::addColorPuyo(const int x, const int y, const int color, const int fallFlag, const int offset, const int fallDelay)
 {
 	// Invalid position
-	if (x >= m_properties.gridX || x < 0 || y >= m_properties.gridY || y < 0)
+	if (x >= m_properties.gridX || x < 0 || y >= m_properties.gridY || y < 0) {
 		return false;
+	}
 
 	// A puyo already exists here
-	if (isPuyo(x, y))
-	{
+	if (isPuyo(x, y)) {
 		return false;
 	}
 
 	// Calculate position of sprite
-	float spriteXreal = float(x * m_properties.gridWidth + PUYOX / 2);
-	float spriteYreal = float((m_properties.gridY - 3 - y - offset) * m_properties.gridHeight);
+	const auto spriteXReal = static_cast<float>(x * m_properties.gridWidth + kPuyoX / 2); // NOLINT(bugprone-integer-division)
+	const auto spriteYReal = static_cast<float>((m_properties.gridY - 3 - y - offset) * m_properties.gridHeight);
 
 	// Create a new puyo at x,y index
-	fieldPuyoArray[x][y] = new ColorPuyo(x, y, color, this, spriteXreal, spriteYreal, data);
+	m_fieldPuyoArray[x][y] = new ColorPuyo(x, y, color, this, spriteXReal, spriteYReal, m_data);
 
 	// Set initial condition
-	fieldPuyoArray[x][y]->fallFlag = fallFlag;
-	fieldPuyoArray[x][y]->fallDelay = static_cast<float>(fallDelay);
+	m_fieldPuyoArray[x][y]->m_fallFlag = fallFlag;
+	m_fieldPuyoArray[x][y]->m_fallDelay = static_cast<float>(fallDelay);
 
 	return true;
 }
 
 // Add nuisance to the field
-bool Field::addNuisancePuyo(int x, int y, int fallFlag, int offset, int fallDelay)
+bool Field::addNuisancePuyo(const int x, const int y, const int fallFlag, const int offset, const int fallDelay)
 {
 	// Invalid position
-	if (x >= m_properties.gridX || x < 0 || y >= m_properties.gridY || y < 0)
+	if (x >= m_properties.gridX || x < 0 || y >= m_properties.gridY || y < 0) {
 		return false;
+	}
 
 	// A puyo already exists here
-	if (isPuyo(x, y))
-	{
+	if (isPuyo(x, y)) {
 		return false;
 	}
 
 	// Calculate position of sprite
-	float spriteXreal = float(x * m_properties.gridWidth + PUYOX / 2);
-	float spriteYreal = float((m_properties.gridY - 3 - y - offset) * m_properties.gridHeight);
+	const auto spriteXReal = static_cast<float>(x * m_properties.gridWidth + kPuyoX / 2); // NOLINT(bugprone-integer-division)
+	const auto spriteYReal = static_cast<float>((m_properties.gridY - 3 - y - offset) * m_properties.gridHeight);
 
 	// Create a new puyo at x,y index
-	fieldPuyoArray[x][y] = new NuisancePuyo(x, y, 0, this, spriteXreal, spriteYreal, data);
+	m_fieldPuyoArray[x][y] = new NuisancePuyo(x, y, 0, this, spriteXReal, spriteYReal, m_data);
 
 	// Set initial state
-	fieldPuyoArray[x][y]->fallFlag = fallFlag;
-	fieldPuyoArray[x][y]->fallDelay = static_cast<float>(fallDelay);
+	m_fieldPuyoArray[x][y]->m_fallFlag = fallFlag;
+	m_fieldPuyoArray[x][y]->m_fallDelay = static_cast<float>(fallDelay);
 
 	return true;
 }
 
 // Drop all puyos down.
-void Field::drop() const
+void Field::drop()
 {
-	for (int i = 0; i < m_properties.gridX; i++)
-	{
-		for (int j = 0; j < m_properties.gridY; j++)
-		{
+	for (int i = 0; i < m_properties.gridX; i++) {
+		for (int j = 0; j < m_properties.gridY; j++) {
 			dropSingle(i, j);
 		}
 	}
 }
 
 // Drop a single puyo down, returns new y position. returns -1 if no puyo dropped at all
-int Field::dropSingle(int x, int y) const
+// ReSharper disable once CppMemberFunctionMayBeConst
+int Field::dropSingle(const int x, const int y)
 {
-	if (!isPuyo(x, y))
+	if (!isPuyo(x, y)) {
 		return -1; // Nothing to drop
+	}
 
-	if (!fieldPuyoArray[x][y]->dropable)
+	if (!m_fieldPuyoArray[x][y]->m_droppable) {
 		return -1; // Cannot drop
+	}
 
 	// Out of bounds
-	if (x >= m_properties.gridX || x < 0 || y >= m_properties.gridY || y < 0)
+	if (x >= m_properties.gridX || x < 0 || y >= m_properties.gridY || y < 0) {
 		return -1;
+	}
 
 	bool foundEmpty;
-	int emptyY;
 
 	// Puyo is on bottom: don't bother
-	if (y == 0)
+	if (y == 0) {
 		return y;
+	}
 
 	// Initial checking if empty
-	if (!(foundEmpty = isEmpty(x, y - 1)))
+	if (!((foundEmpty = isEmpty(x, y - 1)))) {
 		return y;
+	}
 
-	emptyY = y;
+	int emptyY = y;
 
-	while (foundEmpty && emptyY >= 1)
-	{
+	while (foundEmpty && emptyY >= 1) {
 		// Check if next position is empty
-		if ((foundEmpty = isEmpty(x, emptyY - 1)) == true)
+		if ((foundEmpty = isEmpty(x, emptyY - 1)) == true) {
 			emptyY -= 1;
+		}
 	}
 
 	// Drop puyo down
-	fieldPuyoArray[x][emptyY] = fieldPuyoArray[x][y];
-	fieldPuyoArray[x][emptyY]->SetindexY(emptyY);
-	fieldPuyoArray[x][y] = nullptr;
+	m_fieldPuyoArray[x][emptyY] = m_fieldPuyoArray[x][y];
+	m_fieldPuyoArray[x][emptyY]->setPosY(emptyY);
+	m_fieldPuyoArray[x][y] = nullptr;
 
 	return emptyY;
 }
 
 // Get puyo at position
-Puyo* Field::get(int x, int y) const
+Puyo* Field::get(const int x, const int y) const
 {
-	if (isEmpty(x, y))
+	if (isEmpty(x, y)) {
 		return nullptr;
+	}
 
-	return fieldPuyoArray[x][y];
+	return m_fieldPuyoArray[x][y];
 }
 
 // Set puyo, returns true if success
-bool Field::set(int x, int y, Puyo* newpuyo) const
+bool Field::set(int x, int y, Puyo* newPuyo) const
 {
 	// Invalid position
-	if (x >= m_properties.gridX || x < 0 || y >= m_properties.gridY || y < 0)
+	if (x >= m_properties.gridX || x < 0 || y >= m_properties.gridY || y < 0) {
 		return false;
+	}
 
-	if (newpuyo == nullptr)
-		fieldPuyoArray[x][y] = nullptr;
-	else
-		fieldPuyoArray[x][y] = newpuyo;
+	m_fieldPuyoArray[x][y] = newPuyo;
 
 	return true;
 }
 
 void Field::clearFieldVal(int x, int y) const
 {
-	if (isPuyo(x, y))
-		fieldPuyoArray[x][y] = nullptr;
+	if (isPuyo(x, y)) {
+		m_fieldPuyoArray[x][y] = nullptr;
+	}
 }
 
 // Get Puyo type in a safe way
 PuyoType Field::getPuyoType(int x, int y) const
 {
 	// Invalid position
-	if (x >= m_properties.gridX || x < 0 || y >= m_properties.gridY || y < 0)
+	if (x >= m_properties.gridX || x < 0 || y >= m_properties.gridY || y < 0) {
 		return NOPUYO;
+	}
 
-	if (!isPuyo(x, y))
+	if (!isPuyo(x, y)) {
 		return NOPUYO;
+	}
 
-	return fieldPuyoArray[x][y]->getType();
+	return m_fieldPuyoArray[x][y]->getType();
 }
 
-// Connect to a neighbouring puyo
-void Field::setLink(int x, int y, direction dir) const
+// Connect to a neighboring puyo
+void Field::setLink(const int x, const int y, const Direction dir) const
 {
 	// Invalid position
-	if (x >= m_properties.gridX || x < 0 || y >= m_properties.gridY || y < 0)
+	if (x >= m_properties.gridX || x < 0 || y >= m_properties.gridY || y < 0) {
 		return;
+	}
 
-	if (isPuyo(x, y))
-		fieldPuyoArray[x][y]->setLink(dir);
+	if (isPuyo(x, y)) {
+		m_fieldPuyoArray[x][y]->setLink(dir);
+	}
 }
 
 // Disconnect a puyo
-void Field::unsetLink(int x, int y, direction dir) const
+void Field::unsetLink(const int x, const int y, const Direction dir) const
 {
 	// Invalid position
-	if (x >= m_properties.gridX || x < 0 || y >= m_properties.gridY || y < 0)
+	if (x >= m_properties.gridX || x < 0 || y >= m_properties.gridY || y < 0) {
 		return;
+	}
 
-	if (isPuyo(x, y))
-		fieldPuyoArray[x][y]->unsetLink(dir);
+	if (isPuyo(x, y)) {
+		m_fieldPuyoArray[x][y]->unsetLink(dir);
+	}
 }
 
 // Find n connected color puyo and put coordinates into vector v
 bool Field::findConnected(int x, int y, int n, std::vector<PosVectorInt>& v)
 {
-	int connected = 0;
 	PosVectorInt pos;
 	pos.x = x;
 	pos.y = y;
 
 	// Initial check of first puyo
-	if (isPuyo(pos.x, pos.y) && fieldPuyoArray[pos.x][pos.y]->getType() == COLORPUYO
-		&& fieldPuyoArray[pos.x][pos.y]->mark == false && fieldPuyoArray[pos.x][pos.y]->destroy == false)
-	{
-		// Find connecting color puyo and fill vector v
-		fieldPuyoArray[pos.x][pos.y]->mark = true;
-		connected = 1;
-		v.push_back(pos);
-		findConnectedLoop(pos, connected, v);
-	}
-	else
-	{
+	if (!isPuyo(pos.x, pos.y) || m_fieldPuyoArray[pos.x][pos.y]->getType() != COLORPUYO || m_fieldPuyoArray[pos.x][pos.y]->m_mark != false || m_fieldPuyoArray[pos.x][pos.y]->m_destroy != false) {
 		return false;
 	}
 
-	if (connected < n)
-	{
-		// Did not match criterium: remove the elements from v
-		while (connected)
-		{
-			v.pop_back();
-			connected--;
-		}
-		return false;
+	// Find connecting color puyo and fill vector v
+	int connected = 1;
+	m_fieldPuyoArray[pos.x][pos.y]->m_mark = true;
+	v.push_back(pos);
+	findConnectedLoop(pos, connected, v);
+
+	if (connected >= n) {
+		return true;
 	}
-	return true;
+
+	// Did not match criteria: remove the elements from v
+	while (connected) {
+		v.pop_back();
+		connected--;
+	}
+	return false;
 }
 
 // Unmark all puyo in field
 void Field::unmark() const
 {
-	for (int i = 0; i < m_properties.gridX; i++)
-	{
-		for (int j = 0; j < m_properties.gridY; j++)
-		{
-			if (isPuyo(i, j))
-			{
-				fieldPuyoArray[i][j]->mark = false;
+	for (int i = 0; i < m_properties.gridX; i++) {
+		for (int j = 0; j < m_properties.gridY; j++) {
+			if (isPuyo(i, j)) {
+				m_fieldPuyoArray[i][j]->m_mark = false;
 			}
 		}
 	}
 }
 
-// Recursive function that checks neighbours
-void Field::findConnectedLoop(PosVectorInt pos, int& connected, std::vector<PosVectorInt>& v)
+// Recursive function that checks neighbors
+void Field::findConnectedLoop(const PosVectorInt pos, int& connected, std::vector<PosVectorInt>& v)
 {
-	int k, hor, ver;
-	fieldPuyoArray[pos.x][pos.y]->mark = true;
-	PosVectorInt pos_copy;
-	pos_copy.x = pos.x;
-	pos_copy.y = pos.y;
-	for (k = 0; k < 4; k++)
-	{
-		switch (k)
-		{
-		case 0: hor = 0; ver = 1; break;
-		case 1: hor = 1; ver = 0; break;
-		case 2: hor = 0; ver = -1; break;
-		case 3: hor = -1; ver = 0; break;
-		}
-		if (isPuyo(pos.x + hor, pos.y + ver) && fieldPuyoArray[pos.x + hor][pos.y + ver]->getType() == COLORPUYO
-			&& fieldPuyoArray[pos.x + hor][pos.y + ver]->mark == false && fieldPuyoArray[pos.x + hor][pos.y + ver]->mark == false
-			&& fieldPuyoArray[pos.x + hor][pos.y + ver]->getColor() == fieldPuyoArray[pos.x][pos.y]->getColor() && pos.y + ver != m_properties.gridY - 3)
-		{
+	m_fieldPuyoArray[pos.x][pos.y]->m_mark = true;
+	PosVectorInt posCopy;
+	posCopy.x = pos.x;
+	posCopy.y = pos.y;
+	constexpr std::pair<int, int> search[4] = {
+		{ 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 }
+	};
+	for (auto [hor, ver] : search) {
+		if (isPuyo(pos.x + hor, pos.y + ver) && m_fieldPuyoArray[pos.x + hor][pos.y + ver]->getType() == COLORPUYO
+			&& m_fieldPuyoArray[pos.x + hor][pos.y + ver]->m_mark == false
+			&& m_fieldPuyoArray[pos.x + hor][pos.y + ver]->getColor() == m_fieldPuyoArray[pos.x][pos.y]->getColor()
+			&& pos.y + ver != m_properties.gridY - 3) {
 			connected++;
-			pos_copy.x = pos.x + hor; // Need a copy of pos to pass on
-			pos_copy.y = pos.y + ver;
-			v.push_back(pos_copy);
-			findConnectedLoop(pos_copy, connected, v);
+			posCopy.x = pos.x + hor; // Need a copy of pos to pass on
+			posCopy.y = pos.y + ver;
+			v.push_back(posCopy);
+			findConnectedLoop(posCopy, connected, v);
 		}
 	}
 }
@@ -508,83 +486,72 @@ void Field::findConnectedLoop(PosVectorInt pos, int& connected, std::vector<PosV
 // Count puyos in field
 int Field::count() const
 {
-	int n = 0, i, j;
+	int n = 0;
 
-	for (i = 0; i < m_properties.gridX; i++)
-	{
-		for (j = 0; j < m_properties.gridY; j++)
-		{
-			if (isPuyo(i, j))
-			{
+	for (int i = 0; i < m_properties.gridX; i++) {
+		for (int j = 0; j < m_properties.gridY; j++) {
+			if (isPuyo(i, j)) {
 				n++;
 			}
 		}
 	}
+
 	return n;
 }
 
 // Predict chain
 int Field::predictChain()
 {
-	// Copy original array into arraycopy
-	for (int i = 0; i < m_properties.gridX; i++)
-	{
-		for (int j = 0; j < m_properties.gridY; j++)
-		{
+	// Copy original array into array copy
+	for (int i = 0; i < m_properties.gridX; i++) {
+		for (int j = 0; j < m_properties.gridY; j++) {
 			// Copy pointer
-			fieldPuyoArrayCopy[i][j] = fieldPuyoArray[i][j];
+			m_fieldPuyoArrayCopy[i][j] = m_fieldPuyoArray[i][j];
 			// Copy puyo
-			if (isPuyo(i, j))
-				fieldPuyoArray[i][j] = fieldPuyoArray[i][j]->clone();
+			if (isPuyo(i, j)) {
+				m_fieldPuyoArray[i][j] = m_fieldPuyoArray[i][j]->clone();
+			}
 		}
 	}
-	
+
 	// Find chain
-	bool foundChain = false; // Local variable
-	PosVectorInt pv;
+	bool foundChain; // Local variable
 	int chainN = 0;
-	do
-	{
+	do {
 		foundChain = false;
 		unmark();
 		// Loop through field to find connected puyo
-		for (int i = 0; i < m_properties.gridX; i++)
-		{
-			for (int j = 0; j < m_properties.gridY - 3; j++)
-			{
-				if (findConnected(i, j, m_player->currentgame->currentruleset->puyoToClear, m_vector))
-				{
+		for (int i = 0; i < m_properties.gridX; i++) {
+			for (int j = 0; j < m_properties.gridY - 3; j++) {
+				if (findConnected(i, j, m_player->m_currentGame->m_currentRuleSet->m_puyoToClear, m_vector)) {
 					foundChain = true;
-					
-					// Loop through connected puyo
-					while (m_vector.size() > 0)
-					{
-						pv = m_vector.back();
-						m_vector.pop_back();
-						
-						// Set popped group
-						// Check neighbours to find nuisance
-						if (isPuyo(pv.x, pv.y + 1) && pv.y + 1 != m_properties.gridY - 3)
-							fieldPuyoArray[pv.x][pv.y + 1]->neighbourPop(this, true);
-						if (isPuyo(pv.x + 1, pv.y))
-							fieldPuyoArray[pv.x + 1][pv.y]->neighbourPop(this, true);
-						if (isPuyo(pv.x, pv.y - 1))
-							fieldPuyoArray[pv.x][pv.y - 1]->neighbourPop(this, true);
-						if (isPuyo(pv.x - 1, pv.y))
-							fieldPuyoArray[pv.x - 1][pv.y]->neighbourPop(this, true);
-						
-						// Delete puyo
-						delete fieldPuyoArray[pv.x][pv.y];
-						fieldPuyoArray[pv.x][pv.y] = nullptr;
-					}
 
+					// Loop through connected puyo
+					while (!m_vector.empty()) {
+						const PosVectorInt pv = m_vector.back();
+						m_vector.pop_back();
+
+						// Set popped group
+						// Check neighbors to find nuisance
+						if (isPuyo(pv.x, pv.y + 1) && pv.y + 1 != m_properties.gridY - 3)
+							m_fieldPuyoArray[pv.x][pv.y + 1]->neighborPop(this, true);
+						if (isPuyo(pv.x + 1, pv.y))
+							m_fieldPuyoArray[pv.x + 1][pv.y]->neighborPop(this, true);
+						if (isPuyo(pv.x, pv.y - 1))
+							m_fieldPuyoArray[pv.x][pv.y - 1]->neighborPop(this, true);
+						if (isPuyo(pv.x - 1, pv.y))
+							m_fieldPuyoArray[pv.x - 1][pv.y]->neighborPop(this, true);
+
+						// Delete puyo
+						delete m_fieldPuyoArray[pv.x][pv.y];
+						m_fieldPuyoArray[pv.x][pv.y] = nullptr;
+					}
 				}
 			}
 		}
 
 		// Drop puyo and add to chain number
-		if (foundChain)
-		{
+		if (foundChain) {
 			chainN++;
 			drop();
 		}
@@ -593,42 +560,36 @@ int Field::predictChain()
 	// Delete temporary puyos
 	freePuyo(false);
 	m_fieldInit = true;
-	
+
 	// Restore original
-	for (int i = 0; i < m_properties.gridX; i++)
-	{
-		for (int j = 0; j < m_properties.gridY; j++)
-		{
+	for (int i = 0; i < m_properties.gridX; i++) {
+		for (int j = 0; j < m_properties.gridY; j++) {
 			// Copy pointer
-			fieldPuyoArray[i][j] = fieldPuyoArrayCopy[i][j];
-			fieldPuyoArrayCopy[i][j] = nullptr;
+			m_fieldPuyoArray[i][j] = m_fieldPuyoArrayCopy[i][j];
+			m_fieldPuyoArrayCopy[i][j] = nullptr;
 		}
 	}
 
 	return chainN;
 }
 
-// Function that marks puyo and puts them in the deletedpuyo list
-void Field::removePuyo(int x, int y)
+// Function that marks puyo and puts them in the deleted puyo list
+void Field::removePuyo(const int x, int y)
 {
-	if (isPuyo(x, y))
-	{
-		fieldPuyoArray[x][y]->destroy = true;
-		m_deletedPuyo.push_back(fieldPuyoArray[x][y]);
+	if (isPuyo(x, y)) {
+		m_fieldPuyoArray[x][y]->m_destroy = true;
+		m_deletedPuyo.push_back(m_fieldPuyoArray[x][y]);
 	}
 }
 
 // Clean up field
 void Field::clearField() const
 {
-	for (int i = 0; i < m_properties.gridX; i++)
-	{
-		for (int j = 0; j < m_properties.gridY; j++)
-		{
-			if (!isEmpty(i, j))
-			{
-				delete fieldPuyoArray[i][j];
-				fieldPuyoArray[i][j] = nullptr;
+	for (int i = 0; i < m_properties.gridX; i++) {
+		for (int j = 0; j < m_properties.gridY; j++) {
+			if (!isEmpty(i, j)) {
+				delete m_fieldPuyoArray[i][j];
+				m_fieldPuyoArray[i][j] = nullptr;
 			}
 		}
 	}
@@ -644,40 +605,43 @@ void Field::setVisible(bool visibility)
 	m_visible = visibility;
 }
 
-void Field::clear()
-{
-}
-
 // Draw field background and content
 void Field::drawField() const
 {
-	if (!m_visible)
+	if (!m_visible) {
 		return;
+	}
 
 	// Lower layer: consider moving this part to player!
-	m_player->drawFieldBack(getBottomCoord(true), m_properties.angle);
-	m_player->drawFieldFeverBack(getBottomCoord(true), m_properties.angle);
-	m_player->drawCross(data->front);
-	m_player->drawAllClear(getBottomCoord(true), 1, 1, m_properties.angle);
-	data->front->setDepthFunction(Equal);
+	m_player->drawFieldBack(getBottomCoordinates(true), m_properties.angle);
+	m_player->drawFieldFeverBack(getBottomCoordinates(true), m_properties.angle);
+	m_player->drawCross(m_data->front);
+	m_player->drawAllClear(getBottomCoordinates(true), 1, 1, m_properties.angle);
+	m_data->front->setDepthFunction(Equal);
 
 	// Draw puyos on the field
-	for (int i = 0; i < m_properties.gridX; i++)
-		for (int j = 0; j < m_properties.gridY; j++)
-			if (isPuyo(i, j))
-				fieldPuyoArray[i][j]->draw(data->front);
+	for (int i = 0; i < m_properties.gridX; i++) {
+		for (int j = 0; j < m_properties.gridY; j++) {
+			if (isPuyo(i, j)) {
+				m_fieldPuyoArray[i][j]->draw(m_data->front);
+			}
+		}
+	}
 
 	// Draw deleting puyo
-	for (size_t i = 0; i < m_deletedPuyo.size(); i++)
-		m_deletedPuyo[i]->draw(data->front);
+	for (const auto puyo : m_deletedPuyo) {
+		puyo->draw(m_data->front);
+	}
 
 	// Draw particles on the field
-	for (size_t i = 0; i < m_particles.size(); i++)
-		m_particles[i]->draw(data->front);
+	for (const auto particle : m_particles) {
+		particle->draw(m_data->front);
+	}
 
 	// Draw throwPuyo on the field
-	for (size_t i = 0; i < m_particlesThrow.size(); i++)
-		m_particlesThrow[i]->draw(data->front);
+	for (const auto particleThrow : m_particlesThrow) {
+		particleThrow->draw(m_data->front);
+	}
 }
 
 void Field::draw() const
@@ -686,66 +650,61 @@ void Field::draw() const
 }
 
 //============================
-// Gameplay related functions
+// Game-play related functions
 //============================
 
 // Phase 20: Create puyo and get ready to drop
 void Field::createPuyo()
 {
-	if (m_player->createPuyo == false)
+	if (m_player->m_createPuyo == false) {
 		return;
-	
+	}
+
 	// Turn off glow
-	for (int i = 0; i < m_properties.gridX; i++)
-	{
-		for (int j = 0; j < m_properties.gridY; j++)
-		{
-			if (isPuyo(i, j))
-			{
-				fieldPuyoArray[i][j]->glow = false;
+	for (int i = 0; i < m_properties.gridX; i++) {
+		for (int j = 0; j < m_properties.gridY; j++) {
+			if (isPuyo(i, j)) {
+				m_fieldPuyoArray[i][j]->m_glow = false;
 			}
 		}
 	}
-	
+
 	// Only create puyo after rotation has really finished
-	if (((m_player->movePuyos.getRotateCounter() == 0 && m_player->movePuyos.getFlipCounter() == 0) && m_player->getPlayerType() != ONLINE && m_player->currentgame->settings->recording != PVS_REPLAYING)
-		|| (m_player->getPlayerType() == ONLINE && !m_player->messages.empty() && m_player->messages.front()[0] == 'p')
-		|| ((m_player->getPlayerType() == HUMAN && m_player->currentgame->settings->recording == PVS_REPLAYING) && m_player->messages.front()[0] == 'p'))
-	{
-		m_player->movePuyos.setVisible(false);
-		
+	if (m_player->m_movePuyo.getRotateCounter() == 0 && m_player->m_movePuyo.getFlipCounter() == 0 && m_player->getPlayerType() != ONLINE && m_player->m_currentGame->m_settings->recording != RecordState::REPLAYING
+		|| m_player->getPlayerType() == ONLINE && !m_player->m_messages.empty() && m_player->m_messages.front()[0] == 'p'
+		|| m_player->getPlayerType() == HUMAN && m_player->m_currentGame->m_settings->recording == RecordState::REPLAYING && m_player->m_messages.front()[0] == 'p') {
+		m_player->m_movePuyo.setVisible(false);
+
 		// Create colored puyo pair on field
 		// Get values from movePuyos
-		MovePuyoType type = m_player->movePuyos.getType();
-		int color1 = m_player->movePuyos.getColor1();
-		int color2 = m_player->movePuyos.getColor2();
-		int colorBig = m_player->movePuyos.getColorBig();
-		int posX1 = m_player->movePuyos.getPosX1();
-		int posY1 = m_player->movePuyos.getPosY1();
-		int posX2 = m_player->movePuyos.getPosX2();
-		int posY2 = m_player->movePuyos.getPosY2();
-		int posX3 = m_player->movePuyos.getPosX3();
-		int posY3 = m_player->movePuyos.getPosY3();
-		int posX4 = m_player->movePuyos.getPosX4();
-		int posY4 = m_player->movePuyos.getPosY4();
-		bool transpose = m_player->movePuyos.getTranspose();
-		int rotation = m_player->movePuyos.getRotation();
+		const MovePuyoType type = m_player->m_movePuyo.getType();
+		int color1 = m_player->m_movePuyo.getColor1();
+		int color2 = m_player->m_movePuyo.getColor2();
+		int colorBig = m_player->m_movePuyo.getColorBig();
+		int posX1 = m_player->m_movePuyo.getPosX1();
+		int posY1 = m_player->m_movePuyo.getPosY1();
+		int posX2 = m_player->m_movePuyo.getPosX2();
+		int posY2 = m_player->m_movePuyo.getPosY2();
+		int posX3 = m_player->m_movePuyo.getPosX3();
+		int posY3 = m_player->m_movePuyo.getPosY3();
+		int posX4 = m_player->m_movePuyo.getPosX4();
+		int posY4 = m_player->m_movePuyo.getPosY4();
+		const bool transpose = m_player->m_movePuyo.getTranspose();
+		const int rotation = m_player->m_movePuyo.getRotation();
 
-		m_player->divider = max(2, m_player->currentgame->getActivePlayers());
+		m_player->m_divider = max(2, m_player->m_currentGame->getActivePlayers());
 		// Award a bonus garbage when offsetting?
-		if (m_player->currentgame->currentruleset->bonusEQ && m_player->getPlayerType() != ONLINE)
-		{
+		if (m_player->m_currentGame->m_currentRuleSet->m_bonusEq && m_player->getPlayerType() != ONLINE) {
 			// Check if any garbage, award bonus EQ
 			if (m_player->getGarbageSum() > 0)
-				m_player->bonusEQ = true;
+				m_player->m_bonusEq = true;
 		}
 
 		// Send placement info
 		// 0["p"]1[color1]2[color2]3[colorBig]
-		// 4[posx1]5[posy1]6[posx2]7[posy2]8[posx3]9[posy3]10[posx4]11[posy4]
-		// 12[scoreVal]13[dropBonus]14[margintime]15[divider]16[bonusEQ]
-		if (m_player->currentgame->connected && m_player->getPlayerType() == HUMAN)
-		{
+		// 4[pos x1]5[pos y1]6[pos x2]7[pos y2]8[pos x3]9[pos y3]10[pos x4]11[pos y4]
+		// 12[score val]13[drop bonus]14[margin time]15[divider]16[bonus EQ]
+		if (m_player->m_currentGame->m_connected && m_player->getPlayerType() == HUMAN) {
 			char str[200];
 			sprintf(str, "p|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i",
 				color1, color2, colorBig,
@@ -753,96 +712,82 @@ void Field::createPuyo()
 				posX2, posY2,
 				posX3, posY3,
 				posX4, posY4,
-				m_player->scoreVal, m_player->dropBonus,
-				m_player->margintimer, m_player->divider, int(m_player->bonusEQ));
-			m_player->currentgame->network->sendToChannel(CHANNEL_GAME, str, m_player->currentgame->channelName.c_str());
+				m_player->m_scoreVal, m_player->m_dropBonus,
+				m_player->m_marginTimer, m_player->m_divider, static_cast<int>(m_player->m_bonusEq));
+			m_player->m_currentGame->m_network->sendToChannel(CHANNEL_GAME, str, m_player->m_currentGame->m_channelName.c_str());
 
 			// Record for replay
-			if (m_player->currentgame->settings->recording == PVS_RECORDING)
-			{
-				MessageEvent me = { data->matchTimer,"" };
-				std::string mes = str;
-				m_player->recordMessages.push_back(me);
-				if (mes.length() < 64)
-					strcpy(m_player->recordMessages.back().message, mes.c_str());
+			if (m_player->m_currentGame->m_settings->recording == RecordState::RECORDING) {
+				const MessageEvent me = { m_data->matchTimer, "" };
+				const std::string mes = str;
+				m_player->m_recordMessages.push_back(me);
+				if (mes.length() < 64) {
+					strcpy(m_player->m_recordMessages.back().message, mes.c_str());
+				}
 			}
 		}
 		// Receive
-		if ((m_player->getPlayerType() == ONLINE || m_player->currentgame->settings->recording == PVS_REPLAYING)
-			&& !m_player->messages.empty() && m_player->messages.front()[0] == 'p')
-		{
-			int bEQ = 0;
+		if ((m_player->getPlayerType() == ONLINE || m_player->m_currentGame->m_settings->recording == RecordState::REPLAYING)
+			&& !m_player->m_messages.empty() && m_player->m_messages.front()[0] == 'p') {
+			int bEq = 0;
 			int marginTime = 0;
-			sscanf(m_player->messages.front().c_str(), "p|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i",
+			sscanf(m_player->m_messages.front().c_str(), "p|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i",
 				&color1, &color2, &colorBig,
 				&posX1, &posY1,
 				&posX2, &posY2,
 				&posX3, &posY3,
 				&posX4, &posY4,
-				&m_player->scoreVal, &m_player->dropBonus,
-				&marginTime, &m_player->divider, &bEQ);
+				&m_player->m_scoreVal, &m_player->m_dropBonus,
+				&marginTime, &m_player->m_divider, &bEq);
 
-			// Adjust margintime downwards with 30 second error interval
-			if (m_player->margintimer + 20 * 60 >= marginTime)
-				m_player->margintimer = marginTime;
+			// Adjust margin time downwards with 30 second error interval
+			if (m_player->m_marginTimer + 20 * 60 >= marginTime) {
+				m_player->m_marginTimer = marginTime;
+			}
 
-			if (bEQ) m_player->bonusEQ = true;
+			if (bEq) {
+				m_player->m_bonusEq = true;
+			}
 
 			// Clear message
-			m_player->messages.pop_front();
+			m_player->m_messages.pop_front();
 		}
-		
+
 		// Place puyos
-		if (type == DOUBLET)
-		{
+		if (type == DOUBLET) {
 			addColorPuyo(posX1, posY1, color1);
 			addColorPuyo(posX2, posY2, color2);
-		}
-		else if (type == TRIPLET && transpose == false)
-		{
+		} else if (type == TRIPLET && transpose == false) {
 			addColorPuyo(posX1, posY1, color1);
 			addColorPuyo(posX2, posY2, color2);
 			addColorPuyo(posX3, posY3, color1);
-		}
-		else if (type == TRIPLET && transpose == true)
-		{
+		} else if (type == TRIPLET && transpose == true) {
 			addColorPuyo(posX1, posY1, color1);
 			addColorPuyo(posX2, posY2, color1);
 			addColorPuyo(posX3, posY3, color2);
-		}
-		else if (type == QUADRUPLET)
-		{
-			if (rotation == 1)
-			{
+		} else if (type == QUADRUPLET) {
+			if (rotation == 1) {
 				addColorPuyo(posX1, posY1, color2);
 				addColorPuyo(posX2, posY2, color1);
 				addColorPuyo(posX3, posY3, color2);
 				addColorPuyo(posX4, posY4, color1);
-			}
-			else if (rotation == 2)
-			{
+			} else if (rotation == 2) {
 				addColorPuyo(posX1, posY1, color1);
 				addColorPuyo(posX2, posY2, color1);
 				addColorPuyo(posX3, posY3, color2);
 				addColorPuyo(posX4, posY4, color2);
-			}
-			else if (rotation == 3)
-			{
+			} else if (rotation == 3) {
 				addColorPuyo(posX1, posY1, color1);
 				addColorPuyo(posX2, posY2, color2);
 				addColorPuyo(posX3, posY3, color1);
 				addColorPuyo(posX4, posY4, color2);
-			}
-			else if (rotation == 0)
-			{
+			} else if (rotation == 0) {
 				addColorPuyo(posX1, posY1, color2);
 				addColorPuyo(posX2, posY2, color2);
 				addColorPuyo(posX3, posY3, color1);
 				addColorPuyo(posX4, posY4, color1);
 			}
-		}
-		else if (type == BIG)
-		{
+		} else if (type == BIG) {
 			addColorPuyo(posX1, posY1, colorBig);
 			addColorPuyo(posX2, posY2, colorBig);
 			addColorPuyo(posX3, posY3, colorBig);
@@ -850,49 +795,43 @@ void Field::createPuyo()
 		}
 
 		// Play sound
-		data->snd.drop.play(data);
-		
+		m_data->snd.drop.play(m_data);
+
 		// Check if garbage should fall now
-		if (m_player->activeGarbage->GQ <= 0
-			// bugfix: only outside fever
-			&& !m_player->feverMode)
-			m_player->forgiveGarbage = true;
+		if (m_player->m_activeGarbage->gq <= 0
+			// bug-fix: only outside fever
+			&& !m_player->m_feverMode) {
+			m_player->m_forgiveGarbage = true;
+		}
 		// If it is fever: you can, but fever must have not ended yet
 
 		// End phase 20
-		if (m_player->currentphase == CREATEPUYO)
+		if (m_player->m_currentPhase == Phase::CREATEPUYO) {
 			m_player->endPhase();
+		}
 	}
 }
 
 // DEPRECATED. set puyo ready to fall and disconnect them
 void Field::searchFallDelay() const
 {
-	int count = 0;
-	int countDelay = 0;
-	bool foundEmpty = false;
-
-	for (int i = 0; i < m_properties.gridX; i++)
-	{
-		foundEmpty = false;
-		count = 0;
-		countDelay = 0;
+	for (int i = 0; i < m_properties.gridX; i++) {
+		bool foundEmpty = false;
+		int count = 0;
+		int countDelay = 0;
 		// Predict the position to fall to
-		for (int j = 0; j < m_properties.gridY; j++)
-		{
+		for (int j = 0; j < m_properties.gridY; j++) {
 			// Search for empty spaces. After first empty space, start marking
-			if (isEmpty(i, j) && foundEmpty == false)
-			{
+			if (isEmpty(i, j) && foundEmpty == false) {
 				foundEmpty = true;
 				countDelay = 0;
 				count = j;
 			}
 			// After empty space found
-			if (foundEmpty == true && isPuyo(i, j))
-			{
-				fieldPuyoArray[i][j]->fallDelay = static_cast<float>(countDelay);
-				fieldPuyoArray[i][j]->fallFlag = 1;
-				fieldPuyoArray[i][j]->setFallTarget(count);
+			if (foundEmpty == true && isPuyo(i, j)) {
+				m_fieldPuyoArray[i][j]->m_fallDelay = static_cast<float>(countDelay);
+				m_fieldPuyoArray[i][j]->m_fallFlag = 1;
+				m_fieldPuyoArray[i][j]->setFallTarget(count);
 				count++;
 				countDelay++;
 				if (getPuyoType(i, j) == COLORPUYO)
@@ -904,58 +843,58 @@ void Field::searchFallDelay() const
 	}
 }
 
-// Disconnect colorpuyo from all directions
-void Field::unsetLinkAll(int i, int j) const
+// Disconnect color puyo from all directions
+void Field::unsetLinkAll(const int x, const int y) const
 {
-	// Check down -> unset uplink
-	if (getPuyoType(i, j - 1) == COLORPUYO)
-		unsetLink(i, j - 1, ABOVE);
+	// Check down -> unset up-link
+	if (getPuyoType(x, y - 1) == COLORPUYO) {
+		unsetLink(x, y - 1, ABOVE);
+	}
 
 	// Check up
-	if (getPuyoType(i, j + 1) == COLORPUYO)
-		unsetLink(i, j + 1, BELOW);
+	if (getPuyoType(x, y + 1) == COLORPUYO) {
+		unsetLink(x, y + 1, BELOW);
+	}
 
 	// Check right
-	if (getPuyoType(i + 1, j) == COLORPUYO)
-		unsetLink(i + 1, j, LEFT);
+	if (getPuyoType(x + 1, y) == COLORPUYO) {
+		unsetLink(x + 1, y, LEFT);
+	}
 
 	// Check left
-	if (getPuyoType(i - 1, j) == COLORPUYO)
-		unsetLink(i - 1, j, RIGHT);
+	if (getPuyoType(x - 1, y) == COLORPUYO) {
+		unsetLink(x - 1, y, RIGHT);
+	}
 
 	// Disconnect self
-	unsetLink(i, j, ABOVE);
-	unsetLink(i, j, BELOW);
-	unsetLink(i, j, LEFT);
-	unsetLink(i, j, RIGHT);
+	unsetLink(x, y, ABOVE);
+	unsetLink(x, y, BELOW);
+	unsetLink(x, y, LEFT);
+	unsetLink(x, y, RIGHT);
 }
 
 // Cleanly drop all puyo (set fall target etc.)
 void Field::dropPuyo()
 {
-	for (int i = 0; i < m_properties.gridX; i++)
-	{
+	for (int i = 0; i < m_properties.gridX; i++) {
 		int countDelay = 0;
-		for (int j = 0; j < m_properties.gridY; j++)
-		{
+		for (int j = 0; j < m_properties.gridY; j++) {
 			// Drop
-			int newy = dropSingle(i, j);
-			if (newy == -1)
+			const int newY = dropSingle(i, j);
+			if (newY == -1)
 				continue;
 			// Set fall delay
-			if (j != newy)
-			{
-				if (getPuyoType(i, newy) == COLORPUYO)
-				{
+			if (j != newY) {
+				if (getPuyoType(i, newY) == COLORPUYO) {
 					unsetLinkAll(i, j);
-					unsetLink(i, newy, ABOVE);
-					unsetLink(i, newy, BELOW);
-					unsetLink(i, newy, LEFT);
-					unsetLink(i, newy, RIGHT);
+					unsetLink(i, newY, ABOVE);
+					unsetLink(i, newY, BELOW);
+					unsetLink(i, newY, LEFT);
+					unsetLink(i, newY, RIGHT);
 				}
-				fieldPuyoArray[i][newy]->fallDelay = static_cast<float>(countDelay);
-				fieldPuyoArray[i][newy]->fallFlag = 1;
-				fieldPuyoArray[i][newy]->setFallTarget(newy);
+				m_fieldPuyoArray[i][newY]->m_fallDelay = static_cast<float>(countDelay);
+				m_fieldPuyoArray[i][newY]->m_fallFlag = 1;
+				m_fieldPuyoArray[i][newY]->setFallTarget(newY);
 				countDelay++;
 			}
 		}
@@ -968,77 +907,66 @@ void Field::dropPuyo()
 // Phase 21: falling field puyos
 void Field::fallPuyo()
 {
-	int i, j;
 	// Do a sweep
-	if (m_player->currentgame->currentruleset->delayedFall == true)
+	if (m_player->m_currentGame->m_currentRuleSet->m_delayedFall == true) {
 		m_sweepFall += 0.5f;
-	else
+	} else {
 		m_sweepFall = 100;
+	}
 
 	// Loop through puyos
-	for (i = 0; i < m_properties.gridX; i++)
-	{
-		for (j = 0; j < m_properties.gridY; j++)
-		{
-			if (isPuyo(i, j))
-			{
-				if (fieldPuyoArray[i][j]->fallFlag == 1 && fieldPuyoArray[i][j]->fallDelay <= m_sweepFall)
-				{
-					fieldPuyoArray[i][j]->fallFlag = 2;
-					fieldPuyoArray[i][j]->SetAccelY(0);
+	for (int i = 0; i < m_properties.gridX; i++) {
+		for (int j = 0; j < m_properties.gridY; j++) {
+			if (isPuyo(i, j)) {
+				if (m_fieldPuyoArray[i][j]->m_fallFlag == 1 && m_fieldPuyoArray[i][j]->m_fallDelay <= m_sweepFall) {
+					m_fieldPuyoArray[i][j]->m_fallFlag = 2;
+					m_fieldPuyoArray[i][j]->setAccelerationY(0);
 				}
 				// Set gravity
-				if (fieldPuyoArray[i][j]->fallFlag == 2)
-					fieldPuyoArray[i][j]->AddAccelY(m_player->gravity);
+				if (m_fieldPuyoArray[i][j]->m_fallFlag == 2)
+					m_fieldPuyoArray[i][j]->addAccelerationY(m_player->m_gravity);
 				// If it's not a faller, mark the puyo for a bounce.
 				// Search for Puyos that need to bounce. Use flag 0 for this
-				if (fieldPuyoArray[i][j]->fallFlag == 0 && fieldPuyoArray[i][j]->bounceFlag0 == false)
-				{
-					fieldPuyoArray[i][j]->SetAccelY(0);
-					fieldPuyoArray[i][j]->bounceFlag = 1;
-					fieldPuyoArray[i][j]->bounceTimer = 2;
-					fieldPuyoArray[i][j]->bounceFlag0 = true;
-					searchBounce(i, j, fieldPuyoArray[i][j]->GetindexY() + 1);
+				if (m_fieldPuyoArray[i][j]->m_fallFlag == 0 && m_fieldPuyoArray[i][j]->m_bounceFlag0 == false) {
+					m_fieldPuyoArray[i][j]->setAccelerationY(0);
+					m_fieldPuyoArray[i][j]->m_bounceFlag = 1;
+					m_fieldPuyoArray[i][j]->m_bounceTimer = 2;
+					m_fieldPuyoArray[i][j]->m_bounceFlag0 = true;
+					searchBounce(i, j, m_fieldPuyoArray[i][j]->posY() + 1);
 				}
 				// Sound & voice when dropping nuisance
 				// Non-nuisance puyo
-				if (fieldPuyoArray[i][j]->fallFlag != 0 && fieldPuyoArray[i][j]->GetSpriteY() > fieldPuyoArray[i][j]->GetTargetY()
-					&& fieldPuyoArray[i][j]->getType() != NUISANCEPUYO)
-				{
-					data->snd.drop.play(data);
+				if (m_fieldPuyoArray[i][j]->m_fallFlag != 0 && m_fieldPuyoArray[i][j]->spriteY() > m_fieldPuyoArray[i][j]->targetY()
+					&& m_fieldPuyoArray[i][j]->getType() != NUISANCEPUYO) {
+					m_data->snd.drop.play(m_data);
 				}
-				// Nuisancepuyo: normal drop
-				if (fieldPuyoArray[i][j]->fallFlag != 0 && fieldPuyoArray[i][j]->GetSpriteY() > fieldPuyoArray[i][j]->GetTargetY()
-					&& fieldPuyoArray[i][j]->getType() == NUISANCEPUYO && m_player->currentphase != FALLGARBAGE)
-				{
-					data->snd.drop.play(data);
+				// Nuisance puyo: normal drop
+				if (m_fieldPuyoArray[i][j]->m_fallFlag != 0 && m_fieldPuyoArray[i][j]->spriteY() > m_fieldPuyoArray[i][j]->targetY()
+					&& m_fieldPuyoArray[i][j]->getType() == NUISANCEPUYO && m_player->m_currentPhase != Phase::FALLGARBAGE) {
+					m_data->snd.drop.play(m_data);
 				}
-				// Nuisancepuyo: garbage drop
-				if (fieldPuyoArray[i][j]->fallFlag != 0 && fieldPuyoArray[i][j]->GetSpriteY() > fieldPuyoArray[i][j]->GetTargetY()
-					&& fieldPuyoArray[i][j]->getType() == NUISANCEPUYO && fieldPuyoArray[i][j]->lastNuisance && m_player->garbageDropped < 6)
-				{
-					m_player->garbageDropped = 0;
-					fieldPuyoArray[i][j]->lastNuisance = false;
-					data->snd.nuisanceS.play(data);
+				// Nuisance puyo: garbage drop
+				if (m_fieldPuyoArray[i][j]->m_fallFlag != 0 && m_fieldPuyoArray[i][j]->spriteY() > m_fieldPuyoArray[i][j]->targetY()
+					&& m_fieldPuyoArray[i][j]->getType() == NUISANCEPUYO && m_fieldPuyoArray[i][j]->m_lastNuisance && m_player->m_garbageDropped < 6) {
+					m_player->m_garbageDropped = 0;
+					m_fieldPuyoArray[i][j]->m_lastNuisance = false;
+					m_data->snd.nuisanceS.play(m_data);
 				}
-				if (fieldPuyoArray[i][j]->fallFlag != 0 && fieldPuyoArray[i][j]->GetSpriteY() > fieldPuyoArray[i][j]->GetTargetY()
-					&& fieldPuyoArray[i][j]->getType() == NUISANCEPUYO && fieldPuyoArray[i][j]->lastNuisance && m_player->garbageDropped >= 6)
-				{
-					if (m_player->garbageDropped < 24)
-						m_player->characterVoices.damage1.play(data);
+				if (m_fieldPuyoArray[i][j]->m_fallFlag != 0 && m_fieldPuyoArray[i][j]->spriteY() > m_fieldPuyoArray[i][j]->targetY()
+					&& m_fieldPuyoArray[i][j]->getType() == NUISANCEPUYO && m_fieldPuyoArray[i][j]->m_lastNuisance && m_player->m_garbageDropped >= 6) {
+					if (m_player->m_garbageDropped < 24)
+						m_player->m_characterVoices.damage1.play(m_data);
 					else
-						m_player->characterVoices.damage2.play(data);
-					m_player->garbageDropped = 0;
-					fieldPuyoArray[i][j]->lastNuisance = false;
-					data->snd.nuisanceL.play(data);
-
+						m_player->m_characterVoices.damage2.play(m_data);
+					m_player->m_garbageDropped = 0;
+					m_fieldPuyoArray[i][j]->m_lastNuisance = false;
+					m_data->snd.nuisanceL.play(m_data);
 				}
 
 				// Land proper
-				if (fieldPuyoArray[i][j]->fallFlag == 2 && fieldPuyoArray[i][j]->GetSpriteY() > fieldPuyoArray[i][j]->GetTargetY())
-				{
-					fieldPuyoArray[i][j]->bounceFlag0 = false;
-					fieldPuyoArray[i][j]->landProper();
+				if (m_fieldPuyoArray[i][j]->m_fallFlag == 2 && m_fieldPuyoArray[i][j]->spriteY() > m_fieldPuyoArray[i][j]->targetY()) {
+					m_fieldPuyoArray[i][j]->m_bounceFlag0 = false;
+					m_fieldPuyoArray[i][j]->landProper();
 				}
 			}
 		}
@@ -1049,29 +977,26 @@ void Field::fallPuyo()
 void Field::bouncePuyo() const
 {
 	// Loop through puyos
-	for (int i = 0; i < m_properties.gridX; i++)
-	{
-		for (int j = 0; j < m_properties.gridY; j++)
-		{
-			if (isPuyo(i, j))
-			{
+	for (int i = 0; i < m_properties.gridX; i++) {
+		for (int j = 0; j < m_properties.gridY; j++) {
+			if (isPuyo(i, j)) {
 				// Bounce puyo
-				if (fieldPuyoArray[i][j]->fallFlag == 0)
-					fieldPuyoArray[i][j]->bounce();
+				if (m_fieldPuyoArray[i][j]->m_fallFlag == 0) {
+					m_fieldPuyoArray[i][j]->bounce();
+				}
 				// End of bounce
-				if (fieldPuyoArray[i][j]->bounceTimer > m_player->puyoBounceEnd)
-				{
+				if (m_fieldPuyoArray[i][j]->m_bounceTimer > static_cast<float>(m_player->m_puyoBounceEnd)) {
 					// Search connect
-					if (fieldPuyoArray[i][j]->getType() == COLORPUYO)
+					if (m_fieldPuyoArray[i][j]->getType() == COLORPUYO) {
 						searchLink(i, j);
-					fieldPuyoArray[i][j]->SetScaleX(1);
-					fieldPuyoArray[i][j]->SetScaleY(1);
-					fieldPuyoArray[i][j]->bounceY = 0;
-					if (fieldPuyoArray[i][j]->bounceFlag == 1)
-					{
-						fieldPuyoArray[i][j]->bounceFlag = 0;
 					}
-					fieldPuyoArray[i][j]->bounceTimer = 0;
+					m_fieldPuyoArray[i][j]->setScaleX(1);
+					m_fieldPuyoArray[i][j]->setScaleY(1);
+					m_fieldPuyoArray[i][j]->m_bounceY = 0;
+					if (m_fieldPuyoArray[i][j]->m_bounceFlag == 1) {
+						m_fieldPuyoArray[i][j]->m_bounceFlag = 0;
+					}
+					m_fieldPuyoArray[i][j]->m_bounceTimer = 0;
 				}
 			}
 		}
@@ -1079,41 +1004,34 @@ void Field::bouncePuyo() const
 }
 
 // Search bounce strength
-void Field::searchBounce(int x, int y, int posy) const
+void Field::searchBounce(const int x, const int y, const int posY) const
 {
-	int i, j, funFlag = 1, count = 1, rememberColor;
-	for (i = 0; i < posy; i++)
-	{
-		if (isPuyo(x, y - i))
-		{
+	int funFlag = 1, count = 1;
+	for (int i = 0; i < posY; i++) {
+		if (isPuyo(x, y - i)) {
 			// Stop loop
-			if (funFlag == 1 && fieldPuyoArray[x][y - i]->hard == true)
-			{
+			if (funFlag == 1 && m_fieldPuyoArray[x][y - i]->m_hard == true) {
 				// Loop back up
-				for (j = 0; j <= i; j++)
-				{
-					fieldPuyoArray[x][y - i + j]->bottomY = y - i;
+				for (int j = 0; j <= i; j++) {
+					m_fieldPuyoArray[x][y - i + j]->m_bottomY = y - i;
 				}
-				funFlag = 0;
 				break;
 			}
 			// Default value
-			fieldPuyoArray[x][y - i]->bottomY = 0;
+			m_fieldPuyoArray[x][y - i]->m_bottomY = 0;
 		}
-		if (funFlag == 1 && y - i < 0)
+		if (funFlag == 1 && y - i < 0) {
 			funFlag = 0;
-		// Set bouncemultiplied, also start disconnecting puyos
+		}
+		// Set bounceMultiplier, also start disconnecting puyos
 		// Search for disconnect
 		// The count is what determines how many puyos disconnect
-		if (funFlag == 1 && count < 5)
-		{
-			if (isPuyo(x, y - i) && fieldPuyoArray[x][y - i]->fallFlag == 0)
-			{
-				rememberColor = fieldPuyoArray[x][y - i]->getColor();
+		if (funFlag == 1 && count < 5) {
+			if (isPuyo(x, y - i) && m_fieldPuyoArray[x][y - i]->m_fallFlag == 0) {
 				unsetLinkAll(x, y - i);
-				// Set bouncemultiplier
-				fieldPuyoArray[x][y - i]->bounceMultiplier = 1.f / static_cast<float>(pow(2.f, count - 1));
-				fieldPuyoArray[x][y - i]->bounceTimer = 2.f;
+				// Set bounceMultiplier
+				m_fieldPuyoArray[x][y - i]->m_bounceMultiplier = 1.f / static_cast<float>(pow(2.f, count - 1));
+				m_fieldPuyoArray[x][y - i]->m_bounceTimer = 2.f;
 			}
 			count++;
 		}
@@ -1124,46 +1042,33 @@ void Field::searchBounce(int x, int y, int posy) const
 void Field::searchLink(int x, int y) const
 {
 	// Check down
-	if (isPuyo(x, y - 1) && fieldPuyoArray[x][y - 1]->getType() == COLORPUYO && fieldPuyoArray[x][y - 1]->fallFlag == 0 &&
-		fieldPuyoArray[x][y - 1]->getColor() == fieldPuyoArray[x][y]->getColor() && y != m_properties.gridY - 3)
-	{
+	if (isPuyo(x, y - 1) && m_fieldPuyoArray[x][y - 1]->getType() == COLORPUYO && m_fieldPuyoArray[x][y - 1]->m_fallFlag == 0 && m_fieldPuyoArray[x][y - 1]->getColor() == m_fieldPuyoArray[x][y]->getColor() && y != m_properties.gridY - 3) {
 		// Do not connect in the invisible layers
-		fieldPuyoArray[x][y - 1]->setLink(ABOVE);
-		fieldPuyoArray[x][y]->setLink(BELOW);
+		m_fieldPuyoArray[x][y - 1]->setLink(ABOVE);
+		m_fieldPuyoArray[x][y]->setLink(BELOW);
 	}
 	// Check up
-	if (isPuyo(x, y + 1) && fieldPuyoArray[x][y + 1]->getType() == COLORPUYO && fieldPuyoArray[x][y + 1]->fallFlag == 0 &&
-		fieldPuyoArray[x][y + 1]->getColor() == fieldPuyoArray[x][y]->getColor() && y != m_properties.gridY - 4)
-	{
+	if (isPuyo(x, y + 1) && m_fieldPuyoArray[x][y + 1]->getType() == COLORPUYO && m_fieldPuyoArray[x][y + 1]->m_fallFlag == 0 && m_fieldPuyoArray[x][y + 1]->getColor() == m_fieldPuyoArray[x][y]->getColor() && y != m_properties.gridY - 4) {
 		// Do not connect in the invisible layers
-		fieldPuyoArray[x][y + 1]->setLink(BELOW);
-		fieldPuyoArray[x][y]->setLink(ABOVE);
+		m_fieldPuyoArray[x][y + 1]->setLink(BELOW);
+		m_fieldPuyoArray[x][y]->setLink(ABOVE);
 	}
 	// Check right
-	if (isPuyo(x + 1, y) && fieldPuyoArray[x + 1][y]->getType() == COLORPUYO && fieldPuyoArray[x + 1][y]->fallFlag == 0 &&
-		fieldPuyoArray[x + 1][y]->getColor() == fieldPuyoArray[x][y]->getColor())
-	{
-		fieldPuyoArray[x + 1][y]->setLink(LEFT);
-		fieldPuyoArray[x][y]->setLink(RIGHT);
+	if (isPuyo(x + 1, y) && m_fieldPuyoArray[x + 1][y]->getType() == COLORPUYO && m_fieldPuyoArray[x + 1][y]->m_fallFlag == 0 && m_fieldPuyoArray[x + 1][y]->getColor() == m_fieldPuyoArray[x][y]->getColor()) {
+		m_fieldPuyoArray[x + 1][y]->setLink(LEFT);
+		m_fieldPuyoArray[x][y]->setLink(RIGHT);
 	}
-	if (isPuyo(x + 1, y) && fieldPuyoArray[x + 1][y]->getType() == COLORPUYO && fieldPuyoArray[x + 1][y]->fallFlag != 0 &&
-		fieldPuyoArray[x + 1][y]->getColor() == fieldPuyoArray[x][y]->getColor())
-	{
-		fieldPuyoArray[x + 1][y]->unsetLink(LEFT);
-		fieldPuyoArray[x][y]->unsetLink(RIGHT);
+	if (isPuyo(x + 1, y) && m_fieldPuyoArray[x + 1][y]->getType() == COLORPUYO && m_fieldPuyoArray[x + 1][y]->m_fallFlag != 0 && m_fieldPuyoArray[x + 1][y]->getColor() == m_fieldPuyoArray[x][y]->getColor()) {
+		m_fieldPuyoArray[x + 1][y]->unsetLink(LEFT);
+		m_fieldPuyoArray[x][y]->unsetLink(RIGHT);
 	}
 	// Check left
-	if (isPuyo(x - 1, y) && fieldPuyoArray[x - 1][y]->getType() == COLORPUYO && fieldPuyoArray[x - 1][y]->fallFlag == 0 &&
-		fieldPuyoArray[x - 1][y]->getColor() == fieldPuyoArray[x][y]->getColor())
-	{
-		fieldPuyoArray[x - 1][y]->setLink(RIGHT);
-		fieldPuyoArray[x][y]->setLink(LEFT);
-	}
-	else if (isPuyo(x - 1, y) && fieldPuyoArray[x - 1][y]->getType() == COLORPUYO && fieldPuyoArray[x - 1][y]->fallFlag != 0 &&
-		fieldPuyoArray[x - 1][y]->getColor() == fieldPuyoArray[x][y]->getColor())
-	{
-		fieldPuyoArray[x - 1][y]->unsetLink(RIGHT);
-		fieldPuyoArray[x][y]->unsetLink(LEFT);
+	if (isPuyo(x - 1, y) && m_fieldPuyoArray[x - 1][y]->getType() == COLORPUYO && m_fieldPuyoArray[x - 1][y]->m_fallFlag == 0 && m_fieldPuyoArray[x - 1][y]->getColor() == m_fieldPuyoArray[x][y]->getColor()) {
+		m_fieldPuyoArray[x - 1][y]->setLink(RIGHT);
+		m_fieldPuyoArray[x][y]->setLink(LEFT);
+	} else if (isPuyo(x - 1, y) && m_fieldPuyoArray[x - 1][y]->getType() == COLORPUYO && m_fieldPuyoArray[x - 1][y]->m_fallFlag != 0 && m_fieldPuyoArray[x - 1][y]->getColor() == m_fieldPuyoArray[x][y]->getColor()) {
+		m_fieldPuyoArray[x - 1][y]->unsetLink(RIGHT);
+		m_fieldPuyoArray[x][y]->unsetLink(LEFT);
 	}
 }
 
@@ -1171,28 +1076,25 @@ void Field::searchLink(int x, int y) const
 void Field::endFallPuyoPhase() const
 {
 	// Loop through puyos
-	for (int i = 0; i < m_properties.gridX; i++)
-	{
-		for (int j = 0; j < m_properties.gridY; j++)
-		{
-			if (isPuyo(i, j))
-			{
-				fieldPuyoArray[i][j]->glow = false;
+	for (int i = 0; i < m_properties.gridX; i++) {
+		for (int j = 0; j < m_properties.gridY; j++) {
+			if (isPuyo(i, j)) {
+				m_fieldPuyoArray[i][j]->m_glow = false;
 				// Check if any is bouncing falling or destroying
-				if (fieldPuyoArray[i][j]->fallFlag != 0 || fieldPuyoArray[i][j]->bounceTimer != 0)
+				if (m_fieldPuyoArray[i][j]->m_fallFlag != 0 || m_fieldPuyoArray[i][j]->m_bounceTimer != 0) // NOLINT(clang-diagnostic-float-equal)
 					return;
 			}
 		}
 	}
 
 	// Play voice
-	if (m_player->feverMode)
-	{
-		if (m_player->feverSuccess == 1)
-			m_player->characterVoices.feversuccess.play(data);
-		else if (m_player->feverSuccess == 2)
-			m_player->characterVoices.feverfail.play(data);
-		m_player->feverSuccess = 0;
+	if (m_player->m_feverMode) {
+		if (m_player->m_feverSuccess == 1) {
+			m_player->m_characterVoices.feverSuccess.play(m_data);
+		} else if (m_player->m_feverSuccess == 2) {
+			m_player->m_characterVoices.feverFail.play(m_data);
+		}
+		m_player->m_feverSuccess = 0;
 	}
 	// Nothing is bouncing
 	m_player->endPhase();
@@ -1200,150 +1102,153 @@ void Field::endFallPuyoPhase() const
 
 void Field::searchChain()
 {
-	PosVectorInt pv;
-
 	// Destroy 14th and 15th row
-	for (int i = 0; i < m_properties.gridX; i++)
-	{
-		if (isPuyo(i, m_properties.gridY - 1))
-		{
-			delete fieldPuyoArray[i][m_properties.gridY - 1];
-			fieldPuyoArray[i][m_properties.gridY - 1] = nullptr;
+	for (int i = 0; i < m_properties.gridX; i++) {
+		if (isPuyo(i, m_properties.gridY - 1)) {
+			delete m_fieldPuyoArray[i][m_properties.gridY - 1];
+			m_fieldPuyoArray[i][m_properties.gridY - 1] = nullptr;
 		}
-		if (isPuyo(i, m_properties.gridY - 2))
-		{
-			delete fieldPuyoArray[i][m_properties.gridY - 2];
-			fieldPuyoArray[i][m_properties.gridY - 2] = nullptr;
+		if (isPuyo(i, m_properties.gridY - 2)) {
+			delete m_fieldPuyoArray[i][m_properties.gridY - 2];
+			m_fieldPuyoArray[i][m_properties.gridY - 2] = nullptr;
 		}
 	}
 
 	// Predict chain
-	if (m_player->chain == 0)
-	{
-		m_player->predictedChain = 0;
-		m_player->predictedChain = predictChain();
+	if (m_player->m_chain == 0) {
+		m_player->m_predictedChain = 0;
+		m_player->m_predictedChain = predictChain();
 	}
 
 	// Reset chain values
-	m_player->foundChain = 0;
-	m_player->puyosPopped = 0;
-	m_player->groupR = 0;
-	m_player->groupG = 0;
-	m_player->groupB = 0;
-	m_player->groupY = 0;
-	m_player->groupP = 0;
-	m_player->point = 0;
-	m_player->linkBonus = 0;
-	m_player->bonus = 0;
-	m_player->rememberMaxY = 0;
-	m_player->rememberX = 0;
+	m_player->m_foundChain = false;
+	m_player->m_puyosPopped = 0;
+	m_player->m_groupR = 0;
+	m_player->m_groupG = 0;
+	m_player->m_groupB = 0;
+	m_player->m_groupY = 0;
+	m_player->m_groupP = 0;
+	m_player->m_point = 0;
+	m_player->m_linkBonus = 0;
+	m_player->m_bonus = 0;
+	m_player->m_rememberMaxY = 0;
+	m_player->m_rememberX = 0;
 
 	unmark();
 
 	// Find chain
 	// Loop through field
-	for (int i = 0; i < m_properties.gridX; i++)
-	{
-		for (int j = 0; j < m_properties.gridY - 3; j++)
-		{
-			if (findConnected(i, j, m_player->currentgame->currentruleset->puyoToClear, m_vector))
-			{
-				m_player->foundChain = 1;
-				m_player->poppedChain = true;
+	for (int i = 0; i < m_properties.gridX; i++) {
+		for (int j = 0; j < m_properties.gridY - 3; j++) {
+			if (findConnected(i, j, m_player->m_currentGame->m_currentRuleSet->m_puyoToClear, m_vector)) {
+				m_player->m_foundChain = true;
+				m_player->m_poppedChain = true;
+
 				// Loop through connected puyo
-				while (m_vector.size() > 0)
-				{
-					pv = m_vector.back();
+				while (!m_vector.empty()) {
+					const PosVectorInt pv = m_vector.back();
 					m_vector.pop_back();
+
 					// Set popped group
-					if (fieldPuyoArray[pv.x][pv.y]->getType() == COLORPUYO)
-					{
-						switch (fieldPuyoArray[pv.x][pv.y]->getColor())
-						{
-						case -1: break;
-						case 0: m_player->groupR = 1; break;
-						case 1: m_player->groupG = 1; break;
-						case 2: m_player->groupB = 1; break;
-						case 3: m_player->groupY = 1; break;
-						case 4: m_player->groupP = 1; break;
+					if (m_fieldPuyoArray[pv.x][pv.y]->getType() == COLORPUYO) {
+						switch (m_fieldPuyoArray[pv.x][pv.y]->getColor()) {
+						default:
+							break;
+						case 0:
+							m_player->m_groupR = 1;
+							break;
+						case 1:
+							m_player->m_groupG = 1;
+							break;
+						case 2:
+							m_player->m_groupB = 1;
+							break;
+						case 3:
+							m_player->m_groupY = 1;
+							break;
+						case 4:
+							m_player->m_groupP = 1;
+							break;
 						}
 					}
 
 					// Add to puyo count
-					m_player->puyosPopped++;
-					
-					// Check neighbours to find nuisance
-					if (isPuyo(pv.x, pv.y + 1) && pv.y + 1 != m_properties.gridY - 3)
-						fieldPuyoArray[pv.x][pv.y + 1]->neighbourPop(this, false);
-					if (isPuyo(pv.x + 1, pv.y))
-						fieldPuyoArray[pv.x + 1][pv.y]->neighbourPop(this, false);
-					if (isPuyo(pv.x, pv.y - 1))
-						fieldPuyoArray[pv.x][pv.y - 1]->neighbourPop(this, false);
-					if (isPuyo(pv.x - 1, pv.y))
-						fieldPuyoArray[pv.x - 1][pv.y]->neighbourPop(this, false);
-					
-					// Check if highest puyo
-					if (pv.y > m_player->rememberMaxY)
-					{
-						m_player->rememberMaxY = pv.y;
-						m_player->rememberX = pv.x;
+					m_player->m_puyosPopped++;
+
+					// Check neighbors to find nuisance
+					if (isPuyo(pv.x, pv.y + 1) && pv.y + 1 != m_properties.gridY - 3) {
+						m_fieldPuyoArray[pv.x][pv.y + 1]->neighborPop(this, false);
 					}
+					if (isPuyo(pv.x + 1, pv.y)) {
+						m_fieldPuyoArray[pv.x + 1][pv.y]->neighborPop(this, false);
+					}
+					if (isPuyo(pv.x, pv.y - 1)) {
+						m_fieldPuyoArray[pv.x][pv.y - 1]->neighborPop(this, false);
+					}
+					if (isPuyo(pv.x - 1, pv.y)) {
+						m_fieldPuyoArray[pv.x - 1][pv.y]->neighborPop(this, false);
+					}
+
+					// Check if highest puyo
+					if (pv.y > m_player->m_rememberMaxY) {
+						m_player->m_rememberMaxY = pv.y;
+						m_player->m_rememberX = pv.x;
+					}
+
 					// Pop puyo
 					removePuyo(pv.x, pv.y);
-					fieldPuyoArray[pv.x][pv.y] = nullptr;
+					m_fieldPuyoArray[pv.x][pv.y] = nullptr;
 				}
+
 				// Add popped puyos to score
-				m_player->point += m_player->puyosPopped * 10;
-				
-				// Add linkbonus
-				m_player->linkBonus += m_player->currentgame->currentruleset->getLinkBonus(m_player->puyosPopped);
-				
+				m_player->m_point += m_player->m_puyosPopped * 10;
+
+				// Add link bonus
+				m_player->m_linkBonus += m_player->m_currentGame->m_currentRuleSet->getLinkBonus(m_player->m_puyosPopped);
+
 				// Reset popped puyos
-				m_player->puyosPopped = 0;
+				m_player->m_puyosPopped = 0;
 			}
 		}
 	}
 
 	// Calculate score
 	// (point and link bonus are calculated during loop)
-	if (m_player->foundChain)
-	{
-		m_player->chain++;
-	}
-	else
-	{
+	if (m_player->m_foundChain) {
+		m_player->m_chain++;
+	} else {
 		// No chain: remove any bonus EQ
-		m_player->bonusEQ = false;
+		m_player->m_bonusEq = false;
 	}
-	// Sum chain bonus and colorbonus
-	m_player->bonus += m_player->currentgame->currentruleset->getChainBonus(m_player);
-	if (m_player->currentgame->settings->recording == PVS_REPLAYING && m_player->currentgame->currentReplayVersion <= 1)
-		m_player->bonus += m_player->currentgame->currentruleset->getColorBonus(0); // Replay compatibility v1
-	else
-		m_player->bonus += m_player->currentgame->currentruleset->getColorBonus(m_player->groupR + m_player->groupG + m_player->groupB + m_player->groupY + m_player->groupP);
-	m_player->bonus += m_player->linkBonus;
+	// Sum chain bonus and color bonus
+	m_player->m_bonus += m_player->m_currentGame->m_currentRuleSet->getChainBonus(m_player);
+	if (m_player->m_currentGame->m_settings->recording == RecordState::REPLAYING && m_player->m_currentGame->m_currentReplayVersion <= 1) {
+		m_player->m_bonus += m_player->m_currentGame->m_currentRuleSet->getColorBonus(0); // Replay compatibility v1
+	} else {
+		m_player->m_bonus += m_player->m_currentGame->m_currentRuleSet->getColorBonus(m_player->m_groupR + m_player->m_groupG + m_player->m_groupB + m_player->m_groupY + m_player->m_groupP);
+	}
+	m_player->m_bonus += m_player->m_linkBonus;
 
-	// Set bonus to 1 if zero (ruleset specific??)
-	if (m_player->chain == 1 && m_player->bonus == 0)
-		m_player->bonus++;
+	// Set bonus to 1 if zero (rule-set specific??)
+	if (m_player->m_chain == 1 && m_player->m_bonus == 0) {
+		m_player->m_bonus++;
+	}
 
-	if (m_player->chain > 0)
-	{
+	if (m_player->m_chain > 0) {
 		// Add score
-		m_player->scoreVal += m_player->point * m_player->bonus;
-		
-		// Add currentscore
-		m_player->currentScore += m_player->point * m_player->bonus;
-		
-		// Add dropBonus
-		if (m_player->currentgame->currentruleset->addDropBonus)
-		{
-			// Cap dropbonus
-			if (m_player->dropBonus > 300)
-				m_player->dropBonus = 300;
+		m_player->m_scoreVal += m_player->m_point * m_player->m_bonus;
 
-			m_player->currentScore += m_player->dropBonus;
-			m_player->dropBonus = 0;
+		// Add current score
+		m_player->m_currentScore += m_player->m_point * m_player->m_bonus;
+
+		// Add dropBonus
+		if (m_player->m_currentGame->m_currentRuleSet->m_addDropBonus) {
+			// Cap drop bonus
+			if (m_player->m_dropBonus > 300)
+				m_player->m_dropBonus = 300;
+
+			m_player->m_currentScore += m_player->m_dropBonus;
+			m_player->m_dropBonus = 0;
 		}
 
 		// Show calculation
@@ -1351,12 +1256,14 @@ void Field::searchChain()
 	}
 
 	// Trigger all clear action here for tsu
-	if (m_player->chain > 0 && m_player->allClear == 1)
-		m_player->currentgame->currentruleset->onAllClearPop(m_player);
+	if (m_player->m_chain > 0 && m_player->m_allClear == 1) {
+		m_player->m_currentGame->m_currentRuleSet->onAllClearPop(m_player);
+	}
 
 	// Set rule related variables
-	if (m_player->chain > 0 && m_player->foundChain)
-		m_player->currentgame->currentruleset->onChain(m_player);
+	if (m_player->m_chain > 0 && m_player->m_foundChain) {
+		m_player->m_currentGame->m_currentRuleSet->onChain(m_player);
+	}
 
 	// End phase
 	m_player->endPhase();
@@ -1365,12 +1272,11 @@ void Field::searchChain()
 // Do pop animation for deleted puyos
 void Field::popPuyoAnim()
 {
-	for (unsigned int i = 0; i < m_deletedPuyo.size(); i++)
-	{
+	for (unsigned int i = 0; i < m_deletedPuyo.size(); i++) {
 		m_deletedPuyo[i]->pop();
+
 		// Check if it should be deleted
-		if (m_deletedPuyo[i]->destroyPuyo())
-		{
+		if (m_deletedPuyo[i]->destroyPuyo()) {
 			delete m_deletedPuyo[i];
 			m_deletedPuyo.erase(std::remove(m_deletedPuyo.begin(), m_deletedPuyo.end(), m_deletedPuyo[i]), m_deletedPuyo.end());
 		}
@@ -1379,34 +1285,38 @@ void Field::popPuyoAnim()
 
 // Other objects
 
-// Creata a particle at position
-void Field::createParticle(float x, float y, int color)
+// Create a particle at position
+void Field::createParticle(const float x, const float y, const int color)
 {
-	m_particles.push_back(new Particle(x + getRandom(11) - 5, y - m_properties.gridHeight / 2 + getRandom(11) - 5, color, data));
+	m_particles.push_back(new Particle(
+		x + static_cast<float>(getRandom(11)) - 5.f,
+		y - static_cast<float>(m_properties.gridHeight) / 2.f + static_cast<float>(getRandom(11)) - 5,
+		color,
+		m_data));
 }
 
-// Creata a particle at position
+// Create a particle at position
 void Field::createParticleThrow(Puyo* p)
 {
-	if (!p)
+	if (!p) {
 		return;
-	if (p->getType() == COLORPUYO)
-		m_particlesThrow.push_back(new ParticleThrow(p->GetSpriteX(), p->GetSpriteY() - m_properties.gridHeight / 2, p->getColor(), data));
-	else if (p->getType() == NUISANCEPUYO)
-		m_particlesThrow.push_back(new ParticleThrow(p->GetSpriteX(), p->GetSpriteY() - m_properties.gridHeight / 2, 6, data));
+	}
+	if (p->getType() == COLORPUYO) {
+		m_particlesThrow.push_back(new ParticleThrow(p->spriteX(), p->spriteY() - static_cast<float>(m_properties.gridHeight) / 2.f, p->getColor(), m_data));
+	} else if (p->getType() == NUISANCEPUYO) {
+		m_particlesThrow.push_back(new ParticleThrow(p->spriteX(), p->spriteY() - static_cast<float>(m_properties.gridHeight) / 2.f, 6, m_data));
+	}
 }
 
 // Move the particles
 void Field::animateParticle()
 {
-	if (getParticleNumber() > 0)
-	{
-		for (int i = 0; i < getParticleNumber(); i++)
-		{
+	if (getParticleNumber() > 0) {
+		for (int i = 0; i < getParticleNumber(); i++) {
 			m_particles[i]->play();
+
 			// Check if it needs to be deleted
-			if (m_particles[i]->destroy())
-			{
+			if (m_particles[i]->shouldDestroy()) {
 				delete m_particles[i];
 				m_particles.erase(std::remove(m_particles.begin(), m_particles.end(), m_particles[i]), m_particles.end());
 			}
@@ -1414,17 +1324,13 @@ void Field::animateParticle()
 	}
 
 	// Same for thrown puyos
-	if (m_particlesThrow.size() > 0)
-	{
-		for (size_t i = 0; i < m_particlesThrow.size(); i++)
-		{
-			m_particlesThrow[i]->play();
-			// Check if it needs to be deleted
-			if (m_particlesThrow[i]->destroy())
-			{
-				delete m_particlesThrow[i];
-				m_particlesThrow.erase(std::remove(m_particlesThrow.begin(), m_particlesThrow.end(), m_particlesThrow[i]), m_particlesThrow.end());
-			}
+	for (size_t i = 0; i < m_particlesThrow.size(); i++) {
+		m_particlesThrow[i]->play();
+
+		// Check if it needs to be deleted
+		if (m_particlesThrow[i]->shouldDestroy()) {
+			delete m_particlesThrow[i];
+			m_particlesThrow.erase(std::remove(m_particlesThrow.begin(), m_particlesThrow.end(), m_particlesThrow[i]), m_particlesThrow.end());
 		}
 	}
 }
@@ -1434,291 +1340,245 @@ int Field::getParticleNumber() const
 	return static_cast<int>(m_particles.size());
 }
 
-void Field::triggerGlow(PosVectorInt shadowPos[4], int n, int colors[4])
+void Field::triggerGlow(PosVectorInt shadowPos[4], const int n, int colors[4])
 {
 	// Check empty
-	for (int i = 0; i < n; i++)
-	{
+	for (int i = 0; i < n; i++) {
 		// Placing on impossible spot
-		if (!isEmpty(shadowPos[i].x, shadowPos[i].y))
-		{
+		if (!isEmpty(shadowPos[i].x, shadowPos[i].y)) {
 			// Return immediately
 			return;
 		}
 
 		// Out of bounds
-		if (shadowPos[i].x > m_properties.gridX - 1 || shadowPos[i].x<0 || shadowPos[i].y>m_properties.gridY - 1 || shadowPos[i].y < 0)
+		if (shadowPos[i].x > m_properties.gridX - 1 || shadowPos[i].x < 0 || shadowPos[i].y > m_properties.gridY - 1 || shadowPos[i].y < 0) {
 			return;
+		}
 	}
 
 	// Temporarily add puyos at the shadow positions
-	for (int i = 0; i < n; i++)
-	{
-		if (isEmpty(shadowPos[i].x, shadowPos[i].y))
-		{
+	for (int i = 0; i < n; i++) {
+		if (isEmpty(shadowPos[i].x, shadowPos[i].y)) {
 			addColorPuyo(shadowPos[i].x, shadowPos[i].y, colors[i]);
-		}
-		else
-		{
+		} else {
 			// Error
 			shadowPos[i].x = -1;
 			shadowPos[i].y = -1;
-			debugstring += "error";
+			debugString += "error";
 		}
 	}
-	PosVectorInt pv;
 
 	// Check if puyos are connected at these positions
 	unmark();
 
-	// Unglow all
-	for (int i = 0; i < m_properties.gridX; i++)
-	{
-		for (int j = 0; j < m_properties.gridY; j++)
-		{
-			if (isPuyo(i, j))
-			{
-				fieldPuyoArray[i][j]->glow = false;
+	// Un-glow all
+	for (int i = 0; i < m_properties.gridX; i++) {
+		for (int j = 0; j < m_properties.gridY; j++) {
+			if (isPuyo(i, j)) {
+				m_fieldPuyoArray[i][j]->m_glow = false;
 			}
 		}
 	}
-	for (int i = 0; i < n; i++)
-	{
-		if (findConnected(shadowPos[i].x, shadowPos[i].y, m_player->currentgame->currentruleset->puyoToClear, m_vector))
-		{
+	for (int i = 0; i < n; i++) {
+		if (findConnected(shadowPos[i].x, shadowPos[i].y, m_player->m_currentGame->m_currentRuleSet->m_puyoToClear, m_vector)) {
 			// Loop through connected puyo
-			while (m_vector.size() > 0)
-			{
-				pv = m_vector.back();
+			while (!m_vector.empty()) {
+				const PosVectorInt pv = m_vector.back();
 				m_vector.pop_back();
 				// Set to glow
-				fieldPuyoArray[pv.x][pv.y]->glow = true;
+				m_fieldPuyoArray[pv.x][pv.y]->m_glow = true;
 			}
 		}
 	}
 
 	// Remove temporary puyo
-	for (int i = 0; i < n; i++)
-	{
-		if (shadowPos[i].x >= 0 && shadowPos[i].y >= 0)
-		{
-			delete fieldPuyoArray[shadowPos[i].x][shadowPos[i].y];
-			fieldPuyoArray[shadowPos[i].x][shadowPos[i].y] = nullptr;
+	for (int i = 0; i < n; i++) {
+		if (shadowPos[i].x >= 0 && shadowPos[i].y >= 0) {
+			delete m_fieldPuyoArray[shadowPos[i].x][shadowPos[i].y];
+			m_fieldPuyoArray[shadowPos[i].x][shadowPos[i].y] = nullptr;
 		}
 	}
 }
 int Field::virtualChain(PosVectorInt shadowPos[4], int n, int colors[4])
 {
 	// Check empty
-	for (int i = 0; i < n; i++)
-	{
-		if (!isEmpty(shadowPos[i].x, shadowPos[i].y))
-		{
+	for (int i = 0; i < n; i++) {
+		if (!isEmpty(shadowPos[i].x, shadowPos[i].y)) {
 			// Return immediately
 			return 0;
 		}
 	}
 
 	// Check for any incorrect values
-	for (int i = 0; i < n; i++)
-	{
-		if (shadowPos[i].y >= m_properties.gridY)
-		{
+	for (int i = 0; i < n; i++) {
+		if (shadowPos[i].y >= m_properties.gridY) {
 			shadowPos[i].x = -1;
 			shadowPos[i].y = -1;
 		}
 	}
 
 	// Temporarily add puyos at the shadow positions
-	for (int i = 0; i < n; i++)
-	{
-		if (isEmpty(shadowPos[i].x, shadowPos[i].y))
-		{
+	for (int i = 0; i < n; i++) {
+		if (isEmpty(shadowPos[i].x, shadowPos[i].y)) {
 			addColorPuyo(shadowPos[i].x, shadowPos[i].y, colors[i]);
-		}
-		else
-		{
+		} else {
 			// Error
 			shadowPos[i].x = -1;
 			shadowPos[i].y = -1;
 		}
 	}
-	PosVectorInt pv;
+
 	// Check if puyos are connected at these positions
 	unmark();
 
 	// Predict chain
-	int predictedChain = predictChain();
+	const int predictedChain = predictChain();
 
 	// Remove temporary puyo
-	for (int i = 0; i < n; i++)
-	{
-		if (shadowPos[i].x >= 0 && shadowPos[i].y >= 0)
-		{
-			delete fieldPuyoArray[shadowPos[i].x][shadowPos[i].y];
-			fieldPuyoArray[shadowPos[i].x][shadowPos[i].y] = nullptr;
+	for (int i = 0; i < n; i++) {
+		if (shadowPos[i].x >= 0 && shadowPos[i].y >= 0) {
+			delete m_fieldPuyoArray[shadowPos[i].x][shadowPos[i].y];
+			m_fieldPuyoArray[shadowPos[i].x][shadowPos[i].y] = nullptr;
 		}
 	}
+
 	return predictedChain;
 }
 
-
-void Field::dropGarbage(bool automatic, int dropAmount)
+void Field::dropGarbage(const bool automatic, const int dropAmount)
 {
-	int lastx = -1;
-	int lasty = -1;
+	int lastX = -1;
+	int lastY = -1;
 	bool dropped = false;
 
-	int dropN = 0;
-	if (automatic)
-		dropN = m_player->activeGarbage->GQ;
-	else
-		dropN = dropAmount;
-
-	if ((dropN > 0 && !m_player->forgiveGarbage)
+	if (const int dropN = automatic ? m_player->m_activeGarbage->gq : dropAmount;
+		dropN > 0 && !m_player->m_forgiveGarbage
 		// forgiveGarbage is something that applies only to human players
-		|| (dropN > 0 && m_player->getPlayerType() == ONLINE))
-	{
+		|| dropN > 0 && m_player->getPlayerType() == ONLINE) {
 		// Play animation
-		if (dropN >= 6 && dropN < 24)
-			m_player->characterAnimation.prepareAnimation("damage1");
-		else if (dropN >= 24)
-			m_player->characterAnimation.prepareAnimation("damage2");
+		if (dropN >= 6 && dropN < 24) {
+			m_player->m_characterAnimation.prepareAnimation("damage1");
+		} else if (dropN >= 24) {
+			m_player->m_characterAnimation.prepareAnimation("damage2");
+		}
 
-		m_player->garbageDropped = min(dropN, 30);
+		m_player->m_garbageDropped = min(dropN, 30);
 
-		// Reset nuisance drop pattern (doesnt affect legacy)
+		// Reset nuisance drop pattern (doesn't affect legacy)
 		m_player->resetNuisanceDropPattern();
-		
-		// Drop nuisancepuyos
-		for (int i = 0; i < m_player->garbageDropped; i++)
-		{
-			int x;
-			if (m_player->currentgame->legacyNuisanceDrop) {
-				x = nuisanceDropPattern(m_properties.gridX, m_player->garbageCycle);
-			}
-			else {
-				x = m_player->nuisanceDropPattern();
-			}
-			int y = m_properties.gridY - 2;
-			if (addNuisancePuyo(x, y, 1, i / m_properties.gridX))
-			{
+
+		// Drop nuisance puyos
+		for (int i = 0; i < m_player->m_garbageDropped; i++) {
+			const int x = m_player->m_currentGame->m_legacyNuisanceDrop
+				? nuisanceDropPattern(m_properties.gridX, m_player->m_garbageCycle)
+				: m_player->nuisanceDropPattern();
+			const int y = m_properties.gridY - 2;
+			if (addNuisancePuyo(x, y, 1, i / m_properties.gridX)) {
 				// Drop after creation
-				int newy = dropSingle(x, y);
-				
-				// Set falltarget
-				fieldPuyoArray[x][newy]->setFallTarget(newy);
-				
+				const int newY = dropSingle(x, y);
+
+				// Set fall target
+				m_fieldPuyoArray[x][newY]->setFallTarget(newY);
+
 				// Remember last one dropped
-				lastx = x; lasty = newy;
+				lastX = x;
+				lastY = newY;
 			}
 
 			// End iteration
-			m_player->garbageCycle++;
+			m_player->m_garbageCycle++;
 		}
 
 		// Mark if last nuisance for dropping sound
-		if (lastx != -1 && lasty != -1)
-			fieldPuyoArray[lastx][lasty]->lastNuisance = true;
+		if (lastX != -1 && lastY != -1) {
+			m_fieldPuyoArray[lastX][lastY]->m_lastNuisance = true;
+		}
 
 		// Remove from GQ
-		m_player->activeGarbage->GQ -= min(dropN, 30);
+		m_player->m_activeGarbage->gq -= min(dropN, 30);
 
 		// Update tray
-		m_player->updateTray(m_player->activeGarbage);
+		m_player->updateTray(m_player->m_activeGarbage);
 
 		dropped = true;
 		// Send message
-		// 0[g]1[garbagedropped]
-		if (m_player->currentgame->connected && m_player->getPlayerType() == HUMAN)
-		{
+		// 0[g]1[garbage dropped]
+		if (m_player->m_currentGame->m_connected && m_player->getPlayerType() == HUMAN) {
 			char str[100];
-			sprintf(str, "g|%i", m_player->garbageDropped);
-			m_player->currentgame->network->sendToChannel(CHANNEL_GAME, str, m_player->currentgame->channelName.c_str());
+			sprintf(str, "g|%i", m_player->m_garbageDropped);
+			m_player->m_currentGame->m_network->sendToChannel(CHANNEL_GAME, str, m_player->m_currentGame->m_channelName.c_str());
 		}
 	}
-	if (m_player->forgiveGarbage)
-	{
-		m_player->forgiveGarbage = false;
+
+	if (m_player->m_forgiveGarbage) {
+		m_player->m_forgiveGarbage = false;
 	}
 
 	// Nothing dropped: send
 	// 0["n"]
-	if (dropped == false && m_player->currentgame->connected && m_player->getPlayerType() == HUMAN)
-	{
-		m_player->currentgame->network->sendToChannel(CHANNEL_GAME, "n", m_player->currentgame->channelName.c_str());
+	if (dropped == false && m_player->m_currentGame->m_connected && m_player->getPlayerType() == HUMAN) {
+		m_player->m_currentGame->m_network->sendToChannel(CHANNEL_GAME, "n", m_player->m_currentGame->m_channelName.c_str());
 	}
-	
+
 	// Your garbage drop must be confirmed
-	if (m_player->currentgame->connected && m_player->getPlayerType() == HUMAN)
-	{
-		for (size_t i = 0; i < m_player->currentgame->players.size(); i++)
-		{
-			if (m_player->currentgame->players[i] != m_player && m_player->currentgame->players[i]->active)
-				m_player->currentgame->players[i]->waitForConfirm++;
+	if (m_player->m_currentGame->m_connected && m_player->getPlayerType() == HUMAN) {
+		for (const auto& player : m_player->m_currentGame->m_players) {
+			if (player != m_player && player->m_active) {
+				player->m_waitForConfirm++;
+			}
 		}
 	}
 
-
 	// End
 	m_sweepFall = 0;
-	if (automatic)
+	if (automatic) {
 		m_player->endPhase();
+	}
 }
 
 void Field::loseDrop() const
 {
-	for (int i = 0; i < m_properties.gridX; i++)
-	{
-		for (int j = 0; j < m_properties.gridY; j++)
-		{
-			if (isPuyo(i, j))
-			{
+	for (int i = 0; i < m_properties.gridX; i++) {
+		for (int j = 0; j < m_properties.gridY; j++) {
+			if (isPuyo(i, j)) {
 				unsetLinkAll(i, j);
-				if (fieldPuyoArray[i][j]->GetAccelY() < 0.1)
-					fieldPuyoArray[i][j]->SetAccelY(static_cast<float>(static_cast<int>(sqrt(i + 2.) * 12) % 10) / 2.0f);
-				fieldPuyoArray[i][j]->AddAccelY(0.2f);
+				if (m_fieldPuyoArray[i][j]->accelerationY() < 0.1f) {
+					m_fieldPuyoArray[i][j]->setAccelerationY(static_cast<float>(static_cast<int>(sqrt(i + 2.) * 12) % 10) / 2.0f);
+				}
+				m_fieldPuyoArray[i][j]->addAccelerationY(0.2f);
 			}
 		}
 	}
 }
 
 // Drop a field of puyos
-void Field::dropField(const std::string& fieldstring)
+void Field::dropField(const std::string& fieldString)
 {
-	int j = 0; // j backwards counter
-	for (size_t i = 0; i < fieldstring.size(); i++)
-	{
-		j = static_cast<int>(fieldstring.size() - 1 - i);
-		int x = m_properties.gridX - 1 - (i % m_properties.gridX);
-		int y = m_properties.gridY - 2;
-		std::string str = fieldstring.substr(j, 1);
-		if (to_int(str) > 0 && to_int(str) < 6)
-		{
+	for (size_t i = 0; i < fieldString.size(); i++) {
+		const int j = static_cast<int>(fieldString.size() - 1 - i);
+		const int x = m_properties.gridX - 1 - static_cast<int>(i) % m_properties.gridX;
+		const int y = m_properties.gridY - 2;
+		if (std::string str = fieldString.substr(j, 1); toInt(str) > 0 && toInt(str) < 6) {
 			// Color puyo
-			if (addColorPuyo(x, y, to_int(str) - 1, 1, static_cast<int>(i / m_properties.gridX), static_cast<int>(i / m_properties.gridX)))
-			{
+			if (addColorPuyo(x, y, toInt(str) - 1, 1, static_cast<int>(i / m_properties.gridX), static_cast<int>(i / m_properties.gridX))) {
 				// Drop after creation
-				int newy = dropSingle(x, y);
-				// Set falltarget
-				fieldPuyoArray[x][newy]->setFallTarget(newy);
+				const int newY = dropSingle(x, y);
+				// Set fall target
+				m_fieldPuyoArray[x][newY]->setFallTarget(newY);
 			}
-		}
-		else if (to_int(str) == 6)
-		{
-			if (addNuisancePuyo(x, y, 1, static_cast<int>(i / m_properties.gridX)))
-			{
+		} else if (toInt(str) == 6) {
+			if (addNuisancePuyo(x, y, 1, static_cast<int>(i / m_properties.gridX))) {
 				// Drop after creation
-				int newy = dropSingle(x, y);
-				// Set falltarget
-				fieldPuyoArray[x][newy]->setFallTarget(newy);
+				const int newY = dropSingle(x, y);
+				// Set fall target
+				m_fieldPuyoArray[x][newY]->setFallTarget(newY);
 			}
 		}
 	}
 	m_sweepFall = 0;
 }
 
-void Field::setFieldFromString(const std::string& fieldstring)
+void Field::setFieldFromString(const std::string& fieldString)
 {
 	// Clear field
 	clearField();
@@ -1728,30 +1588,23 @@ void Field::setFieldFromString(const std::string& fieldstring)
 	// - 1 - 5 = Color puyo
 	// - 6     = Nuisance puyo
 
-	for (size_t i = 0; i < fieldstring.size(); i++)
-	{
-		int x = static_cast<int>(i % m_properties.gridX);
-		int y = static_cast<int>(i / m_properties.gridX);
-		std::string str = fieldstring.substr(i, 1);
-		if (to_int(str) > 0 && to_int(str) < 6)
-		{
+	for (size_t i = 0; i < fieldString.size(); i++) {
+		const int x = static_cast<int>(i % m_properties.gridX);
+		const int y = static_cast<int>(i / m_properties.gridX);
+		if (std::string str = fieldString.substr(i, 1); toInt(str) > 0 && toInt(str) < 6) {
 			// Color puyo
-			if (addColorPuyo(x, y, to_int(str) - 1, 1))
-			{
+			if (addColorPuyo(x, y, toInt(str) - 1, 1)) {
 				// Drop after creation
-				int newy = dropSingle(x, y);
-				// Set falltarget
-				fieldPuyoArray[x][newy]->setFallTarget(newy);
+				const int newY = dropSingle(x, y);
+				// Set fall target
+				m_fieldPuyoArray[x][newY]->setFallTarget(newY);
 			}
-		}
-		else if (to_int(str) == 6)
-		{
-			if (addNuisancePuyo(x, y, 1))
-			{
+		} else if (toInt(str) == 6) {
+			if (addNuisancePuyo(x, y, 1)) {
 				// Drop after creation
-				int newy = dropSingle(x, y);
-				// Set falltarget
-				fieldPuyoArray[x][newy]->setFallTarget(newy);
+				const int newY = dropSingle(x, y);
+				// Set fall target
+				m_fieldPuyoArray[x][newY]->setFallTarget(newY);
 			}
 		}
 	}
@@ -1761,29 +1614,23 @@ void Field::setFieldFromString(const std::string& fieldstring)
 std::string Field::getFieldString() const
 {
 	std::string out;
-	for (int j = 0; j < m_properties.gridY; j++)
-	{
-		for (int i = 0; i < m_properties.gridX; i++)
-		{
-			if (isPuyo(i, j))
-			{
-				if (fieldPuyoArray[i][j]->getType() == COLORPUYO)
-					out += to_string(fieldPuyoArray[i][j]->getColor() + 1);
-				else if (fieldPuyoArray[i][j]->getType() == NUISANCEPUYO)
+	for (int j = 0; j < m_properties.gridY; j++) {
+		for (int i = 0; i < m_properties.gridX; i++) {
+			if (isPuyo(i, j)) {
+				if (m_fieldPuyoArray[i][j]->getType() == COLORPUYO)
+					out += toString(m_fieldPuyoArray[i][j]->getColor() + 1);
+				else if (m_fieldPuyoArray[i][j]->getType() == NUISANCEPUYO)
 					out += "6";
-			}
-			else
-			{
+			} else {
 				out += "0";
 			}
 		}
 	}
+
 	// Trim zeroes
 	int z = 0;
-	for (size_t i = 0; i < out.length(); i++)
-	{
-		if (out[out.length() - 1 - i] != '0')
-		{
+	for (size_t i = 0; i < out.length(); i++) {
+		if (out[out.length() - 1 - i] != '0') {
 			z = static_cast<int>(i);
 			break;
 		}
@@ -1794,18 +1641,15 @@ std::string Field::getFieldString() const
 // Destroys entire field and shows an animation of "throwing away" puyo
 void Field::throwAwayField()
 {
-	for (int i = 0; i < m_properties.gridX; i++)
-	{
-		for (int j = 0; j < m_properties.gridY; j++)
-		{
-			if (isPuyo(i, j))
-			{
-				// Create new throwpuyo
-				createParticleThrow(fieldPuyoArray[i][j]);
-				
+	for (int i = 0; i < m_properties.gridX; i++) {
+		for (int j = 0; j < m_properties.gridY; j++) {
+			if (isPuyo(i, j)) {
+				// Create new throw puyo
+				createParticleThrow(m_fieldPuyoArray[i][j]);
+
 				// Delete puyo
-				delete fieldPuyoArray[i][j];
-				fieldPuyoArray[i][j] = nullptr;
+				delete m_fieldPuyoArray[i][j];
+				m_fieldPuyoArray[i][j] = nullptr;
 			}
 		}
 	}

@@ -1,27 +1,24 @@
 #pragma once
+#include "Frontend.h"
 #include "RNG/MersenneTwister.h"
 #include "Sound.h"
-#include "Sprite.h"
-#include "Frontend.h"
 
-#include <map>
-#include <vector>
 #include <deque>
+#include <map>
 #include <sstream>
-#include <stdint.h>
+#include <vector>
 
-#define CHANNEL_CHAT                0
-#define CHANNEL_CHALLENGE           1
-#define CHANNEL_CHALLENGERESPONSE   2
-#define CHANNEL_GAME                3
-#define CHANNEL_CHAT_PRIVATE        4
+#define CHANNEL_CHAT 0
+#define CHANNEL_CHALLENGE 1
+#define CHANNEL_CHALLENGERESPONSE 2
+#define CHANNEL_GAME 3
+#define CHANNEL_CHAT_PRIVATE 4
 
-#define CHANNEL_MATCH               9
+#define CHANNEL_MATCH 9
 
 #ifdef _WIN32
 #ifdef _MSC_VER
-extern "C" __declspec(dllimport)
-unsigned long __stdcall timeGetTime(void);
+extern "C" __declspec(dllimport) unsigned long __stdcall timeGetTime(void);
 #endif
 #else
 #include <sys/time.h>
@@ -34,97 +31,95 @@ inline static unsigned long timeGetTime()
 }
 #endif
 
-namespace ppvs
-{
+namespace ppvs {
 
-typedef char PlayerType;
-#define HUMAN   0
-#define CPU     1
-#define ONLINE  2
+enum PlayerType : unsigned char {
+	HUMAN,
+	CPU,
+	ONLINE,
+};
 
-typedef char PuyoCharacter;
-#define ACCORD          0
-#define AMITIE          1
-#define ARLE            2
-#define DONGURIGAERU    3
-#define DRACO           4
-#define CARBUNCLE       5
-#define ECOLO           6
-#define FELI            7
-#define KLUG            8
-#define LEMRES          9
-#define MAGURO          10
-#define OCEAN_PRINCE    11
-#define OSHARE_BONES    12
-#define RAFFINE         13
-#define RIDER           14
-#define RISUKUMA        15
-#define RINGO           16
-#define RULUE           17
-#define SATAN           18
-#define SCHEZO          19
-#define SIG             20
-#define SUKETOUDARA     21
-#define WITCH           22
-#define YU_REI          23
-#define NUM_CHARACTERS  24
+enum PuyoCharacter : unsigned char {
+	ACCORD,
+	AMITIE,
+	ARLE,
+	DONGURIGAERU,
+	DRACO,
+	CARBUNCLE,
+	ECOLO,
+	FELI,
+	KLUG,
+	LEMRES,
+	MAGURO,
+	OCEAN_PRINCE,
+	OSHARE_BONES,
+	RAFFINE,
+	RIDER,
+	RISUKUMA,
+	RINGO,
+	RULUE,
+	SATAN,
+	SCHEZO,
+	SIG,
+	SUKETOUDARA,
+	WITCH,
+	YU_REI,
+};
 
-typedef int RecordState;
-#define PVS_NOTRECORDING 0
-#define PVS_RECORDING    1
-#define PVS_REPLAYING    2
+constexpr int kNumCharacters = 24;
+
+enum class RecordState : int {
+	NOT_RECORDING,
+	RECORDING,
+	REPLAYING,
+};
 
 // Global sounds struct
-struct Sounds
-{
-	Sound allcleardrop, drop, feverlight, fever, fevertimecount, fevertimeend, go, heavy, hit, lose, move,
-		nuisance_hitL, nuisance_hitM, nuisance_hitS,
+struct Sounds {
+	Sound allClearDrop, drop, feverLight, fever, feverTimeCount, feverTimeEnd, go, heavy, hit, lose, move,
+		nuisanceHitL, nuisanceHitM, nuisanceHitS,
 		nuisanceL, nuisanceS, ready, rotate, win,
 		decide, cancel, cursor;
 	Sound chain[7];
 };
 
 // Settings by the users for modding, are loaded at start of game
-struct UserSettings
-{
-	// Strings to userfolders
-	std::string str_puyo;
-	std::string str_background;
-	std::string str_sfx;
-	std::string str_voice;
-	std::string str_replay;
+struct UserSettings {
+	// Strings to user directories
+	std::string puyoDirPath;
+	std::string backgroundDirPath;
+	std::string sfxDirPath;
+	std::string voiceDirPath;
+	std::string replayDirPath;
 };
 
 // Variables through that are global in game
-struct GameData
-{
+struct GameData {
 	// Controllers
-	Frontend* front;
-	FeImage* imgPuyo, * imgBackground, * imgField1, * imgField2, * imgBorder1, * imgBorder2, * imgPlayerBorder, * imgSpice;
-	FeImage* imgFieldFever, * imgScore, * imgChain, * imgCheckmark;
-	FeImage* imgAllClear, * imgLose, * imgWin;
-	FeImage* imgNextPuyoBackgroundR, * imgNextPuyoBackgroundL;
-	FeImage* imgFeverGauge, * imgSeconds;
-	FeImage* imgLight, * imgLight_s, * imgLight_hit, * imgfsparkle, * imgfLight, * imgfLight_hit, * imgTime;
-	FeImage* imgMenu[3][2];
-	FeImage* imgFeverBack[30];
-	FeImage* imgCharHolder, * imgNameHolder, * imgPlayerNumber, * imgPlayerCharSelect, * imgBlack;
-	FeImage* imgCharField[NUM_CHARACTERS], * imgCharSelect[NUM_CHARACTERS], * imgSelect[NUM_CHARACTERS], * imgCharName[NUM_CHARACTERS];
-	FeImage* imgDropset;
-	FeShader* glowShader;
-	FeShader* tunnelShader;
+	Frontend* front {};
+	FeImage *imgPuyo {}, *imgBackground {}, *imgField1 {}, *imgField2 {}, *imgBorder1 {}, *imgBorder2 {}, *imgPlayerBorder {}, *imgSpice {};
+	FeImage *imgFieldFever {}, *imgScore {}, *imgChain {}, *imgCheckMark {};
+	FeImage *imgAllClear {}, *imgLose {}, *imgWin {};
+	FeImage *imgNextPuyoBackgroundR {}, *imgNextPuyoBackgroundL {};
+	FeImage *imgFeverGauge {}, *imgSeconds {};
+	FeImage *imgLight {}, *imgLightS {}, *imgLightHit {}, *imgFSparkle {}, *imgFLight {}, *imgFLightHit {}, *imgTime {};
+	FeImage* imgMenu[3][2] {};
+	FeImage* imgFeverBack[30] {};
+	FeImage *imgCharHolder {}, *imgNameHolder {}, *imgPlayerNumber {}, *imgPlayerCharSelect {}, *imgBlack {};
+	FeImage *imgCharField[kNumCharacters] {}, *imgCharSelect[kNumCharacters] {}, *imgSelect[kNumCharacters] {}, *imgCharName[kNumCharacters] {};
+	FeImage* imgDropSet {};
+	FeShader* glowShader {};
+	FeShader* tunnelShader {};
 	Sounds snd;
 	UserSettings gUserSettings;
-	int globalTimer; // Global timer in game
-	int matchTimer; // Duration of a match
-	int PUYOXCENTER; // Center of rotation for quadruplets
-	bool windowFocus;
-	bool playSounds, playMusic;
-
+	int globalTimer {}; // Global timer in game
+	int matchTimer {}; // Duration of a match
+	int quadrupletCenter {}; // Center of rotation for quadruplets
+	bool windowFocus {};
+	bool playSounds {}, playMusic {};
 };
 
-struct TranslatableStrings
-{
+struct TranslatableStrings {
 	std::string waitingForPlayer;
 	std::string disconnected;
 	std::string rankedWaiting;
@@ -134,34 +129,36 @@ struct TranslatableStrings
 		, disconnected("Player disconnected.")
 		, rankedWaiting("Please press the Start button\n to find a new opponent. (default: Enter button)")
 		, rankedSearching("Searching for opponent...")
-	{}
+	{
+	}
 };
 
-typedef std::deque<std::string> stringList;
+typedef std::deque<std::string> StringList;
 
 // Ini file is edited from launcher
-extern std::map<std::string, int> controls_map;
+extern std::map<std::string, int> controlsMap;
 
 // Sound
 extern std::vector<std::string> voicePattern;
 extern std::vector<int> voicePatternClassic;
 
 // Global constants throughout all games
-extern const float PI;
-extern const int PUYOX; // Size of puyo in image
-extern const int PUYOY;
-extern const int CHAINPOPSPEED;
-extern const float GARBAGESPEED;
+constexpr float kPiF = 3.14159265f;
+constexpr double kPiD = 3.141592653589793238463;
+constexpr int kPuyoX = 32;
+constexpr int kPuyoY = 32;
+constexpr int kChainPopSpeed = 25;
+constexpr float kGarbageSpeed = 4.8f;
 
 // Global strings for local folders (to shorten expressions)
-extern const std::string folder_user_sounds;
-extern const std::string folder_user_music;
-extern const std::string folder_user_backgrounds;
-extern const std::string folder_user_puyo;
-extern const std::string folder_user_character;
+extern const std::string kFolderUserSounds;
+extern const std::string kFolderUserMusic;
+extern const std::string kFolderUserBackgrounds;
+extern const std::string kFolderUserPuyo;
+extern const std::string kFolderUserCharacter;
 
-// Global randomizer
-extern MersenneTwister grandomizer;
+// Global RNG
+extern MersenneTwister gRng;
 
 // Shader
 extern bool useShaders;
@@ -176,23 +173,23 @@ std::string Lower(std::string str);
 void setBuffer(Sound& s, FeSound* sb);
 int sign(int i);
 double interpolate(std::string type, double startVal, double endVal, double t, double alpha = 1, double beta = 1);
-void splitString(std::string& in, char delimiter, stringList& v);
-void createFolder(std::string foldername);
+void splitString(std::string& in, char delimiter, StringList& v);
+void createFolder(std::string folderName);
 
 // Debugging
 extern FeFont* fontArial;
-extern std::string debugstring;
+extern std::string debugString;
 extern int debugMode;
 
 // Convert int to string
 template <class T>
-std::string to_string(const T& t)
+std::string toString(const T& t)
 {
 	std::stringstream ss;
 	ss << t;
 	return ss.str();
 }
 
-int to_int(const std::string& s);
+int toInt(const std::string& s);
 
 }

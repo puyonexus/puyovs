@@ -1,56 +1,58 @@
 #pragma once
 
 #include "RuleSet/RuleSet.h"
-#include "DropPattern.h"
-#include <string>
 #include <map>
+#include <string>
 
-namespace ppvs
-{
+namespace ppvs {
 
-struct RuleSetInfo
-{
+struct RuleSetInfo {
 	RuleSetInfo();
-	RuleSetInfo(Rules type);
+	explicit RuleSetInfo(Rules type);
+
 	void setRules(Rules type);
-	Rules rulesetType;
-	bool custom;
-	bool quickDrop;
-	int marginTime;
-	int targetPoint;
-	int requiredChain;
-	int initialFeverCount;
-	int feverPower;
-	int puyoToClear;
-	int Nplayers;
-	int colors;
+
+	Rules ruleSetType = Rules::TSU;
+	bool custom = false;
+	bool quickDrop = false;
+	int marginTime = 0;
+	int targetPoint = 0;
+	int requiredChain = 0;
+	int initialFeverCount = 0;
+	int feverPower = 0;
+	int puyoToClear = 0;
+	int numPlayers = 0;
+	int colors = 0;
 };
 
-struct ReplayRuleSetHeader
-{
-	Rules rulesetType;
+struct ReplayRuleSetHeader {
+	Rules ruleSetType;
 	int marginTime;
 	int targetPoint;
 	int requiredChain;
 	int initialFeverCount;
 	int feverPower;
 	int puyoToClear;
-	int Nplayers;
+	int numPlayers;
 	int quickDrop;
 
 	int futureRules[10];
 };
 
 // Object to pass to game
-struct GameSettings
-{
-	GameSettings(const RuleSetInfo& rulesetInfo = RuleSetInfo());
+struct GameSettings {
+	explicit GameSettings(const RuleSetInfo& ruleSetInfo = RuleSetInfo());
 	~GameSettings();
 
+	GameSettings(const GameSettings&) = delete;
+	GameSettings& operator=(const GameSettings&) = delete;
+	GameSettings(GameSettings&&) = delete;
+	GameSettings& operator=(GameSettings&&) = delete;
+
 	// Game settings
-	int Nplayers;
-	int Nhumans;
-	RuleSetInfo rulesetInfo;
+	int numPlayers;
+	int numHumans;
+	RuleSetInfo ruleSetInfo;
 	bool rankedMatch;
 	int maxWins;
 	RecordState recording;
@@ -68,9 +70,9 @@ struct GameSettings
 	bool useCharacterField;
 	bool startWithCharacterSelect;
 	bool pickColors;
-	bool useCPUplayers; // This is set for testing or endless
+	bool useCpuPlayers; // This is set for testing or endless
 	bool spectating; // Set on if player intends to spectate match
-	int showNames; // For replays, 0= showall, 1=not p1, 2=hide all
+	int showNames; // For replays, 0=show all, 1=not p1, 2=hide all
 
 	// Replay
 	std::deque<std::string> replayPlayList;

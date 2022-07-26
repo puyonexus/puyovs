@@ -1,67 +1,53 @@
 #include "GameSettings.h"
 
-namespace ppvs
-{
+namespace ppvs {
 
 RuleSetInfo::RuleSetInfo()
 {
-	setRules(TSU);
+	setRules(Rules::TSU);
 }
 
-RuleSetInfo::RuleSetInfo(Rules type)
+RuleSetInfo::RuleSetInfo(const Rules type)
 {
 	setRules(type);
 }
 
-void RuleSetInfo::setRules(Rules type)
+void RuleSetInfo::setRules(const Rules type)
 {
 	custom = true;
 	quickDrop = false;
 	marginTime = 192;
-	targetPoint = 70;
 	requiredChain = 0;
 	initialFeverCount = 0;
 	feverPower = 100;
 	puyoToClear = 4;
-	Nplayers = 2;
+	numPlayers = 2;
 	colors = 4; // Default: cannot choose colors
+	ruleSetType = type;
+	switch (type) {
+	case Rules::TSU:
+	case Rules::TSU_ONLINE:
+	case Rules::ENDLESS:
+	case Rules::ENDLESSFEVER:
+	case Rules::ENDLESSFEVERVS:
+	case Rules::EXCAVATION:
+		targetPoint = 70;
+		break;
 
-	rulesetType = type;
-	if (type == TSU)
-	{
-		targetPoint = 70;
-	}
-	else if (type == FEVER)
-	{
+	case Rules::FEVER:
+	case Rules::FEVER_ONLINE:
+	case Rules::FEVER15_ONLINE:
+	case Rules::ENDLESSFEVERVS_ONLINE:
 		targetPoint = 120;
-		puyoToClear = 4;
-	}
-	else if (type == TSU_ONLINE)
-	{
-		targetPoint = 70;
-	}
-	else if (type == FEVER_ONLINE)
-	{
-		targetPoint = 120;
-		puyoToClear = 4;
-	}
-	else if (type == FEVER15_ONLINE)
-	{
-		targetPoint = 120;
-		puyoToClear = 4;
-	}
-	else if (type == ENDLESSFEVERVS_ONLINE)
-	{
-		targetPoint = 120;
-		puyoToClear = 4;
 	}
 }
 
-GameSettings::GameSettings(const RuleSetInfo& rulesetInfo) : rulesetInfo(rulesetInfo)
+GameSettings::GameSettings(const RuleSetInfo& ruleSetInfo)
+	: ruleSetInfo(ruleSetInfo)
 {
 	// Set default values
-	Nplayers = 2;
-	Nhumans = 1;
+	numPlayers = 2;
+	numHumans = 1;
 
 	language = "EN";
 	playSound = true;
@@ -73,9 +59,9 @@ GameSettings::GameSettings(const RuleSetInfo& rulesetInfo) : rulesetInfo(ruleset
 	useCharacterField = true;
 	startWithCharacterSelect = true;
 	pickColors = true;
-	useCPUplayers = false;
+	useCpuPlayers = false;
 	spectating = false;
-	recording = PVS_NOTRECORDING;
+	recording = RecordState::NOT_RECORDING;
 	showNames = 0;
 	rankedMatch = false;
 	maxWins = 2;
@@ -122,11 +108,8 @@ GameSettings::GameSettings(const RuleSetInfo& rulesetInfo) : rulesetInfo(ruleset
 	controls["2a"] = "m";
 	controls["2b"] = "n";
 	controls["2start"] = "space";
-
 }
 
-GameSettings::~GameSettings()
-{
-}
+GameSettings::~GameSettings() = default;
 
 }

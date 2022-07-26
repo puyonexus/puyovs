@@ -1,91 +1,90 @@
-#include <algorithm>
 #include "DropPattern.h"
 #include "global.h"
+#include <algorithm>
+#include <string>
+#include <vector>
 
 using namespace std;
 
-namespace ppvs
-{
+namespace ppvs {
 
 // Make sure the order is the same as the order as the enum
-DropSet dropPattern[]=
-{
-	{{DOUBLET,TRIPLET,DOUBLET,TRIPLETR,DOUBLET,TRIPLET,DOUBLET,BIG,DOUBLET,TRIPLETR,DOUBLET,TRIPLET,DOUBLET,TRIPLETR,DOUBLET,QUADRUPLET}},
-	{{DOUBLET,DOUBLET,DOUBLET,TRIPLET,DOUBLET,DOUBLET,DOUBLET,BIG,DOUBLET,DOUBLET,DOUBLET,TRIPLETR,DOUBLET,DOUBLET,DOUBLET,QUADRUPLET}},
-	{{DOUBLET,DOUBLET,DOUBLET,DOUBLET,DOUBLET,DOUBLET,DOUBLET,DOUBLET,DOUBLET,DOUBLET,DOUBLET,DOUBLET,DOUBLET,DOUBLET,DOUBLET,DOUBLET}},
-	{{DOUBLET,DOUBLET,DOUBLET,TRIPLET,DOUBLET,DOUBLET,DOUBLET,QUADRUPLET,DOUBLET,DOUBLET,DOUBLET,BIG,DOUBLET,DOUBLET,DOUBLET,QUADRUPLET}},
-	{{DOUBLET,DOUBLET,DOUBLET,DOUBLET,DOUBLET,DOUBLET,DOUBLET,DOUBLET,DOUBLET,DOUBLET,TRIPLET,TRIPLETR,BIG,TRIPLETR,TRIPLET,QUADRUPLET}},
-	{{DOUBLET,TRIPLET,BIG,DOUBLET,QUADRUPLET,TRIPLETR,DOUBLET,DOUBLET,DOUBLET,TRIPLET,QUADRUPLET,DOUBLET,BIG,TRIPLETR,DOUBLET,DOUBLET}},
-	{{DOUBLET,TRIPLET,TRIPLETR,TRIPLET,DOUBLET,DOUBLET,TRIPLET,TRIPLETR,TRIPLET,DOUBLET,QUADRUPLET,BIG,DOUBLET,DOUBLET,TRIPLET,DOUBLET}},
-	{{TRIPLET,DOUBLET,BIG,DOUBLET,TRIPLETR,DOUBLET,QUADRUPLET,DOUBLET,BIG,DOUBLET,TRIPLET,DOUBLET,QUADRUPLET,DOUBLET,TRIPLETR,DOUBLET}},
-	{{DOUBLET,DOUBLET,TRIPLET,DOUBLET,TRIPLETR,DOUBLET,BIG,DOUBLET,TRIPLET,DOUBLET,BIG,DOUBLET,TRIPLETR,DOUBLET,DOUBLET,QUADRUPLET}},
-	{{DOUBLET,TRIPLET,DOUBLET,BIG,DOUBLET,TRIPLETR,DOUBLET,DOUBLET,DOUBLET,TRIPLET,DOUBLET,QUADRUPLET,DOUBLET,BIG,DOUBLET,TRIPLETR}},
-	{{DOUBLET,DOUBLET,TRIPLET,DOUBLET,DOUBLET,TRIPLETR,DOUBLET,DOUBLET,QUADRUPLET,DOUBLET,DOUBLET,BIG,DOUBLET,DOUBLET,DOUBLET,QUADRUPLET}},
-	{{DOUBLET,DOUBLET,DOUBLET,TRIPLET,DOUBLET,DOUBLET,TRIPLETR,BIG,DOUBLET,DOUBLET,TRIPLET,BIG,DOUBLET,DOUBLET,TRIPLETR,QUADRUPLET}},
-	{{DOUBLET,DOUBLET,DOUBLET,DOUBLET,TRIPLET,DOUBLET,DOUBLET,DOUBLET,DOUBLET,BIG,DOUBLET,DOUBLET,DOUBLET,DOUBLET,DOUBLET,QUADRUPLET}},
-	{{DOUBLET,DOUBLET,TRIPLET,DOUBLET,DOUBLET,BIG,DOUBLET,DOUBLET,DOUBLET,TRIPLETR,DOUBLET,DOUBLET,TRIPLET,DOUBLET,DOUBLET,QUADRUPLET}},
-	{{DOUBLET,DOUBLET,DOUBLET,TRIPLET,DOUBLET,DOUBLET,BIG,DOUBLET,DOUBLET,TRIPLETR,DOUBLET,DOUBLET,BIG,DOUBLET,DOUBLET,QUADRUPLET}},
-	{{DOUBLET,TRIPLETR,DOUBLET,DOUBLET,DOUBLET,DOUBLET,BIG,DOUBLET,DOUBLET,DOUBLET,DOUBLET,QUADRUPLET,DOUBLET,DOUBLET,TRIPLET,DOUBLET}},
-	{{DOUBLET,DOUBLET,DOUBLET,TRIPLET,BIG,DOUBLET,DOUBLET,DOUBLET,TRIPLETR,BIG,QUADRUPLET,DOUBLET,DOUBLET,TRIPLET,DOUBLET,TRIPLET}},
-	{{DOUBLET,DOUBLET,DOUBLET,QUADRUPLET,DOUBLET,DOUBLET,DOUBLET,BIG,DOUBLET,DOUBLET,DOUBLET,QUADRUPLET,DOUBLET,DOUBLET,DOUBLET,BIG}},
-	{{DOUBLET,DOUBLET,DOUBLET,TRIPLET,DOUBLET,DOUBLET,DOUBLET,BIG,DOUBLET,DOUBLET,DOUBLET,QUADRUPLET,DOUBLET,DOUBLET,DOUBLET,BIG}},
-	{{DOUBLET,DOUBLET,DOUBLET,DOUBLET,TRIPLET,DOUBLET,QUADRUPLET,DOUBLET,TRIPLETR,DOUBLET,BIG,DOUBLET,TRIPLET,DOUBLET,QUADRUPLET,DOUBLET}},
-	{{DOUBLET,DOUBLET,DOUBLET,TRIPLET,DOUBLET,DOUBLET,DOUBLET,QUADRUPLET,DOUBLET,DOUBLET,TRIPLETR,DOUBLET,BIG,DOUBLET,DOUBLET,QUADRUPLET}},
-	{{DOUBLET,DOUBLET,TRIPLET,DOUBLET,DOUBLET,TRIPLETR,DOUBLET,BIG,DOUBLET,TRIPLET,DOUBLET,DOUBLET,TRIPLETR,DOUBLET,DOUBLET,BIG}},
-	{{TRIPLETR,TRIPLET,DOUBLET,DOUBLET,TRIPLETR,DOUBLET,DOUBLET,DOUBLET,QUADRUPLET,DOUBLET,DOUBLET,DOUBLET,BIG,DOUBLET,DOUBLET,DOUBLET}},
-	{{DOUBLET,TRIPLET,DOUBLET,BIG,DOUBLET,TRIPLETR,DOUBLET,BIG,DOUBLET,TRIPLET,DOUBLET,QUADRUPLET,DOUBLET,DOUBLET,DOUBLET,QUADRUPLET}}
+DropSet dropPattern[] = {
+	{ { DOUBLET, TRIPLET, DOUBLET, TRIPLET_R, DOUBLET, TRIPLET, DOUBLET, BIG, DOUBLET, TRIPLET_R, DOUBLET, TRIPLET, DOUBLET, TRIPLET_R, DOUBLET, QUADRUPLET } },
+	{ { DOUBLET, DOUBLET, DOUBLET, TRIPLET, DOUBLET, DOUBLET, DOUBLET, BIG, DOUBLET, DOUBLET, DOUBLET, TRIPLET_R, DOUBLET, DOUBLET, DOUBLET, QUADRUPLET } },
+	{ { DOUBLET, DOUBLET, DOUBLET, DOUBLET, DOUBLET, DOUBLET, DOUBLET, DOUBLET, DOUBLET, DOUBLET, DOUBLET, DOUBLET, DOUBLET, DOUBLET, DOUBLET, DOUBLET } },
+	{ { DOUBLET, DOUBLET, DOUBLET, TRIPLET, DOUBLET, DOUBLET, DOUBLET, QUADRUPLET, DOUBLET, DOUBLET, DOUBLET, BIG, DOUBLET, DOUBLET, DOUBLET, QUADRUPLET } },
+	{ { DOUBLET, DOUBLET, DOUBLET, DOUBLET, DOUBLET, DOUBLET, DOUBLET, DOUBLET, DOUBLET, DOUBLET, TRIPLET, TRIPLET_R, BIG, TRIPLET_R, TRIPLET, QUADRUPLET } },
+	{ { DOUBLET, TRIPLET, BIG, DOUBLET, QUADRUPLET, TRIPLET_R, DOUBLET, DOUBLET, DOUBLET, TRIPLET, QUADRUPLET, DOUBLET, BIG, TRIPLET_R, DOUBLET, DOUBLET } },
+	{ { DOUBLET, TRIPLET, TRIPLET_R, TRIPLET, DOUBLET, DOUBLET, TRIPLET, TRIPLET_R, TRIPLET, DOUBLET, QUADRUPLET, BIG, DOUBLET, DOUBLET, TRIPLET, DOUBLET } },
+	{ { TRIPLET, DOUBLET, BIG, DOUBLET, TRIPLET_R, DOUBLET, QUADRUPLET, DOUBLET, BIG, DOUBLET, TRIPLET, DOUBLET, QUADRUPLET, DOUBLET, TRIPLET_R, DOUBLET } },
+	{ { DOUBLET, DOUBLET, TRIPLET, DOUBLET, TRIPLET_R, DOUBLET, BIG, DOUBLET, TRIPLET, DOUBLET, BIG, DOUBLET, TRIPLET_R, DOUBLET, DOUBLET, QUADRUPLET } },
+	{ { DOUBLET, TRIPLET, DOUBLET, BIG, DOUBLET, TRIPLET_R, DOUBLET, DOUBLET, DOUBLET, TRIPLET, DOUBLET, QUADRUPLET, DOUBLET, BIG, DOUBLET, TRIPLET_R } },
+	{ { DOUBLET, DOUBLET, TRIPLET, DOUBLET, DOUBLET, TRIPLET_R, DOUBLET, DOUBLET, QUADRUPLET, DOUBLET, DOUBLET, BIG, DOUBLET, DOUBLET, DOUBLET, QUADRUPLET } },
+	{ { DOUBLET, DOUBLET, DOUBLET, TRIPLET, DOUBLET, DOUBLET, TRIPLET_R, BIG, DOUBLET, DOUBLET, TRIPLET, BIG, DOUBLET, DOUBLET, TRIPLET_R, QUADRUPLET } },
+	{ { DOUBLET, DOUBLET, DOUBLET, DOUBLET, TRIPLET, DOUBLET, DOUBLET, DOUBLET, DOUBLET, BIG, DOUBLET, DOUBLET, DOUBLET, DOUBLET, DOUBLET, QUADRUPLET } },
+	{ { DOUBLET, DOUBLET, TRIPLET, DOUBLET, DOUBLET, BIG, DOUBLET, DOUBLET, DOUBLET, TRIPLET_R, DOUBLET, DOUBLET, TRIPLET, DOUBLET, DOUBLET, QUADRUPLET } },
+	{ { DOUBLET, DOUBLET, DOUBLET, TRIPLET, DOUBLET, DOUBLET, BIG, DOUBLET, DOUBLET, TRIPLET_R, DOUBLET, DOUBLET, BIG, DOUBLET, DOUBLET, QUADRUPLET } },
+	{ { DOUBLET, TRIPLET_R, DOUBLET, DOUBLET, DOUBLET, DOUBLET, BIG, DOUBLET, DOUBLET, DOUBLET, DOUBLET, QUADRUPLET, DOUBLET, DOUBLET, TRIPLET, DOUBLET } },
+	{ { DOUBLET, DOUBLET, DOUBLET, TRIPLET, BIG, DOUBLET, DOUBLET, DOUBLET, TRIPLET_R, BIG, QUADRUPLET, DOUBLET, DOUBLET, TRIPLET, DOUBLET, TRIPLET } },
+	{ { DOUBLET, DOUBLET, DOUBLET, QUADRUPLET, DOUBLET, DOUBLET, DOUBLET, BIG, DOUBLET, DOUBLET, DOUBLET, QUADRUPLET, DOUBLET, DOUBLET, DOUBLET, BIG } },
+	{ { DOUBLET, DOUBLET, DOUBLET, TRIPLET, DOUBLET, DOUBLET, DOUBLET, BIG, DOUBLET, DOUBLET, DOUBLET, QUADRUPLET, DOUBLET, DOUBLET, DOUBLET, BIG } },
+	{ { DOUBLET, DOUBLET, DOUBLET, DOUBLET, TRIPLET, DOUBLET, QUADRUPLET, DOUBLET, TRIPLET_R, DOUBLET, BIG, DOUBLET, TRIPLET, DOUBLET, QUADRUPLET, DOUBLET } },
+	{ { DOUBLET, DOUBLET, DOUBLET, TRIPLET, DOUBLET, DOUBLET, DOUBLET, QUADRUPLET, DOUBLET, DOUBLET, TRIPLET_R, DOUBLET, BIG, DOUBLET, DOUBLET, QUADRUPLET } },
+	{ { DOUBLET, DOUBLET, TRIPLET, DOUBLET, DOUBLET, TRIPLET_R, DOUBLET, BIG, DOUBLET, TRIPLET, DOUBLET, DOUBLET, TRIPLET_R, DOUBLET, DOUBLET, BIG } },
+	{ { TRIPLET_R, TRIPLET, DOUBLET, DOUBLET, TRIPLET_R, DOUBLET, DOUBLET, DOUBLET, QUADRUPLET, DOUBLET, DOUBLET, DOUBLET, BIG, DOUBLET, DOUBLET, DOUBLET } },
+	{ { DOUBLET, TRIPLET, DOUBLET, BIG, DOUBLET, TRIPLET_R, DOUBLET, BIG, DOUBLET, TRIPLET, DOUBLET, QUADRUPLET, DOUBLET, DOUBLET, DOUBLET, QUADRUPLET } }
 };
 
-MovePuyoType getFromDropPattern(PuyoCharacter p, int i)
+MovePuyoType getFromDropPattern(const PuyoCharacter p, int i)
 {
 	i %= 16;
-	return dropPattern[int(p)].mpt[i];
+	return dropPattern[static_cast<unsigned char>(p)].mpt[i];
 }
 
-int nuisanceDropPattern(int maxX, int cycle)
+int nuisanceDropPattern(const int maxX, int cycle)
 {
-	int* pattern = new int[maxX];
+	const auto pattern = new int[maxX];
 	createNuisancePattern(maxX, pattern);
-	int returnVal = 0;
 
 	// Cycle val cannot be larger than  max
 	cycle %= maxX;
 
 	// Cycle through pattern
-	returnVal = pattern[cycle] + cycle / maxX;
+	int returnVal = pattern[cycle] + cycle / maxX;
 	returnVal %= maxX;
 
-	delete[]pattern;
+	delete[] pattern;
 	return returnVal;
 }
 
-// Generates pattern, puts in array, so that it will work for every width of puyofield
+// Generates pattern, puts in array, so that it will work for every width of puyo field
 void createNuisancePattern(int max, int* array)
 {
-	bool even = (max % 2 == 0);
-	if (!even) max++;
-	int divider = max / 2;
+	const bool even = (max % 2 == 0);
+	if (!even) {
+		max++;
+	}
+	const int divider = max / 2;
 	int remember = 0;
-	for (int i = 0; i < max; i++)
-	{
-		int x = i / divider;
-		int y = ((-i + divider * 100) % divider);
-		int z = x + y * 2;
-		if (!even && z >= max - 1)
-		{
+	for (int i = 0; i < max; i++) {
+		const int x = i / divider;
+		const int y = ((-i + divider * 100) % divider);
+		const int z = x + y * 2;
+		if (!even && z >= max - 1) {
 			// Do not use out of bound value in uneven situation
 			remember = i;
 			continue;
 		}
-		if (!even && i == max - 1)
-			*(array + z) = remember;
-		else
-			*(array + z) = i;
+		if (!even && i == max - 1) {
+			array[z] = remember;
+		} else {
+			array[z] = i;
+		}
 	}
-	if (!even) max--;
 }
 
-// Feverchains are stored in a 3D array of strings ->  feverChains[type][colors][chainnumber]
+// Fever chains are stored in a 3D array of strings ->  feverChains[type][colors][chain number]
 std::string feverChains[12][3][13];
 
 void initFeverChains()
@@ -569,7 +568,7 @@ void initFeverChains()
 	feverChains[10][2][10] = "200000110003150004220001321251551155533221341251454424535344533222";
 	feverChains[10][2][11] = "33000011054014443331241451551155522441231451353314525244522111";
 	feverChains[10][2][12] = "5030002032111432422324452412551445414311555312111325444553231253311";
-	// Type: Key & Stairswich Mix (11)
+	// Type: Key & Stairwich Mix (11)
 	// ------Colors: 3
 	feverChains[11][0][0] = "21000032200013300011320";
 	feverChains[11][0][1] = "3000032300013300032200013300011320";
@@ -617,25 +616,24 @@ void initFeverChains()
 std::string getFeverChain(int type, int colors, int chain, int offset)
 {
 	// Safe guard
-	if (colors > 5 || colors < 3) colors = 4;
-	if (chain > 15 || chain < 3) chain = 15;
-	if (type > 11) type = 11;
+	if (colors > 5 || colors < 3)
+		colors = 4;
+	if (chain > 15 || chain < 3)
+		chain = 15;
+	if (type > 11)
+		type = 11;
 
 	// Rotate colors
-	std::string fc = feverChains[type][colors - 3][chain - 3];
-	std::string out = "";
-	for (size_t i = 0; i < fc.size(); i++)
-	{
+	const std::string fc = feverChains[type][colors - 3][chain - 3];
+	std::string out;
+	for (size_t i = 0; i < fc.size(); i++) {
 		std::string str = fc.substr(i, 1);
-		int n = to_int(str);
-		if (n != 0)
-		{
+		if (int n = toInt(str); n != 0) {
 			n += offset;
 			n %= colors;
 			n += 1;
-			out += to_string(n);
-		}
-		else
+			out += toString(n);
+		} else
 			out += "0";
 	}
 
@@ -644,24 +642,30 @@ std::string getFeverChain(int type, int colors, int chain, int offset)
 
 int getVoicePattern(int chain, int predicted, bool fever)
 {
-	--chain; --predicted;
-	if (fever)
-	{
-		if (chain < 0 || chain>29 || predicted > 29) return 0;
-		if (chain > predicted) return 0;
+	--chain;
+	--predicted;
+
+	if (fever) {
+		if (chain < 0 || chain > 29 || predicted > 29) {
+			return 0;
+		}
+		if (chain > predicted) {
+			return 0;
+		}
 		int offs = 0;
-		std::string type = voicePattern[predicted].substr(chain * 2, 1);
-		int num = to_int(voicePattern[predicted].substr(chain * 2 + 1, 1)) - 1;
-		if (type == "c") offs = 0;
-		if (type == "e") offs = 5;
+		const std::string type = voicePattern[predicted].substr(static_cast<size_t>(chain) * 2, 1);
+		const int num = toInt(voicePattern[predicted].substr(static_cast<size_t>(chain) * 2 + 1, 1)) - 1;
+		if (type == "c") {
+			offs = 0;
+		}
+		if (type == "e") {
+			offs = 5;
+		}
 		return offs + num;
 	}
-	else
-	{
-		chain = min(chain, 6);
-		int num = voicePatternClassic[chain];
-		return num;
-	}
+
+	chain = min(chain, 6);
+	return voicePatternClassic[chain];
 }
 
 }

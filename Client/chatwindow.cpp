@@ -11,7 +11,7 @@ ChatWindow::ChatWindow(NetChannelProxy* proxy, ppvs::Game* game, GameWidget* wid
 	ui(new Ui::ChatWindow)
 {
 	ui->setupUi(this);
-	ui->ShowNameCheckBox->setChecked(mGame->forceStatusText);
+	ui->ShowNameCheckBox->setChecked(mGame->m_forceStatusText);
 	ui->PlayMusicCheckBox->setChecked(pvsApp->settings().boolean("launcher", "enablemusic", true));
 	ui->PlaySoundCheckBox->setChecked(pvsApp->settings().boolean("launcher", "enablesound", true));
 	setFocusPolicy(Qt::ClickFocus);
@@ -121,19 +121,19 @@ void ChatWindow::on_EntryTextEdit_returnPressed()
 
 void ChatWindow::on_ShowNameCheckBox_stateChanged(int arg1) const
 {
-	mGame->forceStatusText = arg1;
+	mGame->m_forceStatusText = arg1;
 }
 
 void ChatWindow::on_PlaySoundCheckBox_stateChanged(int arg1) const
 {
-	if (mGame->data)
-		mGame->data->playSounds = arg1;
+	if (mGame->m_data)
+		mGame->m_data->playSounds = arg1;
 }
 
 void ChatWindow::on_PlayMusicCheckBox_stateChanged(int arg1) const
 {
-	if (mGame->data)
-		mGame->data->playMusic = arg1;
+	if (mGame->m_data)
+		mGame->m_data->playMusic = arg1;
 	if (arg1 == 0)
 	{
 		pvsApp->settings().setBoolean("launcher", "enablemusic", false);

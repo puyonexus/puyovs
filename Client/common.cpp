@@ -33,11 +33,11 @@ QHash<int, QString> codeToName = buildCodeToName();
 GameModeList getModeList()
 {
 	GameModeList modeList = GameModeList()
-		<< GameModePair(TSU, QObject::tr("Tsu", "ModeTsu"))
-		<< GameModePair(ENDLESS, QObject::tr("Endless", "ModeEndless"))
-		<< GameModePair(ENDLESSFEVER, QObject::tr("Endless Fever", "ModeEndlessFever"))
-		<< GameModePair(FEVER, QObject::tr("Fever", "ModeFever"))
-		<< GameModePair(ENDLESSFEVERVS, QObject::tr("Non-stop Fever", "ModeEndlessFeverVs"));
+		<< GameModePair(ppvs::Rules::TSU, QObject::tr("Tsu", "ModeTsu"))
+		<< GameModePair(ppvs::Rules::ENDLESS, QObject::tr("Endless", "ModeEndless"))
+		<< GameModePair(ppvs::Rules::ENDLESSFEVER, QObject::tr("Endless Fever", "ModeEndlessFever"))
+		<< GameModePair(ppvs::Rules::FEVER, QObject::tr("Fever", "ModeFever"))
+		<< GameModePair(ppvs::Rules::ENDLESSFEVERVS, QObject::tr("Non-stop Fever", "ModeEndlessFeverVs"));
 	return modeList;
 }
 
@@ -77,13 +77,13 @@ void readRulesetString(QString str, ppvs::RuleSetInfo* rs)
 		if (subitem[0] == "rules" && subitem.count() != 1)
 		{
 			if (subitem[1] == "Tsu")
-				rs->setRules(TSU_ONLINE);
+				rs->setRules(ppvs::Rules::TSU_ONLINE);
 			else if (subitem[1] == "Fever")
-				rs->setRules(FEVER_ONLINE);
+				rs->setRules(ppvs::Rules::FEVER_ONLINE);
 			else if (subitem[1] == "Fever(15th)")
-				rs->setRules(FEVER15_ONLINE);
+				rs->setRules(ppvs::Rules::FEVER15_ONLINE);
 			else if (subitem[1] == "EndlessFeverVS")
-				rs->setRules(ENDLESSFEVERVS_ONLINE);
+				rs->setRules(ppvs::Rules::ENDLESSFEVERVS_ONLINE);
 		}
 		else if (subitem[0] == "marginTime")
 			rs->marginTime = intVal;
@@ -102,7 +102,7 @@ void readRulesetString(QString str, ppvs::RuleSetInfo* rs)
 		else if (subitem[0] == "colors")
 			rs->colors = intVal;
 		else if (subitem[0] == "Nplayers")
-			rs->Nplayers = intVal;
+			rs->numPlayers = intVal;
 		else if (subitem[0] == "default")
 			rs->custom = false;
 	}
@@ -116,15 +116,15 @@ QString createRulesetString(ppvs::RuleSetInfo* rs)
 	if (rs == nullptr)
 		return QString();
 
-	if (rs->rulesetType == TSU_ONLINE) ruleString = "Tsu";
-	else if (rs->rulesetType == FEVER_ONLINE) ruleString = "Fever";
-	else if (rs->rulesetType == FEVER15_ONLINE) ruleString = "Fever(15th)";
-	else if (rs->rulesetType == ENDLESSFEVERVS_ONLINE) ruleString = "EndlessFeverVS";
+	if (rs->ruleSetType == ppvs::Rules::TSU_ONLINE) ruleString = "Tsu";
+	else if (rs->ruleSetType == ppvs::Rules::FEVER_ONLINE) ruleString = "Fever";
+	else if (rs->ruleSetType == ppvs::Rules::FEVER15_ONLINE) ruleString = "Fever(15th)";
+	else if (rs->ruleSetType == ppvs::Rules::ENDLESSFEVERVS_ONLINE) ruleString = "EndlessFeverVS";
 
 	if (rs->custom)
 		return QString::asprintf("rules:%s|marginTime:%i|targetPoint:%i|requiredChain:%i|initialFeverCount:%i|feverPower:%i|puyoToClear:%i|quickDrop:%i|colors:%i|Nplayers:%i",
-			ruleString.toUtf8().data(), rs->marginTime, rs->targetPoint, rs->requiredChain, rs->initialFeverCount, rs->feverPower, rs->puyoToClear, (int)rs->quickDrop, rs->colors, rs->Nplayers);
-	return (QStringList() << "rules:" + ruleString << "default" << QString("Nplayers:%1").arg(rs->Nplayers)).join("|");
+			ruleString.toUtf8().data(), rs->marginTime, rs->targetPoint, rs->requiredChain, rs->initialFeverCount, rs->feverPower, rs->puyoToClear, (int)rs->quickDrop, rs->colors, rs->numPlayers);
+	return (QStringList() << "rules:" + ruleString << "default" << QString("Nplayers:%1").arg(rs->numPlayers)).join("|");
 }
 
 InputCondition::InputCondition(const ilib::InputEvent& e)

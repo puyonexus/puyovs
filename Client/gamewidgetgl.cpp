@@ -133,12 +133,12 @@ GameWidgetGL::GameWidgetGL(ppvs::Game* game, NetChannelProxy* proxy, GameAudio* 
 
 GameWidgetGL::~GameWidgetGL()
 {
-	if (!mGame->channelName.empty())
+	if (!mGame->m_channelName.empty())
 	{
 		// Before leaving the channel, check if you're the last player
-		if (mGame->countBoundPlayers() < 2 && mGame->network->connected)
-			mGame->network->requestChannelDescription(mGame->channelName, std::string(""));
-		mGame->network->leaveChannel(mGame->channelName);
+		if (mGame->countBoundPlayers() < 2 && mGame->m_network->connected)
+			mGame->m_network->requestChannelDescription(mGame->m_channelName, std::string(""));
+		mGame->m_network->leaveChannel(mGame->m_channelName);
 	}
 
 	d->inputDriver->disableEvents();
@@ -165,7 +165,7 @@ void GameWidgetGL::keyPressEvent(QKeyEvent* k)
 	// I'm putting this here for the moment.
 	// This is not part of Puyolib, because it may be hard
 	// to notify the client when a replay is changed
-	if (mGame->settings->recording == PVS_REPLAYING)
+	if (mGame->m_settings->recording == ppvs::RecordState::REPLAYING)
 	{
 		if (k->key() == Qt::Key_Left)
 			mGame->previousReplay();
@@ -186,33 +186,34 @@ void GameWidgetGL::keyPressEvent(QKeyEvent* k)
 	}
 
 	// Replay
-	if (mGame && mGame->settings->recording == PVS_REPLAYING && k->key() == Qt::Key_Space)
+	if (mGame && mGame->m_settings->recording == ppvs::RecordState::REPLAYING && k->key() == Qt::Key_Space)
 	{
-		if (mGame->replayState != REPLAYSTATE_PAUSED)
-			mGame->replayState = REPLAYSTATE_PAUSED;
-		else if (mGame->replayState == REPLAYSTATE_PAUSED)
-			mGame->replayState = REPLAYSTATE_NORMAL;
-	}
-	else if (mGame && mGame->settings->recording == PVS_REPLAYING && k->key() == Qt::Key_Up)
+		if (mGame->m_replayState != ReplayState::PAUSED) {
+            mGame->m_replayState = ReplayState::PAUSED;
+        } else if (mGame->m_replayState == ReplayState::PAUSED) {
+            mGame->m_replayState = ReplayState::NORMAL;
+        }
+    }
+	else if (mGame && mGame->m_settings->recording == ppvs::RecordState::REPLAYING && k->key() == Qt::Key_Up)
 	{
-		if (mGame->replayState == REPLAYSTATE_NORMAL)
-			mGame->replayState = REPLAYSTATE_FASTFORWARD;
-		else if (mGame->replayState == REPLAYSTATE_REWIND)
-			mGame->replayState = REPLAYSTATE_NORMAL;
-		else if (mGame->replayState == REPLAYSTATE_FASTFORWARD)
-			mGame->replayState = REPLAYSTATE_FASTFORWARDX4;
-	}
-	else if (mGame && mGame->settings->recording == PVS_REPLAYING && k->key() == Qt::Key_Down)
+		if (mGame->m_replayState == ReplayState::NORMAL) {
+            mGame->m_replayState = ReplayState::FAST_FORWARD;
+        } else if (mGame->m_replayState == ReplayState::REWIND) {
+            mGame->m_replayState = ReplayState::NORMAL;
+        } else if (mGame->m_replayState == ReplayState::FAST_FORWARD) {
+            mGame->m_replayState = ReplayState::FAST_FORWARD_X4;
+        }
+    }
+	else if (mGame && mGame->m_settings->recording == ppvs::RecordState::REPLAYING && k->key() == Qt::Key_Down)
 	{
-		if (mGame->replayState == REPLAYSTATE_NORMAL)
-		{
-			mGame->replayState = REPLAYSTATE_REWIND;
-		}
-		else if (mGame->replayState == REPLAYSTATE_FASTFORWARD)
-			mGame->replayState = REPLAYSTATE_NORMAL;
-		else if (mGame->replayState == REPLAYSTATE_FASTFORWARDX4)
-			mGame->replayState = REPLAYSTATE_FASTFORWARD;
-	}
+		if (mGame->m_replayState == ReplayState::NORMAL) {
+			mGame->m_replayState = ReplayState::REWIND;
+		} else if (mGame->m_replayState == ReplayState::FAST_FORWARD) {
+            mGame->m_replayState = ReplayState::NORMAL;
+        } else if (mGame->m_replayState == ReplayState::FAST_FORWARD_X4) {
+            mGame->m_replayState = ReplayState::FAST_FORWARD;
+        }
+    }
 
 }
 
@@ -239,14 +240,14 @@ void GameWidgetGL::paintEvent(QPaintEvent*)
 
 void GameWidgetGL::closeEvent(QCloseEvent* event)
 {
-	if (mGame && mGame->settings->rankedMatch && mGame->countBoundPlayers() > 1)
+	if (mGame && mGame->m_settings->rankedMatch && mGame->countBoundPlayers() > 1)
 	{
 		// Do not close
 		event->ignore();
 	}
 	else
 	{
-		mGame->runGame = false;
+		mGame->m_runGame = false;
 		close();
 	}
 }
@@ -273,8 +274,8 @@ void GameWidgetGL::initialize()
 	glLoadIdentity();
 	d->gl->doneCurrent();
 
-	if (!mGame->channelName.empty())
-		mGame->network->createChannel(mGame->channelName, "", false, true);
+	if (!mGame->m_channelName.empty())
+		mGame->m_network->createChannel(mGame->m_channelName, "", false, true);
 
 	d->ready = true;
 	d->nextFrame = timeGetTime() + 1000 / 60;
@@ -282,7 +283,7 @@ void GameWidgetGL::initialize()
 
 void GameWidgetGL::process()
 {
-	if (!d->ready || !mGame->runGame)
+	if (!d->ready || !mGame->m_runGame)
 		return;
 
 	quint64 now = timeGetTime();
@@ -324,7 +325,7 @@ void GameWidgetGL::process()
 
 		mGame->renderGame();
 
-		if (!mGame->runGame)
+		if (!mGame->m_runGame)
 		{
 			close();
 			return;

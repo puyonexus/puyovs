@@ -838,9 +838,9 @@ void MainWindow::startRankedMatch(bool tsu) const
 
 	ppvs::GameSettings* settings;
 	if (tsu)
-		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(TSU_ONLINE));
+		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(ppvs::Rules::TSU_ONLINE));
 	else
-		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(FEVER_ONLINE));
+		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(ppvs::Rules::FEVER_ONLINE));
 	settings->rankedMatch = true;
 	GameWidget* game = gameManager->createGame(settings, "");
 
@@ -873,9 +873,9 @@ void MainWindow::spectateRankedMatch(bool tsu) const
 
 	ppvs::GameSettings* settings;
 	if (tsu)
-		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(TSU_ONLINE));
+		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(ppvs::Rules::TSU_ONLINE));
 	else
-		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(FEVER_ONLINE));
+		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(ppvs::Rules::FEVER_ONLINE));
 
 	GameWidget* game = gameManager->createGame(settings, chan.name, true);
 
@@ -1050,7 +1050,7 @@ void MainWindow::reviewRulesDialog(ppvs::RuleSetInfo& rs)
 		"Initial Fever Count: %i\nFever Power: %i\nPuyo To Clear: %i\n"
 		"Quick Drop: %i\nNumber of players: %i\nChoose colors: %i", "Messages:ReviewRules").toUtf8().data()
 		, rs.marginTime, rs.targetPoint, rs.requiredChain, rs.initialFeverCount
-		, rs.feverPower, rs.puyoToClear, rs.quickDrop, rs.Nplayers, rs.colors);
+		, rs.feverPower, rs.puyoToClear, rs.quickDrop, rs.numPlayers, rs.colors);
 	QMessageBox* msgBox = new QMessageBox;
 	msgBox->setText(ruleStr);
 	msgBox->setWindowTitle("Rules");

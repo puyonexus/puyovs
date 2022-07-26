@@ -1,63 +1,65 @@
 #pragma once
 
 #include "global.h"
-#include <string>
+#include <vector>
 
-namespace ppvs
-{
+namespace ppvs {
 
-struct ControllerEvent
-{
-	ControllerEvent() : time(0), ev(0) { }
-	ControllerEvent(int t, char ev) : time(t), ev(ev) { }
+struct ControllerEvent {
+	ControllerEvent()
+		: time(0)
+		, ev(0)
+	{
+	}
+	ControllerEvent(const int t, const char ev)
+		: time(t)
+		, ev(ev)
+	{
+	}
+
 	int time;
 	char ev;
 };
 
 struct FeInput;
 
-class Controller
-{
+class Controller {
 public:
-	Controller();
-	~Controller();
+	int m_down = 0;
+	int m_up = 0;
+	int m_left = 0;
+	int m_right = 0;
+	int m_a = 0;
+	int m_b = 0;
+	int m_start = 0;
 
-	int Down;
-	int Up;
-	int Left;
-	int Right;
-	int A;
-	int B;
-	int Start;
+	bool m_delayDown = false;
+	bool m_delayUp = false;
+	bool m_delayLeft = false;
+	bool m_delayRight = false;
+	bool m_delayA = false;
+	bool m_delayB = false;
+	bool m_delayStart = false;
 
-	bool DelayDown;
-	bool DelayUp;
-	bool DelayLeft;
-	bool DelayRight;
-	bool DelayA;
-	bool DelayB;
-	bool DelayStart;
-
-	void init(int playernumber, PlayerType type, RecordState s = PVS_NOTRECORDING);
-	void setstate(const FeInput& Input, int t);
+	void init(int playerNumber, PlayerType type, RecordState s = RecordState::NOT_RECORDING);
+	void setState(const FeInput& input, int t);
 	void release();
 	void record(int t);
 
-	RecordState state;
-	std::vector<ControllerEvent> recordEvents;
+	RecordState m_state = RecordState::NOT_RECORDING;
+	std::vector<ControllerEvent> m_recordEvents;
 
 private:
 	// Delayed checking
-	bool dUp;
-	bool dDown;
-	bool dLeft;
-	bool dRight;
-	bool dA;
-	bool dB;
-	bool dStart;
+	bool m_dUp = false;
+	bool m_dDown = false;
+	bool m_dLeft = false;
+	bool m_dRight = false;
+	bool m_dA = false;
+	bool m_dB = false;
+	bool m_dStart = false;
 
-	bool m_defined;
-	int m_playernumber;
-	PlayerType m_type;
+	int m_playerNumber = 0;
+	PlayerType m_type = CPU;
 };
 }
