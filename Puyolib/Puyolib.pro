@@ -64,7 +64,7 @@ SOURCES += \
     RNG/ClassicPuyoRNG.cpp \
     RNG/ClassicRNG.cpp \
     RNG/LegacyPuyoRNG.cpp \
-    RNG/mt.cc \
+    RNG/MersenneTwister.cc \
     RNG/PuyoRNG.cpp
 
 include(../Zlib/Zlib.pri)
