@@ -1,4 +1,4 @@
-#include "ClassicRNG.h"
+#include "ClassicRng.h"
 
 void ClassicRng::next(uint32_t* d0, const uint32_t sp)
 {
