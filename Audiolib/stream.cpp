@@ -1,34 +1,37 @@
 #include "stream.h"
-#include "samplereader.h"
 #include "resampler.h"
+#include "samplereader.h"
+#include <cstring>
 #include <stdio.h>
 #include <stdlib.h>
-#include <cstring>
 
-#include "readers/vorbisreader.h"
-#include "readers/vgmreader.h"
 #include "readers/pcmreader.h"
+#include "readers/vgmreader.h"
+#include "readers/vorbisreader.h"
 
 namespace alib {
 
-struct Stream::Priv
-{
+struct Stream::Priv {
 	Priv() = default;
-	~Priv() { delete resampler; delete reader; }
+	~Priv()
+	{
+		delete resampler;
+		delete reader;
+	}
 
 	int inNumChannels = 2, inSampleRate = 44100;
 	int outNumChannels = 2, outSampleRate = 44100;
 	bool needConversion = false, error = false, paused = false;
-	float volume = 1.0f; bool music = false;
+	float volume = 1.0f;
+	bool music = false;
 	StreamObserver* observer = nullptr;
 	SampleReader* reader = nullptr;
 	Resampler* resampler = nullptr;
-	Buffer resamplingBuffer{};
+	Buffer resamplingBuffer {};
 
 	void loadFromStream(BinaryStream* dataStream)
 	{
-		if (!dataStream || dataStream->error())
-		{
+		if (!dataStream || dataStream->error()) {
 			error = true;
 			return;
 		}
@@ -36,8 +39,7 @@ struct Stream::Priv
 		ALIB_VGM_DETECT(reader, dataStream, dataStream);
 		ALIB_OGG_DETECT(reader, dataStream, dataStream);
 
-		if (!reader || reader->error())
-		{
+		if (!reader || reader->error()) {
 			error = true;
 		}
 	}
@@ -47,40 +49,33 @@ struct Stream::Priv
 		const auto dataStream = new MemoryStream(buffer);
 		loadFromStream(dataStream);
 
-		if (error)
-		{
+		if (error) {
 			delete dataStream;
 		}
 	}
 
 	bool setFormat(int numChannels, int sampleRate)
 	{
-		if (!reader || error)
-		{
+		if (!reader || error) {
 			return false;
 		}
 
-		if (numChannels > 0)
-		{
+		if (numChannels > 0) {
 			outNumChannels = numChannels;
 		}
 
-		if (sampleRate > 1000)
-		{
+		if (sampleRate > 1000) {
 			outSampleRate = sampleRate;
 		}
 
 		inNumChannels = reader->numChannels();
 		inSampleRate = reader->sampleRate();
 
-		needConversion = 
-			inNumChannels != outNumChannels ||
-			inSampleRate != outSampleRate;
+		needConversion = inNumChannels != outNumChannels || inSampleRate != outSampleRate;
 
 		delete resampler;
 
-		if (needConversion)
-		{
+		if (needConversion) {
 			resampler = new Resampler(inNumChannels, inSampleRate, outNumChannels, outSampleRate);
 		}
 
@@ -89,49 +84,40 @@ struct Stream::Priv
 
 	void read(float* buffer, int& length)
 	{
-		if (!reader || error || reader->atEnd())
-		{
+		if (!reader || error || reader->atEnd()) {
 			length = 0;
 			return;
 		}
 
 		// If we're paused, just return an empty frame.
-		if (paused)
-		{
+		if (paused) {
 			const int numSamples = length * outNumChannels;
-			for (int i = 0; i < numSamples; ++i)
-			{
+			for (int i = 0; i < numSamples; ++i) {
 				buffer[i] = 0;
 			}
 			return;
 		}
 
-		if (!needConversion || !resampler)
-		{
+		if (!needConversion || !resampler) {
 			reader->read(buffer, length);
 			return;
 		}
 
-		if (inSampleRate == outSampleRate)
-		{
+		if (inSampleRate == outSampleRate) {
 			// The sample rates are the same, but the number of channels differs;
 			// we need to upmix/downmix.
 			// TODO: this "works" but it's non-sense. Upmix/downmix needs actual logic.
 			const auto bufferIn = new float[length * inNumChannels];
 			reader->read(bufferIn, length);
 
-			for (int i = 0; i < length; ++i)
-			{
-				for (int j = 0; j < outNumChannels; ++j)
-				{
+			for (int i = 0; i < length; ++i) {
+				for (int j = 0; j < outNumChannels; ++j) {
 					buffer[i * outNumChannels + j] = bufferIn[i * inNumChannels + j % inNumChannels];
 				}
 			}
 
 			delete[] bufferIn;
-		}
-		else
-		{
+		} else {
 			int fullLengthIn = static_cast<long long>(length) * inSampleRate / outSampleRate;
 			int neededLengthIn = fullLengthIn;
 			auto bufferIn = new float[fullLengthIn * inNumChannels];
@@ -153,8 +139,7 @@ struct Stream::Priv
 
 	void reset()
 	{
-		if (reader && !error)
-		{
+		if (reader && !error) {
 			reader->reset();
 		}
 	}
@@ -178,12 +163,14 @@ struct Stream::Priv
 
 	void signalEnd()
 	{
-		if (observer) observer->reachedEnd();
+		if (observer)
+			observer->reachedEnd();
 	}
 
 	void signalLoop()
 	{
-		if (observer) observer->reachedLoop();
+		if (observer)
+			observer->reachedLoop();
 	}
 };
 
@@ -234,13 +221,11 @@ Buffer Stream::toRaw()
 	const auto buffer = static_cast<float*>(malloc(4096 * static_cast<size_t>(frameSize)));
 	Buffer finalBuffer;
 
-	while (!atEnd())
-	{
+	while (!atEnd()) {
 		int frames = 4096;
 		read(buffer, frames);
 
-		if (frames > 0)
-		{
+		if (frames > 0) {
 			finalBuffer.append(buffer, frames * frameSize);
 		}
 	}
@@ -281,8 +266,7 @@ void Stream::resume()
 
 bool Stream::atEnd() const
 {
-	if (p->reader && !p->error)
-	{
+	if (p->reader && !p->error) {
 		return p->reader->atEnd();
 	}
 
@@ -301,8 +285,7 @@ void Stream::signalLoop()
 
 bool Stream::hasLooped() const
 {
-	if (p->reader && !p->error)
-	{
+	if (p->reader && !p->error) {
 		return p->reader->hasLooped();
 	}
 
@@ -311,8 +294,7 @@ bool Stream::hasLooped() const
 
 bool Stream::haveEnd() const
 {
-	if (p->reader && !p->error)
-	{
+	if (p->reader && !p->error) {
 		return p->reader->haveEnd();
 	}
 

@@ -1,9 +1,9 @@
 #pragma once
 
+#include <QHash>
 #include <QList>
 #include <QPair>
 #include <QString>
-#include <QHash>
 
 #include "pvsapplication.h"
 
@@ -18,22 +18,21 @@
 // User agent
 #define PUYOVS_USER_AGENT "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko"
 
-namespace ppvs
-{
+namespace ppvs {
+enum class Rules : int;
 struct RuleSetInfo;
 }
 
-// Modelist
-typedef QPair<int, QString> GameModePair;
+// Mode list
+typedef QPair<ppvs::Rules, QString> GameModePair;
 typedef QList<GameModePair> GameModeList;
-typedef QListIterator<QPair<int, QString> > GameModeListIterator;
+typedef QListIterator<QPair<ppvs::Rules, QString>> GameModeListIterator;
 GameModeList getModeList();
 void readRulesetString(QString str, ppvs::RuleSetInfo* rs);
 QString getDataLocation();
 QString createRulesetString(ppvs::RuleSetInfo* rs);
 
-namespace ilib
-{
+namespace ilib {
 struct InputEvent;
 }
 
@@ -42,10 +41,11 @@ class QKeyEvent;
 extern QHash<QString, int> nameToCode;
 extern QHash<int, QString> codeToName;
 
-class InputCondition
-{
+class InputCondition {
 public:
-	enum MatchResult { NoMatch, MatchUp, MatchDown };
+	enum MatchResult { NoMatch,
+		MatchUp,
+		MatchDown };
 
 	InputCondition(const ilib::InputEvent& e);
 	InputCondition(QKeyEvent* e);
@@ -58,14 +58,30 @@ public:
 	QString toString() const;
 
 private:
-	enum condtype { keytype, buttontype, axistype, hattype, unknown };
+	enum condtype { keytype,
+		buttontype,
+		axistype,
+		hattype,
+		unknown };
 	int type;
-	union
-	{
-		struct { int code; } key;
-		struct { int device; int id; } button;
-		struct { int device; int id; int direction; } axis;
-		struct { int device; int id; int direction; } hat;
+	union {
+		struct {
+			int code;
+		} key;
+		struct {
+			int device;
+			int id;
+		} button;
+		struct {
+			int device;
+			int id;
+			int direction;
+		} axis;
+		struct {
+			int device;
+			int id;
+			int direction;
+		} hat;
 	};
 };
 
@@ -73,10 +89,14 @@ QString getCryptographicHash(QString str);
 
 #ifdef _WIN32
 #include <windows.h>
-static inline
-void msleep(unsigned long t) { Sleep(t); }
+static inline void msleep(unsigned long t)
+{
+	Sleep(t);
+}
 #else
 #include <unistd.h>
-static inline
-void msleep(unsigned long t) { usleep(t * 1000); }
+static inline void msleep(unsigned long t)
+{
+	usleep(t * 1000);
+}
 #endif

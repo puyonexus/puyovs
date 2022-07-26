@@ -1,12 +1,12 @@
 #pragma once
 
-#include "PuyoRNG.h"
+#include "PuyoRng.h"
 
-class ClassicRNG;
+class ClassicRng;
 
 class ClassicPool {
 public:
-	explicit ClassicPool(ClassicRNG* rng);
+	explicit ClassicPool(ClassicRng* rng);
 
-	Piece pool[3][256];
+	Piece m_pool[3][256] {};
 };

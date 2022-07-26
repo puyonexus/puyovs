@@ -9,8 +9,7 @@ namespace alib {
 
 class StreamObserver;
 
-class Stream
-{
+class Stream {
 	ALIB_DECLARE_SHARED;
 
 	friend class StreamObserver;
@@ -177,15 +176,16 @@ public:
 	bool isMusic() const;
 	void identifyAsMusic();
 
-	bool operator == (const alib::Stream& other) const { return p == other.p; }
-	bool operator != (const alib::Stream& other) const { return p != other.p; }
+	bool operator==(const alib::Stream& other) const { return p == other.p; }
+	bool operator!=(const alib::Stream& other) const { return p != other.p; }
 };
 
-class StreamObserver
-{
+class StreamObserver {
 	friend struct Stream::Priv;
+
 public:
 	virtual ~StreamObserver() { }
+
 private:
 	virtual void reachedEnd() = 0;
 	virtual void reachedLoop() = 0;

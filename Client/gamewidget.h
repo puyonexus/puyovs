@@ -1,8 +1,8 @@
 #pragma once
 
+#include "common.h"
 #include <QMainWindow>
 #include <QTimer>
-#include "common.h"
 
 namespace ppvs {
 class Game;
@@ -12,8 +12,7 @@ class ChatWindow;
 class NetChannelProxy;
 class MusicPlayer;
 
-class GameWidget : public QMainWindow
-{
+class GameWidget : public QMainWindow {
 	Q_OBJECT
 public:
 	explicit GameWidget(ppvs::Game* game, NetChannelProxy* proxy, QWidget* parent = nullptr);

@@ -10,8 +10,7 @@ namespace ilib {
 class Driver;
 }
 
-class InputDialog : public QDialog
-{
+class InputDialog : public QDialog {
 	Q_OBJECT
 
 public:

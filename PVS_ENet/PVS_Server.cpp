@@ -14,23 +14,18 @@ void PVS_Server::checkEvent()
 	ENetEvent event;
 
 	// Processing incoming events:
-	while (enet_host_service(host, &event, 1) > 0)
-	{
-		switch (event.type)
-		{
+	while (enet_host_service(host, &event, 1) > 0) {
+		switch (event.type) {
 		case ENET_EVENT_TYPE_CONNECT:
 			connect(event);
 			break;
 		case ENET_EVENT_TYPE_RECEIVE:
 			if (receive(event) == 0)
 				onReceive();
-			else if (receive(event) == ERROR_PACKET)
-			{
+			else if (receive(event) == ERROR_PACKET) {
 				sprintf(currentErrorString, "Error at reading or writing packet.");
 				onError();
-			}
-			else if (receive(event) == ERROR_OTHER)
-			{
+			} else if (receive(event) == ERROR_OTHER) {
 				sprintf(currentErrorString, "Bad or strange request from peer.");
 				onError();
 			}
@@ -115,8 +110,7 @@ void PVS_Server::disconnect(ENetEvent& event)
 
 	// Remove from channels
 	std::list<std::string>& cl = currentPVS_Peer->channels;
-	while (!cl.empty())
-	{
+	while (!cl.empty()) {
 		currentChannelName = *cl.begin();
 		channelManager.removePeer(*cl.begin(), currentPVS_Peer);
 		removePeerFromChannelMessage(currentChannelName, currentPVS_Peer);
@@ -136,44 +130,49 @@ int PVS_Server::receive(ENetEvent& event)
 	// Get first byte
 	packetReader pr(event.packet);
 	unsigned char type = 0;
-	if (!pr.getValue(type)) return ERROR_PACKET;
-	switch (type)
-	{
-	case PT_CONNECT:
-	{
+	if (!pr.getValue(type))
+		return ERROR_PACKET;
+	switch (type) {
+	case PT_CONNECT: {
 		// Use for debugging (the client should never send on the 0 channel)
 		// Check packet
 		std::string mes;
-		if (!pr.getString(mes)) return ERROR_PACKET;
+		if (!pr.getString(mes))
+			return ERROR_PACKET;
 
 		puts(mes.c_str());
 		fflush(stdout);
 		break;
 	}
-	case PT_MESSERVER:
-	{
+	case PT_MESSERVER: {
 		// Send string to/from server
 		// Check packet
 		unsigned int id = 0;
-		if (!pr.getValue(id)) return ERROR_PACKET;
-		if (!pr.getValue(subChannel)) return ERROR_PACKET;
-		if (!pr.getString(currentString)) return ERROR_PACKET;
+		if (!pr.getValue(id))
+			return ERROR_PACKET;
+		if (!pr.getValue(subChannel))
+			return ERROR_PACKET;
+		if (!pr.getString(currentString))
+			return ERROR_PACKET;
 
 		// Select peer
 		currentPVS_Peer = getPVS_PeerFromID(id);
 		onMessageServer();
 		break;
 	}
-	case PT_MESCHANNEL:
-	{
+	case PT_MESCHANNEL: {
 		// Send string to/from channel
 		// Check packet
 		unsigned int id = 0;
-		if (!pr.getValue(id)) return ERROR_PACKET;
-		if (!pr.getValue(subChannel)) return ERROR_PACKET;
+		if (!pr.getValue(id))
+			return ERROR_PACKET;
+		if (!pr.getValue(subChannel))
+			return ERROR_PACKET;
 		std::string channel;
-		if (!pr.getString(channel)) return ERROR_PACKET;
-		if (!pr.getString(currentString)) return ERROR_PACKET;
+		if (!pr.getString(channel))
+			return ERROR_PACKET;
+		if (!pr.getString(currentString))
+			return ERROR_PACKET;
 
 		// Does channel exist?
 		if (!channelManager.channelExists(channel))
@@ -193,24 +192,27 @@ int PVS_Server::receive(ENetEvent& event)
 		// Pass it to all peers in channel, except the sender
 		peerList* pl = channelManager.getChannel(channel)->peers;
 		peerList::iterator it;
-		for (it = pl->begin(); it != pl->end(); it++)
-		{
+		for (it = pl->begin(); it != pl->end(); it++) {
 			if ((*it)->id == id)
 				continue;
 			sendPacket(0, pw.getArray(), pw.getLength(), (*it)->enetpeer);
 		}
 		break;
 	}
-	case PT_MESCHANNELPEER:
-	{
+	case PT_MESCHANNELPEER: {
 		// Send string to/from peer
 		unsigned int id = 0;
-		if (!pr.getValue(id)) return ERROR_PACKET;
-		if (!pr.getValue(subChannel)) return ERROR_PACKET;
+		if (!pr.getValue(id))
+			return ERROR_PACKET;
+		if (!pr.getValue(subChannel))
+			return ERROR_PACKET;
 		unsigned int targetID = 0;
-		if (!pr.getValue(targetID)) return ERROR_PACKET;
-		if (!pr.getString(currentChannelName)) return ERROR_PACKET;
-		if (!pr.getString(currentString)) return ERROR_PACKET;
+		if (!pr.getValue(targetID))
+			return ERROR_PACKET;
+		if (!pr.getString(currentChannelName))
+			return ERROR_PACKET;
+		if (!pr.getString(currentString))
+			return ERROR_PACKET;
 
 		// Does channel exist?
 		if (!channelManager.channelExists(currentChannelName))
@@ -219,10 +221,11 @@ int PVS_Server::receive(ENetEvent& event)
 		if (!channelManager.peerExistsInChannel(currentChannelName, getPVS_PeerFromID(id)))
 			return ERROR_OTHER;
 		if (!channelManager.peerExistsInChannel(currentChannelName, getPVS_PeerFromID(targetID)))
-			return  ERROR_OTHER;
+			return ERROR_OTHER;
 
 		// Target and peer are the same
-		if (id == targetID) return ERROR_OTHER;
+		if (id == targetID)
+			return ERROR_OTHER;
 
 		// Write a new packet
 		packetWriter pw(sizeof(unsigned char) + sizeof(unsigned int) + 1 + currentChannelName.length() + 1 + currentString.length() + 1);
@@ -235,18 +238,22 @@ int PVS_Server::receive(ENetEvent& event)
 		sendPacket(0, pw.getArray(), pw.getLength(), getPeerFromID(targetID));
 		break;
 	}
-	case PT_RAWMESCHANNEL:
-	{
+	case PT_RAWMESCHANNEL: {
 		// Send raw packet to/from channel
 		// Check packet
 		unsigned int id = 0;
-		if (!pr.getValue(id)) return ERROR_PACKET;
-		if (!pr.getValue(subChannel)) return ERROR_PACKET;
+		if (!pr.getValue(id))
+			return ERROR_PACKET;
+		if (!pr.getValue(subChannel))
+			return ERROR_PACKET;
 		std::string channel;
-		if (!pr.getString(channel)) return ERROR_PACKET;
+		if (!pr.getString(channel))
+			return ERROR_PACKET;
 		unsigned int length = 0;
-		if (!pr.getValue(length)) return ERROR_PACKET;
-		if (length == 0) return ERROR_PACKET;
+		if (!pr.getValue(length))
+			return ERROR_PACKET;
+		if (length == 0)
+			return ERROR_PACKET;
 
 		// Does channel exist?
 		if (!channelManager.channelExists(channel))
@@ -263,31 +270,36 @@ int PVS_Server::receive(ENetEvent& event)
 		pw.writeString(channel.c_str());
 		pw.writeValue(length);
 		// Copy char array
-		if (!pw.copyChars(pr.getChars(length), length)) return ERROR_PACKET;
+		if (!pw.copyChars(pr.getChars(length), length))
+			return ERROR_PACKET;
 
 		// Pass it to all peers in channel, except the sender
 		peerList* pl = channelManager.getChannel(channel)->peers;
 		peerList::iterator it;
-		for (it = pl->begin(); it != pl->end(); it++)
-		{
+		for (it = pl->begin(); it != pl->end(); it++) {
 			if ((*it)->id == id)
 				continue;
 			sendPacket(0, pw.getArray(), pw.getLength(), (*it)->enetpeer);
 		}
 		break;
 	}
-	case PT_RAWMESCHANNELPEER:
-	{
+	case PT_RAWMESCHANNELPEER: {
 		// Send char array to/from peer
 		unsigned int id = 0;
-		if (!pr.getValue(id)) return ERROR_PACKET;
-		if (!pr.getValue(subChannel)) return ERROR_PACKET;
+		if (!pr.getValue(id))
+			return ERROR_PACKET;
+		if (!pr.getValue(subChannel))
+			return ERROR_PACKET;
 		unsigned int targetID = 0;
-		if (!pr.getValue(targetID)) return ERROR_PACKET;
-		if (!pr.getString(currentChannelName)) return ERROR_PACKET;
+		if (!pr.getValue(targetID))
+			return ERROR_PACKET;
+		if (!pr.getString(currentChannelName))
+			return ERROR_PACKET;
 		unsigned int length = 0;
-		if (!pr.getValue(length)) return ERROR_PACKET;
-		if (length == 0) return ERROR_PACKET;
+		if (!pr.getValue(length))
+			return ERROR_PACKET;
+		if (length == 0)
+			return ERROR_PACKET;
 
 		// Does channel exist?
 		if (!channelManager.channelExists(currentChannelName))
@@ -303,46 +315,43 @@ int PVS_Server::receive(ENetEvent& event)
 		pw.writeValue(subChannel);
 		pw.writeString(currentChannelName.c_str());
 		// Copy char array
-		if (!pw.copyChars(pr.getChars(length), length)) return ERROR_PACKET;
+		if (!pw.copyChars(pr.getChars(length), length))
+			return ERROR_PACKET;
 
 		sendPacket(0, pw.getArray(), pw.getLength(), getPeerFromID(targetID));
 		break;
 	}
 
-	case PT_NAME:
-	{
+	case PT_NAME: {
 		// Request name
 		// Check packet
 		unsigned int id = 0;
-		if (!pr.getValue(id)) return ERROR_PACKET;
+		if (!pr.getValue(id))
+			return ERROR_PACKET;
 		std::string name;
-		if (!pr.getString(name)) return ERROR_PACKET;
+		if (!pr.getString(name))
+			return ERROR_PACKET;
 		std::string oldname;
 
 		// Check if name exists among all peers
 		ENetPeer* currentPeer;
 		bool foundName = false;
 		std::list<ENetPeer*>::iterator it;
-		for (it = enetPeerList.begin(); it != enetPeerList.end(); it++)
-		{
+		for (it = enetPeerList.begin(); it != enetPeerList.end(); it++) {
 			currentPeer = *it;
 			oldname = getPVS_Peer(currentPeer)->name;
-			if (oldname == name)
-			{
+			if (oldname == name) {
 				// Name already exists
 				foundName = true;
 				break;
 			}
 		}
-		if (foundName)
-		{
+		if (foundName) {
 			packetWriter pw(sizeof(unsigned char) + sizeof(char));
 			pw.writeValue(static_cast<unsigned char>(PT_NAME));
 			pw.writeValue(static_cast<char>(0));
 			sendPacket(0, pw.getArray(), pw.getLength(), event.peer);
-		}
-		else
-		{
+		} else {
 			// Name not found
 			// Find peer and set name
 			currentPeer = getPeerFromID(id);
@@ -361,27 +370,30 @@ int PVS_Server::receive(ENetEvent& event)
 		}
 		break;
 	}
-	case PT_REQUESTNEWCHANNEL:
-	{
+	case PT_REQUESTNEWCHANNEL: {
 		// Create channel
 		// TODO: possible reason to deny channel joining: channel banlist
 		unsigned int id = 0;
-		if (!pr.getValue(id)) return ERROR_PACKET;
-		if (!pr.getString(currentChannelName)) return ERROR_PACKET;
-		if (!pr.getString(currentChannelDescription)) return ERROR_PACKET;
-		if (!pr.getValue(currentStatus)) return ERROR_PACKET;
+		if (!pr.getValue(id))
+			return ERROR_PACKET;
+		if (!pr.getString(currentChannelName))
+			return ERROR_PACKET;
+		if (!pr.getString(currentChannelDescription))
+			return ERROR_PACKET;
+		if (!pr.getValue(currentStatus))
+			return ERROR_PACKET;
 		currentPVS_Peer = getPVS_Peer(event.peer);
 		char lock = 0;
-		if (!pr.getValue(lock)) return ERROR_PACKET;
+		if (!pr.getValue(lock))
+			return ERROR_PACKET;
 		char autodestroy = 1;
-		if (!pr.getValue(autodestroy)) return ERROR_PACKET;
+		if (!pr.getValue(autodestroy))
+			return ERROR_PACKET;
 
 		// Check if peer has set name
-		if (!currentPVS_Peer->name.empty())
-		{
+		if (!currentPVS_Peer->name.empty()) {
 			// Create channel if it doesn't exist
-			if (channelManager.createNewChannel(currentChannelName, currentChannelDescription, lock, autodestroy))
-			{
+			if (channelManager.createNewChannel(currentChannelName, currentChannelDescription, lock, autodestroy)) {
 				// Send everyone channel creation message
 				packetWriter pw(sizeof(unsigned char) + 1 + currentChannelName.length() + 1 + currentChannelDescription.length() + 1);
 				pw.writeValue(static_cast<unsigned char>(PT_NEWCHANNEL));
@@ -389,18 +401,14 @@ int PVS_Server::receive(ENetEvent& event)
 				pw.writeString(currentChannelName.c_str());
 				pw.writeString(currentChannelDescription.c_str());
 				// Send to all peers in server
-				for (auto& it : enetPeerList)
-				{
+				for (auto& it : enetPeerList) {
 					sendPacket(0, pw.getArray(), pw.getLength(), it);
 				}
 			}
 			// Join it
-			if (!channelManager.peerExistsInChannel(currentChannelName, currentPVS_Peer))
-			{
+			if (!channelManager.peerExistsInChannel(currentChannelName, currentPVS_Peer)) {
 				channelManager.addPeer(currentChannelName, currentPVS_Peer, currentStatus);
-			}
-			else
-			{
+			} else {
 				// Already connected - ignore request and return
 				return ERROR_OTHER;
 			}
@@ -416,8 +424,7 @@ int PVS_Server::receive(ENetEvent& event)
 				pw.writeString(currentChannelDescription.c_str());
 				pw.writeValue(Npeers);
 				peerList::iterator it;
-				for (it = pl->begin(); it != pl->end(); it++)
-				{
+				for (it = pl->begin(); it != pl->end(); it++) {
 					pw.writeValue((*it)->id);
 					pw.writeString((*it)->name.c_str());
 					pw.writeValue(currentChannel->status[(*it)->id]);
@@ -436,16 +443,13 @@ int PVS_Server::receive(ENetEvent& event)
 				pw.writeString(currentPVS_Peer->name);
 				pw.writeValue(currentChannel->status[currentPVS_Peer->id]);
 				peerList::iterator it;
-				for (it = pl->begin(); it != pl->end(); it++)
-				{
+				for (it = pl->begin(); it != pl->end(); it++) {
 					if ((*it)->id == id) // Not self
 						continue;
 					sendPacket(0, pw.getArray(), pw.getLength(), (*it)->enetpeer);
 				}
 			}
-		}
-		else
-		{
+		} else {
 			// Send fail back
 			packetWriter pw(sizeof(unsigned char) + 1);
 			pw.writeValue(static_cast<unsigned char>(PT_REQUESTJOINCHANNEL));
@@ -455,21 +459,21 @@ int PVS_Server::receive(ENetEvent& event)
 		}
 		break;
 	}
-	case PT_REQUESTJOINCHANNEL:
-	{
+	case PT_REQUESTJOINCHANNEL: {
 		// Join channel (WARNING: almost the same as creating channel)
 		// TODO: possible reason to deny channel joining: channel banlist
 		unsigned int id = 0;
-		if (!pr.getValue(id)) return ERROR_PACKET;
-		if (!pr.getString(currentChannelName)) return ERROR_PACKET;
-		if (!pr.getValue(currentStatus)) return ERROR_PACKET;
+		if (!pr.getValue(id))
+			return ERROR_PACKET;
+		if (!pr.getString(currentChannelName))
+			return ERROR_PACKET;
+		if (!pr.getValue(currentStatus))
+			return ERROR_PACKET;
 		currentPVS_Peer = getPVS_Peer(event.peer);
 
 		// Check if peer has set name
-		if (!currentPVS_Peer->name.empty())
-		{
-			if (!channelManager.channelExists(currentChannelName))
-			{
+		if (!currentPVS_Peer->name.empty()) {
+			if (!channelManager.channelExists(currentChannelName)) {
 				// Channel does not exist
 				packetWriter pw(sizeof(unsigned char) + 1);
 				pw.writeValue(static_cast<unsigned char>((PT_REQUESTJOINCHANNEL)));
@@ -479,12 +483,9 @@ int PVS_Server::receive(ENetEvent& event)
 				return ERROR_OTHER;
 			}
 			// Join it
-			if (!channelManager.peerExistsInChannel(currentChannelName, currentPVS_Peer))
-			{
+			if (!channelManager.peerExistsInChannel(currentChannelName, currentPVS_Peer)) {
 				channelManager.addPeer(currentChannelName, currentPVS_Peer, currentStatus);
-			}
-			else
-			{
+			} else {
 				// Already connected - ignore request and return
 				return ERROR_OTHER;
 			}
@@ -500,12 +501,10 @@ int PVS_Server::receive(ENetEvent& event)
 				pw.writeString(currentChannelDescription.c_str());
 				pw.writeValue(Npeers);
 				peerList::iterator it;
-				for (it = pl->begin(); it != pl->end(); it++)
-				{
+				for (it = pl->begin(); it != pl->end(); it++) {
 					pw.writeValue((*it)->id);
 					pw.writeString((*it)->name.c_str());
 					pw.writeValue(currentChannel->status[(*it)->id]);
-
 				}
 				sendPacket(0, pw.getArray(), pw.getLength(), event.peer);
 				onChannelJoin();
@@ -521,16 +520,13 @@ int PVS_Server::receive(ENetEvent& event)
 				pw.writeString(currentPVS_Peer->name);
 				pw.writeValue(currentChannel->status[currentPVS_Peer->id]);
 				peerList::iterator it;
-				for (it = pl->begin(); it != pl->end(); it++)
-				{
+				for (it = pl->begin(); it != pl->end(); it++) {
 					if ((*it)->id == id) // Not self
 						continue;
 					sendPacket(0, pw.getArray(), pw.getLength(), (*it)->enetpeer);
 				}
 			}
-		}
-		else
-		{
+		} else {
 			// Send fail back
 			packetWriter pw(sizeof(unsigned char) + 1);
 			pw.writeValue(static_cast<unsigned char>(PT_REQUESTJOINCHANNEL));
@@ -540,12 +536,13 @@ int PVS_Server::receive(ENetEvent& event)
 		}
 		break;
 	}
-	case PT_REQUESTLEAVECHANNEL:
-	{
+	case PT_REQUESTLEAVECHANNEL: {
 		// Remove peer from channel
 		unsigned int id = 0;
-		if (!pr.getValue(id)) return ERROR_PACKET;
-		if (!pr.getString(currentChannelName)) return ERROR_PACKET;
+		if (!pr.getValue(id))
+			return ERROR_PACKET;
+		if (!pr.getString(currentChannelName))
+			return ERROR_PACKET;
 
 		if (!channelManager.channelExists(currentChannelName))
 			return ERROR_OTHER; // Make sure it's not a bogus message
@@ -556,24 +553,22 @@ int PVS_Server::receive(ENetEvent& event)
 		onChannelLeave();
 		break;
 	}
-	case PT_CHANNELLIST:
-	{
+	case PT_CHANNELLIST: {
 		// Request for channellist
 		sendChannelList(event.peer);
 		break;
 	}
-	case PT_NEWCHANNEL:
-	{
+	case PT_NEWCHANNEL: {
 		// Peers do not send through this channel;
 		break;
 	}
-	case PT_CHANGEDESCRIPTION:
-	{
-		if (!pr.getString(currentChannelName)) return ERROR_PACKET;
-		if (!pr.getString(currentChannelDescription)) return ERROR_PACKET;
+	case PT_CHANGEDESCRIPTION: {
+		if (!pr.getString(currentChannelName))
+			return ERROR_PACKET;
+		if (!pr.getString(currentChannelDescription))
+			return ERROR_PACKET;
 
-		if (!channelManager.channelExists(currentChannelName))
-		{
+		if (!channelManager.channelExists(currentChannelName)) {
 			// Channel not found
 			packetWriter pw(sizeof(unsigned char) + 1);
 			pw.writeValue(static_cast<unsigned char>(PT_CHANGEDESCRIPTION));
@@ -581,29 +576,23 @@ int PVS_Server::receive(ENetEvent& event)
 			sendPacket(0, pw.getArray(), pw.getLength(), event.peer);
 			onChannelDenied();
 			return ERROR_OTHER;
-		}
-		else
-		{
+		} else {
 			PVS_Channel* c = channelManager.getChannel(currentChannelName);
-			if (!c->lock)
-			{
+			if (!c->lock) {
 				// Send everyone change of description
 				packetWriter pw(sizeof(unsigned char) + currentChannelName.length() + 1 + currentChannelDescription.length() + 1);
 				pw.writeValue(static_cast<unsigned char>(PT_CHANGEDESCRIPTION));
 				pw.writeString(currentChannelName.c_str());
 				pw.writeString(currentChannelDescription.c_str());
 				// Send to all peers in server
-				for (auto& it : enetPeerList)
-				{
+				for (auto& it : enetPeerList) {
 					sendPacket(0, pw.getArray(), pw.getLength(), it);
 				}
 				currentPVS_Peer = getPVS_Peer(event.peer);
 				c->description = currentChannelDescription;
 				onChangeDescription();
 
-			}
-			else
-			{
+			} else {
 				// Decription is locked
 				packetWriter pw(sizeof(unsigned char) + 1);
 				pw.writeValue(static_cast<unsigned char>(PT_CHANGEDESCRIPTION));
@@ -615,16 +604,17 @@ int PVS_Server::receive(ENetEvent& event)
 		}
 		break;
 	}
-	case PT_CHANGESTATUS:
-	{
+	case PT_CHANGESTATUS: {
 		unsigned int id = 0;
-		if (!pr.getValue(id)) return ERROR_PACKET;
-		if (!pr.getString(currentChannelName)) return ERROR_PACKET;
-		if (!pr.getValue(currentStatus)) return ERROR_PACKET;
+		if (!pr.getValue(id))
+			return ERROR_PACKET;
+		if (!pr.getString(currentChannelName))
+			return ERROR_PACKET;
+		if (!pr.getValue(currentStatus))
+			return ERROR_PACKET;
 		currentPVS_Peer = getPVS_Peer(event.peer);
 
-		if (channelManager.channelExists(currentChannelName))
-		{
+		if (channelManager.channelExists(currentChannelName)) {
 			// Change status
 			PVS_Channel* currentChannel = channelManager.getChannel(currentChannelName);
 			peerList* pl = currentChannel->peers;
@@ -646,8 +636,7 @@ int PVS_Server::receive(ENetEvent& event)
 				pw.writeValue(oldStatus);
 				// Send to everyone (including self)
 				peerList::iterator it;
-				for (it = pl->begin(); it != pl->end(); it++)
-				{
+				for (it = pl->begin(); it != pl->end(); it++) {
 					sendPacket(0, pw.getArray(), pw.getLength(), (*it)->enetpeer);
 				}
 			}
@@ -662,8 +651,7 @@ int PVS_Server::receive(ENetEvent& event)
 // Inform peers in a channel of a removal
 void PVS_Server::removePeerFromChannelMessage(const std::string& channelname, PVS_Peer* peer)
 {
-	if (!channelManager.channelExists(channelname))
-	{
+	if (!channelManager.channelExists(channelname)) {
 		// Channel could not be found: that means channel was destroyed
 		packetWriter pw(sizeof(unsigned char) + 1 + channelname.length() + 1);
 		pw.writeValue(static_cast<unsigned char>(PT_NEWCHANNEL));
@@ -671,8 +659,7 @@ void PVS_Server::removePeerFromChannelMessage(const std::string& channelname, PV
 		pw.writeString(channelname.c_str());
 
 		// Send to all peers in server
-		for (auto& it : enetPeerList)
-		{
+		for (auto& it : enetPeerList) {
 			sendPacket(0, pw.getArray(), pw.getLength(), it);
 		}
 		return;
@@ -687,8 +674,7 @@ void PVS_Server::removePeerFromChannelMessage(const std::string& channelname, PV
 	pw.writeValue(0); // Peer left, cannot check what his status was
 	peerList* pl = channelManager.getChannel(channelname)->peers;
 	peerList::iterator it;
-	for (it = pl->begin(); it != pl->end(); it++)
-	{
+	for (it = pl->begin(); it != pl->end(); it++) {
 		sendPacket(0, pw.getArray(), pw.getLength(), (*it)->enetpeer);
 	}
 }
@@ -697,12 +683,10 @@ ENetPeer* PVS_Server::getPeerFromID(unsigned int id)
 {
 	ENetPeer* currentPeer;
 	std::list<ENetPeer*>::iterator it;
-	for (it = enetPeerList.begin(); it != enetPeerList.end(); it++)
-	{
+	for (it = enetPeerList.begin(); it != enetPeerList.end(); it++) {
 		currentPeer = *it;
 		unsigned int currentid = static_cast<PVS_Peer*>(currentPeer->data)->id;
-		if (currentid == id)
-		{
+		if (currentid == id) {
 			return currentPeer;
 		}
 	}
@@ -712,8 +696,7 @@ ENetPeer* PVS_Server::getPeerFromID(unsigned int id)
 PVS_Peer* PVS_Server::getPVS_PeerFromID(unsigned int id)
 {
 	ENetPeer* p = getPeerFromID(id);
-	if (p == nullptr)
-	{
+	if (p == nullptr) {
 		sprintf(currentErrorString, "Could not find peer %i", id);
 		onError();
 		return nullptr;
@@ -726,8 +709,7 @@ void PVS_Server::showAllPeers()
 {
 	ENetPeer* currentPeer;
 	std::list<ENetPeer*>::iterator it;
-	for (it = enetPeerList.begin(); it != enetPeerList.end(); it++)
-	{
+	for (it = enetPeerList.begin(); it != enetPeerList.end(); it++) {
 		currentPeer = *it;
 		unsigned int currentid = static_cast<PVS_Peer*>(currentPeer->data)->id;
 		std::string name = static_cast<PVS_Peer*>(currentPeer->data)->name;
@@ -756,16 +738,14 @@ void PVS_Server::sendChannelList(ENetPeer* peer)
 	// Get total string size
 	unsigned int number = static_cast<unsigned int>(channelManager.globalChannelList.size());
 	unsigned int size = 0;
-	for (auto& it : channelManager.globalChannelList)
-	{
+	for (auto& it : channelManager.globalChannelList) {
 		size += static_cast<unsigned int>(it->name.length() + 1);
 		size += static_cast<unsigned int>(it->description.length() + 1);
 	}
 	packetWriter pw(sizeof(unsigned char) + sizeof(unsigned int) + size);
 	pw.writeValue(static_cast<unsigned char>(PT_CHANNELLIST));
 	pw.writeValue(number);
-	for (auto& it : channelManager.globalChannelList)
-	{
+	for (auto& it : channelManager.globalChannelList) {
 		pw.writeString(it->name.c_str());
 		pw.writeString(it->description.c_str());
 	}

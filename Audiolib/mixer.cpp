@@ -1,7 +1,7 @@
 #define TEST
 #include "mixer.h"
-#include <list>
 #include <cstring>
+#include <list>
 
 #ifdef __SSE2__
 #include <emmintrin.h>
@@ -13,7 +13,10 @@ Mixer::~Mixer() = default;
 
 struct SoftwareMixer::Priv {
 	struct PlayingStream {
-		PlayingStream(const Stream& st) : stm(st) { }
+		PlayingStream(const Stream& st)
+			: stm(st)
+		{
+		}
 		alib::Stream stm;
 
 		bool done() const
@@ -35,7 +38,12 @@ struct SoftwareMixer::Priv {
 	float masterVolume;
 	float musicVolume, soundVolume;
 
-	Priv() : channels(2), rate(44100), masterVolume(1.0f), musicVolume(1.0f), soundVolume(1.0f)
+	Priv()
+		: channels(2)
+		, rate(44100)
+		, masterVolume(1.0f)
+		, musicVolume(1.0f)
+		, soundVolume(1.0f)
 	{
 		setFormat(rate, channels);
 		scratchBuffer = new float[scratchBufferLen];
@@ -45,12 +53,13 @@ struct SoftwareMixer::Priv {
 
 	bool setFormat(int r, int c)
 	{
-		if (r > 1000) rate = r;
-		if (c > 0) channels = c;
+		if (r > 1000)
+			rate = r;
+		if (c > 0)
+			channels = c;
 
 		// Truncate the overbuffers, if any exist, since they are now invalid.
-		for (auto& e : streams)
-		{
+		for (auto& e : streams) {
 			// Something was probably meant to be done here...
 			// but what?!
 		}
@@ -69,8 +78,7 @@ struct SoftwareMixer::Priv {
 
 		memset(buffer, 0, bufferFrames * frameSize);
 
-		for (auto& e : streams)
-		{
+		for (auto& e : streams) {
 			bufPtr = 0;
 			memset(scratchBuffer, 0, scratchBufferSamples * sampleSize);
 
@@ -82,8 +90,7 @@ struct SoftwareMixer::Priv {
 			int mixLen = std::min(bufPtr, bufferSamples);
 
 			// Mixing
-			for (int i = 0; i < mixLen; ++i)
-			{
+			for (int i = 0; i < mixLen; ++i) {
 				buffer[i] = (buffer[i] + scratchBuffer[i] * e.stm.volume() * (e.stm.isMusic() ? musicVolume : soundVolume))
 					* masterVolume;
 			}
@@ -91,19 +98,14 @@ struct SoftwareMixer::Priv {
 
 		auto it = streams.begin();
 
-		while (it != streams.end())
-		{
-			if ((*it).looped())
-			{
+		while (it != streams.end()) {
+			if ((*it).looped()) {
 				(*it).stm.signalLoop();
 			}
-			if ((*it).done())
-			{
+			if ((*it).done()) {
 				(*it).stm.signalEnd();
 				it = streams.erase(it);
-			}
-			else
-			{
+			} else {
 				++it;
 			}
 		}
@@ -112,8 +114,7 @@ struct SoftwareMixer::Priv {
 	bool play(Stream& stream)
 	{
 		auto it = streams.begin();
-		while (it != streams.end())
-		{
+		while (it != streams.end()) {
 			if ((*it).stm == stream)
 				it = streams.erase(it);
 			else
@@ -121,8 +122,7 @@ struct SoftwareMixer::Priv {
 		}
 		stream.reset();
 
-		if (stream.setFormat(channels, rate) && !stream.error())
-		{
+		if (stream.setFormat(channels, rate) && !stream.error()) {
 			streams.emplace_back(stream);
 
 			return true;

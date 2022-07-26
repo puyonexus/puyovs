@@ -1,18 +1,17 @@
 #include "searchdialog.h"
-#include "ui_searchdialog.h"
 #include "netclient.h"
+#include "ui_searchdialog.h"
 
-SearchDialog::SearchDialog(QWidget* parent, NetClient* client) :
-	QDialog(parent),
-	ui(new Ui::SearchDialog)
+SearchDialog::SearchDialog(QWidget* parent, NetClient* client)
+	: QDialog(parent)
+	, ui(new Ui::SearchDialog)
 {
 	ui->setupUi(this);
 	searchState = 0;
 	timerState = 0;
 	connect(&timer, SIGNAL(timeout()), this, SLOT(on_TimeOut()));
 
-	if (client)
-	{
+	if (client) {
 		connect(client, SIGNAL(searchResultReceived(QString)), this, SLOT(on_GetSearchResult(QString)));
 	}
 	netClient = client;
@@ -25,16 +24,13 @@ SearchDialog::~SearchDialog()
 
 void SearchDialog::on_pushButton_clicked()
 {
-	if (!ui->lineEdit->text().isEmpty() && netClient && netClient->isConnected())
-	{
+	if (!ui->lineEdit->text().isEmpty() && netClient && netClient->isConnected()) {
 		timer.start(2000);
 		timerState = 1;
 		searchState = 1;
 		ui->pushButton->setEnabled(false);
 		netClient->sendMessageToServer(SUBCHANNEL_SERVERREQ_SEARCH, ui->lineEdit->text());
-	}
-	else
-	{
+	} else {
 		ui->resultTextEdit->setText("Cannot search");
 	}
 }
@@ -54,8 +50,7 @@ void SearchDialog::on_TimeOut()
 
 void SearchDialog::checkButton() const
 {
-	if (searchState == 0 && timerState == 0)
-	{
+	if (searchState == 0 && timerState == 0) {
 		ui->pushButton->setEnabled(true);
 	}
 }

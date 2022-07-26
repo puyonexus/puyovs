@@ -1,0 +1,5 @@
+---
+BasedOnStyle: WebKit
+UseTab: AlignWithSpaces
+IndentWidth: 4
+TabWidth: 4

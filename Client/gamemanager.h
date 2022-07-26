@@ -1,10 +1,10 @@
 #pragma once
 
-#include <QObject>
-#include <QList>
-#include <QBasicTimer>
 #include "../Puyolib/GameSettings.h" // ppvs::RuleSetInfo
 #include "netclient.h"
+#include <QBasicTimer>
+#include <QList>
+#include <QObject>
 
 class GameAudio;
 class GameWidget;
@@ -13,8 +13,7 @@ class Settings;
 
 // WARNING: There may only be one of this class due to a current implementation detail...
 
-class GameManager : public QObject
-{
+class GameManager : public QObject {
 	Q_OBJECT
 public:
 	GameManager(NetClient* network, QObject* parent = nullptr);

@@ -1,9 +1,9 @@
 #pragma once
 
+#include <QMetaType>
 #include <QObject>
 #include <QString>
 #include <QStringList>
-#include <QMetaType>
 
 #include <string>
 #include <vector>
@@ -15,34 +15,39 @@ class QTimer;
 
 // ! WARNING !
 // These definitions are temporary until the libpuyo code is moved in.
-#define CHANNEL_CHAT                0
-#define CHANNEL_CHALLENGE           1
-#define CHANNEL_CHALLENGERESPONSE   2
-#define CHANNEL_GAME                3
+#define CHANNEL_CHAT 0
+#define CHANNEL_CHALLENGE 1
+#define CHANNEL_CHALLENGERESPONSE 2
+#define CHANNEL_GAME 3
 
-#define CHANNEL_PREFIX_LENGTH       8
+#define CHANNEL_PREFIX_LENGTH 8
 
-#define SUBCHANNEL_SERVERREQ_DEBUG         0
-#define SUBCHANNEL_SERVERREQ_USERINFO      1
-#define SUBCHANNEL_SERVERREQ_LOGIN         2
-#define SUBCHANNEL_SERVERREQ_REGISTER      3
-#define SUBCHANNEL_SERVERREQ_ERROR         4
-#define SUBCHANNEL_SERVERREQ_MODERATOR     5
-#define SUBCHANNEL_SERVERREQ_ADMIN         6
-#define SUBCHANNEL_SERVERREQ_RESPONSE      7
-#define SUBCHANNEL_SERVERREQ_MOTD          8
-#define SUBCHANNEL_SERVERREQ_MATCH         9
-#define SUBCHANNEL_SERVERREQ_SEARCH        10
-#define SUBCHANNEL_SERVERREQ_INFO          11
+#define SUBCHANNEL_SERVERREQ_DEBUG 0
+#define SUBCHANNEL_SERVERREQ_USERINFO 1
+#define SUBCHANNEL_SERVERREQ_LOGIN 2
+#define SUBCHANNEL_SERVERREQ_REGISTER 3
+#define SUBCHANNEL_SERVERREQ_ERROR 4
+#define SUBCHANNEL_SERVERREQ_MODERATOR 5
+#define SUBCHANNEL_SERVERREQ_ADMIN 6
+#define SUBCHANNEL_SERVERREQ_RESPONSE 7
+#define SUBCHANNEL_SERVERREQ_MOTD 8
+#define SUBCHANNEL_SERVERREQ_MATCH 9
+#define SUBCHANNEL_SERVERREQ_SEARCH 10
+#define SUBCHANNEL_SERVERREQ_INFO 11
 
-struct NetChannel
-{
-	NetChannel() {}
-	NetChannel(const QString& n, const QString& d) : name(n), description(d) {}
+struct NetChannel {
+	NetChannel() { }
+	NetChannel(const QString& n, const QString& d)
+		: name(n)
+		, description(d)
+	{
+	}
 
 	QString friendlyName() const
 	{
-		QString f = name; f.remove(0, CHANNEL_PREFIX_LENGTH); return f;
+		QString f = name;
+		f.remove(0, CHANNEL_PREFIX_LENGTH);
+		return f;
 	}
 	bool isMatchRoom() const { return name.left(4) == "PVSM"; }
 	bool isChatRoom() const { return name.left(4) == "PVSL"; }
@@ -58,10 +63,18 @@ Q_DECLARE_METATYPE(NetChannel)
 typedef QList<NetChannel> NetChannelList;
 Q_DECLARE_METATYPE(NetChannelList)
 
-struct NetPeer
-{
-	NetPeer() : id(0), status(0) {}
-	NetPeer(int i, const QString& u, unsigned char s) : id(i), username(u), status(s) {}
+struct NetPeer {
+	NetPeer()
+		: id(0)
+		, status(0)
+	{
+	}
+	NetPeer(int i, const QString& u, unsigned char s)
+		: id(i)
+		, username(u)
+		, status(s)
+	{
+	}
 
 	int id;
 	QString username;
@@ -72,11 +85,11 @@ Q_DECLARE_METATYPE(NetPeer)
 typedef QList<NetPeer> NetPeerList;
 Q_DECLARE_METATYPE(NetPeerList)
 
-class NetClient : public QObject
-{
+class NetClient : public QObject {
 	Q_OBJECT
 
-		friend struct QPVSClientPriv;
+	friend struct QPVSClientPriv;
+
 public:
 	NetClient();
 	~NetClient() override;
@@ -169,8 +182,7 @@ private:
 	bool mTryConnectFlag;
 };
 
-class NetChannelProxy : public QObject
-{
+class NetChannelProxy : public QObject {
 	Q_OBJECT
 public:
 	NetChannelProxy(QString channel, NetClient* client, QObject* parent = nullptr);

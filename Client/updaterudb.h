@@ -3,8 +3,7 @@
 #include "updaterldb.h"
 class QIODevice;
 
-enum UDBFileFlags
-{
+enum UDBFileFlags {
 	UDBDirectory = 0x1, // Is a directory.
 	UDBCreateOnlyOnce = 0x2, // Creates a file only the first time it is updated.
 	UDBCreateOnlyOnFirstRun = 0x4, // Creates a file when the db is being generated.
@@ -16,8 +15,7 @@ enum UDBFileFlags
 };
 
 // STRUCTURES
-struct UDBHeader
-{
+struct UDBHeader {
 	quint32 magicnum;
 	quint16 version; // If the updater is too old it should update the launcher blindly
 	quint16 revision;
@@ -27,8 +25,7 @@ struct UDBHeader
 	char message[512];
 };
 
-struct UDBFileInfo
-{
+struct UDBFileInfo {
 	quint16 flags;
 	quint16 revision;
 	quint32 reserved;
@@ -36,8 +33,7 @@ struct UDBFileInfo
 	quint32 namelen;
 };
 
-class UpdaterFile
-{
+class UpdaterFile {
 public:
 	bool read(QIODevice* stream);
 	qint32 version() const;
@@ -55,8 +51,7 @@ private:
 
 typedef QList<UpdaterFile> UpdaterFiles;
 
-class UpdaterUDB
-{
+class UpdaterUDB {
 public:
 	bool read(QIODevice* stream);
 

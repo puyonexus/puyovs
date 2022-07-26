@@ -1,15 +1,16 @@
-#include <QStyle>
-#include <QDockWidget>
-#include <QMenu>
-#include <QCloseEvent>
 #include "gamewidget.h"
+#include "../Puyolib/Game.h"
 #include "chatwindow.h"
 #include "netclient.h"
 #include "playlist.h"
-#include "../Puyolib/Game.h"
+#include <QCloseEvent>
+#include <QDockWidget>
+#include <QMenu>
+#include <QStyle>
 
 GameWidget::GameWidget(ppvs::Game* game, NetChannelProxy* proxy, QWidget* parent)
-	: QMainWindow(parent), mGame(game)
+	: QMainWindow(parent)
+	, mGame(game)
 {
 	if (proxy)
 		proxy->setParent(this);
@@ -21,8 +22,7 @@ GameWidget::GameWidget(ppvs::Game* game, NetChannelProxy* proxy, QWidget* parent
 	mChatWindow = nullptr;
 	mToggleChat = nullptr;
 
-	if (mGame->network)
-	{
+	if (mGame->m_network) {
 		mChatDockWidget = new QDockWidget(tr("Chat Window"));
 		mChatWindow = new ChatWindow(proxy, game, this);
 		mChatDockWidget->setWidget(mChatWindow);
@@ -50,8 +50,7 @@ GameWidget::GameWidget(ppvs::Game* game, NetChannelProxy* proxy, QWidget* parent
 
 	setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(this, SIGNAL(customContextMenuRequested(QPoint)), SLOT(contextMenu(QPoint)));
-	if (mGame->settings->recording == PVS_REPLAYING)
-	{
+	if (mGame->m_settings->recording == ppvs::RecordState::REPLAYING) {
 		QTimer* timer = new QTimer(this);
 		connect(timer, SIGNAL(timeout()), this, SLOT(showReplayTimer()));
 		timer->start(20);
@@ -118,10 +117,9 @@ void GameWidget::playMusic()
 	pvsApp->setMusicMode(mFeverMusic ? PVSApplication::MusicFever : PVSApplication::MusicNormal);
 }
 
-
 void GameWidget::contextMenu(const QPoint& pos)
 {
-	QList <QAction*> actions;
+	QList<QAction*> actions;
 
 	if (mToggleChat)
 		actions.append(mToggleChat);
@@ -155,31 +153,30 @@ void GameWidget::fullScreenToggled(bool visible)
 
 void GameWidget::showReplayTimer()
 {
-	if (mGame->settings->recording != PVS_REPLAYING)
+	if (mGame->m_settings->recording != ppvs::RecordState::REPLAYING)
 		return;
 
-	int& matchTimer = mGame->data->matchTimer;
+	int& matchTimer = mGame->m_data->matchTimer;
 	int ms = matchTimer * 2 % 100;
 	int s = matchTimer / 60 % 60;
 	int m = matchTimer / 60 / 60 % 3600;
 	QString timeString = QString("Replay [%1:%2:%3]").arg(m, 2, 10, QChar('0')).arg(s, 2, 10, QChar('0')).arg(ms, 2, 10, QChar('0'));
-	if (mGame->replayTimer > 0)
+	if (mGame->m_replayTimer > 0)
 		setWindowTitle("Replay [00:00:00]");
-	else
-	{
-		switch (mGame->replayState)
-		{
-		case REPLAYSTATE_PAUSED:
+	else {
+		switch (mGame->m_replayState) {
+		case ReplayState::PAUSED:
 			setWindowTitle(timeString + " Paused");
 			break;
-		case REPLAYSTATE_FASTFORWARD:
+		case ReplayState::FAST_FORWARD:
 			setWindowTitle(timeString + " x2");
 			break;
-		case REPLAYSTATE_FASTFORWARDX4:
+		case ReplayState::FAST_FORWARD_X4:
 			setWindowTitle(timeString + " x4");
 			break;
 		default:
-		case REPLAYSTATE_NORMAL:
+		case ReplayState::NORMAL:
+		case ReplayState::REWIND:
 			setWindowTitle(timeString);
 			break;
 		}
@@ -188,22 +185,19 @@ void GameWidget::showReplayTimer()
 
 bool GameWidget::event(QEvent* event)
 {
-	switch (event->type())
-	{
+	switch (event->type()) {
 	case QEvent::WindowActivate:
-		if (mGame)
-		{
+		if (mGame) {
 			mGame->setWindowFocus(true);
 			mMusicPlaying = true;
-			mGame->currentVolumeFever -= 1;
-			mGame->currentVolumeNormal -= 1;
+			mGame->m_currentVolumeFever -= 1;
+			mGame->m_currentVolumeNormal -= 1;
 		}
 		if (mMusicPlaying)
 			playMusic();
 		break;
 	case QEvent::WindowDeactivate:
-		if (pvsApp->activeWindow() && pvsApp->activeWindow()->inherits("GameWidget") || pvsApp->activeWindow() == nullptr)
-		{
+		if (pvsApp->activeWindow() && pvsApp->activeWindow()->inherits("GameWidget") || pvsApp->activeWindow() == nullptr) {
 			if (mGame)
 				mGame->setWindowFocus(false);
 		}
@@ -215,8 +209,7 @@ bool GameWidget::event(QEvent* event)
 
 void GameWidget::showEvent(QShowEvent*)
 {
-	if (!moveOnce)
-	{
+	if (!moveOnce) {
 		moveOnce = true;
 		move(parentPos - QPoint(width(), 0));
 		raise();
@@ -228,24 +221,19 @@ void GameWidget::showEvent(QShowEvent*)
 
 void GameWidget::closeEvent(QCloseEvent* event)
 {
-	if (mGame && mGame->settings->rankedMatch
-		&& mGame->countBoundPlayers() > 1)
-	{
+	if (mGame && mGame->m_settings->rankedMatch
+		&& mGame->countBoundPlayers() > 1) {
 		// Do not close
 		event->ignore();
-	}
-	else
-	{
+	} else {
 		QMainWindow::closeEvent(event);
 	}
 }
 
-
 void GameWidget::setupMusic(int evt)
 {
 	bool focused = isActiveWindow();
-	switch (ppvs::FeMusicEvent(evt))
-	{
+	switch (ppvs::FeMusicEvent(evt)) {
 	case ppvs::MusicCanStop:
 		if (!pvsApp->settings().boolean("music", "stopmusicafterround", false))
 			return;
@@ -253,8 +241,7 @@ void GameWidget::setupMusic(int evt)
 		mMusicPlaying = false;
 		mFeverMusic = false;
 
-		if (focused)
-		{
+		if (focused) {
 			if (pvsApp->settings().boolean("music", "looponce", true))
 				pvsApp->setMusicMode(PVSApplication::MusicPause);
 			else
@@ -264,16 +251,19 @@ void GameWidget::setupMusic(int evt)
 
 	case ppvs::MusicContinue:
 		mMusicPlaying = true;
-		if (focused) pvsApp->setMusicMode(PVSApplication::MusicNormal, pvsApp->settings().boolean("music", "advance", true));
+		if (focused)
+			pvsApp->setMusicMode(PVSApplication::MusicNormal, pvsApp->settings().boolean("music", "advance", true));
 		break;
 
 	case ppvs::MusicEnterFever:
-		if (focused) pvsApp->setMusicMode(PVSApplication::MusicFever, true);
+		if (focused)
+			pvsApp->setMusicMode(PVSApplication::MusicFever, true);
 		mFeverMusic = true;
 		break;
 
 	case ppvs::MusicExitFever:
-		if (focused) pvsApp->setMusicMode(PVSApplication::MusicNormal, false);
+		if (focused)
+			pvsApp->setMusicMode(PVSApplication::MusicNormal, false);
 		mFeverMusic = false;
 		break;
 	}

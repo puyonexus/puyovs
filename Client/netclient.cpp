@@ -3,9 +3,12 @@
 #include "common.h"
 #include <QTimer>
 
-struct QPVSClientPriv : public PVS_Client
-{
-	QPVSClientPriv(NetClient* c) : PVS_Client(), client(c) { }
+struct QPVSClientPriv : public PVS_Client {
+	QPVSClientPriv(NetClient* c)
+		: PVS_Client()
+		, client(c)
+	{
+	}
 
 	void onConnect() override { client->onConnect(); }
 	void onDisconnect() override { client->onDisconnect(); }
@@ -211,8 +214,7 @@ void NetClient::onChannelJoined(QString c)
 	PVS_Channel* pvsch = mClient->channelManager.getChannel(mClient->currentChannelName);
 	std::list<PVS_Peer*>* pl = pvsch->peers;
 
-	for (const auto& it : *pl)
-	{
+	for (const auto& it : *pl) {
 		peers.append(NetPeer(it->id, QString::fromStdString(it->name), pvsch->status[it->id]));
 	}
 
@@ -233,8 +235,7 @@ void NetClient::onGetPeerList(std::vector<std::string>* v)
 {
 	QStringList peers;
 
-	for (auto& peer : *v)
-	{
+	for (auto& peer : *v) {
 		peers.append(QString::fromStdString(peer));
 	}
 
@@ -340,14 +341,15 @@ void NetClient::onError(QString e)
 
 void NetClient::processEvents() const
 {
-	if (mClient->networkInitialized && (mTryConnectFlag || mClient->connected))
-	{
+	if (mClient->networkInitialized && (mTryConnectFlag || mClient->connected)) {
 		mClient->checkEvent();
 	}
 }
 
 NetChannelProxy::NetChannelProxy(QString channel, NetClient* client, QObject* parent)
-	: QObject(parent), mChannel(channel), mClient(client)
+	: QObject(parent)
+	, mChannel(channel)
+	, mClient(client)
 {
 	connect(client, SIGNAL(serverMessageReceived(uchar, QString)),
 		SLOT(serverMessageReceived(uchar, QString)));
@@ -466,4 +468,3 @@ void NetChannelProxy::serverMessageReceived(uchar subchannel, QString message)
 	if (subchannel == SUBCHANNEL_SERVERREQ_USERINFO)
 		emit userInfoReceived(message);
 }
-

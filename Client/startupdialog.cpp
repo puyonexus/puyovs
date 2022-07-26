@@ -1,9 +1,9 @@
 #include "startupdialog.h"
 #include "ui_startupdialog.h"
 
-StartupDialog::StartupDialog(QString motd, QWidget* parent) :
-	QDialog(parent),
-	ui(new Ui::StartupDialog)
+StartupDialog::StartupDialog(QString motd, QWidget* parent)
+	: QDialog(parent)
+	, ui(new Ui::StartupDialog)
 {
 	ui->setupUi(this);
 	ui->textBrowser->setHtml(motd);

@@ -6,8 +6,7 @@ namespace Ui {
 class CreateChatroomDialog;
 }
 
-class CreateChatroomDialog : public QDialog
-{
+class CreateChatroomDialog : public QDialog {
 	Q_OBJECT
 
 public:

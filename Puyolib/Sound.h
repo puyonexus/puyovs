@@ -1,29 +1,24 @@
 #pragma once
 
-#include <string>
-
-namespace ppvs
-{
+namespace ppvs {
 
 struct GameData;
 class Game;
 class FeSound;
 
-class Sound
-{
+class Sound final {
 public:
 	Sound();
-	virtual ~Sound();
+	~Sound();
 
-	void play(GameData* g);
-	void stop(GameData* g);
+	void play(const GameData* data);
+	void stop(GameData* data);
 	void setBuffer(FeSound* sound);
 	void unload();
-	ppvs::FeSound* getBuffer();
+	[[nodiscard]] ppvs::FeSound* getBuffer() const;
 
 private:
-	GameData* gamedata;
-	FeSound* m_sound;
+	FeSound* m_sound = nullptr;
 };
 
 }

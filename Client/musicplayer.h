@@ -2,21 +2,28 @@
 
 #include <QObject>
 
-namespace alib { class Stream; }
+namespace alib {
+class Stream;
+}
 
 class Playlist;
 class MusicStreamObserver;
 
-class MusicPlayer : public QObject
-{
+class MusicPlayer : public QObject {
 	Q_OBJECT
 
 	friend class MusicStreamObserver;
 
-	struct Priv; Priv* p;
+	struct Priv;
+	Priv* p;
 
 public:
-	enum LoopMode { NoLoop, LoopAtLeastOnce, LoopSingle, LoopAll };
+	enum LoopMode {
+		NoLoop,
+		LoopAtLeastOnce,
+		LoopSingle,
+		LoopAll,
+	};
 
 	MusicPlayer(Playlist& playlist, QObject* parent = nullptr);
 	~MusicPlayer() override;

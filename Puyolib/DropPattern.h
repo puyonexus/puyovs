@@ -1,21 +1,19 @@
 #pragma once
-#include <vector>
-#include <string>
 #include "global.h"
 
 namespace ppvs
 {
 
-// Contains droppatterns, fever patterns, voice patterns etc.
+// Contains drop patterns, fever patterns, voice patterns etc.
 
-// Define types of movepuyo
+// Define types of move puyo
 enum MovePuyoType
 {
 	DOUBLET,
 	TRIPLET,
 	QUADRUPLET,
 	BIG,
-	TRIPLETR
+	TRIPLET_R
 };
 
 struct DropSet
@@ -23,7 +21,7 @@ struct DropSet
 	MovePuyoType mpt[16];
 };
 
-// Call this function to get the movepuyoType
+// Call this function to get the move puyo type
 MovePuyoType getFromDropPattern(PuyoCharacter, int);
 
 // Drop pattern for nuisance

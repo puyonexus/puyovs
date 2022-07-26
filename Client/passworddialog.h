@@ -16,8 +16,7 @@ struct GameSettings;
 struct RuleSetInfo;
 }
 
-class PasswordDialog : public QDialog
-{
+class PasswordDialog : public QDialog {
 	Q_OBJECT
 
 public:

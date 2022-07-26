@@ -4,8 +4,7 @@
 
 namespace alib {
 
-class SampleReader
-{
+class SampleReader {
 public:
 	virtual ~SampleReader();
 

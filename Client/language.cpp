@@ -1,3 +1,4 @@
+#include "language.h"
 #include <QApplication>
 #include <QDebug>
 #include <QDir>
@@ -5,12 +6,14 @@
 #include <QFileSystemWatcher>
 #include <QTranslator>
 #include <json/json.h>
-#include "language.h"
 
 // Language
-struct LanguagePriv
-{
-	LanguagePriv(QString fn) : currentError(Language::NoError), filename(std::move(fn)) {}
+struct LanguagePriv {
+	LanguagePriv(QString fn)
+		: currentError(Language::NoError)
+		, filename(std::move(fn))
+	{
+	}
 
 	Json::Value langRoot;
 	Language::Error currentError;
@@ -18,15 +21,15 @@ struct LanguagePriv
 	Json::Reader reader;
 };
 
-Language::Language(const QString& filename, QObject* parent) :
-	QObject(parent), d(new LanguagePriv(filename))
+Language::Language(const QString& filename, QObject* parent)
+	: QObject(parent)
+	, d(new LanguagePriv(filename))
 {
 	// Get a file handle.
 	QFile file(filename);
 
 	// Open file.
-	if (!file.open(QFile::ReadOnly))
-	{
+	if (!file.open(QFile::ReadOnly)) {
 		d->currentError = FileError;
 		return;
 	}
@@ -35,22 +38,19 @@ Language::Language(const QString& filename, QObject* parent) :
 	QByteArray data = file.readAll();
 
 	// Handle empty file/file read error.
-	if (data.isEmpty())
-	{
+	if (data.isEmpty()) {
 		d->currentError = ReadError;
 		return;
 	}
 
 	// Handle UTF-8 BOM.
-	if (data.startsWith("\xEF\xBB\xBF"))
-	{
+	if (data.startsWith("\xEF\xBB\xBF")) {
 		qDebug() << "Warning:" << filename << "contains a UTF-8 BOM. Discarded.";
 		data.remove(0, 3);
 	}
 
 	// Parse JSON data.
-	if (!d->reader.parse(data.data(), d->langRoot, false))
-	{
+	if (!d->reader.parse(data.data(), d->langRoot, false)) {
 		d->currentError = JsonError;
 		return;
 	}
@@ -68,8 +68,7 @@ Language::Error Language::error() const
 
 QString Language::errorString() const
 {
-	switch (d->currentError)
-	{
+	switch (d->currentError) {
 	case NoError:
 		return QString("No error.");
 	case FileError:
@@ -116,16 +115,18 @@ QString Language::translate(const QString& section, const QString& key) const
 }
 
 // Translator
-class Translator : public QTranslator
-{
+class Translator : public QTranslator {
 public:
-	Translator(LanguageManager* manager) : QTranslator(manager), mManager(manager) { }
+	Translator(LanguageManager* manager)
+		: QTranslator(manager)
+		, mManager(manager)
+	{
+	}
 
 	QString translatedmbg(const char* disambiguation) const
 	{
 		QString d = QString::fromUtf8(disambiguation);
-		if (d.contains(':'))
-		{
+		if (d.contains(':')) {
 			QStringList dp = d.split(':');
 
 			if (dp.count() != 2)
@@ -135,16 +136,13 @@ public:
 		return mManager->translate("Launcher", QString(disambiguation));
 	}
 
-
 	QString translate(const char* /*context*/, const char* sourceText,
 		const char* disambiguation = nullptr, int n = -1) const override
 	{
-		if (disambiguation != nullptr && strlen(disambiguation) != 0)
-		{
+		if (disambiguation != nullptr && strlen(disambiguation) != 0) {
 			QString translation = translatedmbg(disambiguation);
 
-			if (translation.isEmpty())
-			{
+			if (translation.isEmpty()) {
 				return mManager->translate("Launcher", QString(sourceText));
 			}
 			return translation;
@@ -221,8 +219,7 @@ void LanguageManager::setCurrentLanguageIndex(int id)
 	mLostLanguage = QString();
 	mCurrentLanguage = qBound(-1, id, mLanguages.count() - 1);
 
-	if (qApp)
-	{
+	if (qApp) {
 		qApp->removeTranslator(mTranslator);
 		qApp->installTranslator(mTranslator);
 	}
@@ -237,8 +234,7 @@ void LanguageManager::setLanguageFromFilename(const QString& filename)
 	if (!fn.startsWith("Language/"))
 		fn.prepend("Language/");
 
-	for (int i = 0; i < mLanguages.size(); ++i)
-	{
+	for (int i = 0; i < mLanguages.size(); ++i) {
 		if (mLanguages[i]->fileName() == fn)
 			setCurrentLanguageIndex(i);
 	}
@@ -267,7 +263,7 @@ void LanguageManager::refreshLanguageList(QString)
 		languageName = mLostLanguage;
 
 	// Delete currently loaded languages.
-	foreach(Language * language, mLanguages)
+	foreach (Language* language, mLanguages)
 		language->deleteLater();
 
 	// Clear language list.
@@ -284,8 +280,7 @@ void LanguageManager::refreshLanguageList(QString)
 #endif
 
 	// Load languages.
-	foreach(QString file, files)
-	{
+	foreach (QString file, files) {
 		// Add file to fswatch
 		mFsWatcher->addPath(langDir + file);
 		mLanguages.append(new Language(langDir + file, this));
@@ -293,54 +288,47 @@ void LanguageManager::refreshLanguageList(QString)
 
 	// Determine if any loads failed.
 	QList<Language*> loadFailures;
-	foreach(Language * language, mLanguages)
+	foreach (Language* language, mLanguages)
 		if (language->error())
 			loadFailures.append(language);
 
 	bool lostLanguage = false;
 
 	// Try to determine current language again.
-	if (!languageName.isEmpty())
-	{
+	if (!languageName.isEmpty()) {
 		mCurrentLanguage = -1;
-		for (int i = 0; i < mLanguages.count(); ++i)
-		{
+		for (int i = 0; i < mLanguages.count(); ++i) {
 			Language* language = mLanguages.at(i);
 
 			if (language->realName() == languageName)
 				mCurrentLanguage = i;
 		}
-		if (mCurrentLanguage == -1)
-		{
+		if (mCurrentLanguage == -1) {
 			mLostLanguage = languageName;
 			lostLanguage = true;
 		}
 	}
 
 	// Ensure old id was in range.
-	else mCurrentLanguage = qBound(-1, mCurrentLanguage, mLanguages.count() - 1);
+	else
+		mCurrentLanguage = qBound(-1, mCurrentLanguage, mLanguages.count() - 1);
 
 	// Construct error message
-	if (loadFailures.count() > 0)
-	{
+	if (loadFailures.count() > 0) {
 		mErrorString = QString("One or more language files failed to load:");
 
-		foreach(Language * language, loadFailures)
-		{
+		foreach (Language* language, loadFailures) {
 			mErrorString.append("\n\n").append(language->realName()).append(":\n");
 			mErrorString.append(language->errorString());
 		}
 
-		if (lostLanguage)
-		{
+		if (lostLanguage) {
 			mErrorString.append("\n\nAlso, the language you were using, ").append(languageName).append(", was lost.\n");
 			mErrorString.append("It will be reloaded if found again.");
 		}
 
 		mError = true;
-	}
-	else if (lostLanguage)
-	{
+	} else if (lostLanguage) {
 		mErrorString.append("The language you were using, ").append(languageName).append(", was lost.\n");
 		mErrorString.append("It will be reloaded if found again.");
 
@@ -352,8 +340,7 @@ void LanguageManager::refreshLanguageList(QString)
 
 	emit languagesModified();
 
-	if (qApp)
-	{
+	if (qApp) {
 		qApp->removeTranslator(mTranslator);
 		qApp->installTranslator(mTranslator);
 	}

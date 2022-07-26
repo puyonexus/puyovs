@@ -1,57 +1,79 @@
 #pragma once
 
-#include "global.h"
 #include "Sprite.h"
-#include "DropPattern.h"
+#include "global.h"
 
-namespace ppvs
-{
+namespace ppvs {
 
 class Game;
 
-class CharacterSelect
-{
+class CharacterSelect final {
 public:
-	CharacterSelect(Game*);
-	virtual ~CharacterSelect();
+	explicit CharacterSelect(Game*);
+	~CharacterSelect();
+
+	CharacterSelect(const CharacterSelect&) = delete;
+	CharacterSelect& operator=(const CharacterSelect&) = delete;
+	CharacterSelect(CharacterSelect&&) = delete;
+	CharacterSelect& operator=(CharacterSelect&&) = delete;
 
 	void draw();
 	void prepare();
 	void play();
 	void end();
 
-	void setCharacter(int playernum, int selection, bool choice);
+	void setCharacter(int playerNum, int selection, bool choice);
 
 private:
 	void setDropset(int x, int y, int pl);
-	int findCurrentCharacter(int i);
+	[[nodiscard]] int findCurrentCharacter(int i) const;
 
-	int timer = 0;
-	Game* currentgame = nullptr;
-	GameData* data = nullptr;
-	PuyoCharacter order[24] = {
-		ARLE, SCHEZO, RULUE, DRACO, AMITIE, RAFFINE, SIG, RIDER,
-		WITCH, SATAN, SUKETOUDARA, CARBUNCLE, ACCORD, KLUG, DONGURIGAERU, OCEAN_PRINCE,
-		RINGO, MAGURO, RISUKUMA, ECOLO, FELI, LEMRES, OSHARE_BONES, YU_REI,
+	int m_timer = 0;
+	Game* m_currentGame = nullptr;
+	GameData* m_data = nullptr;
+	PuyoCharacter m_order[24] = {
+		ARLE,
+		SCHEZO,
+		RULUE,
+		DRACO,
+		AMITIE,
+		RAFFINE,
+		SIG,
+		RIDER,
+		WITCH,
+		SATAN,
+		SUKETOUDARA,
+		CARBUNCLE,
+		ACCORD,
+		KLUG,
+		DONGURIGAERU,
+		OCEAN_PRINCE,
+		RINGO,
+		MAGURO,
+		RISUKUMA,
+		ECOLO,
+		FELI,
+		LEMRES,
+		OSHARE_BONES,
+		YU_REI,
 	};
-	Sprite background = {};
-	Sprite holder[24] = {};
-	Sprite charSprite[24] = {};
-	FeImage* backgroundImage = nullptr;
+	Sprite m_background = {};
+	Sprite m_holder[24] = {};
+	Sprite m_charSprite[24] = {};
 
 	// Player stuff
-	Sprite* selectSprite = nullptr;
-	Sprite* selectedCharacter = nullptr;
-	Sprite* dropset = nullptr;
-	Sprite* name = nullptr;
-	Sprite* nameHolder = nullptr;
-	Sprite* nameHolderNumber = nullptr;
-	Sprite* playernumber = nullptr;
-	int* sel = nullptr;
-	bool* madeChoice = nullptr;
-	float scale = 1.f;
-	int Nplayers = 0;
-	bool firstStart = true;
+	Sprite* m_selectSprite = nullptr;
+	Sprite* m_selectedCharacter = nullptr;
+	Sprite* m_dropSet = nullptr;
+	Sprite* m_name = nullptr;
+	Sprite* m_nameHolder = nullptr;
+	Sprite* m_nameHolderNumber = nullptr;
+	Sprite* m_playerNumber = nullptr;
+	int* m_sel = nullptr;
+	bool* m_madeChoice = nullptr;
+	float m_scale = 1.f;
+	int m_numPlayers = 0;
+	bool m_firstStart = true;
 };
 
 }

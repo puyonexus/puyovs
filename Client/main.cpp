@@ -15,14 +15,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "main.h"
-#include "pvsapplication.h"
 #include "mainwindow.h"
+#include "pvsapplication.h"
 #include "updatedialog.h"
 #include <QDebug>
 #include <QDesktopWidget>
 #include <QDir>
-#include <QTextCodec>
 #include <QSettings>
+#include <QTextCodec>
 
 #ifdef Q_OS_WIN
 #include <windows.h> // for Sleep
@@ -93,16 +93,13 @@ int main(int argc, char* argv[])
 			qDebug() << "Removing old files.";
 
 			char** arg = &argv[2];
-			while (*arg)
-			{
+			while (*arg) {
 				QString file = *(arg++);
 
 				qDebug() << "Removing" << file;
 				QFile::remove(file);
 			}
-		}
-		else
-		{
+		} else {
 			UpdateDialog d(binPath);
 			QDesktopWidget* desktop = QApplication::desktop();
 			QRect screenGeom = desktop->screenGeometry(QCursor::pos());

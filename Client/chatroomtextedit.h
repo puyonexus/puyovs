@@ -1,10 +1,9 @@
 #pragma once
 
-#include <QPlainTextEdit>
 #include <QMouseEvent>
+#include <QPlainTextEdit>
 
-class ChatroomTextEdit : public QPlainTextEdit
-{
+class ChatroomTextEdit : public QPlainTextEdit {
 	Q_OBJECT
 
 public:
@@ -12,7 +11,7 @@ public:
 
 signals:
 	void anchorClicked(QString);
-	
+
 protected:
 	void mousePressEvent(QMouseEvent* event) override;
 	void mouseMoveEvent(QMouseEvent* event) override;

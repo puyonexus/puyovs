@@ -7,29 +7,29 @@ NullDriver::~NullDriver() = default;
 
 bool NullDriver::error() const
 {
-    // NullDriver: 100% bug and failure free!
-    return false;
+	// NullDriver: 100% bug and failure free!
+	return false;
 }
 
 void NullDriver::process()
 {
-    return;
+	return;
 }
 
 void NullDriver::enableEvents()
 {
-    return;
+	return;
 }
 
 void NullDriver::disableEvents()
 {
-    return;
+	return;
 }
 
-bool NullDriver::getEvent(InputEvent *)
+bool NullDriver::getEvent(InputEvent*)
 {
-    // There are never events to process with NullDriver.
-    return false;
+	// There are never events to process with NullDriver.
+	return false;
 }
 
 }

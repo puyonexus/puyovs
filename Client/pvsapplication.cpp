@@ -1,22 +1,23 @@
-#include <QDir>
 #include "pvsapplication.h"
+#include "common.h"
 #include "musicplayer.h"
 #include "playlist.h"
-#include "common.h"
+#include <QDir>
 #include <alib/audiolib.h>
 
 PVSApplication* pvsApp = nullptr;
 
-struct PVSApplication::Priv
-{
+struct PVSApplication::Priv {
 	Settings* settings;
 
 	Playlist normalPlaylist, feverPlaylist;
 	MusicPlayer normalPlayer, feverPlayer;
 
 	Priv()
-		: normalPlaylist("User/Music/Normal.m3u"), feverPlaylist("User/Music/Fever.m3u"),
-		normalPlayer(normalPlaylist), feverPlayer(feverPlaylist)
+		: normalPlaylist("User/Music/Normal.m3u")
+		, feverPlaylist("User/Music/Fever.m3u")
+		, normalPlayer(normalPlaylist)
+		, feverPlayer(feverPlaylist)
 	{
 		normalPlaylist.discover("User/Music/Normal");
 		feverPlaylist.discover("User/Music/Fever");
@@ -24,15 +25,14 @@ struct PVSApplication::Priv
 };
 
 PVSApplication::PVSApplication(int& argc, char** argv)
-	: QApplication(argc, argv), p(new Priv)
+	: QApplication(argc, argv)
+	, p(new Priv)
 {
 	// Copy settings.json if necessary
-	if (!QDir(getDataLocation()).exists())
-	{
+	if (!QDir(getDataLocation()).exists()) {
 		QDir().mkpath(getDataLocation());
 	}
-	if (QFile("Settings.json").exists() && !QFile(getDataLocation() + "/Settings.json").exists())
-	{
+	if (QFile("Settings.json").exists() && !QFile(getDataLocation() + "/Settings.json").exists()) {
 		QFile("Settings.json").copy(getDataLocation() + "/Settings.json");
 	}
 
@@ -60,15 +60,13 @@ Settings& PVSApplication::settings() const
 
 void PVSApplication::setMusicMode(PVSApplication::MusicMode mode, bool advance) const
 {
-	if (!p->settings->boolean("launcher", "enablemusic", true))
-	{
+	if (!p->settings->boolean("launcher", "enablemusic", true)) {
 		p->normalPlayer.stop();
 		p->feverPlayer.stop();
 		return;
 	}
 
-	switch (mode)
-	{
+	switch (mode) {
 	case MusicOff:
 		p->normalPlayer.stop();
 		p->feverPlayer.stop();
@@ -78,19 +76,15 @@ void PVSApplication::setMusicMode(PVSApplication::MusicMode mode, bool advance) 
 		p->feverPlayer.pause();
 		break;
 	case MusicNormal:
-		if (advance)
-		{
-			if (p->settings->boolean("music", "looponce", true))
-			{
+		if (advance) {
+			if (p->settings->boolean("music", "looponce", true)) {
 				if (p->normalPlayer.numberOfTimesLooped() > 0)
 					p->normalPlayer.next();
 				else
 					p->normalPlayer.resume();
-			}
-			else
+			} else
 				p->normalPlayer.next();
-		}
-		else
+		} else
 			p->normalPlayer.resume();
 
 		p->feverPlayer.stop();

@@ -1,14 +1,14 @@
 #pragma once
 
-#include <QStringList>
-#include <QObject>
 #include <QFile>
+#include <QObject>
+#include <QStringList>
 
 #include <json/json.h>
 
-class Settings : public QObject
-{
+class Settings : public QObject {
 	Q_OBJECT
+
 public:
 	explicit Settings(QObject* parent = nullptr);
 

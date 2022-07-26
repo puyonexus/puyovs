@@ -1,7 +1,6 @@
 #include "Controller.h"
 
-namespace ppvs
-{
+namespace ppvs {
 
 /*
 0=press		up
@@ -18,247 +17,237 @@ namespace ppvs
 11=release	B
 */
 
-Controller::Controller()
+void Controller::init(const int playerNumber, const PlayerType type, const RecordState s)
 {
-	Down = 0;
-	Up = 0;
-	Left = 0;
-	Right = 0;
-	A = 0;
-	B = 0;
-	Start = 0;
-
-	DelayDown = false;
-	DelayUp = false;
-	DelayLeft = false;
-	DelayRight = false;
-	DelayA = false;
-	DelayB = false;
-	DelayStart = false;
-
-	dUp = false;
-	dDown = false;
-	dLeft = false;
-	dRight = false;
-	dA = false;
-	dB = false;
-	dStart = false;
-
-	m_playernumber = 0;
-	m_type = CPU;
-	m_defined = false;
-
-	state = PVS_NOTRECORDING;
-}
-
-Controller::~Controller()
-{
-}
-
-void Controller::init(int playernumber, PlayerType type, RecordState s)
-{
-	m_playernumber = playernumber;
+	m_playerNumber = playerNumber;
 	m_type = type;
-	state = s;
+	m_state = s;
 }
 
-void Controller::setstate(const FeInput& Input, int t)
+void Controller::setState(const FeInput& input, int t)
 {
 	if (m_type == ONLINE) // ONLINE controls
 		return;
 
 	// Set indicators with delay
-	if (Up) DelayUp = true;
-	else    DelayUp = false;
-	if (Down) DelayDown = true;
-	else    DelayDown = false;
-	if (Left) DelayLeft = true;
-	else    DelayLeft = false;
-	if (Right) DelayRight = true;
-	else    DelayRight = false;
-	if (A) DelayA = true;
-	else    DelayA = false;
-	if (B) DelayB = true;
-	else    DelayB = false;
-	if (Start) DelayStart = true;
-	else    DelayStart = false;
+	if (m_up)
+		m_delayUp = true;
+	else
+		m_delayUp = false;
+	if (m_down)
+		m_delayDown = true;
+	else
+		m_delayDown = false;
+	if (m_left)
+		m_delayLeft = true;
+	else
+		m_delayLeft = false;
+	if (m_right)
+		m_delayRight = true;
+	else
+		m_delayRight = false;
+	if (m_a)
+		m_delayA = true;
+	else
+		m_delayA = false;
+	if (m_b)
+		m_delayB = true;
+	else
+		m_delayB = false;
+	if (m_start)
+		m_delayStart = true;
+	else
+		m_delayStart = false;
 
-	if (state != PVS_REPLAYING)
-	{
-		if (Input.a) A++; else A = 0;
-		if (Input.b) B++; else B = 0;
-		if (Input.up) Up++; else Up = 0;
-		if (Input.down) Down++; else Down = 0;
-		if (Input.left) Left++; else Left = 0;
-		if (Input.right) Right++; else Right = 0;
-		if (Input.start) Start++; else Start = 0;
+	if (m_state != RecordState::REPLAYING) {
+		if (input.a)
+			m_a++;
+		else
+			m_a = 0;
+		if (input.b)
+			m_b++;
+		else
+			m_b = 0;
+		if (input.up)
+			m_up++;
+		else
+			m_up = 0;
+		if (input.down)
+			m_down++;
+		else
+			m_down = 0;
+		if (input.left)
+			m_left++;
+		else
+			m_left = 0;
+		if (input.right)
+			m_right++;
+		else
+			m_right = 0;
+		if (input.start)
+			m_start++;
+		else
+			m_start = 0;
 
 		// Record state
-		if (state == PVS_RECORDING && t > 0)
+		if (m_state == RecordState::RECORDING && t > 0)
 			record(t);
-	}
-	else
-	{
+	} else {
 		// Check event by looping through vector
 		// If the time is -1, it's considered as processed
-		for (size_t i = 0; i < recordEvents.size(); i++)
-		{
-			if (recordEvents[i].time != -1 && recordEvents[i].time == t)
-			{
+		for (auto& m_recordEvent : m_recordEvents) {
+			if (m_recordEvent.time != -1 && m_recordEvent.time == t) {
 				// Process all events with the correct time
-				switch (recordEvents[i].ev)
-				{
+				switch (m_recordEvent.ev) {
 				case 0:
-					dUp = true;
+					m_dUp = true;
 					break;
 				case 1:
-					dUp = false;
+					m_dUp = false;
 					break;
 				case 2:
-					dDown = true;
+					m_dDown = true;
 					break;
 				case 3:
-					dDown = false;
+					m_dDown = false;
 					break;
 				case 4:
-					dLeft = true;
+					m_dLeft = true;
 					break;
 				case 5:
-					dLeft = false;
+					m_dLeft = false;
 					break;
 				case 6:
-					dRight = true;
+					m_dRight = true;
 					break;
 				case 7:
-					dRight = false;
+					m_dRight = false;
 					break;
 				case 8:
-					dA = true;
+					m_dA = true;
 					break;
 				case 9:
-					dA = false;
+					m_dA = false;
 					break;
 				case 10:
-					dB = true;
+					m_dB = true;
 					break;
 				case 11:
-					dB = false;
+					m_dB = false;
+					break;
+				default:
 					break;
 				}
-				recordEvents[i].time = -1;
-			}
-			else if (recordEvents[i].time > t)
+				m_recordEvent.time = -1;
+			} else if (m_recordEvent.time > t)
 				break;
 		}
 		// Set controls
-		if (dUp) Up++;
-		else	Up = 0;
-		if (dDown) Down++;
-		else	Down = 0;
-		if (dLeft) Left++;
-		else	Left = 0;
-		if (dRight) Right++;
-		else	Right = 0;
-		if (dA) A++;
-		else	A = 0;
-		if (dB) B++;
-		else	B = 0;
+		if (m_dUp)
+			m_up++;
+		else
+			m_up = 0;
+		if (m_dDown)
+			m_down++;
+		else
+			m_down = 0;
+		if (m_dLeft)
+			m_left++;
+		else
+			m_left = 0;
+		if (m_dRight)
+			m_right++;
+		else
+			m_right = 0;
+		if (m_dA)
+			m_a++;
+		else
+			m_a = 0;
+		if (m_dB)
+			m_b++;
+		else
+			m_b = 0;
 	}
-
 }
 
 void Controller::release()
 {
 	// Artificially release all buttons
-	Down = 0;
-	Up = 0;
-	Left = 0;
-	Right = 0;
-	A = 0;
-	B = 0;
-	Start = 0;
+	m_down = 0;
+	m_up = 0;
+	m_left = 0;
+	m_right = 0;
+	m_a = 0;
+	m_b = 0;
+	m_start = 0;
 
-	DelayDown = false;
-	DelayUp = false;
-	DelayLeft = false;
-	DelayRight = false;
-	DelayA = false;
-	DelayB = false;
-	DelayStart = false;
+	m_delayDown = false;
+	m_delayUp = false;
+	m_delayLeft = false;
+	m_delayRight = false;
+	m_delayA = false;
+	m_delayB = false;
+	m_delayStart = false;
 
-	dUp = false;
-	dDown = false;
-	dLeft = false;
-	dRight = false;
-	dA = false;
-	dB = false;
-	dStart = false;
+	m_dUp = false;
+	m_dDown = false;
+	m_dLeft = false;
+	m_dRight = false;
+	m_dA = false;
+	m_dB = false;
+	m_dStart = false;
 }
 
 void Controller::record(int t)
 {
-	if (Up > 0 && dUp == false)
-	{
-		dUp = true;
-		recordEvents.push_back(ControllerEvent(t, 0));
+	if (m_up > 0 && m_dUp == false) {
+		m_dUp = true;
+		m_recordEvents.emplace_back(t, 0);
 	}
-	if (Up == 0 && dUp == true)
-	{
-		dUp = false;
-		recordEvents.push_back(ControllerEvent(t, 1));
+	if (m_up == 0 && m_dUp == true) {
+		m_dUp = false;
+		m_recordEvents.emplace_back(t, 1);
 	}
-	if (Down > 0 && dDown == false)
-	{
-		dDown = true;
-		recordEvents.push_back(ControllerEvent(t, 2));
+	if (m_down > 0 && m_dDown == false) {
+		m_dDown = true;
+		m_recordEvents.emplace_back(t, 2);
 	}
-	if (Down == 0 && dDown == true)
-	{
-		dDown = false;
-		recordEvents.push_back(ControllerEvent(t, 3));
+	if (m_down == 0 && m_dDown == true) {
+		m_dDown = false;
+		m_recordEvents.emplace_back(t, 3);
 	}
-	if (Left > 0 && dLeft == false)
-	{
-		dLeft = true;
-		recordEvents.push_back(ControllerEvent(t, 4));
+	if (m_left > 0 && m_dLeft == false) {
+		m_dLeft = true;
+		m_recordEvents.emplace_back(t, 4);
 	}
-	if (Left == 0 && dLeft == true)
-	{
-		dLeft = false;
-		recordEvents.push_back(ControllerEvent(t, 5));
+	if (m_left == 0 && m_dLeft == true) {
+		m_dLeft = false;
+		m_recordEvents.emplace_back(t, 5);
 	}
-	if (Right > 0 && dRight == false)
-	{
-		dRight = true;
-		recordEvents.push_back(ControllerEvent(t, 6));
+	if (m_right > 0 && m_dRight == false) {
+		m_dRight = true;
+		m_recordEvents.emplace_back(t, 6);
 	}
-	if (Right == 0 && dRight == true)
-	{
-		dRight = false;
-		recordEvents.push_back(ControllerEvent(t, 7));
+	if (m_right == 0 && m_dRight == true) {
+		m_dRight = false;
+		m_recordEvents.emplace_back(t, 7);
 	}
-	if (A > 0 && dA == false)
-	{
-		dA = true;
-		recordEvents.push_back(ControllerEvent(t, 8));
+	if (m_a > 0 && m_dA == false) {
+		m_dA = true;
+		m_recordEvents.emplace_back(t, 8);
 	}
-	if (A == 0 && dA == true)
-	{
-		dA = false;
-		recordEvents.push_back(ControllerEvent(t, 9));
+	if (m_a == 0 && m_dA == true) {
+		m_dA = false;
+		m_recordEvents.emplace_back(t, 9);
 	}
-	if (B > 0 && dB == false)
-	{
-		dB = true;
-		recordEvents.push_back(ControllerEvent(t, 10));
+	if (m_b > 0 && m_dB == false) {
+		m_dB = true;
+		m_recordEvents.emplace_back(t, 10);
 	}
-	if (B == 0 && dB == true)
-	{
-		dB = false;
-		recordEvents.push_back(ControllerEvent(t, 11));
+	if (m_b == 0 && m_dB == true) {
+		m_dB = false;
+		m_recordEvents.emplace_back(t, 11);
 	}
-
 }
-
 
 }

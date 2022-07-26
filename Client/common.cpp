@@ -1,12 +1,12 @@
-#include <QObject>
-#include <QString>
-#include <QMessageBox>
-#include <QStringList>
-#include <QKeyEvent>
-#include <QCryptographicHash>
-#include <QDesktopServices>
 #include "common.h"
 #include "../Puyolib/Game.h"
+#include <QCryptographicHash>
+#include <QDesktopServices>
+#include <QKeyEvent>
+#include <QMessageBox>
+#include <QObject>
+#include <QString>
+#include <QStringList>
 #include <ilib/inputevent.h>
 
 QHash<QString, int> buildNameToCode()
@@ -33,11 +33,11 @@ QHash<int, QString> codeToName = buildCodeToName();
 GameModeList getModeList()
 {
 	GameModeList modeList = GameModeList()
-		<< GameModePair(TSU, QObject::tr("Tsu", "ModeTsu"))
-		<< GameModePair(ENDLESS, QObject::tr("Endless", "ModeEndless"))
-		<< GameModePair(ENDLESSFEVER, QObject::tr("Endless Fever", "ModeEndlessFever"))
-		<< GameModePair(FEVER, QObject::tr("Fever", "ModeFever"))
-		<< GameModePair(ENDLESSFEVERVS, QObject::tr("Non-stop Fever", "ModeEndlessFeverVs"));
+		<< GameModePair(ppvs::Rules::TSU, QObject::tr("Tsu", "ModeTsu"))
+		<< GameModePair(ppvs::Rules::ENDLESS, QObject::tr("Endless", "ModeEndless"))
+		<< GameModePair(ppvs::Rules::ENDLESSFEVER, QObject::tr("Endless Fever", "ModeEndlessFever"))
+		<< GameModePair(ppvs::Rules::FEVER, QObject::tr("Fever", "ModeFever"))
+		<< GameModePair(ppvs::Rules::ENDLESSFEVERVS, QObject::tr("Non-stop Fever", "ModeEndlessFeverVs"));
 	return modeList;
 }
 
@@ -63,8 +63,7 @@ void readRulesetString(QString str, ppvs::RuleSetInfo* rs)
 	// assert rs != 0
 
 	QStringList items = str.split('|');
-	foreach(QString item, items)
-	{
+	foreach (QString item, items) {
 		QStringList subitem = item.split(':');
 		int intVal = 0;
 
@@ -74,18 +73,16 @@ void readRulesetString(QString str, ppvs::RuleSetInfo* rs)
 		if (subitem.count() == 2)
 			intVal = subitem.at(1).toInt();
 
-		if (subitem[0] == "rules" && subitem.count() != 1)
-		{
+		if (subitem[0] == "rules" && subitem.count() != 1) {
 			if (subitem[1] == "Tsu")
-				rs->setRules(TSU_ONLINE);
+				rs->setRules(ppvs::Rules::TSU_ONLINE);
 			else if (subitem[1] == "Fever")
-				rs->setRules(FEVER_ONLINE);
+				rs->setRules(ppvs::Rules::FEVER_ONLINE);
 			else if (subitem[1] == "Fever(15th)")
-				rs->setRules(FEVER15_ONLINE);
+				rs->setRules(ppvs::Rules::FEVER15_ONLINE);
 			else if (subitem[1] == "EndlessFeverVS")
-				rs->setRules(ENDLESSFEVERVS_ONLINE);
-		}
-		else if (subitem[0] == "marginTime")
+				rs->setRules(ppvs::Rules::ENDLESSFEVERVS_ONLINE);
+		} else if (subitem[0] == "marginTime")
 			rs->marginTime = intVal;
 		else if (subitem[0] == "targetPoint")
 			rs->targetPoint = intVal;
@@ -102,12 +99,11 @@ void readRulesetString(QString str, ppvs::RuleSetInfo* rs)
 		else if (subitem[0] == "colors")
 			rs->colors = intVal;
 		else if (subitem[0] == "Nplayers")
-			rs->Nplayers = intVal;
+			rs->numPlayers = intVal;
 		else if (subitem[0] == "default")
 			rs->custom = false;
 	}
 }
-
 
 QString createRulesetString(ppvs::RuleSetInfo* rs)
 {
@@ -116,21 +112,24 @@ QString createRulesetString(ppvs::RuleSetInfo* rs)
 	if (rs == nullptr)
 		return QString();
 
-	if (rs->rulesetType == TSU_ONLINE) ruleString = "Tsu";
-	else if (rs->rulesetType == FEVER_ONLINE) ruleString = "Fever";
-	else if (rs->rulesetType == FEVER15_ONLINE) ruleString = "Fever(15th)";
-	else if (rs->rulesetType == ENDLESSFEVERVS_ONLINE) ruleString = "EndlessFeverVS";
+	if (rs->ruleSetType == ppvs::Rules::TSU_ONLINE)
+		ruleString = "Tsu";
+	else if (rs->ruleSetType == ppvs::Rules::FEVER_ONLINE)
+		ruleString = "Fever";
+	else if (rs->ruleSetType == ppvs::Rules::FEVER15_ONLINE)
+		ruleString = "Fever(15th)";
+	else if (rs->ruleSetType == ppvs::Rules::ENDLESSFEVERVS_ONLINE)
+		ruleString = "EndlessFeverVS";
 
 	if (rs->custom)
 		return QString::asprintf("rules:%s|marginTime:%i|targetPoint:%i|requiredChain:%i|initialFeverCount:%i|feverPower:%i|puyoToClear:%i|quickDrop:%i|colors:%i|Nplayers:%i",
-			ruleString.toUtf8().data(), rs->marginTime, rs->targetPoint, rs->requiredChain, rs->initialFeverCount, rs->feverPower, rs->puyoToClear, (int)rs->quickDrop, rs->colors, rs->Nplayers);
-	return (QStringList() << "rules:" + ruleString << "default" << QString("Nplayers:%1").arg(rs->Nplayers)).join("|");
+			ruleString.toUtf8().data(), rs->marginTime, rs->targetPoint, rs->requiredChain, rs->initialFeverCount, rs->feverPower, rs->puyoToClear, (int)rs->quickDrop, rs->colors, rs->numPlayers);
+	return (QStringList() << "rules:" + ruleString << "default" << QString("Nplayers:%1").arg(rs->numPlayers)).join("|");
 }
 
 InputCondition::InputCondition(const ilib::InputEvent& e)
 {
-	switch (e.type)
-	{
+	switch (e.type) {
 	case ilib::InputEvent::ButtonUpEvent:
 	case ilib::InputEvent::ButtonDownEvent:
 		type = buttontype;
@@ -160,51 +159,39 @@ InputCondition::InputCondition(QKeyEvent* e)
 
 InputCondition::InputCondition(QString str)
 {
-	if (str.contains(':'))
-	{
+	if (str.contains(':')) {
 		QStringList condparts = str.split(':');
 
-		if (condparts[0] == "pad" && condparts.size() >= 4 && condparts.size() <= 5)
-		{
+		if (condparts[0] == "pad" && condparts.size() >= 4 && condparts.size() <= 5) {
 			int device = condparts[1].toInt();
-			if (condparts[2] == "button" && condparts.size() == 4)
-			{
+			if (condparts[2] == "button" && condparts.size() == 4) {
 				type = buttontype;
 				button.device = device;
 				button.id = condparts[3].toInt();
-			}
-			else if (condparts[2] == "axis" && condparts.size() == 5)
-			{
+			} else if (condparts[2] == "axis" && condparts.size() == 5) {
 				type = axistype;
 				axis.device = device;
 				axis.id = condparts[3].toInt();
 				axis.direction = condparts[4] == "+" ? 1 : -1;
-			}
-			else if (condparts[2] == "hat" && condparts.size() == 5)
-			{
+			} else if (condparts[2] == "hat" && condparts.size() == 5) {
 				type = hattype;
 				hat.device = device;
 				hat.id = condparts[3].toInt();
 				hat.direction = condparts[4].toInt();
-			}
-			else type = unknown;
-		}
-		else if (condparts[0] == "key" && condparts.size() == 2)
-		{
+			} else
+				type = unknown;
+		} else if (condparts[0] == "key" && condparts.size() == 2) {
 			type = keytype;
 			key.code = condparts[1].toInt();
-		}
-		else type = unknown;
-	}
-	else
-	{
+		} else
+			type = unknown;
+	} else {
 		int code = nameToCode[str.toLower()];
-		if (code != 0)
-		{
+		if (code != 0) {
 			type = keytype;
 			key.code = code;
-		}
-		else type = unknown;
+		} else
+			type = unknown;
 	}
 }
 
@@ -219,34 +206,47 @@ InputCondition::~InputCondition()
 
 InputCondition::MatchResult InputCondition::match(const ilib::InputEvent& e) const
 {
-	switch (e.type)
-	{
+	switch (e.type) {
 	case ilib::InputEvent::ButtonUpEvent:
 	case ilib::InputEvent::ButtonDownEvent:
-		if (type != buttontype) return NoMatch;
-		if (e.device != button.device) return NoMatch;
-		if (e.button.id != button.id) return NoMatch;
+		if (type != buttontype)
+			return NoMatch;
+		if (e.device != button.device)
+			return NoMatch;
+		if (e.button.id != button.id)
+			return NoMatch;
 
-		if (e.type == ilib::InputEvent::ButtonDownEvent) return MatchDown;
+		if (e.type == ilib::InputEvent::ButtonDownEvent)
+			return MatchDown;
 		return MatchUp;
 
 		break;
 	case ilib::InputEvent::AxisEvent:
-		if (type != axistype) return NoMatch;
-		if (e.device != axis.device) return NoMatch;
-		if (e.axis.id != axis.id) return NoMatch;
+		if (type != axistype)
+			return NoMatch;
+		if (e.device != axis.device)
+			return NoMatch;
+		if (e.axis.id != axis.id)
+			return NoMatch;
 
-		if (e.axis.value >= -0.5 && e.axis.value <= 0.5) return MatchUp;
-		if (axis.direction == 1 && e.axis.value > 0.5) return MatchDown;
-		if (axis.direction == -1 && e.axis.value < -0.5) return MatchDown;
+		if (e.axis.value >= -0.5 && e.axis.value <= 0.5)
+			return MatchUp;
+		if (axis.direction == 1 && e.axis.value > 0.5)
+			return MatchDown;
+		if (axis.direction == -1 && e.axis.value < -0.5)
+			return MatchDown;
 
 		break;
 	case ilib::InputEvent::HatEvent:
-		if (type != hattype) return NoMatch;
-		if (e.device != hat.device) return NoMatch;
-		if (e.hat.id != hat.id) return NoMatch;
+		if (type != hattype)
+			return NoMatch;
+		if (e.device != hat.device)
+			return NoMatch;
+		if (e.hat.id != hat.id)
+			return NoMatch;
 
-		if (e.hat.value | hat.direction) return MatchUp;
+		if (e.hat.value | hat.direction)
+			return MatchUp;
 		return MatchDown;
 
 		break;
@@ -259,8 +259,7 @@ InputCondition::MatchResult InputCondition::match(const ilib::InputEvent& e) con
 
 InputCondition::MatchResult InputCondition::match(QKeyEvent* e) const
 {
-	switch (e->type())
-	{
+	switch (e->type()) {
 	case QEvent::KeyPress:
 		if (e->key() == key.code)
 			return MatchDown;
@@ -277,8 +276,7 @@ InputCondition::MatchResult InputCondition::match(QKeyEvent* e) const
 QString InputCondition::toString() const
 {
 	QString name;
-	switch (type)
-	{
+	switch (type) {
 	case keytype:
 		name = codeToName[key.code];
 

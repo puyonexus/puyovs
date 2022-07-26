@@ -1,42 +1,43 @@
 #include <QCloseEvent>
-#include <QMenu>
 #include <QCryptographicHash>
+#include <QMenu>
 #include <QMessageBox>
+#include <QPointer>
 #include <QTabBar>
 #include <QTabWidget>
 #include <QTreeWidgetItem>
-#include <QPointer>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "../Puyolib/GameSettings.h"
 #include "admindialog.h"
 #include "chatroomform.h"
-#include "createchatroomdialog.h"
-#include "startupdialog.h"
-#include "offlinedialog.h"
-#include "language.h"
-#include "settingsdialog.h"
-#include "searchdialog.h"
-#include "passworddialog.h"
-#include "replaydialog.h"
-#include "settings.h"
-#include "pvsapplication.h"
-#include "common.h"
-#include "gamewidget.h"
-#include "gamemanager.h"
-#include "glmanager.h"
-#include "../Puyolib/GameSettings.h"
 #include "chatwindow.h"
+#include "common.h"
+#include "createchatroomdialog.h"
+#include "gamemanager.h"
+#include "gamewidget.h"
+#include "glmanager.h"
+#include "language.h"
+#include "offlinedialog.h"
+#include "passworddialog.h"
+#include "pvsapplication.h"
+#include "replaydialog.h"
+#include "searchdialog.h"
+#include "settings.h"
+#include "settingsdialog.h"
+#include "startupdialog.h"
 #include "telemetrydialog.h"
 
 const static Qt::ItemDataRole rulesRole = static_cast<Qt::ItemDataRole>(Qt::UserRole + 1);
 const static Qt::ItemDataRole scoreRole = static_cast<Qt::ItemDataRole>(Qt::UserRole + 2);
 
-MainWindow::MainWindow(QWidget* parent) :
-	QMainWindow(parent), ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget* parent)
+	: QMainWindow(parent)
+	, ui(new Ui::MainWindow)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
+	setAttribute(Qt::WA_DeleteOnClose);
 
 	// Get settings manager
 	Settings& settings = pvsApp->settings();
@@ -63,7 +64,10 @@ MainWindow::MainWindow(QWidget* parent) :
 
 	// Hack: use subclassing to do this 'right.'
 	// Set fixed tabs.
-	class F : public QTabWidget { public: QTabBar* tabBar() const { return QTabWidget::tabBar(); } };
+	class F : public QTabWidget {
+	public:
+		QTabBar* tabBar() const { return QTabWidget::tabBar(); }
+	};
 	QTabBar* tabBar = static_cast<F*>(ui->tabWidget)->tabBar();
 	tabBar->setTabButton(0, QTabBar::RightSide, nullptr);
 	tabBar->setTabButton(1, QTabBar::RightSide, nullptr);
@@ -145,27 +149,22 @@ void MainWindow::connectToServer()
 {
 	Settings& settings = pvsApp->settings();
 	QString reqUsername = ui->UsernameLineEdit->text();
-	if (reqUsername.count() < 3 || reqUsername.count() > 255)
-	{
+	if (reqUsername.count() < 3 || reqUsername.count() > 255) {
 		showError(tr("Invalid username.", "Messages:ErrorName"));
 		return;
 	}
-	for (int i = 0; i < reqUsername.count(); ++i)
-	{
+	for (int i = 0; i < reqUsername.count(); ++i) {
 		ushort unichar = reqUsername.at(i).unicode();
-		if (unichar <= 32 || unichar > 122 || unichar == '|')
-		{
+		if (unichar <= 32 || unichar > 122 || unichar == '|') {
 			showError(tr("Invalid username.", "Messages:ErrorName"));
 			return;
 		}
 	}
 
-	if (settings.string("account", "password", "").isEmpty() || passEdited)
-	{
+	if (settings.string("account", "password", "").isEmpty() || passEdited) {
 		// Check password length
 		QString password = ui->PasswordLineEdit->text();
-		if (password.count() < 3)
-		{
+		if (password.count() < 3) {
 			showError(tr("Password too short.", "Messages:ErrorPassword"));
 			return;
 		}
@@ -195,12 +194,10 @@ bool MainWindow::isLoggedIn() const
 void MainWindow::closeEvent(QCloseEvent* e)
 {
 	Settings& settings = pvsApp->settings();
-	if (client->isConnected())
-	{
+	if (client->isConnected()) {
 		if (QMessageBox(QMessageBox::Question, windowTitle(), tr("Are you sure you want to exit?", "Messages:Exit"), QMessageBox::Yes | QMessageBox::No, this).exec() == QMessageBox::Yes)
 			client->disconnectFromHost();
-		else
-		{
+		else {
 			e->ignore();
 			return;
 		}
@@ -209,8 +206,7 @@ void MainWindow::closeEvent(QCloseEvent* e)
 	settings.setString("account", "name", ui->UsernameLineEdit->text());
 	settings.setString("account", "server", ui->ServerComboBox->currentText());
 	QString password = ui->PasswordLineEdit->text();
-	if (settings.string("account", "password", "").isEmpty() && !password.isEmpty())
-	{
+	if (settings.string("account", "password", "").isEmpty() && !password.isEmpty()) {
 		QString passhash = QString(QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md5).toHex());
 		settings.setString("account", "password", passhash);
 	}
@@ -242,46 +238,31 @@ void MainWindow::addMatchRoom(NetChannel channel)
 
 	QStringList items = channel.description.split('|');
 
-	for (int i = 0; i < items.count(); i++)
-	{
+	for (int i = 0; i < items.count(); i++) {
 		QStringList subitem = items.at(i).split(':');
 
-		if (subitem[0] == "type")
-		{
+		if (subitem[0] == "type") {
 			if (subitem[1] != "friendly")
 				friendly = false;
-		}
-		else if (subitem[0] == "rules")
-		{
+		} else if (subitem[0] == "rules") {
 			item->setData(1, Qt::DisplayRole, subitem[1]);
-		}
-		else if (subitem[0] == "custom")
-		{
+		} else if (subitem[0] == "custom") {
 			if (subitem[1] == "1")
 				item->setData(2, Qt::DisplayRole, tr("Custom"));
 			else
 				item->setData(2, Qt::DisplayRole, tr("Default"));
-		}
-		else if (subitem[0] == "Nplayers")
-		{
+		} else if (subitem[0] == "Nplayers") {
 			item->setData(3, Qt::DisplayRole, subitem[1]);
-		}
-		else if (subitem[0] == "current")
-		{
-			if (subitem.at(1).toInt() <= 0)
-			{
+		} else if (subitem[0] == "current") {
+			if (subitem.at(1).toInt() <= 0) {
 				delete item;
 
 				return;
 			}
 			item->setData(4, Qt::DisplayRole, subitem[1]);
-		}
-		else if (subitem[0] == "currentscore")
-		{
+		} else if (subitem[0] == "currentscore") {
 			item->setData(0, scoreRole, subitem[1]);
-		}
-		else if (subitem[0] == "channelname")
-		{
+		} else if (subitem[0] == "channelname") {
 			// WHY WOULD YOU TELL US THAT
 		}
 	}
@@ -290,11 +271,9 @@ void MainWindow::addMatchRoom(NetChannel channel)
 		ui->FriendlyMatchesTreeWidget->addTopLevelItem(item);
 
 	// Reselected
-	if (!rememberSelectedFriendly.isNull())
-	{
+	if (!rememberSelectedFriendly.isNull()) {
 		QList<QTreeWidgetItem*> items = ui->FriendlyMatchesTreeWidget->findItems(rememberSelectedFriendly.name, Qt::MatchCaseSensitive, 0);
-		if (!items.empty())
-		{
+		if (!items.empty()) {
 			QTreeWidgetItem* olditem = items.at(0);
 			// Select that one
 			ui->FriendlyMatchesTreeWidget->setCurrentItem(olditem);
@@ -328,7 +307,6 @@ NetChannel MainWindow::selectedFriendlyMatch() const
 	return result;
 }
 
-
 void MainWindow::addRankedTsuMatchRoom(NetChannel channel) const
 {
 	removeRankedTsuMatchRoom(channel);
@@ -348,8 +326,7 @@ void MainWindow::removeRankedTsuMatchRoom(NetChannel channel) const
 {
 	QList<QTreeWidgetItem*> oldItems;
 	QTreeWidgetItemIterator it(ui->RankedTsuTreeWidget);
-	while (*it)
-	{
+	while (*it) {
 		if ((*it)->data(0, Qt::UserRole) == channel.name)
 			oldItems.append(*it);
 		++it;
@@ -373,7 +350,6 @@ NetChannel MainWindow::selectedRankedTsuMatch() const
 	return result;
 }
 
-
 void MainWindow::addRankedFeverMatchRoom(NetChannel channel) const
 {
 	removeRankedFeverMatchRoom(channel);
@@ -393,8 +369,7 @@ void MainWindow::removeRankedFeverMatchRoom(NetChannel channel) const
 {
 	QList<QTreeWidgetItem*> oldItems;
 	QTreeWidgetItemIterator it(ui->RankedFeverTreeWidget);
-	while (*it)
-	{
+	while (*it) {
 		if ((*it)->data(0, Qt::UserRole) == channel.name)
 			oldItems.append(*it);
 		++it;
@@ -418,7 +393,6 @@ NetChannel MainWindow::selectedRankedFeverMatch() const
 	return result;
 }
 
-
 void MainWindow::logIn() const
 {
 	QString password = pvsApp->settings().string("account", "password", "");
@@ -432,8 +406,7 @@ void MainWindow::logOut() const
 	if (client->isConnected())
 		client->disconnectFromHost();
 
-	while (ui->tabWidget->count() > 2)
-	{
+	while (ui->tabWidget->count() > 2) {
 		QWidget* w = ui->tabWidget->widget(ui->tabWidget->count() - 1);
 		ui->tabWidget->removeTab(ui->tabWidget->count() - 1);
 		delete w;
@@ -469,8 +442,7 @@ void MainWindow::updateJoinButton() const
 
 void MainWindow::showSettings()
 {
-	if (!showSettingsDlg)
-	{
+	if (!showSettingsDlg) {
 		SettingsDialog* settingsDlg = new SettingsDialog(languageManager);
 		connect(settingsDlg, SIGNAL(finished(int)), this, SLOT(on_SettingsDialog_Finished(int)));
 		settingsDlg->show();
@@ -501,14 +473,11 @@ void MainWindow::on_StartupDialog_Finished(int result) const
 
 void MainWindow::on_SettingsDialog_Finished(int result)
 {
-	if (result == QDialog::Accepted)
-	{
+	if (result == QDialog::Accepted) {
 		// Update chatroomforms
-		for (int i = 0; i < ui->tabWidget->count(); ++i)
-		{
+		for (int i = 0; i < ui->tabWidget->count(); ++i) {
 			ChatroomForm* chatroom = qobject_cast<ChatroomForm*>(ui->tabWidget->widget(i));
-			if (chatroom)
-			{
+			if (chatroom) {
 				chatroom->loadSettings();
 			}
 		}
@@ -523,20 +492,15 @@ void MainWindow::on_SearchDialog_Finished(int result)
 
 void MainWindow::refreshLanguages()
 {
-	if (languageManager->error())
-	{
+	if (languageManager->error()) {
 		showError(languageManager->errorString());
-	}
-	else
-	{
+	} else {
 		ui->retranslateUi(this);
 
-		for (int i = 0; i < ui->tabWidget->count(); ++i)
-		{
+		for (int i = 0; i < ui->tabWidget->count(); ++i) {
 			ChatroomForm* chatroom = qobject_cast<ChatroomForm*>(ui->tabWidget->widget(i));
 
-			if (chatroom)
-			{
+			if (chatroom) {
 				chatroom->refreshLanguages();
 			}
 		}
@@ -555,15 +519,11 @@ void MainWindow::networkError(QString e)
 void MainWindow::loginResponse(uchar subchannel, QString message)
 {
 	Settings& settings = pvsApp->settings();
-	if (subchannel == SUBCHANNEL_SERVERREQ_LOGIN)
-	{
+	if (subchannel == SUBCHANNEL_SERVERREQ_LOGIN) {
 		// Successful login
-		if (message == "ok:0")
-		{
+		if (message == "ok:0") {
 			loggedIn();
-		}
-		else if (message == "ok:1" || message == "ok:2")
-		{
+		} else if (message == "ok:1" || message == "ok:2") {
 			// You are admin or moderator
 			loggedIn();
 			ui->AdminToolButton->show();
@@ -571,25 +531,17 @@ void MainWindow::loginResponse(uchar subchannel, QString message)
 				userLevel = 1;
 			else
 				userLevel = 2;
-		}
-		else if (message == "passfail")
-		{
+		} else if (message == "passfail") {
 			QMessageBox(QMessageBox::Critical, windowTitle(), tr("Password incorrect.", "Messages:ErrorIncorrectPassword"), QMessageBox::Ok, this).exec();
 			logOut();
-		}
-		else if (message == "namefail")
-		{
-			if (QMessageBox(QMessageBox::Question, windowTitle(), tr("Account not found. Register this account?", "Messages:Register"), QMessageBox::Yes | QMessageBox::No, this).exec() == QMessageBox::Yes)
-			{
+		} else if (message == "namefail") {
+			if (QMessageBox(QMessageBox::Question, windowTitle(), tr("Account not found. Register this account?", "Messages:Register"), QMessageBox::Yes | QMessageBox::No, this).exec() == QMessageBox::Yes) {
 				QString password = settings.string("account", "password", "");
 				client->sendMessageToServer(SUBCHANNEL_SERVERREQ_REGISTER, ui->UsernameLineEdit->text() + "|" + password);
-			}
-			else
-			{
+			} else {
 				logOut();
 			}
-		}
-		else if (message.startsWith("tempBanned")) {
+		} else if (message.startsWith("tempBanned")) {
 			QStringList tokens = message.split("|");
 			QTime time = QTime::currentTime();
 			if (tokens.length() > 1) {
@@ -602,31 +554,22 @@ void MainWindow::loginResponse(uchar subchannel, QString message)
 				logOut();
 			}
 		}
-	}
-	else // Register
+	} else // Register
 	{
-		if (message == "ok")
-		{
-			if (QMessageBox(QMessageBox::NoIcon, windowTitle(), tr("Registration success!", "Messages:Registered"), QMessageBox::Ok, this).exec() == QMessageBox::Ok)
-			{
+		if (message == "ok") {
+			if (QMessageBox(QMessageBox::NoIcon, windowTitle(), tr("Registration success!", "Messages:Registered"), QMessageBox::Ok, this).exec() == QMessageBox::Ok) {
 				QString password = settings.string("account", "password", "");
 				client->sendMessageToServer(SUBCHANNEL_SERVERREQ_LOGIN, ui->UsernameLineEdit->text() + "|" + password);
 			}
-		}
-		else if (message == "countfail")
-		{
+		} else if (message == "countfail") {
 			QMessageBox(QMessageBox::Question, windowTitle(), tr("Too many accounts.", "Messages:RegistrationTooMany"), QMessageBox::Ok, this).exec();
 			logOut();
-		}
-		else
-		{
-			if (QMessageBox(QMessageBox::Critical, windowTitle(), tr("Registration failed! Name is taken or illegal character.", "Messages:RegistrationFail"), QMessageBox::Ok, this).exec() == QMessageBox::Ok)
-			{
+		} else {
+			if (QMessageBox(QMessageBox::Critical, windowTitle(), tr("Registration failed! Name is taken or illegal character.", "Messages:RegistrationFail"), QMessageBox::Ok, this).exec() == QMessageBox::Ok) {
 				logOut();
 			}
 		}
 	}
-
 }
 
 void MainWindow::loggedIn() const
@@ -657,50 +600,35 @@ void MainWindow::nameSet(QString) const
 
 void MainWindow::nameDenied(QString u)
 {
-	if (u.endsWith("___"))
-	{
+	if (u.endsWith("___")) {
 		logOut();
 		showError(tr("Name not accepted. The name must be at least 3 letters and 32 letters max. It must contain only ASCII characters (0-9, a-z, A-Z or @[]^_`)", "ErrorName"));
-	}
-	else
-	{
+	} else {
 		client->setUsername(u + '_');
 	}
 }
 
 void MainWindow::channelJoined(QString channel, NetPeerList peers)
 {
-	if (channel.startsWith(client->chatRoomPrefix()))
-	{
+	if (channel.startsWith(client->chatRoomPrefix())) {
 		QString channelName = channel.mid(CHANNEL_PREFIX_LENGTH);
 		ChatroomForm* chat = new ChatroomForm(peers, new NetChannelProxy(channel, client), gameManager, this);
 		ui->tabWidget->setCurrentIndex(ui->tabWidget->addTab(chat, "#" + channelName));
-	}
-	else if (channel.startsWith(client->matchRoomPrefix()))
-	{
+	} else if (channel.startsWith(client->matchRoomPrefix())) {
 		QString channelName = channel.mid(CHANNEL_PREFIX_LENGTH);
-
 	}
 }
 
 void MainWindow::channelCreated(NetChannel channel)
 {
-	if (channel.isMatchRoom())
-	{
+	if (channel.isMatchRoom()) {
 		addMatchRoom(channel);
-	}
-	else if (channel.isRankedTsuRoom())
-	{
+	} else if (channel.isRankedTsuRoom()) {
 		addRankedTsuMatchRoom(channel);
-	}
-	else if (channel.isRankedFeverRoom())
-	{
+	} else if (channel.isRankedFeverRoom()) {
 		addRankedFeverMatchRoom(channel);
-	}
-	else if (channel.isChatRoom() && channel.name.startsWith(client->chatRoomPrefix()))
-	{
-		if (ui->ChatroomListWidget->findItems(channel.friendlyName(), Qt::MatchExactly).count() == 0)
-		{
+	} else if (channel.isChatRoom() && channel.name.startsWith(client->chatRoomPrefix())) {
+		if (ui->ChatroomListWidget->findItems(channel.friendlyName(), Qt::MatchExactly).count() == 0) {
 			QListWidgetItem* item = new QListWidgetItem(channel.friendlyName());
 			ui->ChatroomListWidget->addItem(item);
 			item->setData(Qt::ToolTipRole, channel.description);
@@ -711,23 +639,16 @@ void MainWindow::channelCreated(NetChannel channel)
 
 void MainWindow::channelDestroyed(NetChannel channel) const
 {
-	if (channel.isMatchRoom())
-	{
+	if (channel.isMatchRoom()) {
 		removeMatchRoom(channel);
-	}
-	else if (channel.isRankedTsuRoom())
-	{
+	} else if (channel.isRankedTsuRoom()) {
 		removeRankedTsuMatchRoom(channel);
-	}
-	else if (channel.isRankedFeverRoom())
-	{
+	} else if (channel.isRankedFeverRoom()) {
 		removeRankedFeverMatchRoom(channel);
-	}
-	else if (channel.isChatRoom())
-	{
+	} else if (channel.isChatRoom()) {
 		QList<QListWidgetItem*> list = ui->ChatroomListWidget->findItems(channel.friendlyName(), Qt::MatchExactly);
 
-		foreach(QListWidgetItem * item, list)
+		foreach (QListWidgetItem* item, list)
 			delete item;
 
 		updateJoinButton();
@@ -736,22 +657,15 @@ void MainWindow::channelDestroyed(NetChannel channel) const
 
 void MainWindow::channelDescriptionReceived(NetChannel channel)
 {
-	if (channel.isMatchRoom())
-	{
+	if (channel.isMatchRoom()) {
 		addMatchRoom(channel);
-	}
-	else if (channel.isChatRoom())
-	{
+	} else if (channel.isChatRoom()) {
 		QList<QListWidgetItem*> list = ui->ChatroomListWidget->findItems(channel.friendlyName(), Qt::MatchExactly);
 
 		list.at(0)->setData(Qt::ToolTipRole, channel.description);
-	}
-	else if (channel.isRankedTsuRoom())
-	{
+	} else if (channel.isRankedTsuRoom()) {
 		removeRankedTsuMatchRoom(channel);
-	}
-	else if (channel.isRankedFeverRoom())
-	{
+	} else if (channel.isRankedFeverRoom()) {
 		removeRankedFeverMatchRoom(channel);
 	}
 }
@@ -761,8 +675,7 @@ void MainWindow::channelListReceived(NetChannelList chanList)
 	ui->ChatroomListWidget->clear();
 	ui->FriendlyMatchesTreeWidget->clear();
 
-	foreach(NetChannel channel, chanList)
-	{
+	foreach (NetChannel channel, chanList) {
 		channelCreated(channel);
 	}
 
@@ -838,9 +751,9 @@ void MainWindow::startRankedMatch(bool tsu) const
 
 	ppvs::GameSettings* settings;
 	if (tsu)
-		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(TSU_ONLINE));
+		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(ppvs::Rules::TSU_ONLINE));
 	else
-		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(FEVER_ONLINE));
+		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(ppvs::Rules::FEVER_ONLINE));
 	settings->rankedMatch = true;
 	GameWidget* game = gameManager->createGame(settings, "");
 
@@ -865,17 +778,16 @@ void MainWindow::spectateRankedMatch(bool tsu) const
 		return;
 
 	GameWidget* existing = gameManager->findGame(chan.name);
-	if (existing)
-	{
+	if (existing) {
 		existing->raise();
 		return;
 	}
 
 	ppvs::GameSettings* settings;
 	if (tsu)
-		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(TSU_ONLINE));
+		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(ppvs::Rules::TSU_ONLINE));
 	else
-		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(FEVER_ONLINE));
+		settings = new ppvs::GameSettings(ppvs::RuleSetInfo(ppvs::Rules::FEVER_ONLINE));
 
 	GameWidget* game = gameManager->createGame(settings, chan.name, true);
 
@@ -888,13 +800,12 @@ void MainWindow::spectateRankedMatch(bool tsu) const
 	chatWindow->setChatEnabled(false);
 }
 
-#include "../Puyolib/GameSettings.h"
 #include "../Puyolib/Game.h"
+#include "../Puyolib/GameSettings.h"
 
 void MainWindow::on_OfflineToolButton_clicked()
 {
-	if (mGameSettings)
-	{
+	if (mGameSettings) {
 		// Dialog already opened
 		return;
 	}
@@ -937,18 +848,15 @@ void MainWindow::on_JoinFriendlyButton_clicked()
 		return;
 
 	GameWidget* existing = gameManager->findGame(chan.name);
-	if (existing)
-	{
+	if (existing) {
 		existing->raise();
 		return;
 	}
 
 	QStringList items = chan.name.split(':');
-	if (items.count() > 1)
-	{
+	if (items.count() > 1) {
 		QString item = items.at(1);
-		if (!item.isEmpty())
-		{
+		if (!item.isEmpty()) {
 			PasswordDialog* dlg = new PasswordDialog(this, gameManager, chan);
 			dlg->show();
 			dlg->raise();
@@ -974,19 +882,16 @@ void MainWindow::on_SpectateFriendlyButton_clicked()
 		return;
 
 	GameWidget* existing = gameManager->findGame(chan.name);
-	if (existing)
-	{
+	if (existing) {
 		existing->raise();
 		return;
 	}
 
 	// Ask for password (if any)
 	QStringList items = chan.name.split(':');
-	if (items.count() > 1)
-	{
+	if (items.count() > 1) {
 		QString item = items.at(1);
-		if (!item.isEmpty())
-		{
+		if (!item.isEmpty()) {
 			PasswordDialog* dlg = new PasswordDialog(this, gameManager, chan, true);
 			dlg->show();
 			dlg->raise();
@@ -1025,12 +930,9 @@ void MainWindow::on_FriendlyMatchesTreeWidget_itemSelectionChanged() const
 	ui->SpectateFriendlyButton->setEnabled(validSelection);
 	ui->ReviewRulesFriendlyButton->setEnabled(validSelection);
 
-	if (validSelection)
-	{
+	if (validSelection) {
 		ui->FriendlyMatchScore->setText(ui->FriendlyMatchesTreeWidget->selectedItems().at(0)->data(0, scoreRole).toString());
-	}
-	else
-	{
+	} else {
 		ui->FriendlyMatchScore->setText(tr("Click an item to show scores.", "ShowScores"));
 	}
 }
@@ -1047,10 +949,12 @@ void MainWindow::reviewRulesDialog(ppvs::RuleSetInfo& rs)
 {
 	QString ruleStr;
 	ruleStr = QString::asprintf(tr("Margin Time: %i\nTarget Point: %i\nRequired Chain: %i\n"
-		"Initial Fever Count: %i\nFever Power: %i\nPuyo To Clear: %i\n"
-		"Quick Drop: %i\nNumber of players: %i\nChoose colors: %i", "Messages:ReviewRules").toUtf8().data()
-		, rs.marginTime, rs.targetPoint, rs.requiredChain, rs.initialFeverCount
-		, rs.feverPower, rs.puyoToClear, rs.quickDrop, rs.Nplayers, rs.colors);
+								   "Initial Fever Count: %i\nFever Power: %i\nPuyo To Clear: %i\n"
+								   "Quick Drop: %i\nNumber of players: %i\nChoose colors: %i",
+									"Messages:ReviewRules")
+									.toUtf8()
+									.data(),
+		rs.marginTime, rs.targetPoint, rs.requiredChain, rs.initialFeverCount, rs.feverPower, rs.puyoToClear, rs.quickDrop, rs.numPlayers, rs.colors);
 	QMessageBox* msgBox = new QMessageBox;
 	msgBox->setText(ruleStr);
 	msgBox->setWindowTitle("Rules");
@@ -1071,8 +975,7 @@ void MainWindow::updateServerList()
 void MainWindow::on_PasswordLineEdit_textEdited(const QString& arg1)
 {
 	Settings& settings = pvsApp->settings();
-	if (!settings.string("account", "password", "").isEmpty())
-	{
+	if (!settings.string("account", "password", "").isEmpty()) {
 		settings.setString("account", "password", "");
 	}
 	passEdited = true;
@@ -1087,11 +990,9 @@ void MainWindow::on_AdminToolButton_clicked() const
 void MainWindow::on_RankedTsuPlayButton_clicked() const
 {
 	startRankedMatch(true);
-	for (int i = 0; i < ui->tabWidget->count(); ++i)
-	{
+	for (int i = 0; i < ui->tabWidget->count(); ++i) {
 		ChatroomForm* chatroom = qobject_cast<ChatroomForm*>(ui->tabWidget->widget(i));
-		if (chatroom)
-		{
+		if (chatroom) {
 			chatroom->setAutoreject();
 		}
 	}
@@ -1105,11 +1006,9 @@ void MainWindow::on_RankedTsuSpectateButton_clicked() const
 void MainWindow::on_RankedFeverPlayButton_clicked() const
 {
 	startRankedMatch(false);
-	for (int i = 0; i < ui->tabWidget->count(); ++i)
-	{
+	for (int i = 0; i < ui->tabWidget->count(); ++i) {
 		ChatroomForm* chatroom = qobject_cast<ChatroomForm*>(ui->tabWidget->widget(i));
-		if (chatroom)
-		{
+		if (chatroom) {
 			chatroom->setAutoreject();
 		}
 	}
@@ -1118,7 +1017,6 @@ void MainWindow::on_RankedFeverPlayButton_clicked() const
 void MainWindow::on_RankedFeverSpectateButton_clicked() const
 {
 	spectateRankedMatch(false);
-
 }
 
 void MainWindow::on_OfflineDialog_Finished(int result)
@@ -1129,11 +1027,9 @@ void MainWindow::on_OfflineDialog_Finished(int result)
 	mGameSettings->playSound = true;
 	mGameSettings->playMusic = true;
 
-	switch (result)
-	{
+	switch (result) {
 	case QDialog::Accepted:
-		if (mGameSettings)
-		{
+		if (mGameSettings) {
 			GameWidget* g = gameManager->createGame(mGameSettings, QString());
 			g->show();
 			mGameSettings = nullptr;
@@ -1167,7 +1063,7 @@ void MainWindow::getServerList() const
 #endif
 	);
 
-	foreach(QString server, servers) {
+	foreach (QString server, servers) {
 		// Add to combo box
 		ui->ServerComboBox->addItem(server);
 	}
@@ -1175,12 +1071,10 @@ void MainWindow::getServerList() const
 
 void MainWindow::on_ActionSearch_triggered()
 {
-	if (!showSearchDlg)
-	{
+	if (!showSearchDlg) {
 		searchDlg = new SearchDialog(this, client);
 		connect(searchDlg, SIGNAL(finished(int)), this, SLOT(on_SearchDialog_Finished(int)));
 		searchDlg->show();
 		showSearchDlg = true;
 	}
 }
-

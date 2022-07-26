@@ -1,53 +1,54 @@
 #pragma once
 
-#include "global.h"
-#include "Sprite.h"
 #include "FieldProp.h"
-#include "Frontend.h"
-#include <math.h>
+#include "Sprite.h"
+#include "global.h"
 
-namespace ppvs
-{
+namespace ppvs {
 
-class FeverCounter
-{
+class FeverCounter {
 public:
-	FeverCounter(GameData* data);
-	~FeverCounter();
-	int seconds;
-	bool fullGauge() { return (m_count == 7); }
-	int getCount() { return m_realCount; }
-	int getTime() { return seconds; }
+	explicit FeverCounter(const GameData* gameData);
+
+	[[nodiscard]] bool fullGauge() const { return (m_count == 7); }
+	[[nodiscard]] int getCount() const { return m_realCount; }
+	[[nodiscard]] int getTime() const { return m_seconds; }
 	void addCount() { m_realCount++; }
-	void setCount(int a) { m_realCount = a; m_count = a; }
-	void setTimer(int t) { timer = t; }
+	void setCount(const int a)
+	{
+		m_realCount = a;
+		m_count = a;
+	}
+	void setTimer(const int t) { m_timer = t; }
 	void addTime(int t);
-	void setSeconds(int t) { seconds = t; }
+	void setSeconds(const int t) { m_seconds = t; }
 	void update();
-	void setVisible(bool b) { m_visible = b; }
+	void setVisible(const bool b) { m_visible = b; }
 	void setPositionSeconds(PosVectorFloat pv);
-	PosVectorFloat getPositionSeconds() { return m_positionSeconds; };
+	[[nodiscard]] PosVectorFloat getPositionSeconds() const { return m_positionSeconds; }
 	void resetPositionSeconds();
 
 	void init(float x, float y, float scale, bool orientation, GameData* g);
-	PosVectorFloat getPV();
+	[[nodiscard]] PosVectorFloat getPos() const;
 	void draw();
 
-	bool endless;
-	int maxSeconds;
+	bool m_endless = false;
+	int m_seconds = 60 * 15;
+	int m_maxSeconds = 30;
 
 private:
-	void setSecondsSprite(int);
-	int timer; // Do not confuse timer with seconds
-	int updateTimer;
-	int m_realCount;
-	int m_count;
-	float m_scale;
-	PosVectorFloat m_positionSeconds;
-	bool m_init;
-	bool m_orientation;
-	bool m_visible;
-	GameData* data;
+    void setSecondsSprite(int);
+
+    int m_timer = 0; // Do not confuse timer with seconds
+	int m_updateTimer = 0;
+	int m_count = 0;
+	int m_realCount = 0;
+	float m_scale = 0.f;
+	PosVectorFloat m_positionSeconds = { 0, 0 };
+	bool m_init = false;
+	bool m_orientation = false;
+	bool m_visible = false;
+	GameData* m_data = nullptr;
 	Sprite m_sprite[7];
 	Sprite m_glow[7];
 	Sprite m_sparkle;

@@ -1,16 +1,16 @@
 #pragma once
 
-#include <QApplication>
 #include "settings.h"
+#include <QApplication>
 
 class MusicPlayer;
 class Playlist;
 
-class PVSApplication : public QApplication
-{
+class PVSApplication : public QApplication {
 	Q_OBJECT
 
-	struct Priv; Priv* p;
+	struct Priv;
+	Priv* p;
 
 public:
 	PVSApplication(int& argc, char** argv);
@@ -20,7 +20,10 @@ public:
 	Settings& settings() const;
 
 	// Music
-	enum MusicMode { MusicOff, MusicPause, MusicNormal, MusicFever };
+	enum MusicMode { MusicOff,
+		MusicPause,
+		MusicNormal,
+		MusicFever };
 	void setMusicMode(MusicMode mode, bool advance = false) const;
 	void setMusicVolume(float volume, bool fever = false) const;
 
