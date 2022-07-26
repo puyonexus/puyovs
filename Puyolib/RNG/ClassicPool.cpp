@@ -1,5 +1,5 @@
 #include "ClassicPool.h"
-#include "ClassicRNG.h"
+#include "ClassicRng.h"
 #include "PuyoRng.h"
 
 ClassicPool::ClassicPool(ClassicRng* rng)

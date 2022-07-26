@@ -1,5 +1,5 @@
 #include "ClassicPuyoRng.h"
-#include "ClassicRNG.h"
+#include "ClassicRng.h"
 
 ClassicPuyoRng::ClassicPuyoRng(const uint32_t seed, const int index)
 	: m_pool(new ClassicRng(seed))
