@@ -26,7 +26,7 @@ add_library(Puyolib
     AI.cpp
     RNG/ClassicPool.cpp
     RNG/ClassicPuyoRng.cpp
-    RNG/ClassicRNG.cpp
+    RNG/ClassicRng.cpp
     RNG/LegacyPuyoRng.cpp
     RNG/MersenneTwister.cpp
     RNG/PuyoRng.cpp
