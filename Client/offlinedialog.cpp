@@ -1,20 +1,22 @@
-#include <QComboBox>
 #include "offlinedialog.h"
-#include "ui_offlinedialog.h"
-#include "common.h"
 #include "../Puyolib/Game.h"
 #include "../Puyolib/GameSettings.h"
+#include "common.h"
 #include "settings.h"
+#include "ui_offlinedialog.h"
+#include <QComboBox>
 
-OfflineDialog::OfflineDialog(ppvs::GameSettings* gameSettings, QWidget* parent) :
-	QDialog(parent), ui(new Ui::OfflineDialog), mModeList(getModeList()), mGameSettings(gameSettings)
+OfflineDialog::OfflineDialog(ppvs::GameSettings* gameSettings, QWidget* parent)
+	: QDialog(parent)
+	, ui(new Ui::OfflineDialog)
+	, mModeList(getModeList())
+	, mGameSettings(gameSettings)
 {
 	Settings& settings = pvsApp->settings();
 	ui->setupUi(this);
 
 	GameModeListIterator modeIterator(mModeList);
-	while (modeIterator.hasNext())
-	{
+	while (modeIterator.hasNext()) {
 		GameModePair mode = modeIterator.next();
 		ui->ModeComboBox->addItem(mode.second, static_cast<int>(mode.first));
 	}

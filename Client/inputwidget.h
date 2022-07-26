@@ -6,8 +6,7 @@ namespace Ui {
 class InputWidget;
 }
 
-class InputWidget : public QWidget
-{
+class InputWidget : public QWidget {
 	Q_OBJECT
 
 public:

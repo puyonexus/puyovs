@@ -1,17 +1,17 @@
+#include "settingsdialog.h"
+#include "language.h"
+#include "playlist.h"
+#include "pvsapplication.h"
+#include "settings.h"
+#include "ui_settingsdialog.h"
 #include <QDir>
 #include <QDirIterator>
 #include <QFileDialog>
-#include "settingsdialog.h"
-#include "ui_settingsdialog.h"
-#include "pvsapplication.h"
-#include "language.h"
-#include "settings.h"
-#include "playlist.h"
 #include <alib/audiolib.h>
 
-SettingsDialog::SettingsDialog(LanguageManager* lm, QWidget* parent) :
-	QDialog(parent),
-	ui(new Ui::SettingsDialog)
+SettingsDialog::SettingsDialog(LanguageManager* lm, QWidget* parent)
+	: QDialog(parent)
+	, ui(new Ui::SettingsDialog)
 {
 	ui->setupUi(this);
 
@@ -31,7 +31,7 @@ SettingsDialog::SettingsDialog(LanguageManager* lm, QWidget* parent) :
 	languagesModified();
 	oldLanguage = lm->currentLanguageIndex();
 	connect(languageManager, SIGNAL(languagesModified()), SLOT(languagesModified()));
-	foreach(QComboBox * combobox, characterComboBoxList)
+	foreach (QComboBox* combobox, characterComboBoxList)
 		connect(combobox, SIGNAL(currentIndexChanged(QString)),
 			SLOT(characterSlotIndexChanged(QString)));
 	translateDefaultCharacters();
@@ -97,8 +97,7 @@ void SettingsDialog::load()
 	ui->SoundComboBox->setCurrentIndex(ui->SoundComboBox->findText(settings.string("custom", "sound", "Default")));
 	ui->ApplyCharacterCheckBox->setCheckState(settings.boolean("custom", "characterfield", true) ? Qt::Checked : Qt::Unchecked);
 	QStringList charmap = settings.charMap();
-	for (int i = 0; i < qMin(characterComboBoxList.count(), charmap.count()); i++)
-	{
+	for (int i = 0; i < qMin(characterComboBoxList.count(), charmap.count()); i++) {
 		QComboBox* combobox = characterComboBoxList.at(i);
 		QString currentChar = charmap.at(i);
 		combobox->setCurrentIndex(combobox->findText(currentChar));
@@ -165,12 +164,12 @@ void SettingsDialog::save()
 	settings.setString("custom", "puyo", ui->PuyoComboBox->currentText());
 	settings.setString("custom", "sound", ui->SoundComboBox->currentText());
 	QStringList characters;
-	foreach(QComboBox * cb, characterComboBoxList)
+	foreach (QComboBox* cb, characterComboBoxList)
 		characters.append(cb->currentText());
 	settings.setCharMap(characters);
 	settings.setBoolean("custom", "characterfield", ui->ApplyCharacterCheckBox->isChecked());
 
-	// Music    
+	// Music
 	settings.setBoolean("music", "advance", ui->MusicAdvanceAtRoundStartCheckbox->isChecked());
 	settings.setBoolean("music", "looponce", ui->MusicAtLeastOnceCheckBox->isChecked());
 	settings.setBoolean("music", "stopmusicafterround", ui->MusicStopAfterRoundCheckBox->isChecked());
@@ -218,8 +217,7 @@ void SettingsDialog::updateEnabled(SettingsDialog::Rule rule) const
 	if (!enabled)
 		return;
 
-	switch (rule)
-	{
+	switch (rule) {
 	case Tsu:
 		ui->InitialFeverCountSpinBox->setEnabled(false);
 		ui->FeverPowerSpinBox->setEnabled(false);
@@ -285,14 +283,13 @@ void SettingsDialog::fetchFileLists()
 	// Puyo
 	QDir dirP(QString("User/Puyo/"), "*.png", QDir::Name, QDir::Files | QDir::Readable);
 	QFileInfoList flist = dirP.entryInfoList();
-	foreach(QFileInfo fi, flist)
+	foreach (QFileInfo fi, flist)
 		ui->PuyoComboBox->addItem(fi.baseName());
 
 	// Characters
 	QDir dirC(QString("User/Characters/"), "*", QDir::Name, QDir::AllDirs | QDir::Readable | QDir::NoDotAndDotDot);
 	charactersList = dirC.entryList();
-	foreach(QComboBox * combobox, characterComboBoxList)
-	{
+	foreach (QComboBox* combobox, characterComboBoxList) {
 		combobox->addItem("");
 		combobox->addItems(charactersList);
 	}
@@ -306,8 +303,7 @@ void SettingsDialog::fetchFileLists()
 void SettingsDialog::setDefaultRuleSettings() const
 {
 	int index = ui->BaseRulesComboBox->currentIndex();
-	switch (Rule(index))
-	{
+	switch (Rule(index)) {
 	case Tsu:
 		ui->TargetPointsSpinBox->setValue(70);
 		break;
@@ -333,8 +329,7 @@ void SettingsDialog::setDefaultRuleSettings() const
 
 void SettingsDialog::translateDefaultCharacters() const
 {
-	for (int i = 0; i < ui->DefaultCharacterComboBox->count(); i++)
-	{
+	for (int i = 0; i < ui->DefaultCharacterComboBox->count(); i++) {
 		QString c = QString("Char%1").arg(i + 1);
 		ui->DefaultCharacterComboBox->setItemText(i, languageManager->translate("Launcher", c));
 	}
@@ -347,8 +342,7 @@ void SettingsDialog::on_DefaultButton_clicked() const
 
 void SettingsDialog::on_PlaylistComboBox_currentIndexChanged(int index) const
 {
-	switch (index)
-	{
+	switch (index) {
 	case 0:
 		ui->PlaylistView->setModel(normalPlaylistModel);
 		break;
@@ -371,13 +365,16 @@ void SettingsDialog::on_PlaylistAddButton_clicked()
 		"All files (*.*)");
 
 	Playlist* playlist = &pvsApp->playlist();
-	switch (ui->PlaylistComboBox->currentIndex())
-	{
-	case 0: playlist = &pvsApp->playlist(); break;
-	case 1: playlist = &pvsApp->feverPlaylist(); break;
+	switch (ui->PlaylistComboBox->currentIndex()) {
+	case 0:
+		playlist = &pvsApp->playlist();
+		break;
+	case 1:
+		playlist = &pvsApp->feverPlaylist();
+		break;
 	}
 
-	foreach(QString file, files)
+	foreach (QString file, files)
 		playlist->add(PlaylistEntry("", file));
 }
 

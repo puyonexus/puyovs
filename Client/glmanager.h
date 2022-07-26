@@ -1,33 +1,34 @@
 #pragma once
 
-#include <QtOpenGL>
-#include <QString>
 #include <QMap>
+#include <QString>
+#include <QtOpenGL>
 
 class GLManager;
 class QGLWidget;
 
-extern GLManager *glMan;
+extern GLManager* glMan;
 
-struct GLTexture { GLuint id, w, h; };
-class GLManager
-{
+struct GLTexture {
+	GLuint id, w, h;
+};
+class GLManager {
 public:
-    GLManager();
-    ~GLManager();
+	GLManager();
+	~GLManager();
 
-    QGLWidget *globalWidget() const;
-    bool sharing() const;
-    GLuint texID(QString tx);
-    GLTexture loadTexture(QGLWidget *context, QString name);
+	QGLWidget* globalWidget() const;
+	bool sharing() const;
+	GLuint texID(QString tx);
+	GLTexture loadTexture(QGLWidget* context, QString name);
 
-    static QString errorString(GLenum errorCode);
-    static bool checkError(bool silent = false);
+	static QString errorString(GLenum errorCode);
+	static bool checkError(bool silent = false);
 
 private:
-    bool mGlobalContextSharingEnabled;
-    QGLWidget *mGlobalWidget;
-    QMap<QString, GLTexture> mTextures;
+	bool mGlobalContextSharingEnabled;
+	QGLWidget* mGlobalWidget;
+	QMap<QString, GLTexture> mTextures;
 };
 
 void GlobalGLInit();

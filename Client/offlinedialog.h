@@ -2,11 +2,11 @@
 
 #include <QDialog>
 #include <QList>
-#include <QString>
 #include <QPair>
+#include <QString>
 
 namespace Ui {
-	class OfflineDialog;
+class OfflineDialog;
 }
 
 namespace ppvs {
@@ -16,8 +16,7 @@ struct GameSettings;
 
 class Settings;
 
-class OfflineDialog : public QDialog
-{
+class OfflineDialog : public QDialog {
 	Q_OBJECT
 
 public:

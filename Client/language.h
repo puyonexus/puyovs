@@ -5,12 +5,10 @@
 class QFileSystemWatcher;
 
 struct LanguagePriv;
-class Language : public QObject
-{
+class Language : public QObject {
 	Q_OBJECT
 public:
-	enum Error
-	{
+	enum Error {
 		NoError,
 		FileError,
 		ReadError,
@@ -33,8 +31,7 @@ private:
 };
 
 class Translator;
-class LanguageManager : public QObject
-{
+class LanguageManager : public QObject {
 	Q_OBJECT
 public:
 	explicit LanguageManager(QObject* parent = nullptr);
@@ -63,7 +60,7 @@ signals:
 
 private:
 	QFileSystemWatcher* mFsWatcher;
-	QList <Language*> mLanguages;
+	QList<Language*> mLanguages;
 	int mCurrentLanguage;
 	bool mError;
 	QString mErrorString;

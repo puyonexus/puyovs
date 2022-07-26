@@ -1,9 +1,9 @@
 #include "createchatroomdialog.h"
 #include "ui_createchatroomdialog.h"
 
-CreateChatroomDialog::CreateChatroomDialog(QWidget* parent) :
-	QDialog(parent),
-	ui(new Ui::CreateChatroomDialog)
+CreateChatroomDialog::CreateChatroomDialog(QWidget* parent)
+	: QDialog(parent)
+	, ui(new Ui::CreateChatroomDialog)
 {
 	ui->setupUi(this);
 }

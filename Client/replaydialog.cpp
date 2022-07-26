@@ -1,13 +1,14 @@
-#include <QFileDialog>
 #include "replaydialog.h"
-#include "ui_replaydialog.h"
 #include "gamemanager.h"
-#include "settings.h"
 #include "gamewidget.h"
+#include "settings.h"
+#include "ui_replaydialog.h"
+#include <QFileDialog>
 
 ReplayDialog::ReplayDialog(QWidget* parent, GameManager* gameManager)
-	: QDialog(parent), gameManager(gameManager),
-	ui(new Ui::ReplayDialog)
+	: QDialog(parent)
+	, gameManager(gameManager)
+	, ui(new Ui::ReplayDialog)
 {
 	ui->setupUi(this);
 
@@ -31,7 +32,6 @@ void ReplayDialog::on_AddPushButton_clicked()
 	connect(dialog, SIGNAL(filesSelected(const QStringList&)), this, SLOT(on_FileDialog_Finished(const QStringList&)));
 
 	dialog->show();
-
 }
 void ReplayDialog::on_DeletePushButton_clicked() const
 {

@@ -2,8 +2,7 @@
 
 #include <QPlainTextEdit>
 
-class ChatTextEntry : public QTextEdit
-{
+class ChatTextEntry : public QTextEdit {
 	Q_OBJECT
 
 public:

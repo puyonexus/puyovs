@@ -1,11 +1,11 @@
+#include "settings.h"
 #include <QByteArray>
 #include <QDir>
-#include "settings.h"
 
 #include "common.h"
 
-Settings::Settings(QObject* parent) :
-	QObject(parent)
+Settings::Settings(QObject* parent)
+	: QObject(parent)
 {
 	mError = false;
 
@@ -14,8 +14,7 @@ Settings::Settings(QObject* parent) :
 	QFile file(settingsFile);
 
 	// Open file.
-	if (!file.open(QFile::ReadOnly))
-	{
+	if (!file.open(QFile::ReadOnly)) {
 		mExists = false;
 		return;
 	}
@@ -26,8 +25,7 @@ Settings::Settings(QObject* parent) :
 	file.close();
 
 	// Handle empty file/file read error.
-	if (data.isEmpty())
-	{
+	if (data.isEmpty()) {
 		mError = true;
 		return;
 	}
@@ -38,8 +36,7 @@ Settings::Settings(QObject* parent) :
 
 	// Parse JSON data.
 	Json::Reader reader;
-	if (!reader.parse(data.data(), mSettingsRoot, false))
-	{
+	if (!reader.parse(data.data(), mSettingsRoot, false)) {
 		mError = true;
 		return;
 	}
@@ -58,8 +55,7 @@ QStringList Settings::charMap()
 	QStringList charList;
 	int numElements = value.size();
 
-	for (int i = 0; i < numElements; ++i)
-	{
+	for (int i = 0; i < numElements; ++i) {
 		charList.append(QString::fromStdString(value[i].asString()));
 	}
 
@@ -75,8 +71,7 @@ void Settings::setCharMap(const QStringList& map)
 
 	int mapSize = map.size();
 
-	for (int i = 0; i < mapSize; ++i)
-	{
+	for (int i = 0; i < mapSize; ++i) {
 		value.append(Json::Value(map.at(i).toStdString()));
 	}
 
@@ -88,8 +83,7 @@ bool Settings::getValue(const QString& section, const QString& key, Json::Value&
 	std::string sectionstd = section.toStdString();
 	std::string keystd = key.toStdString();
 
-	if (!mSettingsRoot.isMember("settings") || !mSettingsRoot["settings"].isMember(sectionstd) ||
-		!mSettingsRoot["settings"][sectionstd].isMember(keystd))
+	if (!mSettingsRoot.isMember("settings") || !mSettingsRoot["settings"].isMember(sectionstd) || !mSettingsRoot["settings"][sectionstd].isMember(keystd))
 		return false;
 
 	out = mSettingsRoot["settings"][sectionstd][keystd];
@@ -116,8 +110,7 @@ QString Settings::string(const QString& section, const QString& key, const QStri
 
 	getValue(section, key, value);
 
-	if (value.isNull())
-	{
+	if (value.isNull()) {
 		setString(section, key, defValue);
 		return defValue;
 	}
@@ -138,8 +131,7 @@ bool Settings::boolean(const QString& section, const QString& key, bool defValue
 
 	getValue(section, key, value);
 
-	if (value.isNull())
-	{
+	if (value.isNull()) {
 		setBoolean(section, key, defValue);
 		return defValue;
 	}
@@ -158,8 +150,7 @@ qint64 Settings::integer(const QString& section, const QString& key, qint64 defV
 
 	getValue(section, key, value);
 
-	if (value.isNull())
-	{
+	if (value.isNull()) {
 		setInteger(section, key, defValue);
 		return defValue;
 	}
@@ -178,8 +169,7 @@ qreal Settings::real(const QString& section, const QString& key, qreal defValue)
 
 	getValue(section, key, value);
 
-	if (value.isNull())
-	{
+	if (value.isNull()) {
 		setReal(section, key, defValue);
 		return defValue;
 	}
@@ -198,8 +188,7 @@ void Settings::save()
 	QFile file(settingsFile);
 
 	mError = false;
-	if (!file.open(QFile::WriteOnly))
-	{
+	if (!file.open(QFile::WriteOnly)) {
 		mError = true;
 		return;
 	}
@@ -208,8 +197,7 @@ void Settings::save()
 	QString strdata = QString::fromStdString(writer.write(mSettingsRoot));
 	QByteArray data = strdata.toUtf8();
 
-	if (file.write(data) != -1)
-	{
+	if (file.write(data) != -1) {
 		mError = true;
 		return;
 	}

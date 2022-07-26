@@ -1,7 +1,7 @@
 #include "chatroomtextedit.h"
 
-ChatroomTextEdit::ChatroomTextEdit(QWidget* parent) :
-	QPlainTextEdit(parent)
+ChatroomTextEdit::ChatroomTextEdit(QWidget* parent)
+	: QPlainTextEdit(parent)
 {
 	setMouseTracking(true);
 }
@@ -22,6 +22,4 @@ void ChatroomTextEdit::mouseMoveEvent(QMouseEvent* event)
 	else
 		viewport()->setCursor(Qt::PointingHandCursor);
 	QPlainTextEdit::mouseMoveEvent(event);
-
 }
-

@@ -2,7 +2,10 @@
 #include "gameaudio.h"
 
 FSoundAlib::FSoundAlib(const QString& fn, GameAudio* audio, QObject* parent)
-	: QObject(parent), fn(fn), audio(audio), error(false)
+	: QObject(parent)
+	, fn(fn)
+	, audio(audio)
+	, error(false)
 {
 }
 

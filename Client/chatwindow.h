@@ -13,8 +13,7 @@ class Game;
 class NetChannelProxy;
 class GameWidget;
 
-class ChatWindow : public QWidget
-{
+class ChatWindow : public QWidget {
 	Q_OBJECT
 
 public:

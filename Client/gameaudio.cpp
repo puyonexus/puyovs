@@ -16,12 +16,9 @@ GameAudio::~GameAudio()
 
 void GameAudio::play(const QString& path)
 {
-	if (sampleCache.contains(path))
-	{
+	if (sampleCache.contains(path)) {
 		audioDevice->play(sampleCache[path]);
-	}
-	else
-	{
+	} else {
 		alib::Stream stm(path.toUtf8().data());
 		sampleCache.insert(path, stm);
 		audioDevice->play(stm);

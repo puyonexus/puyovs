@@ -2,11 +2,10 @@
 
 #include "audiolib.h"
 
-class Sample
-{
+class Sample {
 public:
-    Sample();
+	Sample();
 
 private:
-    ALIB_DECLARE_PRIV;
+	ALIB_DECLARE_PRIV;
 };

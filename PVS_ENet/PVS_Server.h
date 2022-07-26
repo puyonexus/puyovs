@@ -1,18 +1,17 @@
 #pragma once
 
-#include <enet/enet.h>
 #include "PVS_Channel.h"
 #include "PVS_Packet.h"
 #include "PVS_Peer.h"
+#include <enet/enet.h>
 
-#include <string>
 #include <list>
+#include <string>
 
 #define N_CHANNELS 10
 #define N_MAXCLIENTS 1000
 
-struct PVS_Server
-{
+struct PVS_Server {
 	PVS_Server();
 
 	ENetHost* host;

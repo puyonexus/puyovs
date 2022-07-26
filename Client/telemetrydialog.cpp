@@ -1,13 +1,13 @@
 #include "telemetrydialog.h"
-#include "ui_telemetrydialog.h"
 #include "language.h"
-#include "settings.h"
 #include "pvsapplication.h"
+#include "settings.h"
+#include "ui_telemetrydialog.h"
 
-TelemetryDialog::TelemetryDialog(LanguageManager* lm, QWidget* parent) :
-	QDialog(parent),
-	ui(new Ui::TelemetryDialog),
-	languageManager(lm)
+TelemetryDialog::TelemetryDialog(LanguageManager* lm, QWidget* parent)
+	: QDialog(parent)
+	, ui(new Ui::TelemetryDialog)
+	, languageManager(lm)
 {
 	ui->setupUi(this);
 	connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));

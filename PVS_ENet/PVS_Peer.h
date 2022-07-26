@@ -1,17 +1,16 @@
 #pragma once
 
-#include <iostream>
 #include <cstdlib>
+#include <iostream>
+#include <list>
 #include <stdio.h>
 #include <string>
-#include <list>
 
 struct _ENetPeer;
 
 // The struct PVS_Peer contains the PuyoVS specific values for a peer
 // Add it to ENetPeer::data
-struct PVS_Peer
-{
+struct PVS_Peer {
 	PVS_Peer();
 	_ENetPeer* enetpeer;
 	unsigned int id;

@@ -1,7 +1,7 @@
-#include <QEvent>
-#include <QApplication>
-#include <QObject>
 #include "musicplayer.h"
+#include <QApplication>
+#include <QEvent>
+#include <QObject>
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
 #include <qrandom.h>
@@ -12,10 +12,12 @@
 #include <alib/audiolib.h>
 #include <alib/stream.h>
 
-class MusicStreamObserver : public alib::StreamObserver
-{
+class MusicStreamObserver : public alib::StreamObserver {
 public:
-	MusicStreamObserver(MusicPlayer::Priv* mp) :mp(mp) {}
+	MusicStreamObserver(MusicPlayer::Priv* mp)
+		: mp(mp)
+	{
+	}
 
 private:
 	void reachedEnd() override;
@@ -24,8 +26,7 @@ private:
 	MusicPlayer::Priv* mp;
 };
 
-struct MusicPlayer::Priv : QObject
-{
+struct MusicPlayer::Priv : QObject {
 	Playlist& playlist;
 	int playlistPtr;
 	MusicStreamObserver* stmObserver;
@@ -34,7 +35,9 @@ struct MusicPlayer::Priv : QObject
 	MusicPlayer::LoopMode loopMode;
 	int looped;
 
-	Priv(Playlist& p) : playlist(p), looped(0)
+	Priv(Playlist& p)
+		: playlist(p)
+		, looped(0)
 	{
 		stmObserver = new MusicStreamObserver(this);
 		device = alib::open();
@@ -49,8 +52,7 @@ struct MusicPlayer::Priv : QObject
 
 	bool playStream(const alib::Stream& stm)
 	{
-		if (currentStream != stm)
-		{
+		if (currentStream != stm) {
 			currentStream.stop();
 			currentStream = stm;
 		}
@@ -77,8 +79,7 @@ struct MusicPlayer::Priv : QObject
 		looped = 0;
 		if (!pvsApp->settings().boolean("music", "randomorder", true))
 			playlistPtr++;
-		else
-		{
+		else {
 			// On Qt 5.10 and above, use QRandomGenerator instead.
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
 			playlistPtr = int(int(QRandomGenerator::global()->generate()) * 1.0 / RAND_MAX * playlist.childCount());
@@ -114,8 +115,7 @@ struct MusicPlayer::Priv : QObject
 		// HACK: support qiodevice here.
 		currentStream = alib::Stream(playlist.child(playlistPtr)->url.toLocalFile().toUtf8().data());
 		currentStream.identifyAsMusic();
-		if (!playStream(currentStream))
-		{
+		if (!playStream(currentStream)) {
 			next();
 			currentStream.setVolume(1.0f);
 		}
@@ -123,12 +123,10 @@ struct MusicPlayer::Priv : QObject
 
 	void resume()
 	{
-		if (currentStream.atEnd() || currentStream.error())
-		{
+		if (currentStream.atEnd() || currentStream.error()) {
 			next();
 			currentStream.setVolume(1.0f);
-		}
-		else
+		} else
 			currentStream.resume();
 	}
 
@@ -150,8 +148,7 @@ struct MusicPlayer::Priv : QObject
 
 		looped++;
 
-		switch (loopMode)
-		{
+		switch (loopMode) {
 		case MusicPlayer::NoLoop:
 			break;
 		case MusicPlayer::LoopSingle:
@@ -193,7 +190,8 @@ void MusicStreamObserver::reachedLoop()
 }
 
 MusicPlayer::MusicPlayer(Playlist& playlist, QObject* parent)
-	: QObject(parent), p(new Priv(playlist))
+	: QObject(parent)
+	, p(new Priv(playlist))
 {
 }
 
@@ -256,4 +254,3 @@ void MusicPlayer::stop() const
 {
 	p->stop();
 }
-

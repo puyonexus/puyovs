@@ -6,8 +6,8 @@
 #include "PVS_Packet.h"
 #include "PVS_Peer.h"
 
-#include <string>
 #include <list>
+#include <string>
 #include <vector>
 
 struct _ENetHost;
@@ -17,8 +17,7 @@ struct _ENetPacket;
 struct _ENetEvent;
 
 // Client functions
-struct PVS_Client
-{
+struct PVS_Client {
 	PVS_Client();
 	virtual ~PVS_Client();
 	_ENetHost* host;
@@ -26,7 +25,6 @@ struct PVS_Client
 	_ENetAddress* address;
 	PVS_ChannelManager channelManager;
 	PVS_Peer* getPVS_Peer() const;
-
 
 	// State
 	bool networkInitialized; // Init success

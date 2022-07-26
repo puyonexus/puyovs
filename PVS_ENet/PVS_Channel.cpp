@@ -1,10 +1,14 @@
 #include <enet/enet.h>
 
-#include <utility>
 #include "PVS_Channel.h"
+#include <utility>
 
 PVS_Channel::PVS_Channel(std::string n, std::string d, const bool lockdescriptions, const bool destroy)
-	: name(std::move(n)), description(std::move(d)), lock(lockdescriptions), autoDestroy(destroy), peers(nullptr)
+	: name(std::move(n))
+	, description(std::move(d))
+	, lock(lockdescriptions)
+	, autoDestroy(destroy)
+	, peers(nullptr)
 {
 	peers = new peerList;
 }
@@ -18,8 +22,7 @@ PVS_Channel::~PVS_Channel()
 unsigned int PVS_Channel::getPeerListNameLength() const
 {
 	unsigned int length = 0;
-	for (const auto& peer : *peers)
-	{
+	for (const auto& peer : *peers) {
 		length += static_cast<unsigned int>(peer->name.length() + 1);
 	}
 	return length;
@@ -33,10 +36,8 @@ PVS_ChannelManager::PVS_ChannelManager()
 // Returns channel based on name
 PVS_Channel* PVS_ChannelManager::getChannel(const std::string& channelName) const
 {
-	for (const auto& channel : globalChannelList)
-	{
-		if (channel->name == channelName)
-		{
+	for (const auto& channel : globalChannelList) {
+		if (channel->name == channelName) {
 			return channel;
 		}
 	}
@@ -58,8 +59,7 @@ bool PVS_ChannelManager::channelExists(const std::string& channelName) const
 // Find peer in channel
 bool PVS_ChannelManager::peerExistsInChannel(const std::string& channelName, PVS_Peer* peer) const
 {
-	if (!channelExists(channelName))
-	{
+	if (!channelExists(channelName)) {
 		return false;
 	}
 
@@ -71,8 +71,7 @@ bool PVS_ChannelManager::peerExistsInChannel(const std::string& channelName, PVS
 // Creates a new channel, return true if successful
 bool PVS_ChannelManager::createNewChannel(const std::string& channelName, std::string channelDescription, bool lockdescription, bool autodestroy)
 {
-	if (channelExists(channelName))
-	{
+	if (channelExists(channelName)) {
 		return false;
 	}
 
@@ -83,24 +82,20 @@ bool PVS_ChannelManager::createNewChannel(const std::string& channelName, std::s
 // Removes channel from the channelList
 void PVS_ChannelManager::destroyChannel(const std::string& channelName)
 {
-	if (!channelExists(channelName))
-	{
+	if (!channelExists(channelName)) {
 		return;
 	}
 
 	// Delete channel from all peers
 	PVS_Channel* c = getChannel(channelName);
 	peerList* peers = c->peers;
-	if (peers != nullptr)
-	{
-		while (!peers->empty())
-		{
+	if (peers != nullptr) {
+		while (!peers->empty()) {
 			std::list<std::string>& cl = peers->back()->channels;
 			cl.erase(remove(cl.begin(), cl.end(), channelName), cl.end());
 
 			// Delete peer
-			if (!useReferences)
-			{
+			if (!useReferences) {
 				delete peers->back();
 			}
 
@@ -117,8 +112,7 @@ void PVS_ChannelManager::destroyChannel(const std::string& channelName)
 // Add an PVS_Peer to a channel
 void PVS_ChannelManager::addPeer(const std::string& channelName, PVS_Peer* peer, unsigned char status) const
 {
-	if (!channelExists(channelName))
-	{
+	if (!channelExists(channelName)) {
 		return;
 	}
 
@@ -143,8 +137,7 @@ void PVS_ChannelManager::removePeer(const std::string& channelName, ENetPeer* pe
 // Remove PVS_Peer from channel
 void PVS_ChannelManager::removePeer(const std::string& channelName, PVS_Peer* peer)
 {
-	if (!channelExists(channelName))
-	{
+	if (!channelExists(channelName)) {
 		return;
 	}
 
@@ -160,14 +153,12 @@ void PVS_ChannelManager::removePeer(const std::string& channelName, PVS_Peer* pe
 	pl.erase(remove(pl.begin(), pl.end(), peer), pl.end());
 
 	// Delete the peer
-	if (!useReferences)
-	{
+	if (!useReferences) {
 		delete peer;
 	}
 
 	// Check if it was the last peer
-	if (pl.empty() && getChannel(channelName)->autoDestroy)
-	{
+	if (pl.empty() && getChannel(channelName)->autoDestroy) {
 		destroyChannel(channelName);
 	}
 }
@@ -175,16 +166,13 @@ void PVS_ChannelManager::removePeer(const std::string& channelName, PVS_Peer* pe
 // Find peer in channel with name, if not found it returns null
 PVS_Peer* PVS_ChannelManager::getPeerInChannel(const std::string& channelName, const std::string& peerName) const
 {
-	if (!channelExists(channelName))
-	{
+	if (!channelExists(channelName)) {
 		return nullptr;
 	}
 
 	const peerList* pl = getChannel(channelName)->peers;
-	for (const auto& peer : *pl)
-	{
-		if (peerName == peer->name)
-		{
+	for (const auto& peer : *pl) {
+		if (peerName == peer->name) {
 			return peer;
 		}
 	}
@@ -194,16 +182,13 @@ PVS_Peer* PVS_ChannelManager::getPeerInChannel(const std::string& channelName, c
 // Find peer in channel with id number, if not found it returns null
 PVS_Peer* PVS_ChannelManager::getPeerInChannel(const std::string& channelName, unsigned int peerID) const
 {
-	if (!channelExists(channelName))
-	{
+	if (!channelExists(channelName)) {
 		return nullptr;
 	}
 
 	const peerList* pl = getChannel(channelName)->peers;
-	for (const auto& peer : *pl)
-	{
-		if (peerID == peer->id)
-		{
+	for (const auto& peer : *pl) {
+		if (peerID == peer->id) {
 			return peer;
 		}
 	}
@@ -213,14 +198,12 @@ PVS_Peer* PVS_ChannelManager::getPeerInChannel(const std::string& channelName, u
 // Change channel description, return true on success
 bool PVS_ChannelManager::changeDescription(const std::string& channelName, std::string channelDescription) const
 {
-	if (!channelExists(channelName))
-	{
+	if (!channelExists(channelName)) {
 		return false;
 	}
 
 	PVS_Channel* c = getChannel(channelName);
-	if (c->lock)
-	{
+	if (c->lock) {
 		return false;
 	}
 	c->description = std::move(channelDescription);
@@ -229,8 +212,7 @@ bool PVS_ChannelManager::changeDescription(const std::string& channelName, std::
 
 void PVS_ChannelManager::setStatus(const std::string& channelName, PVS_Peer* peer, unsigned char status) const
 {
-	if (!channelExists(channelName))
-	{
+	if (!channelExists(channelName)) {
 		return;
 	}
 
@@ -239,8 +221,7 @@ void PVS_ChannelManager::setStatus(const std::string& channelName, PVS_Peer* pee
 
 int PVS_ChannelManager::getStatus(const std::string& channelName, PVS_Peer* peer) const
 {
-	if (!channelExists(channelName))
-	{
+	if (!channelExists(channelName)) {
 		return -1;
 	}
 

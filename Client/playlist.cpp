@@ -1,24 +1,23 @@
 #include "playlist.h"
 #include "common.h"
 #include <QApplication>
-#include <QNetworkRequest>
-#include <QNetworkReply>
-#include <QFileInfo>
-#include <QDir>
-#include <QDebug>
 #include <QDataStream>
-#include <QRegExp>
-#include <QTimer>
+#include <QDebug>
+#include <QDir>
+#include <QFileInfo>
 #include <QFileSystemWatcher>
 #include <QMimeData>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QRegExp>
+#include <QTimer>
 
 QByteArray download(QString fn)
 {
 	QIODevice* file = UrlDispatcher::openUrl(UrlDispatcher::urlFromString(QString(), fn));
 
 	QByteArray data;
-	while (!file->atEnd())
-	{
+	while (!file->atEnd()) {
 		char buffer[512] = { 0 };
 		file->read(buffer, 512);
 		data.append(buffer, 512);
@@ -55,8 +54,7 @@ QIODevice* UrlDispatcher::openUrl(QUrl url)
 	request.setRawHeader("User-Agent", PUYOVS_USER_AGENT);
 	QIODevice* file = manager->get(request);
 
-	if (file->inherits("QNetworkReply"))
-	{
+	if (file->inherits("QNetworkReply")) {
 		QEventLoop loop;
 		loop.connect(file, SIGNAL(finished()), SLOT(quit()));
 		QTimer::singleShot(10 * 1000, &loop, SLOT(quit())); // 10 sec timeout
@@ -80,8 +78,7 @@ CacheDB::CacheDB()
 
 	hashes.reserve(static_cast<int>(cache.size() / sizeof(unsigned)));
 
-	while (!dataStream.atEnd())
-	{
+	while (!dataStream.atEnd()) {
 		unsigned hash;
 		dataStream >> hash;
 		hashes.append(hash);
@@ -95,7 +92,8 @@ CacheDB::~CacheDB()
 
 CacheDB& CacheDB::get()
 {
-	if (!instance) instance = new CacheDB();
+	if (!instance)
+		instance = new CacheDB();
 	return *instance;
 }
 
@@ -119,7 +117,7 @@ void CacheDB::write()
 	cache.open(QIODevice::WriteOnly);
 	QDataStream dataStream(&cache);
 
-	foreach(unsigned hash, hashes) {
+	foreach (unsigned hash, hashes) {
 		dataStream << hash;
 	}
 }
@@ -144,8 +142,7 @@ Playlist::Playlist(QString fn)
 
 	QString wd = QFileInfo(fn).dir().absolutePath() + "/";
 
-	foreach(QByteArray entry, entries)
-	{
+	foreach (QByteArray entry, entries) {
 		QString fn = QString::fromUtf8(entry.data());
 		fn = fn.trimmed();
 		if (fn.size() < 3)
@@ -195,8 +192,7 @@ bool Playlist::isEmpty() const
 void Playlist::discover(QString dir)
 {
 	// Here, we add newly discovered files to the playlist automagically.
-	if (mDiscoverPath.isEmpty())
-	{
+	if (mDiscoverPath.isEmpty()) {
 		mDiscoverPath = dir;
 
 		QFileSystemWatcher* watcher = new QFileSystemWatcher(this);
@@ -209,20 +205,17 @@ void Playlist::discover(QString dir)
 
 	CacheDB& db = CacheDB::get();
 
-	foreach(QString name, discoverDir.entryList(QDir::Files | QDir::Readable | QDir::NoDotAndDotDot | QDir::NoSymLinks))
-	{
+	foreach (QString name, discoverDir.entryList(QDir::Files | QDir::Readable | QDir::NoDotAndDotDot | QDir::NoSymLinks)) {
 		PlaylistEntry entry("", QFileInfo(discoverDir.absoluteFilePath(name)).canonicalFilePath());
 
 		if (!mChildren.contains(entry) && db.registerHashCode(entry.urlHash))
 			mChildren.append(entry);
 	}
 
-	foreach(PlaylistEntry entry, mChildren)
-	{
+	foreach (PlaylistEntry entry, mChildren) {
 		QFileInfo fileInfo(entry.url.toLocalFile());
 
-		if (!fileInfo.exists())
-		{
+		if (!fileInfo.exists()) {
 			mChildren.removeOne(entry);
 			db.removeHashCode(entry.urlHash);
 		}
@@ -241,7 +234,7 @@ void Playlist::write()
 	QFile file(mFilename);
 	file.open(QIODevice::WriteOnly);
 
-	foreach(PlaylistEntry entry, mChildren)
+	foreach (PlaylistEntry entry, mChildren)
 		file.write((entry.toString() + "\r\n").toUtf8());
 
 	file.close();
@@ -335,18 +328,17 @@ QString PlaylistEntry::toString()
 	return str;
 }
 
-
 /******************************************************************************
  * PlaylistModel implementation
  */
 
-struct PlaylistModel::Priv
-{
+struct PlaylistModel::Priv {
 	Playlist* playlist;
 };
 
 PlaylistModel::PlaylistModel(Playlist* playlist, QObject* parent)
-	: QAbstractItemModel(parent), p(new Priv)
+	: QAbstractItemModel(parent)
+	, p(new Priv)
 {
 	p->playlist = playlist;
 
@@ -379,14 +371,15 @@ QModelIndex PlaylistModel::index(int row, int column, const QModelIndex& parent)
 	return createIndex(row, column, qHash(entry->toString()));
 }
 
-QModelIndex PlaylistModel::parent(const QModelIndex&/*child*/) const
+QModelIndex PlaylistModel::parent(const QModelIndex& /*child*/) const
 {
 	return QModelIndex();
 }
 
 int PlaylistModel::rowCount(const QModelIndex& parent) const
 {
-	if (parent.isValid()) return 0;
+	if (parent.isValid())
+		return 0;
 
 	return p->playlist->childCount();
 }
@@ -403,8 +396,7 @@ QVariant PlaylistModel::data(const QModelIndex& index, int role) const
 	if (!entry)
 		return QVariant();
 
-	switch (role)
-	{
+	switch (role) {
 	case Qt::DisplayRole:
 		// TODO: Perhaps load into alib and get metadata?
 		// Do not need alib driver loaded even!
@@ -423,8 +415,7 @@ bool PlaylistModel::setData(const QModelIndex& index, const QVariant& value, int
 	if (!entry)
 		return false;
 
-	switch (role)
-	{
+	switch (role) {
 	case Qt::EditRole:
 		*entry = PlaylistEntry("", value.toString());
 		return true;
@@ -471,13 +462,12 @@ Qt::DropActions PlaylistModel::supportedDropActions() const
 
 bool PlaylistModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
 {
-	if (data->hasUrls())
-	{
+	if (data->hasUrls()) {
 		QList<QUrl> urlList;
 
 		urlList = data->urls();
 
-		foreach(QUrl url, urlList)
+		foreach (QUrl url, urlList)
 			p->playlist->add(PlaylistEntry("", url.toString()));
 
 		return true;

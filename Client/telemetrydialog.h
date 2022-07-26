@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QDialog>
 #include <QDesktopServices>
+#include <QDialog>
 
 namespace Ui {
 class TelemetryDialog;
@@ -9,8 +9,7 @@ class TelemetryDialog;
 
 class LanguageManager;
 
-class TelemetryDialog : public QDialog
-{
+class TelemetryDialog : public QDialog {
 	Q_OBJECT
 
 public:

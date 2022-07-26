@@ -1,15 +1,14 @@
 #pragma once
 
-#include <QUrl>
+#include <QAbstractItemModel>
 #include <QList>
 #include <QStringList>
-#include <QAbstractItemModel>
+#include <QUrl>
 
 class QNetworkAccessManager;
 class QIODevice;
 
-class UrlDispatcher
-{
+class UrlDispatcher {
 	static QNetworkAccessManager* manager;
 
 public:
@@ -17,13 +16,13 @@ public:
 	static QIODevice* openUrl(QUrl url);
 };
 
-class CacheDB
-{
+class CacheDB {
 	static CacheDB* instance;
 	QList<unsigned> hashes;
 	CacheDB();
 	CacheDB(const CacheDB& other);
 	~CacheDB();
+
 public:
 	static CacheDB& get();
 
@@ -35,8 +34,7 @@ public:
 	void write();
 };
 
-class PlaylistEntry
-{
+class PlaylistEntry {
 public:
 	PlaylistEntry();
 	PlaylistEntry(QString dir, QString entry);
@@ -53,8 +51,7 @@ public:
 };
 
 class QFileSystemWatcher;
-class Playlist : public QObject
-{
+class Playlist : public QObject {
 	Q_OBJECT
 public:
 	Playlist();
@@ -89,11 +86,12 @@ private:
 	QList<PlaylistEntry> mChildren;
 };
 
-class PlaylistModel : public QAbstractItemModel
-{
+class PlaylistModel : public QAbstractItemModel {
 	Q_OBJECT
 
-		struct Priv; Priv* p;
+	struct Priv;
+	Priv* p;
+
 public:
 	PlaylistModel(Playlist* playlist, QObject* parent = nullptr);
 	~PlaylistModel() override;

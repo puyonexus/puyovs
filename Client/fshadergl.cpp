@@ -2,7 +2,10 @@
 #include "glmanager.h"
 
 FShaderGL::FShaderGL(const char* source, GLExtensions& ext, QObject* parent)
-	: QObject(parent), ext(ext), program(0), currentTex(-1)
+	: QObject(parent)
+	, ext(ext)
+	, program(0)
+	, currentTex(-1)
 {
 	if (source)
 		setSource(source);
@@ -25,8 +28,7 @@ bool FShaderGL::setSource(const char* src)
 bool FShaderGL::setParameter(const char* param, double value)
 {
 	bool result;
-	if (program)
-	{
+	if (program) {
 		GLint currentProgram = 0;
 		glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
 
@@ -37,18 +39,16 @@ bool FShaderGL::setParameter(const char* param, double value)
 		else
 			result = false;
 
-
 		ext.glUseProgram(currentProgram);
-	}
-	else result = false;
+	} else
+		result = false;
 	return result;
 }
 
 bool FShaderGL::setParameter(const char* param, double x, double y, double z, double w)
 {
 	bool result;
-	if (program)
-	{
+	if (program) {
 		GLint currentProgram = 0;
 		glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
 
@@ -59,16 +59,16 @@ bool FShaderGL::setParameter(const char* param, double x, double y, double z, do
 		else
 			result = false;
 
-
 		ext.glUseProgram(currentProgram);
-	}
-	else result = false;
+	} else
+		result = false;
 	return result;
 }
 
 bool FShaderGL::setCurrentTexture(const char* param)
 {
-	if (!program) return false;
+	if (!program)
+		return false;
 
 	currentTex = ext.glGetUniformLocation(program, param);
 	return currentTex != -1;
@@ -76,13 +76,12 @@ bool FShaderGL::setCurrentTexture(const char* param)
 
 bool FShaderGL::compile()
 {
-	static const char* vertexSource =
-		"void main()"
-		"{"
-		"    gl_TexCoord[0] = gl_MultiTexCoord0;"
-		"    gl_FrontColor = gl_Color;"
-		"    gl_Position = ftransform();"
-		"}";
+	static const char* vertexSource = "void main()"
+									  "{"
+									  "    gl_TexCoord[0] = gl_MultiTexCoord0;"
+									  "    gl_FrontColor = gl_Color;"
+									  "    gl_Position = ftransform();"
+									  "}";
 
 	program = 0;
 	currentTex = -1;
@@ -99,8 +98,7 @@ bool FShaderGL::compile()
 
 	// Check for compilation errors.
 	ext.glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (success == GL_FALSE)
-	{
+	if (success == GL_FALSE) {
 		char log[4096] = { 0 };
 		ext.glGetShaderInfoLog(vertexShader, sizeof log, nullptr, log);
 		QMessageBox(QMessageBox::Warning, "Puyo VS", QString("GLSL Error: \n") + log + QString("\nGL error: ") + QString::number(glGetError()), QMessageBox::Ok).exec();
@@ -110,8 +108,7 @@ bool FShaderGL::compile()
 		return false;
 	}
 	ext.glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (success == GL_FALSE)
-	{
+	if (success == GL_FALSE) {
 		char log[4096] = { 0 };
 		ext.glGetShaderInfoLog(fragmentShader, sizeof log, nullptr, log);
 		QMessageBox(QMessageBox::Warning, "Puyo VS", QString("GLSL Error: \n") + log, QMessageBox::Ok).exec();
@@ -129,8 +126,7 @@ bool FShaderGL::compile()
 	ext.glDeleteShader(fragmentShader);
 	ext.glLinkProgram(program);
 	ext.glGetShaderiv(program, GL_LINK_STATUS, &success);
-	if (success == GL_FALSE)
-	{
+	if (success == GL_FALSE) {
 		char log[4096] = { 0 };
 		ext.glGetShaderInfoLog(program, sizeof log, nullptr, log);
 		QMessageBox(QMessageBox::Warning, "Puyo VS", QString("GLSL Error: \n") + log, QMessageBox::Ok).exec();
@@ -145,8 +141,7 @@ bool FShaderGL::compile()
 
 void FShaderGL::bind()
 {
-	if (program)
-	{
+	if (program) {
 		ext.glUseProgram(program);
 
 		if (currentTex != -1)

@@ -1,14 +1,18 @@
-#include <QTime>
 #include "chatwindow.h"
+#include "../Puyolib/Game.h"
 #include "gamewidget.h"
-#include "ui_chatwindow.h"
 #include "netclient.h"
 #include "settings.h"
-#include "../Puyolib/Game.h"
+#include "ui_chatwindow.h"
+#include <QTime>
 
-ChatWindow::ChatWindow(NetChannelProxy* proxy, ppvs::Game* game, GameWidget* widget, QWidget* parent) :
-	QWidget(parent), mProxy(proxy), mGame(game), mGameWidget(widget), quickchat(false),
-	ui(new Ui::ChatWindow)
+ChatWindow::ChatWindow(NetChannelProxy* proxy, ppvs::Game* game, GameWidget* widget, QWidget* parent)
+	: QWidget(parent)
+	, mProxy(proxy)
+	, mGame(game)
+	, mGameWidget(widget)
+	, quickchat(false)
+	, ui(new Ui::ChatWindow)
 {
 	ui->setupUi(this);
 	ui->ShowNameCheckBox->setChecked(mGame->m_forceStatusText);
@@ -24,8 +28,7 @@ ChatWindow::~ChatWindow()
 
 void ChatWindow::setQuickChat(bool quick)
 {
-	if (quick)
-	{
+	if (quick) {
 		quickchat = true;
 		QPalette p = ui->EntryTextEdit->palette();
 		p.setColor(QPalette::Base, Qt::cyan);
@@ -34,9 +37,7 @@ void ChatWindow::setQuickChat(bool quick)
 		activateWindow();
 		showNormal();
 		ui->EntryTextEdit->setFocus();
-	}
-	else
-	{
+	} else {
 		quickchat = false;
 		QPalette p = ui->EntryTextEdit->palette();
 		p.setColor(QPalette::Base, Qt::white);
@@ -134,13 +135,10 @@ void ChatWindow::on_PlayMusicCheckBox_stateChanged(int arg1) const
 {
 	if (mGame->m_data)
 		mGame->m_data->playMusic = arg1;
-	if (arg1 == 0)
-	{
+	if (arg1 == 0) {
 		pvsApp->settings().setBoolean("launcher", "enablemusic", false);
 		pvsApp->setMusicMode(PVSApplication::MusicPause);
-	}
-	else
-	{
+	} else {
 		pvsApp->settings().setBoolean("launcher", "enablemusic", true);
 		mGameWidget->playMusic();
 	}
@@ -156,8 +154,7 @@ void ChatWindow::focusInEvent(QFocusEvent* ev)
 void ChatWindow::on_EntryTextEdit_textChanged() const
 {
 	int max = 140;
-	if (ui->EntryTextEdit->toPlainText().length() > max)
-	{
+	if (ui->EntryTextEdit->toPlainText().length() > max) {
 		int diff = ui->EntryTextEdit->toPlainText().length() - max;
 		QString newStr = ui->EntryTextEdit->toPlainText();
 		newStr.chop(diff);

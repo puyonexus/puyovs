@@ -1,21 +1,21 @@
 #include "updatedialog.h"
-#include "ui_updatedialog.h"
-#include "pvsapplication.h"
-#include "updaterudb.h"
 #include "common.h"
+#include "pvsapplication.h"
+#include "ui_updatedialog.h"
+#include "updaterudb.h"
 
-#include <qglobal.h>
 #include <QBuffer>
 #include <QDebug>
 #include <QDir>
 #include <QFile>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
 #include <QMessageBox>
-#include <QTimer>
-#include <QRegExp>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 #include <QProcess>
+#include <QRegExp>
+#include <QTimer>
+#include <qglobal.h>
 
 #include <stdlib.h>
 
@@ -118,10 +118,10 @@ bool elevateProcess()
 
 #endif
 
-UpdateDialog::UpdateDialog(QString binPath, QWidget* parent) :
-	QDialog(parent),
-	binPath(binPath),
-	ui(new Ui::UpdateDialog)
+UpdateDialog::UpdateDialog(QString binPath, QWidget* parent)
+	: QDialog(parent)
+	, binPath(binPath)
+	, ui(new Ui::UpdateDialog)
 {
 	ui->setupUi(this);
 
@@ -131,7 +131,8 @@ UpdateDialog::UpdateDialog(QString binPath, QWidget* parent) :
 		qDebug() << "Could not open ldb.";
 	else if (!ldb.read(&ldbFile))
 		qDebug() << "Could not read ldb.";
-	else qDebug() << "Read ldb file.";
+	else
+		qDebug() << "Read ldb file.";
 
 	// Update root
 	updateUrl = "https://upd.puyovs.com";
@@ -172,9 +173,7 @@ void UpdateDialog::writeLDB()
 			tr("Updater"),
 			tr(
 				"Could not write to revisions database...\n"
-				"Update failed."
-			)
-		);
+				"Update failed."));
 	ldbFile.flush();
 	ldbFile.close();
 	qDebug() << "Wrote ldb file.";
@@ -198,8 +197,7 @@ void UpdateDialog::beginUpdate()
 		QBuffer udbBuffer(&taskBuffer);
 		udbBuffer.open(QBuffer::ReadOnly);
 		bool success = udb.read(&udbBuffer);
-		if (!success)
-		{
+		if (!success) {
 			QTimer::singleShot(500, this, SLOT(close()));
 			ui->taskProgress->setFormat("Error reading update.udb");
 			return;
@@ -207,8 +205,7 @@ void UpdateDialog::beginUpdate()
 	}
 	taskBuffer.clear();
 
-	foreach(const UpdaterFile & file, udb.files)
-	{
+	foreach (const UpdaterFile& file, udb.files) {
 		QString filename = file.filename();
 		QString localFn = file.localFilename();
 		QString platform = file.platform();
@@ -216,18 +213,14 @@ void UpdateDialog::beginUpdate()
 		if (!platform.isEmpty() && platform != platformStr)
 			continue;
 
-		if (file.isFolder())
-		{
+		if (file.isFolder()) {
 			QDir().mkpath(localFn);
-		}
-		else if (version != ldb.version(localFn))
-		{
+		} else if (version != ldb.version(localFn)) {
 			DownloaderTask task;
 			task.url = fullUrl(filename);
 			if (!platform.isEmpty()) {
 				task.target = QDir(binPath).filePath(localFn);
-			}
-			else {
+			} else {
 				task.target = localFn;
 			}
 			task.revision = version;
@@ -237,8 +230,7 @@ void UpdateDialog::beginUpdate()
 		}
 	}
 
-	if (downloadQueue.isEmpty())
-	{
+	if (downloadQueue.isEmpty()) {
 		QTimer::singleShot(500, this, SLOT(close()));
 		ui->taskProgress->setFormat("Up to date.");
 		return;
@@ -253,19 +245,17 @@ void UpdateDialog::beginUpdate()
 
 void UpdateDialog::nextTask()
 {
-	if (downloadQueue.isEmpty())
-	{
+	if (downloadQueue.isEmpty()) {
 		QTimer::singleShot(500, this, SLOT(close()));
 		ui->overallProgress->setFormat("Download complete.");
 		ui->taskProgress->hide();
 
-		if (removeQueue.isEmpty())
-		{
+		if (removeQueue.isEmpty()) {
 			return;
 		}
 		QStringList arguments;
 		arguments << "--remove-cruft";
-		foreach(RemoveTask task, removeQueue)
+		foreach (RemoveTask task, removeQueue)
 			arguments << task.file;
 
 		QProcess::startDetached(
@@ -298,30 +288,27 @@ void UpdateDialog::taskDone()
 	while (QFile::exists(task.target) && !QFile::rename(task.target, targetOld)) {
 		if (isElevated()) {
 			if (QMessageBox::warning(
-				this,
-				tr("Updater"),
-				tr(
-					"Error moving %1 out of the way...\n"
-					"Please make sure there are no other "
-					"instances of Puyo VS running."
-				).arg(task.target),
-				QMessageBox::Retry,
-				QMessageBox::Abort
-			) == QMessageBox::Abort) {
+					this,
+					tr("Updater"),
+					tr(
+						"Error moving %1 out of the way...\n"
+						"Please make sure there are no other "
+						"instances of Puyo VS running.")
+						.arg(task.target),
+					QMessageBox::Retry,
+					QMessageBox::Abort)
+				== QMessageBox::Abort) {
 				close();
 				return;
 			}
-		}
-		else {
+		} else {
 			if (!elevateProcess()) {
 				QMessageBox::warning(
-					this, 
+					this,
 					tr("Updater"),
 					tr(
 						"Error elevating process...\n"
-						"The updater will now exit."
-					)
-				);
+						"The updater will now exit."));
 			}
 			close();
 			return;
@@ -333,12 +320,11 @@ void UpdateDialog::taskDone()
 	if (!saveTo.open(QFile::WriteOnly)) {
 		if (isElevated()) {
 			writeError(task.target);
-		}
-		else {
+		} else {
 			if (!elevateProcess()) {
 				QMessageBox::warning(this, tr("Updater"),
 					tr("Error elevating process...\n"
-						"The updater will now exit."));
+					   "The updater will now exit."));
 			}
 		}
 		close();
@@ -351,8 +337,7 @@ void UpdateDialog::taskDone()
 	ldb.setVersion(task.target, task.revision);
 
 	// Remove old file, if possible.
-	if (QFile::exists(targetOld) && !QFile::remove(targetOld))
-	{
+	if (QFile::exists(targetOld) && !QFile::remove(targetOld)) {
 		// Windows hates us.
 		RemoveTask rmtask;
 		rmtask.file = targetOld;
@@ -369,9 +354,8 @@ void UpdateDialog::writeError(QString target)
 		tr("Updater"),
 		tr(
 			"An error occured writing to the file %1.\n"
-			"Updater will now exit."
-		).arg(target)
-	);
+			"Updater will now exit.")
+			.arg(target));
 
 	close();
 }

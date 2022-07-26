@@ -9,8 +9,7 @@ class SearchDialog;
 
 class NetClient;
 
-class SearchDialog : public QDialog
-{
+class SearchDialog : public QDialog {
 	Q_OBJECT
 
 public:
@@ -21,6 +20,7 @@ private slots:
 	void on_pushButton_clicked();
 	void on_GetSearchResult(QString);
 	void on_TimeOut();
+
 private:
 	Ui::SearchDialog* ui;
 	NetClient* netClient;
