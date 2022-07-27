@@ -990,7 +990,12 @@ void Player::chooseColor()
 	}
 
 	if (m_takeover) {
-		m_controls.m_a = m_currentGame->m_players[0]->m_controls.m_a;
+        if (m_currentGame->m_settings->SwapABConfirm == false) {
+            m_controls.m_a = m_currentGame->m_players[0]->m_controls.m_a;
+        }
+        else {
+            m_controls.m_b = m_currentGame->m_players[0]->m_controls.m_b;
+        }
 		m_controls.m_down = m_currentGame->m_players[0]->m_controls.m_down;
 		m_controls.m_up = m_currentGame->m_players[0]->m_controls.m_up;
 	}
@@ -1045,15 +1050,26 @@ void Player::chooseColor()
 
 		// Automatic choice
 		if (m_currentGame->m_colorTimer == 1 && m_colorMenuTimer > 25 && m_pickedColor == false) {
-			m_controls.m_a = 1;
+            if (m_currentGame->m_settings->SwapABConfirm == false) {
+                m_controls.m_a = 1;
+            }
+            else
+            {
+                m_controls.m_b = 1;
+            }
 		}
 
 		// Make choice
-		if (m_controls.m_a == 1 && m_colorMenuTimer > 25) {
+        if ((m_controls.m_a == 1 && m_colorMenuTimer > 25) || ((m_controls.m_b == 1 && m_currentGame->m_settings->SwapABConfirm == true && m_colorMenuTimer > 25))) {
 			m_normalGarbage.gq += m_normalGarbage.cq;
 			m_normalGarbage.cq = 0;
 			m_data->snd.decide.play(m_data);
-			m_controls.m_a++;
+            if (m_currentGame->m_settings->SwapABConfirm == false) {
+                m_controls.m_a++;
+            }
+            else {
+                m_controls.m_b++;
+            }
 			if (m_takeover) {
 				m_currentGame->m_players[0]->m_controls.m_a++;
 			}

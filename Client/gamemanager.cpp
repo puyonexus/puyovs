@@ -153,6 +153,7 @@ GameWidget* GameManager::createGame(ppvs::GameSettings* gs, const QString& roomN
 	gs->controls["1left"] = settings.string("controlsp1", "left", "left").toStdString();
 	gs->controls["1right"] = settings.string("controlsp1", "right", "right").toStdString();
 	gs->controls["1start"] = settings.string("controlsp1", "start", "return").toStdString();
+    gs->SwapABConfirm = settings.boolean("controlsp1", "swapabconfirm", true);
 
 	gs->playMusic = settings.boolean("launcher", "enablemusic", true);
 	gs->playSound = settings.boolean("launcher", "enablesound", true);
