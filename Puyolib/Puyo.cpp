@@ -97,7 +97,7 @@ int Puyo::getColor() const
 
 void Puyo::updateSprite()
 {
-	// Bugfixes
+	// Bug fixes
 	if (m_fallFlag != 0) {
 		// There is a memory effect, nasty effects
 		m_scaleX = 1.0f;
@@ -106,7 +106,7 @@ void Puyo::updateSprite()
 	}
 
 	// Weird scaling events
-	if (m_scaleX > 3.0 || m_scaleY > 3.0 || m_scaleX < 0.1) {
+	if (m_scaleX > 3.0f || m_scaleY > 3.0f || m_scaleX < 0.1f) {
 		m_scaleX = 1.0f;
 		m_scaleY = 1.0f;
 	}
@@ -116,10 +116,10 @@ void Puyo::updateSprite()
 	}
 
 	// Position
-	FieldProp prop = m_field->getProperties();
+    const FieldProp prop = m_field->getProperties();
 
 	// Note: puyo width is now 30 (to remove artifacts)
-	m_sprite.setPosition(m_spriteX - m_posX * 2 + prop.gridX / 2, m_spriteY + m_bounceY);
+	m_sprite.setPosition(m_spriteX - static_cast<float>(m_posX) * 2 + static_cast<float>(prop.gridX) / 2, m_spriteY + m_bounceY);
 
 	// Scale
 	m_sprite.setScale(m_scaleX * m_scaleXd, m_scaleY * m_scaleYd * m_scaleYcor);
@@ -317,14 +317,14 @@ void ColorPuyo::draw(FeRenderTarget* target)
 		m_sprite.draw(target);
 	} else {
 		if (m_data->glowShader) {
-			m_data->glowShader->setParameter("color", 0.10f + 0.10f * sin(m_data->globalTimer / 8.f));
+			m_data->glowShader->setParameter("color", 0.10 + 0.10 * sin(static_cast<double>(m_data->globalTimer) / 8.0));
 			m_sprite.draw(target, m_data->glowShader);
 		} else {
 			// Without shaders
 			m_sprite.setBlendMode(AlphaBlending);
 			m_sprite.draw(target);
 			m_sprite.setBlendMode(AdditiveBlending);
-			m_sprite.setTransparency(0.20f + 0.20f * sin(m_data->globalTimer / 8.f));
+			m_sprite.setTransparency(0.20f + 0.20f * sin(static_cast<float>(m_data->globalTimer) / 8.f));
 			m_sprite.draw(target);
 			m_sprite.setTransparency(1);
 			m_sprite.setBlendMode(AlphaBlending);

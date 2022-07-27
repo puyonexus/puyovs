@@ -9,15 +9,15 @@ using namespace std;
 namespace ppvs {
 
 // Lists
-int linkBonus_TSU[11] = { 0, 0, 0, 0, 2, 3, 4, 5, 6, 7, 10 };
-int colorBonus_TSU[5] = { 0, 3, 6, 12, 24 };
-int chainBonus_TSU[22] = { 0, 8, 16, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448, 480, 512, 544, 576, 608 };
+int linkBonusTsu[11] = { 0, 0, 0, 0, 2, 3, 4, 5, 6, 7, 10 };
+int colorBonusTsu[5] = { 0, 3, 6, 12, 24 };
+int chainBonusTsu[22] = { 0, 8, 16, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448, 480, 512, 544, 576, 608 };
 
-int linkBonus_FEVER[11] = { 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 8 };
-int colorBonus_FEVER[5] = { 0, 2, 4, 8, 16 };
+int linkBonusFever[11] = { 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 8 };
+int colorBonusFever[5] = { 0, 2, 4, 8, 16 };
 
 // Character powers
-int chainBonus_NORMAL[24][24] = {
+int chainBonusNormal[24][24] = {
 	{ 4, 11, 24, 33, 51, 106, 179, 274, 371, 472, 600, 732, 882, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999, 999 },
 	{ 4, 12, 24, 32, 48, 96, 160, 240, 320, 400, 500, 600, 700, 800, 900, 999, 999, 999, 999, 999, 999, 999, 999, 999 },
 	{ 4, 12, 24, 33, 50, 101, 169, 254, 341, 428, 538, 648, 763, 876, 990, 999, 999, 999, 999, 999, 999, 999, 999, 999 },
@@ -43,7 +43,7 @@ int chainBonus_NORMAL[24][24] = {
 	{ 4, 12, 23, 31, 46, 92, 152, 229, 305, 380, 476, 570, 665, 760, 855, 898, 935, 969, 999, 999, 999, 999, 999, 999 },
 	{ 4, 11, 22, 29, 43, 86, 144, 216, 288, 360, 450, 540, 630, 720, 810, 900, 990, 999, 999, 999, 999, 999, 999, 999 }
 };
-int chainBonus_FEVER[24][24] = {
+int chainBonusFever[24][24] = {
 	{ 4, 9, 16, 20, 27, 43, 72, 108, 144, 216, 252, 259, 308, 360, 396, 432, 468, 504, 540, 576, 612, 648, 684, 720 },
 	{ 4, 10, 18, 22, 30, 48, 80, 120, 160, 240, 280, 288, 342, 400, 440, 480, 520, 560, 600, 640, 680, 720, 760, 800 },
 	{ 4, 9, 16, 20, 27, 43, 72, 108, 144, 216, 252, 259, 308, 360, 396, 432, 468, 504, 540, 576, 612, 648, 684, 720 },
@@ -71,26 +71,25 @@ int chainBonus_FEVER[24][24] = {
 };
 
 // Target point calculation
-int getTargetFromMargin(int initialTarget, int marginTime, int currentTime)
+int getTargetFromMargin(const int initialTarget, const int marginTime, const int currentTime)
 {
-	if (currentTime >= marginTime) {
-		int step = (currentTime - marginTime) / (16 * 60);
-		step = min(step, 13);
-		int out = initialTarget;
-
-		// Even
-		if (step % 2 == 0) {
-			out = initialTarget * 3 / 4;
-			step = step / 2;
-		}
-
-		// Uneven
-		else {
-			step = (step + 1) / 2;
-		}
-		return max(int(out / pow(2., step)), 1);
+	if (currentTime < marginTime) {
+		return initialTarget;
 	}
-	return initialTarget;
+
+	int step = (currentTime - marginTime) / (16 * 60);
+	step = min(step, 13);
+	int out = initialTarget;
+
+	if (step % 2 == 0) {
+		// Even
+		out = initialTarget * 3 / 4;
+		step = step / 2;
+	} else {
+		// Uneven
+		step = (step + 1) / 2;
+	}
+	return max(static_cast<int>(out / pow(2., step)), 1);
 }
 
 //{Base rules
@@ -114,23 +113,11 @@ RuleSet::RuleSet()
 	m_quickDrop = false;
 }
 
-RuleSet::~RuleSet()
-{
-}
+RuleSet::~RuleSet() = default;
 
-void RuleSet::setRules(Rules rulestring)
+void RuleSet::setRules(const Rules ruleString)
 {
-	m_rules = rulestring;
-
-	// Set constants
-	switch (m_rules) {
-	case Rules::ENDLESS:
-		break;
-	case Rules::TSU:
-		break;
-	case Rules::FEVER:
-		break;
-	}
+	m_rules = ruleString;
 }
 
 void RuleSet::setGame(Game* g)
@@ -196,8 +183,8 @@ int RuleSet::getLinkBonus(int n)
 		return 0;
 
 	if (n >= 11)
-		return linkBonus_TSU[10];
-	return linkBonus_TSU[n];
+		return linkBonusTsu[10];
+	return linkBonusTsu[n];
 }
 
 int RuleSet::getColorBonus(int n)
@@ -207,8 +194,8 @@ int RuleSet::getColorBonus(int n)
 		return 0;
 
 	if (n >= 5)
-		return colorBonus_TSU[4];
-	return colorBonus_TSU[n];
+		return colorBonusTsu[4];
+	return colorBonusTsu[n];
 }
 
 int RuleSet::getChainBonus(Player* pl)
@@ -322,8 +309,8 @@ int EndlessRuleSet::getLinkBonus(int n)
 		return 0;
 
 	if (n >= 11)
-		return linkBonus_FEVER[10];
-	return linkBonus_FEVER[n];
+		return linkBonusFever[10];
+	return linkBonusFever[n];
 }
 
 int EndlessRuleSet::getColorBonus(int n)
@@ -333,8 +320,8 @@ int EndlessRuleSet::getColorBonus(int n)
 		return 0;
 
 	if (n >= 5)
-		return colorBonus_FEVER[4];
-	return colorBonus_FEVER[n];
+		return colorBonusFever[4];
+	return colorBonusFever[n];
 }
 
 int EndlessRuleSet::getChainBonus(Player* pl)
@@ -348,8 +335,8 @@ int EndlessRuleSet::getChainBonus(Player* pl)
 	if (n > 23)
 		return 999;
 	if (pl->m_feverMode)
-		return chainBonus_FEVER[character][n];
-	return chainBonus_NORMAL[character][n];
+		return chainBonusFever[character][n];
+	return chainBonusNormal[character][n];
 }
 //}
 
@@ -455,8 +442,8 @@ int TsuRuleSet::getLinkBonus(int n)
 		return 0;
 
 	if (n >= 11)
-		return linkBonus_TSU[10];
-	return linkBonus_TSU[n];
+		return linkBonusTsu[10];
+	return linkBonusTsu[n];
 }
 
 int TsuRuleSet::getColorBonus(int n)
@@ -466,8 +453,8 @@ int TsuRuleSet::getColorBonus(int n)
 		return 0;
 
 	if (n >= 5)
-		return colorBonus_TSU[4];
-	return colorBonus_TSU[n];
+		return colorBonusTsu[4];
+	return colorBonusTsu[n];
 }
 
 int TsuRuleSet::getChainBonus(Player* pl)
@@ -477,8 +464,8 @@ int TsuRuleSet::getChainBonus(Player* pl)
 	if (n < 0)
 		return 0;
 	if (n >= 16)
-		return min(chainBonus_TSU[15] + 32 * (n - 15), 999);
-	return chainBonus_TSU[n];
+		return min(chainBonusTsu[15] + 32 * (n - 15), 999);
+	return chainBonusTsu[n];
 }
 //}
 
@@ -640,8 +627,8 @@ int FeverRuleSet::getLinkBonus(int n)
 		return 0;
 
 	if (n >= 11)
-		return linkBonus_FEVER[10];
-	return linkBonus_FEVER[n];
+		return linkBonusFever[10];
+	return linkBonusFever[n];
 }
 
 int FeverRuleSet::getColorBonus(int n)
@@ -651,8 +638,8 @@ int FeverRuleSet::getColorBonus(int n)
 		return 0;
 
 	if (n >= 5)
-		return colorBonus_FEVER[4];
-	return colorBonus_FEVER[n];
+		return colorBonusFever[4];
+	return colorBonusFever[n];
 }
 
 int FeverRuleSet::getChainBonus(Player* pl)
@@ -666,8 +653,8 @@ int FeverRuleSet::getChainBonus(Player* pl)
 	if (n > 23)
 		return 999;
 	if (pl->m_feverMode)
-		return chainBonus_FEVER[character][n];
-	return chainBonus_NORMAL[character][n];
+		return chainBonusFever[character][n];
+	return chainBonusNormal[character][n];
 }
 //}
 
@@ -837,8 +824,8 @@ int EndlessFeverRuleSet::getLinkBonus(int n)
 		return 0;
 
 	if (n >= 11)
-		return linkBonus_FEVER[10];
-	return linkBonus_FEVER[n];
+		return linkBonusFever[10];
+	return linkBonusFever[n];
 }
 
 int EndlessFeverRuleSet::getColorBonus(int n)
@@ -848,8 +835,8 @@ int EndlessFeverRuleSet::getColorBonus(int n)
 		return 0;
 
 	if (n >= 5)
-		return colorBonus_FEVER[4];
-	return colorBonus_FEVER[n];
+		return colorBonusFever[4];
+	return colorBonusFever[n];
 }
 
 int EndlessFeverRuleSet::getChainBonus(Player* pl)
@@ -863,8 +850,8 @@ int EndlessFeverRuleSet::getChainBonus(Player* pl)
 	if (n > 23)
 		return 999;
 	if (pl->m_feverMode)
-		return chainBonus_FEVER[character][n];
-	return chainBonus_NORMAL[character][n];
+		return chainBonusFever[character][n];
+	return chainBonusNormal[character][n];
 }
 //}
 
@@ -1029,8 +1016,8 @@ int EndlessFeverVsRuleSet::getLinkBonus(int n)
 		return 0;
 
 	if (n >= 11)
-		return linkBonus_FEVER[10];
-	return linkBonus_FEVER[n];
+		return linkBonusFever[10];
+	return linkBonusFever[n];
 }
 
 int EndlessFeverVsRuleSet::getColorBonus(int n)
@@ -1040,8 +1027,8 @@ int EndlessFeverVsRuleSet::getColorBonus(int n)
 		return 0;
 
 	if (n >= 5)
-		return colorBonus_FEVER[4];
-	return colorBonus_FEVER[n];
+		return colorBonusFever[4];
+	return colorBonusFever[n];
 }
 
 int EndlessFeverVsRuleSet::getChainBonus(Player* pl)
@@ -1055,8 +1042,8 @@ int EndlessFeverVsRuleSet::getChainBonus(Player* pl)
 	if (n > 23)
 		return 999;
 	if (pl->m_feverMode)
-		return chainBonus_FEVER[character][n];
-	return chainBonus_NORMAL[character][n];
+		return chainBonusFever[character][n];
+	return chainBonusNormal[character][n];
 }
 //}
 
@@ -1184,8 +1171,8 @@ int TsuOnlineRuleSet::getLinkBonus(int n)
 		return 0;
 
 	if (n >= 11)
-		return linkBonus_TSU[10];
-	return linkBonus_TSU[n];
+		return linkBonusTsu[10];
+	return linkBonusTsu[n];
 }
 
 int TsuOnlineRuleSet::getColorBonus(int n)
@@ -1195,8 +1182,8 @@ int TsuOnlineRuleSet::getColorBonus(int n)
 		return 0;
 
 	if (n >= 5)
-		return colorBonus_TSU[4];
-	return colorBonus_TSU[n];
+		return colorBonusTsu[4];
+	return colorBonusTsu[n];
 }
 
 int TsuOnlineRuleSet::getChainBonus(Player* pl)
@@ -1206,8 +1193,8 @@ int TsuOnlineRuleSet::getChainBonus(Player* pl)
 	if (n < 0)
 		return 0;
 	if (n >= 16)
-		return min(chainBonus_TSU[15] + 32 * (n - 15), 999);
-	return chainBonus_TSU[n];
+		return min(chainBonusTsu[15] + 32 * (n - 15), 999);
+	return chainBonusTsu[n];
 }
 
 void TsuOnlineRuleSet::onOffset(Player* thisplayer)
@@ -1418,8 +1405,8 @@ int FeverOnlineRuleSet::getLinkBonus(int n)
 		return 0;
 
 	if (n >= 11)
-		return linkBonus_FEVER[10];
-	return linkBonus_FEVER[n];
+		return linkBonusFever[10];
+	return linkBonusFever[n];
 }
 
 int FeverOnlineRuleSet::getColorBonus(int n)
@@ -1429,8 +1416,8 @@ int FeverOnlineRuleSet::getColorBonus(int n)
 		return 0;
 
 	if (n >= 5)
-		return colorBonus_FEVER[4];
-	return colorBonus_FEVER[n];
+		return colorBonusFever[4];
+	return colorBonusFever[n];
 }
 
 int FeverOnlineRuleSet::getChainBonus(Player* pl)
@@ -1450,9 +1437,9 @@ int FeverOnlineRuleSet::getChainBonus(Player* pl)
 		return 999;
 
 	if (pl->m_feverMode)
-		return (chainBonus_FEVER[character][n] * 699) / 999;
+		return (chainBonusFever[character][n] * 699) / 999;
 
-	return (chainBonus_NORMAL[character][n] * 699) / 999;
+	return (chainBonusNormal[character][n] * 699) / 999;
 }
 //}
 
@@ -1676,8 +1663,8 @@ int Fever15OnlineRuleSet::getLinkBonus(int n)
 		return 0;
 
 	if (n >= 11)
-		return linkBonus_FEVER[10];
-	return linkBonus_FEVER[n];
+		return linkBonusFever[10];
+	return linkBonusFever[n];
 }
 
 int Fever15OnlineRuleSet::getColorBonus(int n)
@@ -1687,8 +1674,8 @@ int Fever15OnlineRuleSet::getColorBonus(int n)
 		return 0;
 
 	if (n >= 5)
-		return colorBonus_FEVER[4];
-	return colorBonus_FEVER[n];
+		return colorBonusFever[4];
+	return colorBonusFever[n];
 }
 
 int Fever15OnlineRuleSet::getChainBonus(Player* pl)
@@ -1702,8 +1689,8 @@ int Fever15OnlineRuleSet::getChainBonus(Player* pl)
 	if (n > 23)
 		return 999;
 	if (pl->m_feverMode)
-		return chainBonus_FEVER[character][n];
-	return chainBonus_NORMAL[character][n];
+		return chainBonusFever[character][n];
+	return chainBonusNormal[character][n];
 }
 //}
 
@@ -1909,8 +1896,8 @@ int EndlessFeverVsOnlineRuleSet::getLinkBonus(int n)
 		return 0;
 
 	if (n >= 11)
-		return linkBonus_FEVER[10];
-	return linkBonus_FEVER[n];
+		return linkBonusFever[10];
+	return linkBonusFever[n];
 }
 
 int EndlessFeverVsOnlineRuleSet::getColorBonus(int n)
@@ -1920,8 +1907,8 @@ int EndlessFeverVsOnlineRuleSet::getColorBonus(int n)
 		return 0;
 
 	if (n >= 5)
-		return colorBonus_FEVER[4];
-	return colorBonus_FEVER[n];
+		return colorBonusFever[4];
+	return colorBonusFever[n];
 }
 
 int EndlessFeverVsOnlineRuleSet::getChainBonus(Player* pl)
@@ -1935,8 +1922,8 @@ int EndlessFeverVsOnlineRuleSet::getChainBonus(Player* pl)
 	if (n > 23)
 		return 999;
 	if (pl->m_feverMode)
-		return chainBonus_FEVER[character][n];
-	return chainBonus_NORMAL[character][n];
+		return chainBonusFever[character][n];
+	return chainBonusNormal[character][n];
 }
 //}
 
@@ -2038,8 +2025,8 @@ int ExcavationRuleSet::getLinkBonus(int n)
 		return 0;
 
 	if (n >= 11)
-		return linkBonus_TSU[10];
-	return linkBonus_TSU[n];
+		return linkBonusTsu[10];
+	return linkBonusTsu[n];
 }
 
 int ExcavationRuleSet::getColorBonus(int n)
@@ -2049,8 +2036,8 @@ int ExcavationRuleSet::getColorBonus(int n)
 		return 0;
 
 	if (n >= 5)
-		return colorBonus_TSU[4];
-	return colorBonus_TSU[n];
+		return colorBonusTsu[4];
+	return colorBonusTsu[n];
 }
 
 int ExcavationRuleSet::getChainBonus(Player* pl)
@@ -2060,8 +2047,8 @@ int ExcavationRuleSet::getChainBonus(Player* pl)
 	if (n < 0)
 		return 0;
 	if (n >= 16)
-		return min(chainBonus_TSU[15] + 32 * (n - 15), 999);
-	return chainBonus_TSU[n];
+		return min(chainBonusTsu[15] + 32 * (n - 15), 999);
+	return chainBonusTsu[n];
 }
 //}
 

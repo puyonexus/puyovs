@@ -208,7 +208,7 @@ public:
 	int m_puyoBounceSpeed = 0;
 	int m_puyoBounceEnd = 0;
 	float m_gravity = 0.f;
-	AttackState m_attackState;
+	AttackState m_attackState = NO_ATTACK;
 	int m_chain = 0, m_puyosPopped = 0, m_totalGroups = 0,
 		m_groupR = 0, m_groupG = 0, m_groupB = 0, m_groupY = 0, m_groupP = 0,
 		m_predictedChain = 0, m_point = 0, m_bonus = 0, m_linkBonus = 0,

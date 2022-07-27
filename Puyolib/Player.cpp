@@ -9,7 +9,7 @@ using namespace std;
 
 namespace ppvs {
 
-Player::Player(PlayerType type, int playerNum, int totalPlayers, Game* g)
+Player::Player(const PlayerType type, const int playerNum, const int totalPlayers, Game* g)
 	: m_feverGauge(g->m_data)
 	, m_feverLight(g->m_data)
 {
@@ -77,11 +77,12 @@ Player::Player(PlayerType type, int playerNum, int totalPlayers, Game* g)
 		initValues(ppvs::getRandom(1000));
 		// All player are active
 		m_active = true;
-	} else
-		initValues(m_currentGame->m_randomSeedNextList + m_onlineId);
+	} else {
+        initValues(static_cast<int>(m_currentGame->m_randomSeedNextList + m_onlineId));
+    }
 
-	// TEMP
-	// Field size may be set up by ruleset. For now, use standard field size
+    // TEMP
+	// Field size may be set up by rule set. For now, use standard field size
 	m_properties.gridHeight = 28;
 	m_properties.gridWidth = 32;
 	m_properties.gridX = 6;
@@ -106,13 +107,13 @@ Player::Player(PlayerType type, int playerNum, int totalPlayers, Game* g)
 	// Initialize movePuyos at least once
 	m_movePuyo.prepare(DOUBLET, this, 0, 0);
 
-	// Initialize garbagetray
+	// Initialize garbage tray
 	m_normalTray.align(m_properties.offsetX, m_properties.offsetY - (32) * m_globalScale, m_globalScale);
 	m_feverTray.align(m_properties.offsetX, m_properties.offsetY - (32) * m_globalScale, m_globalScale);
 	m_feverTray.setVisible(false);
 
 	// Initialize scoreCounter
-	m_scoreCounter.init(m_data, m_properties.offsetX, m_fieldNormal.getBottomCoordinates().y + kPuyoY / 4 * m_globalScale, m_globalScale);
+	m_scoreCounter.init(m_data, m_properties.offsetX, m_fieldNormal.getBottomCoordinates().y + static_cast<float>(kPuyoY) / 4.f * m_globalScale, m_globalScale);
 
 	// Load other sprites
 	m_allClearSprite.setImage(m_data->imgAllClear);
@@ -161,13 +162,13 @@ Player::Player(PlayerType type, int playerNum, int totalPlayers, Game* g)
 	m_overlaySprite.setTransparency(0.5f);
 	m_overlaySprite.setScale(2 * 192, 336);
 	m_overlaySprite.setColor(0, 0, 0);
-	m_overlaySprite.setPosition(-192 / 2, -336 / 4);
+	m_overlaySprite.setPosition(-192.f / 2.f, -336.f / 4.f);
 
 	m_charHolderSprite.setImage(m_data->imgCharHolder);
 	m_charHolderSprite.setCenter();
 	m_charHolderSprite.setPosition(
-		m_properties.offsetX + m_properties.gridWidth * m_properties.gridX / 2 * m_globalScale,
-		m_properties.offsetY + m_properties.gridHeight * m_properties.gridY / 2 * m_globalScale);
+		m_properties.offsetX + static_cast<float>(m_properties.gridWidth * m_properties.gridX) / 2 * m_globalScale,
+		m_properties.offsetY + static_cast<float>(m_properties.gridHeight * m_properties.gridY) / 2 * m_globalScale);
 	m_charHolderSprite.setVisible(false);
 	m_charHolderSprite.setScale(m_globalScale);
 	m_currentCharacterSprite.setVisible(true);
@@ -179,8 +180,8 @@ Player::Player(PlayerType type, int playerNum, int totalPlayers, Game* g)
 	m_rematchIcon.setImage(m_data->imgCheckMark);
 	m_rematchIcon.setCenter();
 	m_rematchIcon.setPosition(
-		m_properties.offsetX + m_properties.gridWidth * m_properties.gridX / 2 * m_globalScale,
-		m_properties.offsetY + m_properties.gridHeight * (m_properties.gridY / 2 + 3) * m_globalScale);
+		m_properties.offsetX + static_cast<float>(m_properties.gridWidth * m_properties.gridX) / 2 * m_globalScale,
+		m_properties.offsetY + static_cast<float>(m_properties.gridHeight) * (static_cast<float>(m_properties.gridY) / 2 + 3) * m_globalScale);
 	m_rematchIcon.setVisible(false);
 	m_rematchIcon.setScale(m_globalScale);
 	m_rematchIconTimer = 1000;
@@ -235,7 +236,7 @@ void Player::reset()
 	if (m_currentGame->m_settings->useCpuPlayers) {
 		initValues(ppvs::getRandom(1000));
 	} else {
-		initValues(m_currentGame->m_randomSeedNextList + m_onlineId);
+		initValues(int(m_currentGame->m_randomSeedNextList + m_onlineId));
 	}
 
 	if (!m_active) {
@@ -454,8 +455,8 @@ void Player::playerSetup(FieldProp& properties, const int playerNum, const int p
 		m_fieldFever.init(properties, this);
 		m_fieldTemp.init(properties, this);
 
-		// Set nextpuyo
-		m_nextPuyoOffsetX = properties.offsetX + (properties.gridX * properties.gridWidth * properties.scaleX + 10) * m_globalScale;
+		// Set next puyo
+		m_nextPuyoOffsetX = properties.offsetX + (static_cast<float>(properties.gridX * properties.gridWidth) * properties.scaleX + 10) * m_globalScale;
 		m_nextPuyoOffsetY = properties.offsetY;
 		m_nextPuyoScale = m_globalScale;
 		m_nextPuyo.init(0, 0, 1, true, m_data);
@@ -472,12 +473,12 @@ void Player::playerSetup(FieldProp& properties, const int playerNum, const int p
 		// Other players
 		m_globalScale = 1.0f / static_cast<float>(width);
 		properties.offsetX = 400.f + static_cast<float>((playerNum - 2) % width) * 320.f * m_globalScale - 75.f * m_globalScale * static_cast<float>(width - 1);
-		properties.offsetY = 84.f + static_cast<float>((playerNum - 2) / width) * 438.f * m_globalScale - 42.f * m_globalScale * static_cast<float>(width - 1);
+		properties.offsetY = 84.f + static_cast<float>((playerNum - 2) / width) * 438.f * m_globalScale - 42.f * m_globalScale * static_cast<float>(width - 1);  // NOLINT(bugprone-integer-division)
 		m_fieldNormal.init(properties, this);
 		m_fieldFever.init(properties, this);
 		m_fieldTemp.init(properties, this);
 
-		// Set nextpuyo
+		// Set next puyo
 		m_nextPuyoOffsetX = properties.offsetX - 75 * m_globalScale;
 		m_nextPuyoOffsetY = properties.offsetY;
 		m_nextPuyoScale = m_globalScale;
@@ -1023,7 +1024,6 @@ void Player::chooseColor()
 
 		if (select || m_colorMenuTimer == 25) {
 			// Put this in
-			select = false;
 			if (m_spiceSelect == 0) {
 				m_colors = 3;
 				m_normalGarbage.cq = 0;
@@ -1186,7 +1186,7 @@ void Player::cpuMove()
 			m_controls.m_a = m_cpuAi->m_timer % 12;
 		}
 	} else {
-		if (m_movePuyo.getRotation() != m_cpuAi->m_bestRot) {
+		if (static_cast<int>(m_movePuyo.getRotation()) != m_cpuAi->m_bestRot) {
 			m_controls.m_a = m_cpuAi->m_timer % 12;
 		}
 	}
@@ -1224,10 +1224,10 @@ void Player::destroyPuyos()
 	m_destroyPuyosTimer++;
 	if (m_destroyPuyosTimer == m_chainPopSpeed) {
 		// Create "XX Chain" word
-		FieldProp prop = m_activeField->getProperties();
+        const FieldProp prop = m_activeField->getProperties();
 		m_chainWord->showAt(
-			prop.gridWidth * m_rememberX * prop.scaleX,
-			prop.gridHeight * (prop.gridY - 3 - (m_rememberMaxY + 3)) * prop.scaleY, m_chain);
+			static_cast<float>(prop.gridWidth * m_rememberX) * prop.scaleX,
+			static_cast<float>(prop.gridHeight * (prop.gridY - 3 - (m_rememberMaxY + 3))) * prop.scaleY, m_chain);
 
 		// Play sound
 		m_data->snd.chain[min(m_chain - 1, 6)].play(m_data);
@@ -1245,7 +1245,7 @@ void Player::destroyPuyos()
 				div = max(2, m_divider);
 			}
 
-			m_eq = static_cast<int>(static_cast<float>(m_currentScore / m_targetPoint) * power * 3.f / static_cast<float>(div + 1));
+			m_eq = static_cast<int>(static_cast<float>(m_currentScore / m_targetPoint) * power * 3.f / static_cast<float>(div + 1));  // NOLINT(bugprone-integer-division)
 			m_currentScore -= m_targetPoint * (m_currentScore / m_targetPoint);
 
 			if (m_bonusEq) {
@@ -1301,7 +1301,7 @@ void Player::addFeverCount()
 
 	int dir = m_nextPuyo.getOrientation();
 	PosVectorFloat startpv, middlepv, endpv;
-	startpv = PosVectorFloat(m_properties.offsetX + (192 / 2) * m_properties.scaleX * getGlobalScale(), m_properties.offsetY);
+	startpv = PosVectorFloat(m_properties.offsetX + (192.f / 2.f) * m_properties.scaleX * getGlobalScale(), m_properties.offsetY);
 	endpv = PosVectorFloat(m_nextPuyoOffsetX + (m_feverGauge.getPos().x) * m_nextPuyoScale, m_nextPuyoOffsetY + (m_feverGauge.getPos().y) * m_nextPuyoScale);
 	middlepv.x = startpv.x + static_cast<float>(dir * kPuyoX) * 1.5f;
 	middlepv.y = startpv.y - static_cast<float>(kPuyoY) * 1.5f;
@@ -1441,14 +1441,16 @@ void Player::startGarbage()
 				}
 
 				// Create light effect animation for each opponent
-				PosVectorFloat startpv, middlepv, endpv;
-				startpv = m_activeField->getGlobalCoordinates(m_rememberX, m_rememberMaxY);
-				endpv = player->m_activeField->getTopCoordinates(-1);
-				// Calculate a middle
+				PosVectorFloat startPv, middlePv, endPv;
+				startPv = m_activeField->getGlobalCoordinates(m_rememberX, m_rememberMaxY);
+				endPv = player->m_activeField->getTopCoordinates(-1);
+
+			    // Calculate a middle
 				const int dir = m_nextPuyo.getOrientation();
-				middlepv.x = startpv.x - dir * kPuyoX * 3;
-				middlepv.y = startpv.y - kPuyoY * 3;
-				m_lightEffect.push_back(new LightEffect(m_data, startpv, middlepv, endpv));
+				middlePv.x = startPv.x - static_cast<float>(dir) * kPuyoX * 3.f;
+				middlePv.y = startPv.y - kPuyoY * 3;
+
+			    m_lightEffect.push_back(new LightEffect(m_data, startPv, middlePv, endPv));
 
 				// Add self to garbage accumulator
 				player->addAttacker(m_targetGarbage[player], this);
@@ -1480,16 +1482,18 @@ void Player::startGarbage()
 				m_playVoice = 10;
 			}
 		}
-		// Create light effect for defense
-		PosVectorFloat startpv = m_activeField->getGlobalCoordinates(m_rememberX, m_rememberMaxY);
-		PosVectorFloat endpv = m_activeField->getTopCoordinates(-1);
-		// Calculate a middle
-		const int dir = m_nextPuyo.getOrientation();
-		PosVectorFloat middlepv;
-		middlepv.x = startpv.x - dir * kPuyoX * 3;
-		middlepv.y = startpv.y - kPuyoY * 3;
-		m_lightEffect.push_back(new LightEffect(m_data, startpv, middlepv, endpv));
 
+	    // Create light effect for defense
+        const PosVectorFloat startPv = m_activeField->getGlobalCoordinates(m_rememberX, m_rememberMaxY);
+        const PosVectorFloat endPv = m_activeField->getTopCoordinates(-1);
+
+	    // Calculate a middle
+		const int dir = m_nextPuyo.getOrientation();
+		PosVectorFloat middlePv;
+		middlePv.x = startPv.x - static_cast<float>(dir) * kPuyoX * 3.f;
+		middlePv.y = startPv.y - kPuyoY * 3;
+
+	    m_lightEffect.push_back(new LightEffect(m_data, startPv, middlePv, endPv));
 	} else {
 		m_attackState = NO_ATTACK;
 	}
@@ -1503,7 +1507,7 @@ void Player::garbagePhase()
 		return;
 	}
 
-	if (m_garbageTimer == 0) {
+	if (m_garbageTimer == 0) {  // NOLINT(clang-diagnostic-float-equal)
 		m_hasMoved = false;
 
 		// Trigger voice
@@ -1525,7 +1529,7 @@ void Player::garbagePhase()
 	// Change garbageTimer
 	m_garbageTimer += m_garbageSpeed;
 
-	if (m_garbageTimer > m_garbageEndTime) {
+	if (m_garbageTimer > static_cast<float>(m_garbageEndTime)) {
 		endGarbage();
 		m_garbageTimer = 0;
 		endPhase();
@@ -1536,7 +1540,7 @@ void Player::counterGarbage()
 {
 	// Almost the same as normal garbage phase, except no endphase
 	m_garbageTimer += m_garbageSpeed;
-	if (m_garbageTimer > m_garbageEndTime) {
+	if (m_garbageTimer > static_cast<float>(m_garbageEndTime)) {
 		endGarbage();
 		m_garbageTimer = 0;
 	}
@@ -1677,15 +1681,15 @@ void Player::endGarbage()
 				}
 
 				// Create new light effect animation for each opponent
-				PosVectorFloat startpv, middlepv, endpv;
-				startpv = m_activeField->getTopCoordinates(-1);
-				endpv = player->m_activeField->getTopCoordinates(-1);
+				PosVectorFloat startPv, middlePv, endPv;
+				startPv = m_activeField->getTopCoordinates(-1);
+				endPv = player->m_activeField->getTopCoordinates(-1);
 
 				// Calculate a middle
 				const int dir = m_nextPuyo.getOrientation();
-				middlepv.x = startpv.x - dir * kPuyoX * 3;
-				middlepv.y = startpv.y - kPuyoY * 3;
-				m_lightEffect.push_back(new LightEffect(m_data, startpv, middlepv, endpv));
+				middlePv.x = startPv.x - static_cast<float>(dir) * kPuyoX * 3;
+				middlePv.y = startPv.y - kPuyoY * 3;
+				m_lightEffect.push_back(new LightEffect(m_data, startPv, middlePv, endPv));
 
 				// Add self to garbage accumulator
 				player->addAttacker(m_targetGarbage[player], this);
@@ -2241,7 +2245,7 @@ void Player::showSecondsObj(int n)
 	const PosVectorFloat pv = m_feverGauge.getPositionSeconds();
 	m_secondsObj.push_back(new SecondsObject(m_data));
 	m_secondsObj.back()->setScale(m_globalScale);
-	m_secondsObj.back()->showAt(m_nextPuyoOffsetX + (pv.x - 16) * m_nextPuyoScale * m_globalScale, m_nextPuyoOffsetY + (pv.y + 16) * m_nextPuyoScale * m_globalScale * m_secondsObj.size(), n);
+	m_secondsObj.back()->showAt(m_nextPuyoOffsetX + (pv.x - 16) * m_nextPuyoScale * m_globalScale, m_nextPuyoOffsetY + (pv.y + 16) * m_nextPuyoScale * m_globalScale * static_cast<float>(m_secondsObj.size()), n);
 }
 
 void Player::setMarginTimer()
@@ -2462,8 +2466,8 @@ void Player::waitLose()
 
 void Player::getUpdate(std::string str)
 {
-	char fieldstring[500];
-	char feverstring[500];
+	char fieldstring[500] = {};
+	char feverstring[500] = {};
 
 	// 0[spectate]1[currentphase]2[fieldstringnormal]3[fevermode]4[fieldfever]5[fevercount]
 	// 6[rng seed]7[fever rng called]8[turns]9[colors]
@@ -2487,10 +2491,10 @@ void Player::getUpdate(std::string str)
 	// Initialize
 	setRandomSeed(rngseed, &m_rngNextList);
 	m_colors = clrs;
-	initValues(rngseed + m_onlineId);
+	initValues(static_cast<int>(rngseed + m_onlineId));
 
 	// Set other stuff
-	m_currentPhase = Phase(ph);
+	m_currentPhase = static_cast<Phase>(ph);
 	m_fieldNormal.setFieldFromString(fieldstring);
 	m_feverMode = fm == 0 ? false : true;
 	m_fieldFever.setFieldFromString(feverstring);
@@ -2625,10 +2629,11 @@ void Player::draw()
 	// Draw status text
 	if (m_statusText) {
 		m_data->front->setColor(255, 255, 255, 255);
-		if ((m_type == ONLINE || m_type == HUMAN) && m_currentGame->m_currentGameStatus != GameStatus::PLAYING
-			&& m_currentGame->m_currentGameStatus != GameStatus::SPECTATING && !m_currentGame->m_settings->useCpuPlayers) {
-			m_statusText->draw(0, 0);
-		} else if (m_currentGame->m_forceStatusText) {
+		if (m_currentGame->m_forceStatusText
+			|| (m_type == ONLINE || m_type == HUMAN)
+			&& m_currentGame->m_currentGameStatus != GameStatus::PLAYING
+            && m_currentGame->m_currentGameStatus != GameStatus::SPECTATING
+			&& !m_currentGame->m_settings->useCpuPlayers) {
 			m_statusText->draw(0, 0);
 		}
 	}
@@ -2671,7 +2676,7 @@ void Player::drawFieldBack(PosVectorFloat /*position*/, const float rotation)
 }
 
 // C99 round
-double _round(double r) { return (r > 0.0) ? floor(r + 0.5) : ceil(r - 0.5); }
+float round(const float r) { return (r > 0.0f) ? floor(r + 0.5f) : ceil(r - 0.5f); }
 
 void Player::drawFieldFeverBack(PosVectorFloat /*position*/, float rotation)
 {
@@ -2685,12 +2690,12 @@ void Player::drawFieldFeverBack(PosVectorFloat /*position*/, float rotation)
 	m_fieldFeverSprite.setRotation(rotation);
 
 	// Transition to new color
-	_round(m_feverColorR * 100) < _round(tunnelShaderColor[m_feverColor][0] * 100) ? m_feverColorR += 0.01f : m_feverColorR -= 0.01f;
-	_round(m_feverColorG * 100) < _round(tunnelShaderColor[m_feverColor][1] * 100) ? m_feverColorG += 0.01f : m_feverColorG -= 0.01f;
-	_round(m_feverColorB * 100) < _round(tunnelShaderColor[m_feverColor][2] * 100) ? m_feverColorB += 0.01f : m_feverColorB -= 0.01f;
+	round(m_feverColorR * 100.f) < round(tunnelShaderColor[m_feverColor][0] * 100.f) ? m_feverColorR += 0.01f : m_feverColorR -= 0.01f;
+	round(m_feverColorG * 100.f) < round(tunnelShaderColor[m_feverColor][1] * 100.f) ? m_feverColorG += 0.01f : m_feverColorG -= 0.01f;
+	round(m_feverColorB * 100.f) < round(tunnelShaderColor[m_feverColor][2] * 100.f) ? m_feverColorB += 0.01f : m_feverColorB -= 0.01f;
 
 	if (m_data->tunnelShader) {
-		m_data->tunnelShader->setParameter("cl", m_feverColorR, m_feverColorG, m_feverColorB, 1.0f);
+		m_data->tunnelShader->setParameter("cl", static_cast<double>(m_feverColorR), static_cast<double>(m_feverColorG), static_cast<double>(m_feverColorB), 1.0);
 		m_fieldFeverSprite.setImage(m_data->imgFieldFever);
 		m_fieldFeverSprite.draw(m_data->front, m_data->tunnelShader);
 	} else {
@@ -2759,7 +2764,6 @@ void Player::drawCross(FeRenderTarget* r)
 
 void Player::drawLose()
 {
-	FieldProp p = m_activeField->getProperties();
 	PosVectorFloat position = m_activeField->getBottomCoordinates(true);
 	position.y -= m_activeField->getFieldSize().y * 0.75f;
 
@@ -2772,7 +2776,6 @@ void Player::drawLose()
 
 void Player::drawWin()
 {
-	FieldProp p = m_activeField->getProperties();
 	PosVectorFloat position = m_activeField->getBottomCoordinates(true);
 	position.y -= m_activeField->getFieldSize().y * 0.75f;
 
@@ -2812,13 +2815,12 @@ void Player::setDropSetSprite(int x, int y, PuyoCharacter pc)
 {
 	// Get total width and center drop set
 	float length = 0;
-	float xx = 0;
-	const float scale = m_globalScale * 0.75f;
+    const float scale = m_globalScale * 0.75f;
 	for (int j = 0; j < 16; j++) {
         const MovePuyoType mpt = getFromDropPattern(pc, j);
 		length += mpt == DOUBLET ? 10 : 18;
 	}
-	xx = -length / 2.f - 5.f;
+	float xx = -length / 2.f - 5.f;
 
 	for (int j = 0; j < 16; j++) {
 		const MovePuyoType mpt = getFromDropPattern(pc, j);

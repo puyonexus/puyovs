@@ -136,7 +136,7 @@ void CharacterSelect::play()
 			if (numPlayers > 4) {
 				const int width = static_cast<int>(ceil(sqrt(static_cast<double>(numPlayers))));
 				posX = 640.f / static_cast<float>(width * 2) * static_cast<float>(i % width * 2 + 1);
-				posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale;
+				posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale;  // NOLINT(bugprone-integer-division)
 			}
 			const double tt = static_cast<double>(m_timer) / 30.0 - static_cast<double>(i) * 1.0 / static_cast<double>(numPlayers);
 			float move = static_cast<float>(interpolate("elastic", 1, 0, tt, -5, 0.5));
@@ -261,7 +261,7 @@ void CharacterSelect::play()
 			if (numPlayers > 4) {
 				const int width = static_cast<int>(ceil(sqrt(static_cast<double>(numPlayers))));
 				posX = 640.f / static_cast<float>(width * 2) * static_cast<float>(i % width * 2 + 1);
-				posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale;
+				posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale;  // NOLINT(bugprone-integer-division)
 			}
 
 			// Make choice
@@ -318,8 +318,8 @@ void CharacterSelect::play()
 			}
 
 			// Player number
-			const float xx = m_playerNumber[i * 3].getX() + (m_selectSprite[i].getX() - m_playerNumber[i * 3].getX()) / 3.f + 2.f;
-			const float yy = m_playerNumber[i * 3].getY() + (m_selectSprite[i].getY() - m_playerNumber[i * 3].getY()) / 3.f + 6.f;
+			const float xx = m_playerNumber[static_cast<ptrdiff_t>(i) * 3].getX() + (m_selectSprite[i].getX() - m_playerNumber[static_cast<ptrdiff_t>(i) * 3].getX()) / 3.f + 2.f;
+			const float yy = m_playerNumber[static_cast<ptrdiff_t>(i) * 3].getY() + (m_selectSprite[i].getY() - m_playerNumber[static_cast<ptrdiff_t>(i) * 3].getY()) / 3.f + 6.f;
 			m_playerNumber[i * 3 + 0].setPosition(xx, yy + 1.f * static_cast<float>(sin(m_data->globalTimer / 30.0 + i * 10.0)));
 			m_playerNumber[i * 3 + 1].setPosition(xx + 10, yy + 1.f * static_cast<float>(sin(m_data->globalTimer / 30.0 + i * 10.0)));
 			m_playerNumber[i * 3 + 2].setPosition(xx + 20, yy + 1.f * static_cast<float>(sin(m_data->globalTimer / 30.0 + i * 10.0)));
@@ -390,7 +390,7 @@ void CharacterSelect::play()
 			if (numPlayers > 4) {
 				const int width = static_cast<int>(ceil(sqrt(static_cast<double>(numPlayers))));
 				posX = 640.f / static_cast<float>(width * 2) * static_cast<float>(i % width * 2 + 1);
-				posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale;
+				posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale;  // NOLINT(bugprone-integer-division)
 			}
 			const double tt = static_cast<double>(-m_timer) / 30.0 - static_cast<double>(i) / static_cast<double>(numPlayers);
 			float move = static_cast<float>(interpolate("elastic", 1, 0, tt, -5, 0.5));
@@ -474,9 +474,9 @@ void CharacterSelect::prepare()
 	m_selectedCharacter = new Sprite[m_numPlayers];
 	m_name = new Sprite[m_numPlayers];
 	m_nameHolder = new Sprite[m_numPlayers];
-	m_nameHolderNumber = new Sprite[m_numPlayers * 3];
-	m_dropSet = new Sprite[m_numPlayers * 16];
-	m_playerNumber = new Sprite[m_numPlayers * 3];
+	m_nameHolderNumber = new Sprite[static_cast<size_t>(m_numPlayers) * 3];
+	m_dropSet = new Sprite[static_cast<size_t>(m_numPlayers) * 16];
+	m_playerNumber = new Sprite[static_cast<size_t>(m_numPlayers) * 3];
 
 	m_sel = new int[m_numPlayers];
 	m_madeChoice = new bool[m_numPlayers];
@@ -511,7 +511,7 @@ void CharacterSelect::prepare()
 			const int width = static_cast<int>(ceil(sqrt(static_cast<double>(m_numPlayers))));
 			m_scale = 2.0f / static_cast<float>(width);
 			posX = 640.f / static_cast<float>(width * 2) * static_cast<float>(i % width * 2 + 1);
-			posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale;
+			posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale;  // NOLINT(bugprone-integer-division)
 		}
 
 		m_selectSprite[i].setImage(m_data->imgPlayerCharSelect);
@@ -572,7 +572,7 @@ void CharacterSelect::prepare()
 		m_nameHolderNumber[i * 3 + 0].setVisible(false);
 		m_nameHolderNumber[i * 3 + 1].setVisible(false);
 		m_nameHolderNumber[i * 3 + 2].setVisible(false);
-		m_name[i].setImage(m_data->imgCharName[(int)m_order[m_sel[i]]]);
+		m_name[i].setImage(m_data->imgCharName[static_cast<int>(m_order[m_sel[i]])]);
 		m_name[i].setCenterBottom();
 		m_name[i].setPosition(posX, posY);
 		m_name[i].setScale(m_scale);
@@ -597,11 +597,11 @@ void CharacterSelect::prepare()
 			}
 			m_nameHolder[k].setTransparency(1);
 		}
-		for (auto& i : m_holder) {
-			i.setTransparency(1);
+		for (auto& sprite : m_holder) {
+			sprite.setTransparency(1);
 		}
-		for (auto& i : m_charSprite) {
-			i.setTransparency(1);
+		for (auto& sprite : m_charSprite) {
+			sprite.setTransparency(1);
 		}
 	}
 	m_firstStart = false;
@@ -687,8 +687,8 @@ void CharacterSelect::setCharacter(const int playerNum, const int selection, con
 		// Display only name
 		if (m_numPlayers > 4) {
 			const int width = static_cast<int>(ceil(sqrt(static_cast<double>(m_numPlayers))));
-			posX = 640.f / (width * 2) * (i % width * 2 + 1);
-			posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale;
+			posX = 640.f / static_cast<float>((width * 2) * (i % width * 2 + 1));
+			posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale;  // NOLINT(bugprone-integer-division)
 		}
 
 		// Move
