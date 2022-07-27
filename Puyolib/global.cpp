@@ -13,19 +13,12 @@
 namespace ppvs
 {
 
-// Constants
-const float PI = 3.14159265f;
-const int PUYOX = 32;
-const int PUYOY = 32;
-const int CHAINPOPSPEED = 25;
-const float GARBAGESPEED = 4.8f;
-
 // Strings
-const std::string folder_user_sounds = "User/Sounds/";
-const std::string folder_user_music = "User/Music/";
-const std::string folder_user_backgrounds = "User/Backgrounds/";
-const std::string folder_user_puyo = "User/Puyo/";
-const std::string folder_user_character = "User/Characters/";
+const std::string kFolderUserSounds = "User/Sounds/";
+const std::string kFolderUserMusic = "User/Music/";
+const std::string kFolderUserBackgrounds = "User/Backgrounds/";
+const std::string kFolderUserPuyo = "User/Puyo/";
+const std::string kFolderUserCharacter = "User/Characters/";
 
 // Sound
 std::vector<std::string> voicePattern;
@@ -47,7 +40,7 @@ float tunnelShaderColor[6][3] = {
 };
 
 // Global randomizer
-MersenneTwister grandomizer;
+MersenneTwister gRng;
 
 // Load ini file
 UserSettings gUserSettings;
@@ -58,7 +51,7 @@ int getRandom(int in)
 {
 	// Returns random number with random seed
 	unsigned long out;
-	out = static_cast<unsigned long>(in * grandomizer.genrand_real1());
+	out = static_cast<unsigned long>(in * gRng.genrand_real1());
 	return int(out);
 }
 
@@ -86,7 +79,7 @@ int sign(int x)
 	return (x > 0) ? 1 : ((x < 0) ? -1 : 1);
 }
 
-int to_int(const std::string& s)
+int toInt(const std::string& s)
 {
 	/*int out;
 	std::stringstream ss(s);
@@ -115,15 +108,15 @@ double interpolate(std::string type, double s, double e, double t, double alpha,
 	else if (type == "exponential")
 		out = (e - s) / (exp(alpha) - 1) * exp(alpha * t) + s - (e - s) / (exp(alpha) - 1);
 	else if (type == "elastic") // beta=wavenumber
-		out = (e - s) / (exp(alpha) - 1) * cos(beta * t * 2 * PI) * exp(alpha * t) + s - (e - s) / (exp(alpha) - 1);
+		out = (e - s) / (exp(alpha) - 1) * cos(beta * t * 2 * kPiF) * exp(alpha * t) + s - (e - s) / (exp(alpha) - 1);
 	else if (type == "sin")
-		out = s + e * sin(alpha * t * 2 * PI); // s=offset, e=amplitude, alpha=wavenumber
+		out = s + e * sin(alpha * t * 2 * kPiF); // s=offset, e=amplitude, alpha=wavenumber
 	else if (type == "cos")
-		out = s + e * cos(alpha * t * 2 * PI); // s=offset, e=amplitude, alpha=wavenumber
+		out = s + e * cos(alpha * t * 2 * kPiF); // s=offset, e=amplitude, alpha=wavenumber
 	return out;
 }
 
-void splitString(std::string& in, char delimiter, stringList& v)
+void splitString(std::string& in, char delimiter, StringList& v)
 {
 	std::stringstream stream(in);
 	std::string token;
@@ -133,12 +126,12 @@ void splitString(std::string& in, char delimiter, stringList& v)
 	}
 }
 
-void createFolder(std::string foldername)
+void createFolder(std::string folderName)
 {
 #ifdef _WIN32
-	CreateDirectoryA(foldername.c_str(), nullptr);
+	CreateDirectoryA(folderName.c_str(), nullptr);
 #else
-	mkdir(foldername.c_str(), 0777);
+	mkdir(folderName.c_str(), 0777);
 #endif
 }
 
@@ -150,7 +143,7 @@ void initGlobal()
 		return;
 
 	// Randomizer
-	grandomizer.init_genrand(timeGetTime());
+	gRng.init_genrand(timeGetTime());
 
 	// Fever chains
 	initFeverChains();
@@ -201,7 +194,7 @@ void initGlobal()
 	init = true;
 }
 
-std::string debugstring = "";
+std::string debugString;
 int debugMode = 0;
 
 }

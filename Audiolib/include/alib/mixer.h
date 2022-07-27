@@ -5,8 +5,7 @@
 
 namespace alib {
 
-class Mixer
-{
+class Mixer {
 public:
 	virtual ~Mixer();
 
@@ -22,8 +21,7 @@ public:
 /**
  * Mixer; mixes several streams simultaneously. Introduces ~1024 samples of lag.
  */
-class SoftwareMixer : public Mixer, NonCopyable
-{
+class SoftwareMixer : public Mixer, NonCopyable {
 	ALIB_DECLARE_PRIV;
 
 public:

@@ -6,7 +6,7 @@ namespace ppvs
 NextPuyo::NextPuyo()
 {
 	// nextPuyo window is 65 pixels wide, 124 pixels high
-	gamedata = nullptr;
+	m_data = nullptr;
 	m_scale = 1;
 	m_goNext = 16;
 	m_color11 = 0; m_color12 = 0;
@@ -16,7 +16,7 @@ NextPuyo::NextPuyo()
 	m_offsetX = 0; m_offsetY = 0;
 	m_orientation = true; // orientation sets nextPuyo window left or right
 	m_sign = 1;
-	initialize = false;
+	m_initialize = false;
 }
 
 NextPuyo::~NextPuyo() = default;
@@ -26,34 +26,34 @@ int NextPuyo::getOrientation() const
 	return m_sign;
 }
 
-void NextPuyo::init(float x, float y, float scale, bool orientation, GameData* globalp)
+void NextPuyo::init(const float x, const float y, const float scale, const bool orientation, GameData* data)
 {
-	gamedata = globalp;
+	m_data = data;
 
 	initImage();
 	m_offsetX = x; m_offsetY = y;
 	m_scale = scale;
 	m_orientation = orientation;
-	m_sign = int(orientation) * 2 - 1;
+	m_sign = static_cast<int>(orientation) * 2 - 1;
 
-	if (initialize)
+	if (m_initialize)
 		return;
 
-	if (gamedata)
+	if (m_data)
 	{
 		if (orientation)
 		{
-			m_background.setImage(gamedata->imgNextPuyoBackgroundR);
+			m_background.setImage(m_data->imgNextPuyoBackgroundR);
 		}
 		else
 		{
-			m_background.setImage(gamedata->imgNextPuyoBackgroundL);
+			m_background.setImage(m_data->imgNextPuyoBackgroundL);
 		}
 	}
 
 	m_background.setSubRect(0, 0, 65, 124);
 
-	initialize = true;
+	m_initialize = true;
 	resetPuyoPos();
 	m_sprite31.setScale(33.0 / 48.0);
 	m_sprite32.setScale(33.0 / 48.0);
@@ -61,17 +61,17 @@ void NextPuyo::init(float x, float y, float scale, bool orientation, GameData* g
 
 void NextPuyo::initImage()
 {
-	if (gamedata)
+	if (m_data)
 	{
-		m_sprite11.setImage(gamedata->imgPuyo); m_sprite12.setImage(gamedata->imgPuyo);
-		m_sprite21.setImage(gamedata->imgPuyo); m_sprite22.setImage(gamedata->imgPuyo);
-		m_sprite31.setImage(gamedata->imgPuyo); m_sprite32.setImage(gamedata->imgPuyo);
-		m_eye11.setImage(gamedata->imgPuyo); m_eye12.setImage(gamedata->imgPuyo);
-		m_eye21.setImage(gamedata->imgPuyo); m_eye22.setImage(gamedata->imgPuyo);
-		m_eye31.setImage(gamedata->imgPuyo); m_eye32.setImage(gamedata->imgPuyo);
+		m_sprite11.setImage(m_data->imgPuyo); m_sprite12.setImage(m_data->imgPuyo);
+		m_sprite21.setImage(m_data->imgPuyo); m_sprite22.setImage(m_data->imgPuyo);
+		m_sprite31.setImage(m_data->imgPuyo); m_sprite32.setImage(m_data->imgPuyo);
+		m_eye11.setImage(m_data->imgPuyo); m_eye12.setImage(m_data->imgPuyo);
+		m_eye21.setImage(m_data->imgPuyo); m_eye22.setImage(m_data->imgPuyo);
+		m_eye31.setImage(m_data->imgPuyo); m_eye32.setImage(m_data->imgPuyo);
 	}
 
-	MovePuyoType mpt = DOUBLET;
+    constexpr MovePuyoType mpt = DOUBLET;
 	setSprite(m_sprite11, m_sprite12, m_eye11, m_eye12, m_color11, m_color12, mpt);
 	setSprite(m_sprite21, m_sprite22, m_eye21, m_eye22, m_color21, m_color22, mpt);
 	setSprite(m_sprite31, m_sprite32, m_eye31, m_eye32, m_color31, m_color32, mpt);
@@ -111,7 +111,7 @@ void NextPuyo::play()
 }
 
 // Set colors of puyo to player's deque
-void NextPuyo::update(std::deque<int>& dq, PuyoCharacter p, int turn)
+void NextPuyo::update(const std::deque<int>& dq, const PuyoCharacter p, const int turn)
 {
 	resetPuyoPos();
 	m_goNext = 0;
@@ -145,21 +145,21 @@ void NextPuyo::draw()
 	m_eye31.setPosition(m_pair3X, m_pair3Y); m_eye32.setPosition(m_pair3X, m_pair3Y);
 
 	// Copy background (consider copying image without alpha channel)
-	if (!gamedata)
+	if (!m_data)
 		return;
-	gamedata->front->clearDepth();
-	gamedata->front->setDepthFunction(LessOrEqual);
-	gamedata->front->enableAlphaTesting(0.1f);
-	m_background.draw(gamedata->front);
+	m_data->front->clearDepth();
+	m_data->front->setDepthFunction(LessOrEqual);
+	m_data->front->enableAlphaTesting(0.1f);
+	m_background.draw(m_data->front);
 
 	// Draw puyos
-	gamedata->front->setDepthFunction(Equal);
-	m_sprite11.draw(gamedata->front);
-	m_sprite12.draw(gamedata->front);
-	m_sprite21.draw(gamedata->front);
-	m_sprite22.draw(gamedata->front);
-	m_sprite31.draw(gamedata->front);
-	m_sprite32.draw(gamedata->front);
+	m_data->front->setDepthFunction(Equal);
+	m_sprite11.draw(m_data->front);
+	m_sprite12.draw(m_data->front);
+	m_sprite21.draw(m_data->front);
+	m_sprite22.draw(m_data->front);
+	m_sprite31.draw(m_data->front);
+	m_sprite32.draw(m_data->front);
 
 	// Set eyes
 	m_eye21.setScale(m_sprite21.getScaleX());
@@ -167,145 +167,145 @@ void NextPuyo::draw()
 	m_eye31.setScale(m_sprite31.getScaleX());
 	m_eye32.setScale(m_sprite32.getScaleX());
 
-	m_eye11.draw(gamedata->front);
-	m_eye12.draw(gamedata->front);
-	m_eye21.draw(gamedata->front);
-	m_eye22.draw(gamedata->front);
-	m_eye31.draw(gamedata->front);
-	m_eye32.draw(gamedata->front);
-	gamedata->front->setDepthFunction(Always);
-	gamedata->front->disableAlphaTesting();
+	m_eye11.draw(m_data->front);
+	m_eye12.draw(m_data->front);
+	m_eye21.draw(m_data->front);
+	m_eye22.draw(m_data->front);
+	m_eye31.draw(m_data->front);
+	m_eye32.draw(m_data->front);
+	m_data->front->setDepthFunction(Always);
+	m_data->front->disableAlphaTesting();
 }
 
-// Almost a direct copy of movepuyo.cpp. Difference in centers.
-void NextPuyo::setSprite(Sprite& m_sprite1, Sprite& m_sprite2, Sprite& m_spriteEye1, Sprite& m_spriteEye2, int& m_color1, int& m_color2, MovePuyoType& m_type) const
+// Almost a direct copy from MovePuyo.cpp. Difference in centers.
+void NextPuyo::setSprite(Sprite& sprite1, Sprite& sprite2, Sprite& spriteEye1, Sprite& spriteEye2, const int& color1, const int& color2, const MovePuyoType& type) const
 {
 	int subRectX1, subRectY1, subRectWidth1, subRectHeight1, subRectX2, subRectY2, subRectWidth2, subRectHeight2;
-	const int m_bigColor = m_color1;
-	if (m_type == DOUBLET)
+	const int m_bigColor = color1;
+	if (type == DOUBLET)
 	{
-		subRectX1 = 0; subRectY1 = PUYOY * m_color1;
-		subRectWidth1 = PUYOX; subRectHeight1 = PUYOY;
-		subRectX2 = 0; subRectY2 = PUYOY * m_color2;
-		subRectWidth2 = PUYOX; subRectHeight2 = PUYOY;
-		m_sprite1.setSubRect(subRectX1, subRectY1, subRectWidth1, subRectHeight1);
-		m_sprite2.setSubRect(subRectX2, subRectY2, subRectWidth2, subRectHeight2);
-		m_sprite1.setCenter(PUYOX / 2, 0);
-		m_sprite2.setCenter(PUYOX / 2, PUYOY);
-		m_sprite1.setVisible(true);
-		m_sprite2.setVisible(true);
-		m_spriteEye1.setVisible(false);
-		m_spriteEye2.setVisible(false);
+		subRectX1 = 0; subRectY1 = kPuyoY * color1;
+		subRectWidth1 = kPuyoX; subRectHeight1 = kPuyoY;
+		subRectX2 = 0; subRectY2 = kPuyoY * color2;
+		subRectWidth2 = kPuyoX; subRectHeight2 = kPuyoY;
+		sprite1.setSubRect(subRectX1, subRectY1, subRectWidth1, subRectHeight1);
+		sprite2.setSubRect(subRectX2, subRectY2, subRectWidth2, subRectHeight2);
+		sprite1.setCenter(kPuyoX / 2, 0);
+		sprite2.setCenter(kPuyoX / 2, kPuyoY);
+		sprite1.setVisible(true);
+		sprite2.setVisible(true);
+		spriteEye1.setVisible(false);
+		spriteEye2.setVisible(false);
 	}
-	else if (m_type == TRIPLET && m_color1 != m_color2)
+	else if (type == TRIPLET && color1 != color2)
 	{
-		subRectX1 = PUYOX * m_color1; subRectY1 = PUYOY * 5 + 1;
-		subRectWidth1 = PUYOX; subRectHeight1 = PUYOY * 2 - 1;
-		subRectX2 = 0; subRectY2 = PUYOY * m_color2;
-		subRectWidth2 = PUYOX; subRectHeight2 = PUYOY;
-		m_sprite1.setSubRect(subRectX1, subRectY1, subRectWidth1, subRectHeight1);
-		m_sprite2.setSubRect(subRectX2, subRectY2, subRectWidth2, subRectHeight2);
-		m_sprite1.setCenter(PUYOX, PUYOY);
-		m_sprite2.setCenter(0, 0);
-		m_sprite1.setVisible(true);
-		m_sprite2.setVisible(true);
-		m_spriteEye1.setSubRect(PUYOX + 2 * PUYOX * ((m_color1 / 2)), 12 * PUYOY + PUYOY * (m_color1 % 2), PUYOX, PUYOY);
-		m_spriteEye2.setSubRect(PUYOX + 2 * PUYOX * ((m_color2 / 2)), 12 * PUYOY + PUYOY * (m_color2 % 2), PUYOX, PUYOY);
-		m_spriteEye1.setCenter(PUYOX, PUYOY);
-		m_spriteEye2.setCenter(0, 0);
-		m_spriteEye1.setVisible(true);
-		m_spriteEye2.setVisible(false);
+		subRectX1 = kPuyoX * color1; subRectY1 = kPuyoY * 5 + 1;
+		subRectWidth1 = kPuyoX; subRectHeight1 = kPuyoY * 2 - 1;
+		subRectX2 = 0; subRectY2 = kPuyoY * color2;
+		subRectWidth2 = kPuyoX; subRectHeight2 = kPuyoY;
+		sprite1.setSubRect(subRectX1, subRectY1, subRectWidth1, subRectHeight1);
+		sprite2.setSubRect(subRectX2, subRectY2, subRectWidth2, subRectHeight2);
+		sprite1.setCenter(kPuyoX, kPuyoY);
+		sprite2.setCenter(0, 0);
+		sprite1.setVisible(true);
+		sprite2.setVisible(true);
+		spriteEye1.setSubRect(kPuyoX + 2 * kPuyoX * ((color1 / 2)), 12 * kPuyoY + kPuyoY * (color1 % 2), kPuyoX, kPuyoY);
+		spriteEye2.setSubRect(kPuyoX + 2 * kPuyoX * ((color2 / 2)), 12 * kPuyoY + kPuyoY * (color2 % 2), kPuyoX, kPuyoY);
+		spriteEye1.setCenter(kPuyoX, kPuyoY);
+		spriteEye2.setCenter(0, 0);
+		spriteEye1.setVisible(true);
+		spriteEye2.setVisible(false);
 	}
-	else if ((m_type == TRIPLET || m_type == TRIPLETR) && m_color1 == m_color2)
+	else if ((type == TRIPLET || type == TRIPLET_R) && color1 == color2)
 	{
-		subRectX1 = 5 * PUYOX + 2 * PUYOX * m_color1; subRectY1 = PUYOY * 5 + 1;
-		subRectWidth1 = PUYOX * 2; subRectHeight1 = PUYOY * 2 - 1;
-		subRectX2 = 0; subRectY2 = PUYOY * m_color2;
-		subRectWidth2 = PUYOX; subRectHeight2 = PUYOY;
-		m_sprite1.setSubRect(subRectX1, subRectY1, subRectWidth1, subRectHeight1);
-		m_sprite2.setSubRect(subRectX2, subRectY2, subRectWidth2, subRectHeight2);
-		m_sprite1.setCenter(PUYOX, PUYOY);
-		m_sprite2.setCenter(0, 0);
-		m_sprite1.setVisible(true);
-		m_sprite2.setVisible(false);
-		m_spriteEye1.setSubRect(PUYOX + 2 * PUYOX * ((m_color1 / 2)), 12 * PUYOY + PUYOY * (m_color1 % 2), PUYOX, PUYOY);
-		m_spriteEye2.setSubRect(PUYOX + 2 * PUYOX * ((m_color2 / 2)), 12 * PUYOY + PUYOY * (m_color2 % 2), PUYOX, PUYOY);
-		m_spriteEye1.setCenter(PUYOX, PUYOY);
-		m_spriteEye2.setCenter(0, 0);
-		m_spriteEye1.setVisible(true);
-		m_spriteEye2.setVisible(false);
+		subRectX1 = 5 * kPuyoX + 2 * kPuyoX * color1; subRectY1 = kPuyoY * 5 + 1;
+		subRectWidth1 = kPuyoX * 2; subRectHeight1 = kPuyoY * 2 - 1;
+		subRectX2 = 0; subRectY2 = kPuyoY * color2;
+		subRectWidth2 = kPuyoX; subRectHeight2 = kPuyoY;
+		sprite1.setSubRect(subRectX1, subRectY1, subRectWidth1, subRectHeight1);
+		sprite2.setSubRect(subRectX2, subRectY2, subRectWidth2, subRectHeight2);
+		sprite1.setCenter(kPuyoX, kPuyoY);
+		sprite2.setCenter(0, 0);
+		sprite1.setVisible(true);
+		sprite2.setVisible(false);
+		spriteEye1.setSubRect(kPuyoX + 2 * kPuyoX * ((color1 / 2)), 12 * kPuyoY + kPuyoY * (color1 % 2), kPuyoX, kPuyoY);
+		spriteEye2.setSubRect(kPuyoX + 2 * kPuyoX * ((color2 / 2)), 12 * kPuyoY + kPuyoY * (color2 % 2), kPuyoX, kPuyoY);
+		spriteEye1.setCenter(kPuyoX, kPuyoY);
+		spriteEye2.setCenter(0, 0);
+		spriteEye1.setVisible(true);
+		spriteEye2.setVisible(false);
 	}
-	else if (m_type == TRIPLETR && m_color1 != m_color2)
+	else if (type == TRIPLET_R && color1 != color2)
 	{
-		subRectX1 = PUYOX * m_color1; subRectY1 = PUYOY * 5 + 1;
-		subRectWidth1 = PUYOX; subRectHeight1 = PUYOY * 2 - 1;
-		subRectX2 = 0; subRectY2 = PUYOY * m_color2;
-		subRectWidth2 = PUYOX; subRectHeight2 = PUYOY;
-		m_sprite1.setSubRect(subRectX1, subRectY1, subRectWidth1, subRectHeight1);
-		m_sprite2.setSubRect(subRectX2, subRectY2, subRectWidth2, subRectHeight2);
-		m_sprite1.setCenter(0, PUYOY);
-		m_sprite2.setCenter(PUYOX, PUYOY);
-		m_sprite1.setVisible(true);
-		m_sprite2.setVisible(true);
-		m_spriteEye1.setSubRect(PUYOX + 2 * PUYOX * ((m_color1 / 2)), 12 * PUYOY + PUYOY * (m_color1 % 2), PUYOX, PUYOY);
-		m_spriteEye2.setSubRect(PUYOX + 2 * PUYOX * ((m_color2 / 2)), 12 * PUYOY + PUYOY * (m_color2 % 2), PUYOX, PUYOY);
-		m_spriteEye1.setCenter(0, 0);
-		m_spriteEye2.setCenter(PUYOX, PUYOY);
-		m_spriteEye1.setVisible(true);
-		m_spriteEye2.setVisible(false);
+		subRectX1 = kPuyoX * color1; subRectY1 = kPuyoY * 5 + 1;
+		subRectWidth1 = kPuyoX; subRectHeight1 = kPuyoY * 2 - 1;
+		subRectX2 = 0; subRectY2 = kPuyoY * color2;
+		subRectWidth2 = kPuyoX; subRectHeight2 = kPuyoY;
+		sprite1.setSubRect(subRectX1, subRectY1, subRectWidth1, subRectHeight1);
+		sprite2.setSubRect(subRectX2, subRectY2, subRectWidth2, subRectHeight2);
+		sprite1.setCenter(0, kPuyoY);
+		sprite2.setCenter(kPuyoX, kPuyoY);
+		sprite1.setVisible(true);
+		sprite2.setVisible(true);
+		spriteEye1.setSubRect(kPuyoX + 2 * kPuyoX * ((color1 / 2)), 12 * kPuyoY + kPuyoY * (color1 % 2), kPuyoX, kPuyoY);
+		spriteEye2.setSubRect(kPuyoX + 2 * kPuyoX * ((color2 / 2)), 12 * kPuyoY + kPuyoY * (color2 % 2), kPuyoX, kPuyoY);
+		spriteEye1.setCenter(0, 0);
+		spriteEye2.setCenter(kPuyoX, kPuyoY);
+		spriteEye1.setVisible(true);
+		spriteEye2.setVisible(false);
 
 	}
-	else if (m_type == QUADRUPLET)
+	else if (type == QUADRUPLET)
 	{
-		subRectX1 = static_cast<int>(10.f * static_cast<float>(PUYOX) + (static_cast<float>(PUYOX) + static_cast<float>(PUYOX) / 6.4f) * static_cast<float>(m_color1)); subRectY1 = PUYOY * 13;
-		subRectWidth1 = static_cast<int>(static_cast<float>(PUYOX) + static_cast<float>(PUYOX) / 6.4f); subRectHeight1 = PUYOY * 2;
-		subRectX2 = static_cast<int>(10.f * static_cast<float>(PUYOX) + (static_cast<float>(PUYOX) + static_cast<float>(PUYOX) / 6.4f) * static_cast<float>(m_color2)); subRectY2 = PUYOY * 13;
-		subRectWidth2 = static_cast<int>(static_cast<float>(PUYOX) + static_cast<float>(PUYOX) / 6.4f); subRectHeight2 = PUYOY * 2;
-		m_sprite2.setSubRect(subRectX1, subRectY1, subRectWidth1, subRectHeight1);
-		m_sprite1.setSubRect(subRectX2, subRectY2, subRectWidth2, subRectHeight2);
-		if (gamedata)
+		subRectX1 = static_cast<int>(10.f * static_cast<float>(kPuyoX) + (static_cast<float>(kPuyoX) + static_cast<float>(kPuyoX) / 6.4f) * static_cast<float>(color1)); subRectY1 = kPuyoY * 13;
+		subRectWidth1 = static_cast<int>(static_cast<float>(kPuyoX) + static_cast<float>(kPuyoX) / 6.4f); subRectHeight1 = kPuyoY * 2;
+		subRectX2 = static_cast<int>(10.f * static_cast<float>(kPuyoX) + (static_cast<float>(kPuyoX) + static_cast<float>(kPuyoX) / 6.4f) * static_cast<float>(color2)); subRectY2 = kPuyoY * 13;
+		subRectWidth2 = static_cast<int>(static_cast<float>(kPuyoX) + static_cast<float>(kPuyoX) / 6.4f); subRectHeight2 = kPuyoY * 2;
+		sprite2.setSubRect(subRectX1, subRectY1, subRectWidth1, subRectHeight1);
+		sprite1.setSubRect(subRectX2, subRectY2, subRectWidth2, subRectHeight2);
+		if (m_data)
 		{
-			m_sprite2.setCenter(gamedata->PUYOXCENTER, PUYOY);
-			m_sprite1.setCenter(gamedata->PUYOXCENTER, PUYOY);
+			sprite2.setCenter(m_data->quadrupletCenter, kPuyoY);
+			sprite1.setCenter(m_data->quadrupletCenter, kPuyoY);
 		}
-		m_sprite1.setVisible(true);
-		m_sprite2.setVisible(true);
-		m_spriteEye1.setSubRect(PUYOX + 2 * PUYOX * ((m_color1 / 2)), 12 * PUYOY + PUYOY * (m_color1 % 2), PUYOX, PUYOY);
-		m_spriteEye2.setSubRect(PUYOX + 2 * PUYOX * ((m_color2 / 2)), 12 * PUYOY + PUYOY * (m_color2 % 2), PUYOX, PUYOY);
-		m_spriteEye2.setCenter(PUYOX - 10, PUYOY - 4);
-		m_spriteEye1.setCenter(0 + 10, 0 + 4);
-		m_spriteEye1.setVisible(true);
-		m_spriteEye2.setVisible(true);
+		sprite1.setVisible(true);
+		sprite2.setVisible(true);
+		spriteEye1.setSubRect(kPuyoX + 2 * kPuyoX * ((color1 / 2)), 12 * kPuyoY + kPuyoY * (color1 % 2), kPuyoX, kPuyoY);
+		spriteEye2.setSubRect(kPuyoX + 2 * kPuyoX * ((color2 / 2)), 12 * kPuyoY + kPuyoY * (color2 % 2), kPuyoX, kPuyoY);
+		spriteEye2.setCenter(kPuyoX - 10, kPuyoY - 4);
+		spriteEye1.setCenter(0 + 10, 0 + 4);
+		spriteEye1.setVisible(true);
+		spriteEye2.setVisible(true);
 	}
-	else if (m_type == BIG)
+	else if (type == BIG)
 	{
-		subRectX1 = 2 * PUYOX + 2 * PUYOX * m_bigColor; subRectY1 = PUYOY * 7;
-		subRectWidth1 = PUYOX * 2; subRectHeight1 = PUYOY * 2;
+		subRectX1 = 2 * kPuyoX + 2 * kPuyoX * m_bigColor; subRectY1 = kPuyoY * 7;
+		subRectWidth1 = kPuyoX * 2; subRectHeight1 = kPuyoY * 2;
 		subRectX2 = 0; subRectY2 = 0;
 		subRectWidth2 = 0; subRectHeight2 = 0;
-		m_sprite1.setSubRect(subRectX1, subRectY1, subRectWidth1, subRectHeight1);
-		m_sprite2.setSubRect(subRectX2, subRectY2, subRectWidth2, subRectHeight2);
-		m_sprite1.setCenter(PUYOX, PUYOY);
-		m_sprite2.setCenter(PUYOX, PUYOY);
-		m_sprite1.setVisible(true);
-		m_sprite2.setVisible(false);
-		m_spriteEye1.setVisible(false);
-		m_spriteEye2.setVisible(false);
+		sprite1.setSubRect(subRectX1, subRectY1, subRectWidth1, subRectHeight1);
+		sprite2.setSubRect(subRectX2, subRectY2, subRectWidth2, subRectHeight2);
+		sprite1.setCenter(kPuyoX, kPuyoY);
+		sprite2.setCenter(kPuyoX, kPuyoY);
+		sprite1.setVisible(true);
+		sprite2.setVisible(false);
+		spriteEye1.setVisible(false);
+		spriteEye2.setVisible(false);
 	}
-	if (m_type == TRIPLETR && m_color1 != m_color2)
+	if (type == TRIPLET_R && color1 != color2)
 	{
-		m_sprite1.setRotation(-90);
-		m_sprite2.setRotation(0);
+		sprite1.setRotation(-90);
+		sprite2.setRotation(0);
 	}
-	else if (m_type == QUADRUPLET)
+	else if (type == QUADRUPLET)
 	{
-		m_sprite1.setRotation(0);
-		m_sprite2.setRotation(180);
+		sprite1.setRotation(0);
+		sprite2.setRotation(180);
 	}
 	else
 	{
-		m_sprite1.setRotation(0);
-		m_sprite2.setRotation(0);
+		sprite1.setRotation(0);
+		sprite2.setRotation(0);
 	}
 }
 

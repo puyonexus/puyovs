@@ -1,11 +1,11 @@
 #pragma once
 
-#include <qglobal.h>
-#include <QDialog>
+#include "updaterldb.h"
 #include <QByteArray>
+#include <QDialog>
 #include <QQueue>
 #include <QUrl>
-#include "updaterldb.h"
+#include <qglobal.h>
 
 #if defined(Q_OS_WIN)
 static const QString platformBinary = "PuyoVS.exe";
@@ -34,14 +34,19 @@ class QNetworkAccessManager;
 class QIODevice;
 
 namespace Ui {
-	class UpdateDialog;
+class UpdateDialog;
 }
 
-struct DownloaderTask { QUrl url; QString target; quint16 revision; };
-struct RemoveTask { QString file; };
+struct DownloaderTask {
+	QUrl url;
+	QString target;
+	quint16 revision;
+};
+struct RemoveTask {
+	QString file;
+};
 
-class UpdateDialog : public QDialog
-{
+class UpdateDialog : public QDialog {
 	Q_OBJECT
 
 public:

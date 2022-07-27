@@ -6,7 +6,7 @@ add_library(Puyolib
     tinystr.cpp
     Sprite.cpp
     Sound.cpp
-    "RuleSet/RuleSet.cpp"
+    RuleSet/RuleSet.cpp
     Puyo.cpp
     Player.cpp
     OtherObjects.cpp
@@ -25,11 +25,11 @@ add_library(Puyolib
     Animation.cpp
     AI.cpp
     RNG/ClassicPool.cpp
-    RNG/ClassicPuyoRNG.cpp
-    RNG/ClassicRNG.cpp
-    RNG/LegacyPuyoRNG.cpp
+    RNG/ClassicPuyoRng.cpp
+    RNG/ClassicRng.cpp
+    RNG/LegacyPuyoRng.cpp
     RNG/MersenneTwister.cpp
-    RNG/PuyoRNG.cpp
+    RNG/PuyoRng.cpp
 )
 
 target_compile_features(Puyolib PUBLIC cxx_std_17)

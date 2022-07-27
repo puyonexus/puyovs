@@ -1,125 +1,133 @@
-#include <algorithm>
 #include "Sprite.h"
-#include "global.h"
 #include "Frontend.h"
+#include "global.h"
+#include <algorithm>
 
 using namespace std;
 
-namespace ppvs
-{
+namespace ppvs {
 
-Sprite::Sprite() :
-	m_visible(true),
-	flipX(false), flipY(false),
-	posX(0), posY(0),
-	scaleX(1), scaleY(1),
-	subRectX(0), subRectY(0), subRectW(0), subRectH(0),
-	centerX(0), centerY(0),
-	colorA(255), colorR(255), colorG(255), colorB(255),
-	rotation(0), blendMode(AlphaBlending), m_image(nullptr),
-	m_colorR(255), m_colorG(255), m_colorB(255), m_colorA(255)
+Sprite::Sprite()
+	: m_visible(true)
+	, m_flipX(false)
+	, m_flipY(false)
+	, m_posX(0)
+	, m_posY(0)
+	, m_scaleX(1)
+	, m_scaleY(1)
+	, m_subRectX(0)
+	, m_subRectY(0)
+	, m_subRectW(0)
+	, m_subRectH(0)
+	, m_centerX(0)
+	, m_centerY(0)
+	, m_colorA(255)
+	, m_colorR(255)
+	, m_colorG(255)
+	, m_colorB(255)
+	, m_rotation(0)
+	, m_blendMode(AlphaBlending)
+	, m_image(nullptr)
+	, m_colorRInternal(255)
+	, m_colorGInternal(255)
+	, m_colorBInternal(255)
+	, m_colorAInternal(255)
 {
 }
 
-Sprite::~Sprite()
-{
-}
+Sprite::~Sprite() = default;
 
 void Sprite::setImage(FeImage* img)
 {
 	m_image = img;
-	subRectX = 0;
-	subRectY = 0;
-	if (m_image)
-	{
-		subRectW = m_image->width();
-		subRectH = m_image->height();
-	}
-	else
-	{
-		subRectW = 1;
-		subRectH = 1;
+	m_subRectX = 0;
+	m_subRectY = 0;
+	if (m_image) {
+		m_subRectW = m_image->width();
+		m_subRectH = m_image->height();
+	} else {
+		m_subRectW = 1;
+		m_subRectH = 1;
 	}
 }
 
 void Sprite::setX(float x)
 {
-	posX = x;
+	m_posX = x;
 }
 
 void Sprite::setY(float y)
 {
-	posY = y;
+	m_posY = y;
 }
 
 void Sprite::addX(float x)
 {
-	posX += x;
+	m_posX += x;
 }
 
 void Sprite::addY(float y)
 {
-	posY += y;
+	m_posY += y;
 }
 
 void Sprite::setSubRect(int x, int y, int width, int height)
 {
-	subRectX = x;
-	subRectY = y;
-	subRectW = width;
-	subRectH = height;
+	m_subRectX = x;
+	m_subRectY = y;
+	m_subRectW = width;
+	m_subRectH = height;
 }
 
 void Sprite::setCenter()
 {
-	centerX = subRectW / 2;
-	centerY = subRectH / 2;
+	m_centerX = m_subRectW / 2;
+	m_centerY = m_subRectH / 2;
 }
 
 void Sprite::setCenter(int x, int y)
 {
-	centerX = x;
-	centerY = y;
+	m_centerX = x;
+	m_centerY = y;
 }
 
 void Sprite::setCenter(const PosVectorFloat pv)
 {
-	centerX = static_cast<int>(pv.x);
-	centerY = static_cast<int>(pv.y);
+	m_centerX = static_cast<int>(pv.x);
+	m_centerY = static_cast<int>(pv.y);
 }
 
 void Sprite::setCenterBottom()
 {
-	centerX = subRectW / 2;
-	centerY = subRectH;
+	m_centerX = m_subRectW / 2;
+	m_centerY = m_subRectH;
 }
 
-void Sprite::setScale(float x)
+void Sprite::setScale(const float scale)
 {
-	scaleX = x;
-	scaleY = x;
+	m_scaleX = scale;
+	m_scaleY = scale;
 }
 
-void Sprite::setScaleX(float x)
+void Sprite::setScaleX(const float scale)
 {
-	scaleX = x;
+	m_scaleX = scale;
 }
-void Sprite::setScaleY(float x)
+void Sprite::setScaleY(const float scale)
 {
-	scaleY = x;
+	m_scaleY = scale;
 }
-void Sprite::setScale(float x, float y)
+void Sprite::setScale(const float x, const float y)
 {
-	scaleX = x;
-	scaleY = y;
+	m_scaleX = x;
+	m_scaleY = y;
 }
 
-void Sprite::setSize(float x, float y)
+void Sprite::setSize(const float x, const float y)
 {
-	if (subRectW != 0 && subRectH != 0)
-	{
-		scaleX = x / static_cast<float>(subRectW);
-		scaleY = y / static_cast<float>(subRectH);
+	if (m_subRectW != 0 && m_subRectH != 0) {
+		m_scaleX = x / static_cast<float>(m_subRectW);
+		m_scaleY = y / static_cast<float>(m_subRectH);
 	}
 }
 
@@ -128,121 +136,130 @@ void Sprite::setSize(const PosVectorFloat pv)
 	setSize(pv.x, pv.y);
 }
 
-void Sprite::setPosition(float x, float y)
+void Sprite::setPosition(const float x, const float y)
 {
-	posX = x;
-	posY = y;
+	m_posX = x;
+	m_posY = y;
 }
 
-void Sprite::setPosition(PosVectorFloat pv)
+void Sprite::setPosition(const PosVectorFloat pv)
 {
-	posX = pv.x;
-	posY = pv.y;
+	m_posX = pv.x;
+	m_posY = pv.y;
 }
 
-void Sprite::setRotation(float angle)
+void Sprite::setRotation(const float angle)
 {
-	rotation = angle;
+	m_rotation = angle;
 }
 
-void Sprite::setTransparency(float t)
+void Sprite::setTransparency(const float t)
 {
-	m_colorA = static_cast<int>(t * 255.f);
+	m_colorAInternal = static_cast<int>(t * 255.f);
 }
 
-void Sprite::setColor(float r, float g, float b)
+void Sprite::setColor(const float r, const float g, const float b)
 {
-	m_colorR = std::max(static_cast<int>(r), 0);
-	m_colorG = std::max(static_cast<int>(g), 0);
-	m_colorB = std::max(static_cast<int>(b), 0);
+	m_colorRInternal = std::max(static_cast<int>(r), 0);
+	m_colorGInternal = std::max(static_cast<int>(g), 0);
+	m_colorBInternal = std::max(static_cast<int>(b), 0);
 }
 
-void Sprite::setColor(float r, float g, float b, float a)
+void Sprite::setColor(const float r, const float g, const float b, const float a)
 {
 	setColor(r, g, b);
-	m_colorA = std::max(static_cast<int>(a), 0);
+	m_colorAInternal = std::max(static_cast<int>(a), 0);
 }
 
-void Sprite::setVisible(bool b)
+void Sprite::setVisible(const bool visible)
 {
-	m_visible = b;
+	m_visible = visible;
 }
 
-void Sprite::setBlendMode(BlendingMode b)
+void Sprite::setBlendMode(const BlendingMode blendMode)
 {
-	blendMode = b;
+	m_blendMode = blendMode;
 }
 
-void Sprite::setFlipX(bool f)
+void Sprite::setFlipX(const bool f)
 {
-	flipX = f;
+	m_flipX = f;
 }
-void Sprite::setFlipY(bool f)
+void Sprite::setFlipY(const bool f)
 {
-	flipY = f;
+	m_flipY = f;
 }
 
 void Sprite::setColor()
 {
-	colorR = m_colorR % 256;
-	colorG = m_colorG % 256;
-	colorB = m_colorB % 256;
-	colorA = m_colorA % 256;
+	m_colorR = m_colorRInternal % 256;
+	m_colorG = m_colorGInternal % 256;
+	m_colorB = m_colorBInternal % 256;
+	m_colorA = m_colorAInternal % 256;
 }
 
 void Sprite::draw(FeRenderTarget* target, FeShader* shader)
 {
-	if (!m_visible)
-		return;
+	if (!m_visible) {
+        return;
+    }
 
-	setColor();
+    setColor();
 	target->pushMatrix();
-	float scenterX = static_cast<float>(centerX) * scaleX,
-		scenterY = static_cast<float>(centerY) * scaleY;
+	float sCenterX = static_cast<float>(m_centerX) * m_scaleX,
+		  sCenterY = static_cast<float>(m_centerY) * m_scaleY;
 
-	if (flipX) scenterX = scenterX - (static_cast<float>(subRectW) * scaleX);
-	if (flipY) scenterY = scenterY - (static_cast<float>(subRectH) * scaleY);
+	if (m_flipX) {
+        sCenterX = sCenterX - (static_cast<float>(m_subRectW) * m_scaleX);
+    }
+    if (m_flipY) {
+        sCenterY = sCenterY - (static_cast<float>(m_subRectH) * m_scaleY);
+    }
 
-	// Translation
-	target->translate(-scenterX, -scenterY, 0);
-	target->translate(posX, posY, 0);
+    // Translation
+	target->translate(-sCenterX, -sCenterY, 0);
+	target->translate(m_posX, m_posY, 0);
 
 	// Rotation
-	target->translate(scenterX, scenterY, 0);
-	target->rotate(-rotation, 0, 0, 1);
-	target->translate(-scenterX, -scenterY, 0);
+	target->translate(sCenterX, sCenterY, 0);
+	target->rotate(-m_rotation, 0, 0, 1);
+	target->translate(-sCenterX, -sCenterY, 0);
 
 	// Scaling
-	target->scale(scaleX, scaleY, 1);
+	target->scale(m_scaleX, m_scaleY, 1);
 
 	// Flipping
-	target->scale(flipX ? -1.f : 1.f, flipY ? -1.f : 1.f, 1.f);
+	target->scale(m_flipX ? -1.f : 1.f, m_flipY ? -1.f : 1.f, 1.f);
 
 	// Blending
-	target->setBlendMode(blendMode);
-	target->setColor(colorR, colorG, colorB, colorA);
+	target->setBlendMode(m_blendMode);
+	target->setColor(m_colorR, m_colorG, m_colorB, m_colorA);
 
 	// Render
-	if (shader) shader->bind();
-	target->drawRect(m_image, subRectX, subRectY, subRectW, subRectH);
-	if (shader) shader->unbind();
+	if (shader) {
+        shader->bind();
+    }
+    target->drawRect(m_image, m_subRectX, m_subRectY, m_subRectW, m_subRectH);
+	if (shader) {
+        shader->unbind();
+    }
 
-	target->popMatrix();
+    target->popMatrix();
 }
 
 void Sprite::redraw(FeRenderTarget* target)
 {
 	target->setBlendMode(AdditiveBlending);
-	if (m_colorR > 255 || m_colorG > 255 || m_colorB > 255)
-	{
-		int cR = m_colorR, cG = m_colorG, cB = m_colorB;
-		while (cR > 255 || cG > 255 || cB > 255)
-		{
+	if (m_colorRInternal > 255 || m_colorGInternal > 255 || m_colorBInternal > 255) {
+		int cR = m_colorRInternal, cG = m_colorGInternal, cB = m_colorBInternal;
+		while (cR > 255 || cG > 255 || cB > 255) {
 			cR = max(cR - 255, 0);
 			cG = max(cG - 255, 0);
 			cB = max(cB - 255, 0);
-			colorR = cR; colorG = cG; colorB = cB;
-			target->drawRect(m_image, subRectX, subRectY, subRectW, subRectH);
+			m_colorR = cR;
+			m_colorG = cG;
+			m_colorB = cB;
+			target->drawRect(m_image, m_subRectX, m_subRectY, m_subRectW, m_subRectH);
 		}
 	}
 	target->setBlendMode(AlphaBlending);
@@ -255,39 +272,39 @@ FeImage* Sprite::getImage() const
 
 float Sprite::getSizeX() const
 {
-	return static_cast<float>(subRectW);
+	return static_cast<float>(m_subRectW);
 }
 
 float Sprite::getSizeY() const
 {
-	return static_cast<float>(subRectH);
+	return static_cast<float>(m_subRectH);
 }
 
 float Sprite::getScaleX() const
 {
-	return scaleX;
+	return m_scaleX;
 }
 float Sprite::getScaleY() const
 {
-	return scaleY;
+	return m_scaleY;
 }
 
 float Sprite::getX() const
 {
-	return posX;
+	return m_posX;
 }
 
 float Sprite::getY() const
 {
-	return posY;
+	return m_posY;
 }
 float Sprite::getAngle() const
 {
-	return rotation;
+	return m_rotation;
 }
 float Sprite::getTransparency() const
 {
-	return static_cast<float>(m_colorA) / 255.0f;
+	return static_cast<float>(m_colorAInternal) / 255.0f;
 }
 PosVectorFloat Sprite::getPosition() const
 {

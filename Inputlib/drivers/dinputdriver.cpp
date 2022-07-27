@@ -9,29 +9,26 @@
 #include "dinputdriver.h"
 #include "inputevent.h"
 
-#include <vector>
 #include <deque>
+#include <vector>
 
 namespace ilib {
 
-typedef HRESULT(WINAPI * DIRECTINPUT8CREATE)(HINSTANCE hinst, DWORD dwVersion, REFIID riidltf, LPVOID *ppvOut, LPUNKNOWN punkOuter);
+typedef HRESULT(WINAPI* DIRECTINPUT8CREATE)(HINSTANCE hinst, DWORD dwVersion, REFIID riidltf, LPVOID* ppvOut, LPUNKNOWN punkOuter);
 #include "js2format.h"
 
-struct DInputDriver::Priv
-{
+struct DInputDriver::Priv {
 	bool error;
 	int processEvents;
 	std::deque<InputEvent> events;
 
-	struct DInput
-	{
+	struct DInput {
 		HINSTANCE module;
 		DIRECTINPUT8CREATE create;
 		LPDIRECTINPUT8 context;
 		LPDIRECTINPUTDEVICE8 device;
 
-		struct Gamepad : Driver::Gamepad
-		{
+		struct Gamepad : Driver::Gamepad {
 			LPDIRECTINPUTDEVICE8 handle;
 
 			short hats[4] = { HatCentered };
@@ -40,7 +37,8 @@ struct DInputDriver::Priv
 			int id;
 
 			Gamepad(LPDIRECTINPUTDEVICE8 handle, int id)
-				: handle(handle), id(id)
+				: handle(handle)
+				, id(id)
 			{
 			}
 
@@ -48,30 +46,31 @@ struct DInputDriver::Priv
 			{
 				const bool events = p->processEvents > 0;
 
-				for (int i = 0; i < 4; ++i)
-				{
+				for (int i = 0; i < 4; ++i) {
 					const unsigned hatBefore = hats[i];
 					hats[i] = HatCentered;
 
 					const unsigned pov = state.rgdwPOV[i];
-					if (pov < 36000)
-					{
-						if (pov >= 31500 || pov <= 4500) hats[i] |= HatUp;
-						if (pov >= 4500 && pov <= 13500) hats[i] |= HatRight;
-						if (pov >= 13500 && pov <= 22500) hats[i] |= HatDown;
-						if (pov >= 22500 && pov <= 31500) hats[i] |= HatLeft;
+					if (pov < 36000) {
+						if (pov >= 31500 || pov <= 4500)
+							hats[i] |= HatUp;
+						if (pov >= 4500 && pov <= 13500)
+							hats[i] |= HatRight;
+						if (pov >= 13500 && pov <= 22500)
+							hats[i] |= HatDown;
+						if (pov >= 22500 && pov <= 31500)
+							hats[i] |= HatLeft;
 					}
 
-					if (events && hats[i] != hatBefore)
-					{
+					if (events && hats[i] != hatBefore) {
 						p->queue(InputEvent::createHatEvent(id, i, static_cast<HatPosition>(hats[i])));
 					}
 				}
 
-#define AXIS(i, member) \
-    if(events && axes[i] != state . member) \
-        p->queue(InputEvent::createAxisEvent(id, i, state . member /  32767.f)); \
-    axes[i] = static_cast<short>(state . member)
+#define AXIS(i, member)                                                       \
+	if (events && axes[i] != state.member)                                    \
+		p->queue(InputEvent::createAxisEvent(id, i, state.member / 32767.f)); \
+	axes[i] = static_cast<short>(state.member)
 				AXIS(0, lX);
 				AXIS(1, lY);
 				AXIS(2, lZ);
@@ -80,10 +79,8 @@ struct DInputDriver::Priv
 				AXIS(5, lRz);
 #undef AXIS
 
-				for (int i = 0; i < 128; ++i)
-				{
-					if (events && buttons[i] != static_cast<bool>(state.rgbButtons[i]))
-					{
+				for (int i = 0; i < 128; ++i) {
+					if (events && buttons[i] != static_cast<bool>(state.rgbButtons[i])) {
 						const InputEvent::Type type = state.rgbButtons[i] ? InputEvent::ButtonDownEvent : InputEvent::ButtonUpEvent;
 						p->queue(InputEvent::createButtonEvent(type, id, i));
 					}
@@ -96,24 +93,27 @@ struct DInputDriver::Priv
 			[[nodiscard]] int numButtons() const override { return 128; }
 			[[nodiscard]] int numAxis() const override { return 6; }
 			[[nodiscard]] int numHats() const override { return 4; }
-			
+
 			[[nodiscard]] bool button(int num) const override
 			{
-				if (num < 0 || num >= 128) return false;
+				if (num < 0 || num >= 128)
+					return false;
 
 				return buttons[num];
 			}
 
 			[[nodiscard]] float axis(int num) const override
 			{
-				if (num < 0 || num >= 6) return 0.f;
+				if (num < 0 || num >= 6)
+					return 0.f;
 
 				return axes[num] / 32767.f;
 			}
 
 			[[nodiscard]] HatPosition hat(int num) const override
 			{
-				if (num < 0 || num >= 4) return HatCentered;
+				if (num < 0 || num >= 4)
+					return HatCentered;
 
 				return static_cast<HatPosition>(hats[num]);
 			}
@@ -127,8 +127,7 @@ struct DInputDriver::Priv
 
 		bool init_joypad(const DIDEVICEINSTANCE* instance)
 		{
-			if (FAILED(context->CreateDevice(instance->guidInstance, &device, nullptr)))
-			{
+			if (FAILED(context->CreateDevice(instance->guidInstance, &device, nullptr))) {
 				return DIENUM_CONTINUE;
 			}
 
@@ -161,10 +160,12 @@ struct DInputDriver::Priv
 		bool load()
 		{
 			module = LoadLibraryW(L"DINPUT8.DLL");
-			if (!module) return false;
+			if (!module)
+				return false;
 
 			create = reinterpret_cast<DIRECTINPUT8CREATE>(GetProcAddress(module, "DirectInput8Create"));
-			if (!create) return false;
+			if (!create)
+				return false;
 
 			create(GetModuleHandle(nullptr), DIRECTINPUT_VERSION, IID_IDirectInput8, reinterpret_cast<void**>(&context), nullptr);
 			context->EnumDevices(DI8DEVCLASS_GAMECTRL, enum_joypads, (void*)this, DIEDFL_ATTACHEDONLY);
@@ -182,10 +183,8 @@ struct DInputDriver::Priv
 
 		void process(Priv* p)
 		{
-			for (auto& gamepad : gamepads)
-			{
-				if (FAILED(gamepad.handle->Poll()))
-				{
+			for (auto& gamepad : gamepads) {
+				if (FAILED(gamepad.handle->Poll())) {
 					gamepad.handle->Acquire();
 					continue;
 				}
@@ -217,8 +216,7 @@ struct DInputDriver::Priv
 
 	bool getEvent(InputEvent* e)
 	{
-		if (events.empty())
-		{
+		if (events.empty()) {
 			return false;
 		}
 
@@ -228,7 +226,6 @@ struct DInputDriver::Priv
 		return true;
 	}
 };
-
 
 DInputDriver::DInputDriver()
 	: p(new Priv)

@@ -1,11 +1,14 @@
 #include "ffontgl.h"
 #include "glmanager.h"
+#include <QFontMetrics>
 #include <QImage>
 #include <QPainter>
-#include <QFontMetrics>
 
 FTextGL::FTextGL(GLuint id, GLuint w, GLuint h, QObject* parent)
-	: QObject(parent), id(id), w(w), h(h)
+	: QObject(parent)
+	, id(id)
+	, w(w)
+	, h(h)
 {
 }
 
@@ -21,17 +24,23 @@ void FTextGL::draw(float x, float y)
 	glTranslatef(x, y, 0);
 	glBegin(GL_QUADS);
 	{
-		glTexCoord2d(0, 0); glVertex2d(0, 0);
-		glTexCoord2d(1, 0); glVertex2d(w, 0);
-		glTexCoord2d(1, 1); glVertex2d(w, h);
-		glTexCoord2d(0, 1); glVertex2d(0, h);
+		glTexCoord2d(0, 0);
+		glVertex2d(0, 0);
+		glTexCoord2d(1, 0);
+		glVertex2d(w, 0);
+		glTexCoord2d(1, 1);
+		glVertex2d(w, h);
+		glTexCoord2d(0, 1);
+		glVertex2d(0, h);
 	}
 	glEnd();
 	glPopMatrix();
 }
 
 FFontGL::FFontGL(const QString& fn, double fontSize, QGLWidget* gl, QObject* parent)
-	: QObject(parent), gl(gl), font(fn, fontSize)
+	: QObject(parent)
+	, gl(gl)
+	, font(fn, fontSize)
 {
 }
 
@@ -46,8 +55,7 @@ QImage FFontGL::renderTextline(const QString& line) const
 		fm.width(line) + 4,
 #endif
 		fm.lineSpacing(),
-		QImage::Format_ARGB32
-	);
+		QImage::Format_ARGB32);
 	image.fill(0);
 
 	QPainter p;
@@ -71,11 +79,11 @@ ppvs::FeText* FFontGL::render(const char* str)
 	int blockHeight = lines.count() * lineSpacing;
 	int maxWidth = 0;
 
-	for (int i = 0; i < lines.count(); ++i)
-	{
+	for (int i = 0; i < lines.count(); ++i) {
 		QString line = lines.at(i);
 		QImage image = renderTextline(line);
-		if (image.width() > maxWidth) maxWidth = image.width();
+		if (image.width() > maxWidth)
+			maxWidth = image.width();
 		images.append(image);
 	}
 
@@ -84,8 +92,7 @@ ppvs::FeText* FFontGL::render(const char* str)
 	int blockCursor = 0;
 	QPainter p;
 	p.begin(&blockImage);
-	for (int i = 0; i < images.count(); ++i)
-	{
+	for (int i = 0; i < images.count(); ++i) {
 		p.drawImage(0, blockCursor, images.at(i));
 		blockCursor += lineSpacing;
 	}
@@ -96,7 +103,7 @@ ppvs::FeText* FFontGL::render(const char* str)
 	glGenTextures(1, &id);
 	glBindTexture(GL_TEXTURE_2D, id);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, blockImage.width(), blockImage.height(), 0, 0x80E1/* GL_BGRA */, GL_UNSIGNED_BYTE, blockImage.bits());
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, blockImage.width(), blockImage.height(), 0, 0x80E1 /* GL_BGRA */, GL_UNSIGNED_BYTE, blockImage.bits());
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 

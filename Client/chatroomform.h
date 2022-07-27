@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QWidget>
-#include <QIcon>
-#include "netclient.h"
 #include "../Puyolib/GameSettings.h" // ppvs::RuleSetInfo
+#include "netclient.h"
+#include <QIcon>
+#include <QWidget>
 
 namespace Ui {
 class ChatroomForm;
@@ -19,9 +19,13 @@ class GameWidget;
 class Settings;
 class ChatroomTextEdit;
 
-struct ChallengeState
-{
-	ChallengeState() : beingChallenged(false), challenging(false), game(nullptr) { }
+struct ChallengeState {
+	ChallengeState()
+		: beingChallenged(false)
+		, challenging(false)
+		, game(nullptr)
+	{
+	}
 	bool beingChallenged;
 	bool challenging;
 
@@ -33,20 +37,23 @@ struct ChallengeState
 	GameWidget* game;
 };
 
-class ChatroomForm : public QWidget
-{
+class ChatroomForm : public QWidget {
 	Q_OBJECT
 
 public:
-	enum StatusEvent
-	{
-		ChannelJoinedEvent, ChannelLeftEvent,
+	enum StatusEvent {
+		ChannelJoinedEvent,
+		ChannelLeftEvent,
 
-		PeerJoinedEvent, PeerLeftEvent,
+		PeerJoinedEvent,
+		PeerLeftEvent,
 
-		MatchCancelEvent, MatchLeftEvent,
-		MatchAutorejectEvent, MatchAutorejectSelfEvent,
-		MatchDeclineEvent, MatchAcceptEvent
+		MatchCancelEvent,
+		MatchLeftEvent,
+		MatchAutorejectEvent,
+		MatchAutorejectSelfEvent,
+		MatchDeclineEvent,
+		MatchAcceptEvent
 	};
 
 	explicit ChatroomForm(NetPeerList peers, NetChannelProxy* proxy, GameManager* manager, QWidget* parent = nullptr);

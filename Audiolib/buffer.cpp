@@ -1,8 +1,8 @@
-#include <cstring>
+#include "buffer.h"
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <sstream>
-#include "buffer.h"
 
 #ifdef _WIN32
 #include <process.h>
@@ -21,20 +21,42 @@ struct Buffer::Priv {
 	size_t size;
 	bool locked;
 
-	Priv() : data(nullptr), size(0), locked(false) { }
-	Priv(char* data, size_t size) : data(nullptr), size(0), locked(false) { copy(data, size); }
-	Priv(const Priv& other) { if (other.locked) abort(); copy(other.data, other.size); locked = false; }
-	~Priv() { if (locked) abort(); if (data) free(data); data = nullptr; }
+	Priv()
+		: data(nullptr)
+		, size(0)
+		, locked(false)
+	{
+	}
+	Priv(char* data, size_t size)
+		: data(nullptr)
+		, size(0)
+		, locked(false)
+	{
+		copy(data, size);
+	}
+	Priv(const Priv& other)
+	{
+		if (other.locked)
+			abort();
+		copy(other.data, other.size);
+		locked = false;
+	}
+	~Priv()
+	{
+		if (locked)
+			abort();
+		if (data)
+			free(data);
+		data = nullptr;
+	}
 
 	int read(char* buffer, size_t amount, long offset)
 	{
-		if (amount > size - offset)
-		{
+		if (amount > size - offset) {
 			amount = size - offset;
 		}
 
-		if (amount < 1)
-		{
+		if (amount < 1) {
 			return 0;
 		}
 
@@ -59,12 +81,9 @@ struct Buffer::Priv {
 
 	void removeFront(size_t s)
 	{
-		if (s >= size)
-		{
+		if (s >= size) {
 			size = 0;
-		}
-		else
-		{
+		} else {
 			size -= s;
 			memmove(data, data + s, size);
 			data = static_cast<char*>(realloc(data, size));
@@ -73,8 +92,7 @@ struct Buffer::Priv {
 
 	void truncate(size_t s)
 	{
-		if (s > size)
-		{
+		if (s > size) {
 			return;
 		}
 
@@ -169,7 +187,8 @@ int BinaryStream::readChar()
 
 long BinaryStream::size()
 {
-	if (!seekable()) return 0;
+	if (!seekable())
+		return 0;
 	const long pos = tell();
 	seek(0, End);
 	const long size = tell();
@@ -179,17 +198,15 @@ long BinaryStream::size()
 
 char* BinaryStream::readAll(int* len)
 {
-	if (error())
-	{
+	if (error()) {
 		*len = 0;
 		return nullptr;
 	}
 
 	int bufferlen = 1024, bufferread;
-	char* buffer = static_cast<char*>(malloc(bufferlen)), * bufferptr = buffer;
+	char *buffer = static_cast<char*>(malloc(bufferlen)), *bufferptr = buffer;
 
-	do
-	{
+	do {
 		bufferread = read(bufferptr, 1024);
 
 		bufferptr += bufferread;
@@ -224,7 +241,8 @@ BinaryStream* BinaryStream::openUrl(const char* url, const char* mode)
 {
 	// Try FileStream (stdio)
 	auto fileStream = new FileStream(url, mode);
-	if (!fileStream->error()) return fileStream;
+	if (!fileStream->error())
+		return fileStream;
 	delete fileStream;
 	return nullptr;
 }
@@ -232,8 +250,7 @@ BinaryStream* BinaryStream::openUrl(const char* url, const char* mode)
 ////////////////////////////////////////////////////////////////////////////////
 // FileStream
 
-struct FileStream::Priv
-{
+struct FileStream::Priv {
 	FILE* file = nullptr;
 	std::string fn;
 };
@@ -244,16 +261,14 @@ FileStream::FileStream(const char* fn, const char* mode)
 	p->file = ::fopen(fn, mode);
 	p->fn = fn;
 
-	if (!p->file)
-	{
+	if (!p->file) {
 		ALIB_ERROR("Error loading %s.\n", fn);
 	}
 }
 
 FileStream::~FileStream()
 {
-	if (p && p->file)
-	{
+	if (p && p->file) {
 		::fclose(p->file);
 	}
 
@@ -344,22 +359,23 @@ std::string FileStream::url() const
 ////////////////////////////////////////////////////////////////////////////////
 // MemoryStream
 
-struct MemoryStream::Priv
-{
-	Priv(Buffer buffer) : buffer(buffer), c(0) { }
+struct MemoryStream::Priv {
+	Priv(Buffer buffer)
+		: buffer(buffer)
+		, c(0)
+	{
+	}
 
 	Buffer buffer;
 	long c;
 
 	int read(void* ptr, size_t size)
 	{
-		if (size > buffer.size() - c)
-		{
+		if (size > buffer.size() - c) {
 			size = buffer.size() - c;
 		}
 
-		if (size < 1)
-		{
+		if (size < 1) {
 			return 0;
 		}
 
@@ -372,8 +388,7 @@ struct MemoryStream::Priv
 	{
 		const int bufSize = static_cast<int>(buffer.size());
 
-		switch (origin)
-		{
+		switch (origin) {
 		case MemoryStream::Beginning:
 			c = to;
 			break;
@@ -385,8 +400,10 @@ struct MemoryStream::Priv
 			break;
 		}
 
-		if (c < 0) c = 0;
-		if (c > bufSize) c = bufSize;
+		if (c < 0)
+			c = 0;
+		if (c > bufSize)
+			c = bufSize;
 
 		return true;
 	}

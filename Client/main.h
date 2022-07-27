@@ -2,13 +2,13 @@
 #include <qglobal.h>
 
 #ifndef PREFIX
-#   if defined(Q_OS_WIN)
-#       define PREFIX "C:\\PuyoVS"
-#   elif defined(Q_OS_MAC) && defined(__aarch64__)
-#       define PREFIX "/opt/homebrew"
-#   else
-#       define PREFIX "/usr/local"
-#   endif
+#if defined(Q_OS_WIN)
+#define PREFIX "C:\\PuyoVS"
+#elif defined(Q_OS_MAC) && defined(__aarch64__)
+#define PREFIX "/opt/homebrew"
+#else
+#define PREFIX "/usr/local"
+#endif
 #endif
 
 #if defined(Q_OS_WIN)

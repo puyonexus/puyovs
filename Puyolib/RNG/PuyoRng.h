@@ -15,10 +15,10 @@ enum Piece {
 	Purple = 4,
 };
 
-class PuyoRNG {
+class PuyoRng {
 public:
-	virtual ~PuyoRNG() = default;
+	virtual ~PuyoRng() = default;
 	virtual Piece next(int colors) = 0;
 };
 
-PuyoRNG* MakePuyoRNG(const std::string& name, uint32_t seed, int index);
+PuyoRng* makePuyoRng(const std::string& name, uint32_t seed, int index);

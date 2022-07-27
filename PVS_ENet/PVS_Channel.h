@@ -1,14 +1,13 @@
 #pragma once
 
-#include <map>
-#include <list>
-#include <string>
 #include <algorithm>
+#include <list>
+#include <map>
+#include <string>
 
 #include "PVS_Peer.h"
 
-enum ENet_channelnum
-{
+enum ENet_channelnum {
 	EC_CONNECT,
 	EC_MESSERVER,
 	EC_MESCHANNEL,
@@ -25,10 +24,8 @@ struct _ENetPeer;
 typedef std::list<PVS_Peer*> peerList;
 
 // Structure for an "IRC" like channel
-struct PVS_Channel
-{
-	enum PVS_ChannelType
-	{
+struct PVS_Channel {
+	enum PVS_ChannelType {
 		CT_CHAT, // Just a chat channel
 		CT_GAME, // Use for games
 		CT_PRIVATE // Use for pm
@@ -47,8 +44,7 @@ struct PVS_Channel
 
 typedef std::list<PVS_Channel*> channelList;
 
-struct PVS_ChannelManager
-{
+struct PVS_ChannelManager {
 	PVS_ChannelManager();
 	channelList globalChannelList;
 

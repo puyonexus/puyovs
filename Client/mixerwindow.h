@@ -6,8 +6,7 @@ namespace Ui {
 class MixerWindow;
 }
 
-class MixerWindow : public QDialog
-{
+class MixerWindow : public QDialog {
 	Q_OBJECT
 
 public:

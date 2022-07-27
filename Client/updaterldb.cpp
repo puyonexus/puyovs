@@ -1,7 +1,7 @@
-#include <QIODevice>
-#include <QDataStream>
-#include <QMapIterator>
 #include "updaterldb.h"
+#include <QDataStream>
+#include <QIODevice>
+#include <QMapIterator>
 
 bool UpdaterLDB::read(QIODevice* stream)
 {
@@ -14,13 +14,13 @@ bool UpdaterLDB::read(QIODevice* stream)
 
 	// Magic number
 	dataStream.readRawData(magic, magicLen);
-	if (memcmp(magic, "LDBV", 4)) return false;
+	if (memcmp(magic, "LDBV", 4))
+		return false;
 
 	// Number of entries
 	dataStream >> numEntries;
 
-	while (numEntries--)
-	{
+	while (numEntries--) {
 		quint32 fnLength, fnVersion;
 		char* filename = nullptr;
 
@@ -49,8 +49,7 @@ bool UpdaterLDB::write(QIODevice* stream) const
 	dataStream << quint32(fileVersions.count());
 
 	QMapIterator<QString, quint32> it(fileVersions);
-	while (it.hasNext())
-	{
+	while (it.hasNext()) {
 		it.next();
 		QByteArray filename = it.key().toUtf8();
 		dataStream << quint32(filename.size());

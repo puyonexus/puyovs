@@ -1,5 +1,5 @@
-#include <enet/enet.h>
 #include "PVS_Packet.h"
+#include <enet/enet.h>
 #include <string.h>
 
 unsigned short pvs_htons(unsigned short s)
@@ -16,178 +16,181 @@ unsigned int pvs_htonl(unsigned int l)
 Packets are structured as following, excluding the first byte:
 
 PT_CONNECT:
-	(from server)
-	*uint32 peer id
+    (from server)
+    *uint32 peer id
 
 PT_MESSSERVER:
-	(from client)
-	*uint32 id of sender
-	*char subchannel
-	*string message
+    (from client)
+    *uint32 id of sender
+    *char subchannel
+    *string message
 
-	(from server)
-	*char subchannel
-	*string message
+    (from server)
+    *char subchannel
+    *string message
 
 PT_MESCHANNEL:
-	(from client)
-	*uint32 id of sender
-	*char subchannel
-	*string channel name
-	*string message
+    (from client)
+    *uint32 id of sender
+    *char subchannel
+    *string channel name
+    *string message
 
-	(from server)
-	*uint32 id of sender
-	*char subchannel
-	*string channel name
-	*string message
+    (from server)
+    *uint32 id of sender
+    *char subchannel
+    *string channel name
+    *string message
 
 PT_MESCHANNEL_RAW:
-	(from client)
-	*uint32 id of sender
-	*char subchannel
-	*string channel name
-	*uint32 length of char array
-	*char message[array lenght]
+    (from client)
+    *uint32 id of sender
+    *char subchannel
+    *string channel name
+    *uint32 length of char array
+    *char message[array lenght]
 
-	(from server)
-	*uint32 id of sender
-	*char subchannel
-	*string channel name
-	*string message
-	*uint32 length of char array
-	*char message[array length]
+    (from server)
+    *uint32 id of sender
+    *char subchannel
+    *string channel name
+    *string message
+    *uint32 length of char array
+    *char message[array length]
 
 PT_MESCHANNELPEER:
-	(from client)
-	*uint32 id of sender
-	*char subchannel
-	*uint32 target id
-	*string channel name
-	*string message
+    (from client)
+    *uint32 id of sender
+    *char subchannel
+    *uint32 target id
+    *string channel name
+    *string message
 
-	(from server)
-	*uint32 id of sender
-	*char subchannel
-	*string channel name
-	*string message
+    (from server)
+    *uint32 id of sender
+    *char subchannel
+    *string channel name
+    *string message
 
 PT_MESCHANNELPEER_RAW:
-	(from client)
-	*uint32 id of sender
-	*char subchannel
-	*uint32 target id
-	*string channel name
-	*uint32 length
-	*char message[length]
+    (from client)
+    *uint32 id of sender
+    *char subchannel
+    *uint32 target id
+    *string channel name
+    *uint32 length
+    *char message[length]
 
-	(from server)
-	*uint32 id of sender
-	*char subchannel
-	*string channel name
-	*uint32 length
-	*char message[length]
+    (from server)
+    *uint32 id of sender
+    *char subchannel
+    *string channel name
+    *uint32 length
+    *char message[length]
 
 PT_NAME:
-	(from client)
-	*uint32 id of sender
-	*string requested name
+    (from client)
+    *uint32 id of sender
+    *string requested name
 
-	(send from server)
-	*char name ok(1) or not(0)
-	*string requested name
-	*string old name
+    (send from server)
+    *char name ok(1) or not(0)
+    *string requested name
+    *string old name
 
 PT_REQUESTNEWCHANNEL:
-	(from client)
-	*uint32 id of sender
-	*string channel name
-	*string channel description
-	*unsigned char peer status upon entering
-	*byte lock
-	*byte destroy if empty
+    (from client)
+    *uint32 id of sender
+    *string channel name
+    *string channel description
+    *unsigned char peer status upon entering
+    *byte lock
+    *byte destroy if empty
 
-	(from server)
-	send back through request join channel
+    (from server)
+    send back through request join channel
 
 PT_REQUESTJOINCHANNEL:
-	(from client)
-	*uint32 id of sender
-	*string channel name
-	*unsigned char peer status upon entering
+    (from client)
+    *uint32 id of sender
+    *string channel name
+    *unsigned char peer status upon entering
 
-	(send from server) (send to connected peer, to inform of other peers in channel)
-	*char join ok(1) or not(0)
-	*string channel name
-	*string channel description
-	*uint32 number of peers in channel
-	*uint32 id1
-	*string name1
-	*unsigned char status1
-	*uint32 id2
-	*string name2
-	*unsigned char status2
-	etc.
+    (send from server) (send to connected peer, to inform of other peers in channel)
+    *char join ok(1) or not(0)
+    *string channel name
+    *string channel description
+    *uint32 number of peers in channel
+    *uint32 id1
+    *string name1
+    *unsigned char status1
+    *uint32 id2
+    *string name2
+    *unsigned char status2
+    etc.
 
 PT_REQUESTLEAVECHANNEL:
-	(from client)
-	*uint32 id of sender
-	*string channelname
+    (from client)
+    *uint32 id of sender
+    *string channelname
 
 PT_PEERJOINCHANNEL:
-	(send from server) (inform leaving/joining single peer)
-	*char peer leaves(0)/joins(1)
-	*string channel name
-	*uint32 id
-	*string name
-	*unsigned char status
+    (send from server) (inform leaving/joining single peer)
+    *char peer leaves(0)/joins(1)
+    *string channel name
+    *uint32 id
+    *string name
+    *unsigned char status
 
 PT_CHANNELLIST:
-	(from client)
-	*uint32 id of sender
+    (from client)
+    *uint32 id of sender
 
-	(send from server)
-	*uint32 number of channels
-	*string name1
-	*string channeldescription
-	*string name2
-	...
+    (send from server)
+    *uint32 number of channels
+    *string name1
+    *string channeldescription
+    *string name2
+    ...
 
 PT_NEWCHANNEL
-	(send from server)
-	*char destroy channel (0)
-	*string channelname
+    (send from server)
+    *char destroy channel (0)
+    *string channelname
 
-	*char create channel (1)
-	*string channelname
-	*string channeldescription
+    *char create channel (1)
+    *string channelname
+    *string channeldescription
 
 PT_CHANGEDESCRIPTION
-	(send from server)
-	 *string channelname
-	 *string channeldescription
+    (send from server)
+     *string channelname
+     *string channeldescription
 
-	 (send from client)
-	 *string channelname
-	 *string channeldescription
+     (send from client)
+     *string channelname
+     *string channeldescription
 
 PT_CHANGESTATUS
-	(send from client)
-	*uint32 id
-	*string channelname
-	*unsigned char new status
+    (send from client)
+    *uint32 id
+    *string channelname
+    *unsigned char new status
 
-	(send from server)
-	*uint32 id of peer
-	*string channelname
-	*unsigned char new status
-	*unsigned char old status
+    (send from server)
+    *uint32 id of peer
+    *string channelname
+    *unsigned char new status
+    *unsigned char old status
 */
 
-
 packetWriter::packetWriter()
-	: ppos(0), arraySize(0), initialized(false), dynSize(false)
-{}
+	: ppos(0)
+	, arraySize(0)
+	, initialized(false)
+	, dynSize(false)
+{
+}
 
 // Pass char array
 packetWriter::packetWriter(char* p)
@@ -252,8 +255,10 @@ bool packetWriter::copyChars(char* pack, unsigned int n)
 }
 
 packetReader::packetReader()
-	: ppos(0), initialized(false)
-{}
+	: ppos(0)
+	, initialized(false)
+{
+}
 
 packetReader::packetReader(ENetPacket* p)
 {

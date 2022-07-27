@@ -2,21 +2,21 @@
 
 #include <QDialog>
 #include <QList>
-#include <QString>
 #include <QPair>
+#include <QString>
 
 namespace Ui {
-	class OfflineDialog;
+class OfflineDialog;
 }
 
 namespace ppvs {
-	struct GameSettings;
+enum class Rules : int;
+struct GameSettings;
 }
 
 class Settings;
 
-class OfflineDialog : public QDialog
-{
+class OfflineDialog : public QDialog {
 	Q_OBJECT
 
 public:
@@ -31,6 +31,6 @@ private slots:
 
 private:
 	Ui::OfflineDialog* ui;
-	const QList<QPair<int, QString>> mModeList;
+	const QList<QPair<ppvs::Rules, QString>> mModeList;
 	ppvs::GameSettings* mGameSettings;
 };

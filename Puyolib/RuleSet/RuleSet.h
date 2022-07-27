@@ -1,19 +1,13 @@
 #pragma once
 
-#include "../FieldProp.h"
 #include "../global.h"
-#include "../DropPattern.h"
-#include <vector>
-#include <string>
 
-namespace ppvs
-{
+namespace ppvs {
 
 class Player;
 class Game;
 
-enum Phase
-{
+enum class Phase {
 	PICKCOLORS = -2,
 	IDLE = -1,
 	GETREADY = 0,
@@ -47,62 +41,62 @@ enum Phase
 	WAITLOSE = 62 // Online player loses: wait until receiving lose message
 };
 
-enum LoseWinState
-{
+enum class LoseWinState {
 	NOWIN,
 	WIN,
 	LOSE,
 	LOSEWAIT,
 };
 
-typedef int Rules;
-#define ENDLESS         0
-#define TSU             1
-#define FEVER           2
-#define ENDLESSFEVER    3
-#define ENDLESSFEVERVS  4
-#define TSU_ONLINE      5
-#define FEVER_ONLINE    6
-#define FEVER15_ONLINE  7
-#define ENDLESSFEVERVS_ONLINE  8
-#define EXCAVATION      9
+enum class Rules : int {
+	ENDLESS,
+	TSU,
+	FEVER,
+	ENDLESSFEVER,
+	ENDLESSFEVERVS,
+	TSU_ONLINE,
+	FEVER_ONLINE,
+	FEVER15_ONLINE,
+	ENDLESSFEVERVS_ONLINE,
+	EXCAVATION,
+};
 
 int getTargetFromMargin(int initialTarget, int marginTime, int currentTime);
 
-class RuleSet
-{
+class RuleSet {
 public:
 	RuleSet();
 	virtual ~RuleSet();
 	void setRules(Rules);
 	void setGame(Game*);
 	virtual Phase endPhase(Phase, Player*);
-	Game* currentgame;
-	GameData* data;
+
+    Game* m_currentGame = nullptr;
+	GameData* m_data = nullptr;
 
 	// Some constants throughout a game
-	int fastDrop;
-	int marginTime;
-	int initialFeverCount;
-	int puyoToClear;
-	int requiredChain;
-	int targetPoint; // Pass to player
-	float feverPower;
-	int NFeverChains; // 4=ppf, 12=ppf+pp15
-	bool delayedFall;
-	bool doubleSpawn;
-	bool addDropBonus;
-	bool voicePatternFever;
-	bool allClearStart; // Whether the first 4 puyos can create an all clear
-	bool feverDeath; // Whether you can die in fever at t=0
-	bool bonusEQ; // Whether a player gets a bonus of 1 garbage preparing an offset
-	bool quickDrop;
+	int m_fastDrop = 0;
+	int m_marginTime = 0;
+	int m_initialFeverCount = 0;
+	int m_puyoToClear = 0;
+	int m_requiredChain = 0;
+	int m_targetPoint {}; // Pass to player
+	float m_feverPower = 0.f;
+	int m_nFeverChains = 0; // 4=ppf, 12=ppf+pp15
+	bool m_delayedFall = false;
+	bool m_doubleSpawn = false;
+	bool m_addDropBonus = false;
+	bool m_voicePatternFever = false;
+	bool m_allClearStart = false; // Whether the first 4 puyos can create an all clear
+	bool m_feverDeath = false; // Whether you can die in fever at t=0
+	bool m_bonusEq = false; // Whether a player gets a bonus of 1 garbage preparing an offset
+	bool m_quickDrop = false;
 
 	// Pointer to score lists
-	// Note: in fever rules, chainbonus is character related
-	int* linkBonus, * colorBonus, * chainBonus;
+	// Note: in fever rules, chain bonus is character related
+	int *m_linkBonus {}, *m_colorBonus {}, *m_chainBonus {};
 
-	// Ruleset function callbacks
+	// Rule set function callbacks
 	virtual void onSetGame();
 	virtual void onInit(Player*);
 	virtual void onAllClearPop(Player*);
@@ -117,190 +111,179 @@ public:
 	virtual int getChainBonus(Player* pl);
 
 private:
-	Rules m_rules;
+	Rules m_rules {};
 };
 
-class EndlessRuleSet : public RuleSet
-{
+class EndlessRuleSet final : public RuleSet {
 public:
 	EndlessRuleSet();
-	~EndlessRuleSet();
-	Phase endPhase(Phase currentphase, Player*);
-	void onInit(Player*);
-	void onAllClearPop(Player*);
-	void onWin(Player*);
-	void onChain(Player*);
-	void onOffset(Player*);
-	int getLinkBonus(int chain);
-	int getColorBonus(int chain);
-	int getChainBonus(Player* pl);
+	~EndlessRuleSet() override;
+	Phase endPhase(Phase currentPhase, Player*) override;
+	void onInit(Player*) override;
+	void onAllClearPop(Player*) override;
+	void onWin(Player*) override;
+	void onChain(Player*) override;
+	void onOffset(Player*) override;
+	int getLinkBonus(int chain) override;
+	int getColorBonus(int chain) override;
+	int getChainBonus(Player* pl) override;
 };
 
-class TsuRuleSet : public RuleSet
-{
+class TsuRuleSet final : public RuleSet {
 public:
 	TsuRuleSet();
-	~TsuRuleSet();
-	Phase endPhase(Phase currentphase, Player*);
-	void onInit(Player*);
-	void onAllClearPop(Player*);
-	void onWin(Player*);
-	void onLose(Player*);
-	int getLinkBonus(int chain);
-	int getColorBonus(int chain);
-	int getChainBonus(Player* pl);
+	~TsuRuleSet() override;
+	Phase endPhase(Phase currentPhase, Player*) override;
+	void onInit(Player*) override;
+	void onAllClearPop(Player*) override;
+	void onWin(Player*) override;
+	void onLose(Player*) override;
+	int getLinkBonus(int chain) override;
+	int getColorBonus(int chain) override;
+	int getChainBonus(Player* pl) override;
 };
 
-class FeverRuleSet : public RuleSet
-{
+class FeverRuleSet final : public RuleSet {
 public:
 	FeverRuleSet();
-	~FeverRuleSet();
-	Phase endPhase(Phase currentphase, Player*);
-	void onSetGame();
-	void onInit(Player*);
-	void onAllClearPop(Player*);
-	void onAllClear(Player*);
-	void onLose(Player*);
-	void onWin(Player*);
-	void onChain(Player*);
-	void onOffset(Player*);
-	void onAttack(Player*);
-	int getLinkBonus(int chain);
-	int getColorBonus(int chain);
-	int getChainBonus(Player* pl);
+	~FeverRuleSet() override;
+	Phase endPhase(Phase currentPhase, Player*) override;
+	void onSetGame() override;
+	void onInit(Player*) override;
+	void onAllClearPop(Player*) override;
+	void onAllClear(Player*) override;
+	void onLose(Player*) override;
+	void onWin(Player*) override;
+	void onChain(Player*) override;
+	void onOffset(Player*) override;
+	void onAttack(Player*) override;
+	int getLinkBonus(int chain) override;
+	int getColorBonus(int chain) override;
+	int getChainBonus(Player* pl) override;
 };
 
-class EndlessFeverRuleSet : public RuleSet
-{
+class EndlessFeverRuleSet final : public RuleSet {
 public:
 	EndlessFeverRuleSet();
-	~EndlessFeverRuleSet();
-	Phase endPhase(Phase currentphase, Player*);
-	void onSetGame();
-	void onInit(Player*);
-	void onAllClearPop(Player*);
-	void onAllClear(Player*);
-	void onLose(Player*);
-	void onWin(Player*);
-	void onChain(Player*);
-	void onOffset(Player*);
-	void onAttack(Player*);
-	int getLinkBonus(int chain);
-	int getColorBonus(int chain);
-	int getChainBonus(Player* pl);
+	~EndlessFeverRuleSet() override;
+	Phase endPhase(Phase currentPhase, Player*) override;
+	void onSetGame() override;
+	void onInit(Player*) override;
+	void onAllClearPop(Player*) override;
+	void onAllClear(Player*) override;
+	void onLose(Player*) override;
+	void onWin(Player*) override;
+	void onChain(Player*) override;
+	void onOffset(Player*) override;
+	void onAttack(Player*) override;
+	int getLinkBonus(int chain) override;
+	int getColorBonus(int chain) override;
+	int getChainBonus(Player* pl) override;
 };
 
-class EndlessFeverVsRuleSet : public RuleSet
-{
+class EndlessFeverVsRuleSet final : public RuleSet {
 public:
 	EndlessFeverVsRuleSet();
-	~EndlessFeverVsRuleSet();
-	Phase endPhase(Phase currentphase, Player*);
-	void onSetGame();
-	void onInit(Player*);
-	void onAllClearPop(Player*);
-	void onAllClear(Player*);
-	void onLose(Player*);
-	void onWin(Player*);
-	void onChain(Player*);
-	void onOffset(Player*);
-	void onAttack(Player*);
-	int getLinkBonus(int chain);
-	int getColorBonus(int chain);
-	int getChainBonus(Player* pl);
+	~EndlessFeverVsRuleSet() override;
+	Phase endPhase(Phase currentPhase, Player*) override;
+	void onSetGame() override;
+	void onInit(Player*) override;
+	void onAllClearPop(Player*) override;
+	void onAllClear(Player*) override;
+	void onLose(Player*) override;
+	void onWin(Player*) override;
+	void onChain(Player*) override;
+	void onOffset(Player*) override;
+	void onAttack(Player*) override;
+	int getLinkBonus(int chain) override;
+	int getColorBonus(int chain) override;
+	int getChainBonus(Player* pl) override;
 };
 
-class TsuOnlineRuleSet : public RuleSet
-{
+class TsuOnlineRuleSet final : public RuleSet {
 public:
 	TsuOnlineRuleSet();
-	~TsuOnlineRuleSet();
-	Phase endPhase(Phase currentphase, Player*);
-	void onInit(Player*);
-	void onAllClearPop(Player*);
-	void onWin(Player*);
-	void onLose(Player*);
-	void onOffset(Player*);
-	int getLinkBonus(int chain);
-	int getColorBonus(int chain);
-	int getChainBonus(Player* pl);
+	~TsuOnlineRuleSet() override;
+	Phase endPhase(Phase currentPhase, Player*) override;
+	void onInit(Player*) override;
+	void onAllClearPop(Player*) override;
+	void onWin(Player*) override;
+	void onLose(Player*) override;
+	void onOffset(Player*) override;
+	int getLinkBonus(int chain) override;
+	int getColorBonus(int chain) override;
+	int getChainBonus(Player* pl) override;
 };
 
-class FeverOnlineRuleSet : public RuleSet
-{
+class FeverOnlineRuleSet final : public RuleSet {
 public:
 	FeverOnlineRuleSet();
-	~FeverOnlineRuleSet();
-	Phase endPhase(Phase currentphase, Player*);
-	void onSetGame();
-	void onInit(Player*);
-	void onAllClearPop(Player*);
-	void onAllClear(Player*);
-	void onLose(Player*);
-	void onWin(Player*);
-	void onChain(Player*);
-	void onOffset(Player*);
-	void onAttack(Player*);
-	int getLinkBonus(int chain);
-	int getColorBonus(int chain);
-	int getChainBonus(Player* pl);
+	~FeverOnlineRuleSet() override;
+	Phase endPhase(Phase currentPhase, Player*) override;
+	void onSetGame() override;
+	void onInit(Player*) override;
+	void onAllClearPop(Player*) override;
+	void onAllClear(Player*) override;
+	void onLose(Player*) override;
+	void onWin(Player*) override;
+	void onChain(Player*) override;
+	void onOffset(Player*) override;
+	void onAttack(Player*) override;
+	int getLinkBonus(int chain) override;
+	int getColorBonus(int chain) override;
+	int getChainBonus(Player* pl) override;
 };
 
-class Fever15OnlineRuleSet : public RuleSet
-{
+class Fever15OnlineRuleSet final : public RuleSet {
 public:
 	Fever15OnlineRuleSet();
-	~Fever15OnlineRuleSet();
-	Phase endPhase(Phase currentphase, Player*);
-	void onSetGame();
-	void onInit(Player*);
-	void onAllClearPop(Player*);
-	void onAllClear(Player*);
-	void onLose(Player*);
-	void onWin(Player*);
-	void onChain(Player*);
-	void onOffset(Player*);
-	void onAttack(Player*);
-	int getLinkBonus(int chain);
-	int getColorBonus(int chain);
-	int getChainBonus(Player* pl);
+	~Fever15OnlineRuleSet() override;
+	Phase endPhase(Phase currentPhase, Player*) override;
+	void onSetGame() override;
+	void onInit(Player*) override;
+	void onAllClearPop(Player*) override;
+	void onAllClear(Player*) override;
+	void onLose(Player*) override;
+	void onWin(Player*) override;
+	void onChain(Player*) override;
+	void onOffset(Player*) override;
+	void onAttack(Player*) override;
+	int getLinkBonus(int chain) override;
+	int getColorBonus(int chain) override;
+	int getChainBonus(Player* pl) override;
 };
 
-class EndlessFeverVsOnlineRuleSet : public RuleSet
-{
+class EndlessFeverVsOnlineRuleSet final : public RuleSet {
 public:
 	EndlessFeverVsOnlineRuleSet();
-	~EndlessFeverVsOnlineRuleSet();
-	Phase endPhase(Phase currentphase, Player*);
-	void onSetGame();
-	void onInit(Player*);
-	void onAllClearPop(Player*);
-	void onAllClear(Player*);
-	void onLose(Player*);
-	void onWin(Player*);
-	void onChain(Player*);
-	void onOffset(Player*);
-	void onAttack(Player*);
-	int getLinkBonus(int chain);
-	int getColorBonus(int chain);
-	int getChainBonus(Player* pl);
+	~EndlessFeverVsOnlineRuleSet() override;
+	Phase endPhase(Phase currentPhase, Player*) override;
+	void onSetGame() override;
+	void onInit(Player*) override;
+	void onAllClearPop(Player*) override;
+	void onAllClear(Player*) override;
+	void onLose(Player*) override;
+	void onWin(Player*) override;
+	void onChain(Player*) override;
+	void onOffset(Player*) override;
+	void onAttack(Player*) override;
+	int getLinkBonus(int chain) override;
+	int getColorBonus(int chain) override;
+	int getChainBonus(Player* pl) override;
 };
 
-
-class ExcavationRuleSet : public RuleSet
-{
+class ExcavationRuleSet final : public RuleSet {
 public:
 	ExcavationRuleSet();
-	~ExcavationRuleSet();
-	Phase endPhase(Phase currentphase, Player*);
-	void onInit(Player*);
-	void onAllClearPop(Player*);
-	void onWin(Player*);
-	void onLose(Player*);
-	int getLinkBonus(int chain);
-	int getColorBonus(int chain);
-	int getChainBonus(Player* pl);
+	~ExcavationRuleSet() override;
+	Phase endPhase(Phase currentPhase, Player*) override;
+	void onInit(Player*) override;
+	void onAllClearPop(Player*) override;
+	void onWin(Player*) override;
+	void onLose(Player*) override;
+	int getLinkBonus(int chain) override;
+	int getColorBonus(int chain) override;
+	int getChainBonus(Player* pl) override;
 };
 
 }

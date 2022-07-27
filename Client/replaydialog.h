@@ -9,8 +9,7 @@ class ReplayDialog;
 class GameManager;
 class Settings;
 
-class ReplayDialog : public QDialog
-{
+class ReplayDialog : public QDialog {
 	Q_OBJECT
 
 public:

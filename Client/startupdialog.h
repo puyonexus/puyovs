@@ -1,14 +1,13 @@
 #pragma once
 
-#include <QDialog>
 #include <QDesktopServices>
+#include <QDialog>
 
 namespace Ui {
 class StartupDialog;
 }
 
-class StartupDialog : public QDialog
-{
+class StartupDialog : public QDialog {
 	Q_OBJECT
 
 public:

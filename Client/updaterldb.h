@@ -1,12 +1,11 @@
 #pragma once
 
-#include <qglobal.h>
 #include <QMap>
+#include <qglobal.h>
 
 class QIODevice;
 
-class UpdaterLDB
-{
+class UpdaterLDB {
 public:
 	bool read(QIODevice* stream);
 	bool write(QIODevice* stream) const;

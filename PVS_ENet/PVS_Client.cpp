@@ -1,6 +1,6 @@
 #include "PVS_Client.h"
-#include <string.h>
 #include <enet/enet.h>
+#include <string.h>
 
 PVS_Client::PVS_Client()
 {
@@ -51,8 +51,7 @@ unsigned int PVS_Client::getID() const
 
 bool PVS_Client::initNetwork()
 {
-	if (enet_initialize() != 0)
-	{
+	if (enet_initialize() != 0) {
 		return false;
 	}
 
@@ -60,10 +59,9 @@ bool PVS_Client::initNetwork()
 	host = enet_host_create(nullptr, // Create a client host
 		1, N_CHANNELS, // Allow only 1 outgoing connection
 		0, // Use 57600 / 8 for 56K modem with 56 Kbps downstream bandwidth
-		0);// Use 14400 / 8 for 56K modem with 14 Kbps upstream bandwidth
+		0); // Use 14400 / 8 for 56K modem with 14 Kbps upstream bandwidth
 
-	if (!host)
-	{
+	if (!host) {
 		return false;
 	}
 	networkInitialized = true;
@@ -76,8 +74,7 @@ bool PVS_Client::requestConnect(const char* serverAddress)
 	enet_address_set_host(address, serverAddress);
 	serverPeer = enet_host_connect(host, address, N_CHANNELS, 0);
 	serverPeer->data = nullptr; // Use this as mark that connection is not yet acknowledged
-	if (!serverPeer)
-	{
+	if (!serverPeer) {
 		return false;
 	}
 	return true;
@@ -123,10 +120,8 @@ void PVS_Client::requestDisconnect()
 
 	enet_peer_disconnect(serverPeer, 0);
 	ENetEvent event;
-	while (enet_host_service(host, &event, 3000) > 0)
-	{
-		switch (event.type)
-		{
+	while (enet_host_service(host, &event, 3000) > 0) {
+		switch (event.type) {
 		case ENET_EVENT_TYPE_RECEIVE:
 			enet_packet_destroy(event.packet);
 			break;
@@ -181,10 +176,8 @@ void PVS_Client::sendPacket(int channelNum, char* pack, int len, ENetPeer* peer)
 void PVS_Client::checkEvent()
 {
 	ENetEvent event;
-	while (enet_host_service(host, &event, 0) > 0)
-	{
-		switch (event.type)
-		{
+	while (enet_host_service(host, &event, 0) > 0) {
+		switch (event.type) {
 		case ENET_EVENT_TYPE_CONNECT:
 			connect(event);
 			break;
@@ -200,7 +193,6 @@ void PVS_Client::checkEvent()
 			break;
 		}
 	}
-
 }
 
 // Connected to server
@@ -221,8 +213,7 @@ void PVS_Client::disconnect()
 	disconnectRequested = false;
 	onDisconnect();
 	// Leave all channels
-	while (!channelManager.globalChannelList.empty())
-	{
+	while (!channelManager.globalChannelList.empty()) {
 		leaveChannel(channelManager.globalChannelList.back()->name.c_str(), false);
 		break;
 	}
@@ -234,215 +225,212 @@ void PVS_Client::receive(ENetEvent& event)
 	// Get first byte
 	packetReader pr(event.packet);
 	unsigned char type = 0;
-	if (!pr.getValue(type)) return;
+	if (!pr.getValue(type))
+		return;
 	// Process package
-	switch (type)
-	{
-	case PT_CONNECT:
-	{
+	switch (type) {
+	case PT_CONNECT: {
 		// Get id from server: call onConnect
-		if (!pr.getValue(getPVS_Peer()->id)) return;
+		if (!pr.getValue(getPVS_Peer()->id))
+			return;
 		idSet = true;
 		onConnect();
 		break;
 	}
-	case PT_MESSERVER:
-	{
+	case PT_MESSERVER: {
 		// Get string from server
-		if (!pr.getValue(subChannel)) return;
-		if (!pr.getString(currentString)) return;;
+		if (!pr.getValue(subChannel))
+			return;
+		if (!pr.getString(currentString))
+			return;
+		;
 		onMessageServer();
 		break;
 	}
-	case PT_MESCHANNEL:
-	{
+	case PT_MESCHANNEL: {
 		// Get string from channel
 		unsigned int id = 0;
-		if (!pr.getValue(id)) return;
-		if (!pr.getValue(subChannel)) return;
-		if (!pr.getString(currentChannelName)) return;
-		if (!pr.getString(currentString)) return;
+		if (!pr.getValue(id))
+			return;
+		if (!pr.getValue(subChannel))
+			return;
+		if (!pr.getString(currentChannelName))
+			return;
+		if (!pr.getString(currentString))
+			return;
 
 		// Check if connected to channel in the first place
-		if (channelManager.channelExists(currentChannelName))
-		{
+		if (channelManager.channelExists(currentChannelName)) {
 			// Find peer
-			if ((currentPVS_Peer = channelManager.getPeerInChannel(currentChannelName, id)))
-			{
+			if ((currentPVS_Peer = channelManager.getPeerInChannel(currentChannelName, id))) {
 				currentPVS_PeerName = currentPVS_Peer->name;
 				onMessageChannel();
-			}
-			else
-			{
+			} else {
 				currentPVS_PeerName = "could not find peer";
 				onMessageChannel();
 			}
 		}
 		break;
 	}
-	case PT_MESCHANNELPEER:
-	{
+	case PT_MESCHANNELPEER: {
 		// Get string from peer in channel
 		unsigned int id = 0;
-		if (!pr.getValue(id)) return;
-		if (!pr.getValue(subChannel)) return;
-		if (!pr.getString(currentChannelName)) return;
-		if (!pr.getString(currentString)) return;
+		if (!pr.getValue(id))
+			return;
+		if (!pr.getValue(subChannel))
+			return;
+		if (!pr.getString(currentChannelName))
+			return;
+		if (!pr.getString(currentString))
+			return;
 
 		// Check if connected to channel in the first place
-		if (channelManager.channelExists(currentChannelName))
-		{
+		if (channelManager.channelExists(currentChannelName)) {
 			// Find peer
-			if ((currentPVS_Peer = channelManager.getPeerInChannel(currentChannelName, id)))
-			{
-				if (currentPVS_Peer == nullptr) return;
+			if ((currentPVS_Peer = channelManager.getPeerInChannel(currentChannelName, id))) {
+				if (currentPVS_Peer == nullptr)
+					return;
 				currentPVS_PeerName = currentPVS_Peer->name;
 				onMessageChannelPeer();
-			}
-			else
+			} else
 				currentPVS_PeerName = "could not find peer";
 		}
 	}
-	case PT_RAWMESCHANNEL:
-	{
+	case PT_RAWMESCHANNEL: {
 		// Get string from channel
 		unsigned int id = 0;
-		if (!pr.getValue(id)) return;
-		if (!pr.getValue(subChannel)) return;
-		if (!pr.getString(currentChannelName)) return;
+		if (!pr.getValue(id))
+			return;
+		if (!pr.getValue(subChannel))
+			return;
+		if (!pr.getString(currentChannelName))
+			return;
 		unsigned int length = 0;
-		if (!pr.getValue(length)) return;
-		if (length == 0) return;
+		if (!pr.getValue(length))
+			return;
+		if (length == 0)
+			return;
 		// After this comes the char array
 
 		currentPacket = event.packet;
 
 		// Check if connected to channel in the first place
-		if (channelManager.channelExists(currentChannelName))
-		{
+		if (channelManager.channelExists(currentChannelName)) {
 			// Find peer
-			if ((currentPVS_Peer = channelManager.getPeerInChannel(currentChannelName, id)))
-			{
+			if ((currentPVS_Peer = channelManager.getPeerInChannel(currentChannelName, id))) {
 				currentPVS_PeerName = currentPVS_Peer->name;
 				onRawMessageChannel();
-			}
-			else
-			{
+			} else {
 				currentPVS_PeerName = "could not find peer";
 				onRawMessageChannel();
 			}
 		}
 		break;
 	}
-	case PT_RAWMESCHANNELPEER:
-	{
+	case PT_RAWMESCHANNELPEER: {
 		// Get string from peer in channel
 		unsigned int id = 0;
-		if (!pr.getValue(id)) return;
-		if (!pr.getValue(subChannel)) return;
-		if (!pr.getString(currentChannelName)) return;
+		if (!pr.getValue(id))
+			return;
+		if (!pr.getValue(subChannel))
+			return;
+		if (!pr.getString(currentChannelName))
+			return;
 		unsigned int length = 0;
-		if (!pr.getValue(length)) return;
-		if (length == 0) return;
+		if (!pr.getValue(length))
+			return;
+		if (length == 0)
+			return;
 		// After this comes the char array
 
 		currentPacket = event.packet;
 
 		// Check if connected to channel in the first place
-		if (channelManager.channelExists(currentChannelName))
-		{
+		if (channelManager.channelExists(currentChannelName)) {
 			// Find peer
-			if ((currentPVS_Peer = channelManager.getPeerInChannel(currentChannelName, id)))
-			{
+			if ((currentPVS_Peer = channelManager.getPeerInChannel(currentChannelName, id))) {
 				currentPVS_PeerName = currentPVS_Peer->name;
 				onRawMessageChannelPeer();
-			}
-			else
-			{
+			} else {
 				currentPVS_PeerName = "could not find peer";
 			}
 		}
 	}
 
-	case PT_NAME:
-	{
+	case PT_NAME: {
 		// Name request response from server
 		char ok = 0;
-		if (!pr.getValue(ok)) return;
+		if (!pr.getValue(ok))
+			return;
 
-		if (ok)
-		{
+		if (ok) {
 			pr.getString(getPVS_Peer()->name);
 			pr.getString(getPVS_Peer()->oldName);
 			onNameSet();
-		}
-		else
-		{
+		} else {
 			onNameDenied();
 		}
 		break;
 	}
-	case PT_REQUESTJOINCHANNEL:
-	{
+	case PT_REQUESTJOINCHANNEL: {
 		// Channel join/creation response
 		char ok = 0;
 		pr.getValue(ok);
-		if (ok)
-		{
+		if (ok) {
 			// Channel is created/joined: client recieves a list of peers (includes self)
-			if (!pr.getString(currentChannelName)) return;
-			if (!pr.getString(currentChannelDescription)) return;
+			if (!pr.getString(currentChannelName))
+				return;
+			if (!pr.getString(currentChannelDescription))
+				return;
 			// Create channel (==joining channel on client side)
 			if (!channelManager.channelExists(currentChannelName))
 				channelManager.createNewChannel(currentChannelName, currentChannelDescription, false, true);
-			else
-			{
+			else {
 				errorString = "ERROR: Attempting to join a channel you're already connected to.";
 				onError();
 				return; // This shouldnt happen, attempting to join existing channel
 			}
 			int Npeers = 0;
 			pr.getValue(Npeers);
-			for (int i = 0; i < Npeers; i++)
-			{
+			for (int i = 0; i < Npeers; i++) {
 				// Client creates peers in channel
 				unsigned char status;
 				PVS_Peer* p = new PVS_Peer();
-				if (!pr.getValue(p->id)) break;
-				if (!pr.getString(p->name)) break;
-				if (!pr.getValue(status)) break;
+				if (!pr.getValue(p->id))
+					break;
+				if (!pr.getString(p->name))
+					break;
+				if (!pr.getValue(status))
+					break;
 				channelManager.addPeer(currentChannelName, p, status);
 			}
 			onChannelJoined();
-		}
-		else
-		{
+		} else {
 			onChannelDenied();
 		}
 		break;
 	}
-	case PT_PEERJOINCHANNEL:
-	{
+	case PT_PEERJOINCHANNEL: {
 		// A peer joins/leaves channel
 		char join = 0;
-		if (!pr.getValue(join)) return;
-		if (!pr.getString(currentChannelName)) return;
+		if (!pr.getValue(join))
+			return;
+		if (!pr.getString(currentChannelName))
+			return;
 		unsigned int id = 0;
-		if (!pr.getValue(id)) return;
-		if (!pr.getString(currentPVS_PeerName)) return;
-		if (channelManager.channelExists(currentChannelName))
-		{
-			if (join)
-			{
+		if (!pr.getValue(id))
+			return;
+		if (!pr.getString(currentPVS_PeerName))
+			return;
+		if (channelManager.channelExists(currentChannelName)) {
+			if (join) {
 				PVS_Peer* newpeer = new PVS_Peer;
 				newpeer->id = id;
 				newpeer->name = currentPVS_PeerName;
 				channelManager.addPeer(currentChannelName, newpeer, currentStatus);
 				currentPVS_Peer = newpeer;
 				onPeerJoinedChannel();
-			}
-			else
-			{
+			} else {
 				currentPVS_Peer = channelManager.getPeerInChannel(currentChannelName, currentPVS_PeerName);
 				onPeerLeftChannel();
 				channelManager.removePeer(currentChannelName, currentPVS_Peer);
@@ -450,69 +438,73 @@ void PVS_Client::receive(ENetEvent& event)
 		}
 		break;
 	}
-	case PT_CHANNELLIST:
-	{
+	case PT_CHANNELLIST: {
 		// Receive channellist
 		unsigned int channels = 0;
-		if (!pr.getValue(channels)) return;
+		if (!pr.getValue(channels))
+			return;
 		std::vector<std::string> names;
 		std::vector<std::string> descriptions;
-		for (unsigned int i = 0; i < channels; i++)
-		{
+		for (unsigned int i = 0; i < channels; i++) {
 			std::string str;
 			std::string descr;
-			if (!pr.getString(str)) return;
-			if (!pr.getString(descr)) return;
+			if (!pr.getString(str))
+				return;
+			if (!pr.getString(descr))
+				return;
 			names.push_back(str);
 			descriptions.push_back(descr);
 		}
 		onGetChannelList(&names, &descriptions);
 		break;
 	}
-	case PT_NEWCHANNEL:
-	{
+	case PT_NEWCHANNEL: {
 		// Channel was created/destroyed
 		unsigned char create = 2;
-		if (!pr.getValue(create)) return;
-		if (create == 0)
-		{
-			if (!pr.getString(currentChannelName)) return;
+		if (!pr.getValue(create))
+			return;
+		if (create == 0) {
+			if (!pr.getString(currentChannelName))
+				return;
 			onChannelDestroyed();
-		}
-		else if (create == 1)
-		{
-			if (!pr.getString(currentChannelName)) return;
-			if (!pr.getString(currentChannelDescription)) return;
+		} else if (create == 1) {
+			if (!pr.getString(currentChannelName))
+				return;
+			if (!pr.getString(currentChannelDescription))
+				return;
 			onChannelCreated();
-		}
-		else
-		{
+		} else {
 			errorString = "Wrong specifier for channel creation";
 			onError();
 		}
 		break;
 	}
-	case PT_CHANGEDESCRIPTION:
-	{
+	case PT_CHANGEDESCRIPTION: {
 		// Channel changed description
-		if (!pr.getString(currentChannelName)) return;
-		if (!pr.getString(currentChannelDescription)) return;
+		if (!pr.getString(currentChannelName))
+			return;
+		if (!pr.getString(currentChannelDescription))
+			return;
 		onChannelDescription();
 	}
-	case PT_CHANGESTATUS:
-	{// Status got changed
+	case PT_CHANGESTATUS: { // Status got changed
 		unsigned int id = 0;
-		if (!pr.getValue(id)) return;
-		if (id == 0) return;
-		if (!pr.getString(currentChannelName)) return;
-		if (!pr.getValue(currentStatus)) return;
-		if (!pr.getValue(oldStatus)) return;
+		if (!pr.getValue(id))
+			return;
+		if (id == 0)
+			return;
+		if (!pr.getString(currentChannelName))
+			return;
+		if (!pr.getValue(currentStatus))
+			return;
+		if (!pr.getValue(oldStatus))
+			return;
 
-		if (channelManager.channelExists(currentChannelName))
-		{
+		if (channelManager.channelExists(currentChannelName)) {
 			// Find peer
 			currentPVS_Peer = channelManager.getPeerInChannel(currentChannelName, id);
-			if (currentPVS_Peer == nullptr) return;
+			if (currentPVS_Peer == nullptr)
+				return;
 			currentPVS_PeerName = currentPVS_Peer->name;
 			// Set status
 			channelManager.setStatus(currentChannelName, currentPVS_Peer, currentStatus);
@@ -664,4 +656,3 @@ void PVS_Client::changeStatus(const char* channelname, unsigned char status) con
 	pw.writeValue(status);
 	sendPacket(0, pw.getArray(), pw.getLength(), serverPeer);
 }
-

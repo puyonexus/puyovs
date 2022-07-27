@@ -2,8 +2,8 @@
 
 #include <QMainWindow>
 #include <QNetworkAccessManager>
-#include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QNetworkRequest>
 
 #include "netclient.h"
 
@@ -26,8 +26,7 @@ class GameWidgetGL;
 class CreateChatroomDialog;
 class PasswordDialog;
 class SearchDialog;
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
 	Q_OBJECT
 
 public:

@@ -8,8 +8,7 @@ class AdminDialog;
 
 class NetClient;
 
-class AdminDialog : public QDialog
-{
+class AdminDialog : public QDialog {
 	Q_OBJECT
 
 public:

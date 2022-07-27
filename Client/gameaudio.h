@@ -1,16 +1,15 @@
 #pragma once
 
+#include <QMap>
+#include <QObject>
+#include <QThread>
 #include <alib/audiolib.h>
 #include <alib/buffer.h>
-#include <QThread>
-#include <QObject>
-#include <QMap>
 
 typedef QMap<QString, alib::Stream> SampleCache;
 typedef QMapIterator<QString, alib::Stream> SampleCacheIterator;
 
-class GameAudio : public QObject
-{
+class GameAudio : public QObject {
 	Q_OBJECT
 
 public:

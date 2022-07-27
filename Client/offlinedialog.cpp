@@ -1,22 +1,24 @@
-#include <QComboBox>
 #include "offlinedialog.h"
-#include "ui_offlinedialog.h"
-#include "common.h"
 #include "../Puyolib/Game.h"
 #include "../Puyolib/GameSettings.h"
+#include "common.h"
 #include "settings.h"
+#include "ui_offlinedialog.h"
+#include <QComboBox>
 
-OfflineDialog::OfflineDialog(ppvs::GameSettings* gameSettings, QWidget* parent) :
-	QDialog(parent), ui(new Ui::OfflineDialog), mModeList(getModeList()), mGameSettings(gameSettings)
+OfflineDialog::OfflineDialog(ppvs::GameSettings* gameSettings, QWidget* parent)
+	: QDialog(parent)
+	, ui(new Ui::OfflineDialog)
+	, mModeList(getModeList())
+	, mGameSettings(gameSettings)
 {
 	Settings& settings = pvsApp->settings();
 	ui->setupUi(this);
 
 	GameModeListIterator modeIterator(mModeList);
-	while (modeIterator.hasNext())
-	{
+	while (modeIterator.hasNext()) {
 		GameModePair mode = modeIterator.next();
-		ui->ModeComboBox->addItem(mode.second, mode.first);
+		ui->ModeComboBox->addItem(mode.second, static_cast<int>(mode.first));
 	}
 
 	mGameSettings->playMusic = settings.boolean("launcher", "enablemusic", true);
@@ -31,17 +33,17 @@ OfflineDialog::~OfflineDialog()
 
 void OfflineDialog::on_PlayButton_clicked()
 {
-	mGameSettings->rulesetInfo.setRules(ui->ModeComboBox->itemData(ui->ModeComboBox->currentIndex(), Qt::UserRole).toInt());
+	mGameSettings->ruleSetInfo.setRules(static_cast<ppvs::Rules>(ui->ModeComboBox->itemData(ui->ModeComboBox->currentIndex(), Qt::UserRole).toInt()));
 
 	if (ui->ColorsCheckBox->checkState() == Qt::Checked)
-		mGameSettings->rulesetInfo.colors = ui->ColorsSpinBox->value();
+		mGameSettings->ruleSetInfo.colors = ui->ColorsSpinBox->value();
 	else
-		mGameSettings->rulesetInfo.colors = 0;
+		mGameSettings->ruleSetInfo.colors = 0;
 
-	mGameSettings->rulesetInfo.Nplayers = mGameSettings->rulesetInfo.rulesetType == ENDLESS ? 1 : ui->PlayersSpinBox->value();
-	mGameSettings->Nhumans = 1;
+	mGameSettings->ruleSetInfo.numPlayers = mGameSettings->ruleSetInfo.ruleSetType == ppvs::Rules::ENDLESS ? 1 : ui->PlayersSpinBox->value();
+	mGameSettings->numHumans = 1;
 	mGameSettings->startWithCharacterSelect = true;
-	mGameSettings->useCPUplayers = true;
+	mGameSettings->useCpuPlayers = true;
 
 	accept();
 }

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QDialog>
 #include <QComboBox>
+#include <QDialog>
 
 namespace Ui {
 class SettingsDialog;
@@ -10,13 +10,11 @@ class SettingsDialog;
 class LanguageManager;
 class PlaylistModel;
 
-class SettingsDialog : public QDialog
-{
+class SettingsDialog : public QDialog {
 	Q_OBJECT
 
 public:
-	enum Rule
-	{
+	enum Rule {
 		Tsu,
 		Fever,
 		Fever15,
@@ -50,7 +48,7 @@ private:
 	void setDefaultRuleSettings() const;
 	void translateDefaultCharacters() const;
 
-	PlaylistModel* normalPlaylistModel, * feverPlaylistModel;
+	PlaylistModel *normalPlaylistModel, *feverPlaylistModel;
 
 	QStringList backgroundsList;
 	QStringList puyoList;

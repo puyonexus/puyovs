@@ -2,8 +2,7 @@
 
 #include <QTextEdit>
 
-class UserInfoTextBox : public QTextEdit
-{
+class UserInfoTextBox : public QTextEdit {
 	Q_OBJECT
 
 public:

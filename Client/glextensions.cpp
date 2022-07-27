@@ -24,10 +24,7 @@ void loadExtensions(const QGLContext* gl, GLExtensions* ext)
 	ext->glUniform4f = (glGetUniform4fPtr)gl->getProcAddress("glUniform4f");
 	ext->glUniform1i = (glGetUniform1iPtr)gl->getProcAddress("glUniform1i");
 
-	ext->haveGLSL = ext->glCreateProgram && ext->glDeleteProgram && ext->glAttachShader && ext->glLinkProgram &&
-		ext->glUseProgram && ext->glCreateShader && ext->glDeleteShader && ext->glShaderSource && ext->glCompileShader &&
-		ext->glGetShaderInfoLog && ext->glGetProgramInfoLog && ext->glGetShaderiv && ext->glGetProgramiv &&
-		ext->glGetUniformLocation && ext->glUniform1f && ext->glUniform4f && ext->glUniform1i;
+	ext->haveGLSL = ext->glCreateProgram && ext->glDeleteProgram && ext->glAttachShader && ext->glLinkProgram && ext->glUseProgram && ext->glCreateShader && ext->glDeleteShader && ext->glShaderSource && ext->glCompileShader && ext->glGetShaderInfoLog && ext->glGetProgramInfoLog && ext->glGetShaderiv && ext->glGetProgramiv && ext->glGetUniformLocation && ext->glUniform1f && ext->glUniform4f && ext->glUniform1i;
 
 	if (ext->haveGLSL)
 		qDebug("GLSL support detected.");

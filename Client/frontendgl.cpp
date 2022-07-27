@@ -1,11 +1,15 @@
 #include "frontendgl.h"
-#include "fshadergl.h"
-#include "fimagegl.h"
 #include "ffontgl.h"
+#include "fimagegl.h"
+#include "fshadergl.h"
 #include "fsoundalib.h"
 
 FrontendGL::FrontendGL(QGLWidget* gl, GameAudio* audio, ppvs::FeInput& input, GLExtensions& ext, QObject* parent)
-	: QObject(parent), gl(gl), audio(audio), input(input), ext(ext)
+	: QObject(parent)
+	, gl(gl)
+	, audio(audio)
+	, input(input)
+	, ext(ext)
 {
 }
 
@@ -21,7 +25,8 @@ ppvs::FeImage* FrontendGL::loadImage(const std::string& nameu8)
 
 ppvs::FeShader* FrontendGL::loadShader(const char* source)
 {
-	if (ext.haveGLSL) return new FShaderGL(source, ext, this);
+	if (ext.haveGLSL)
+		return new FShaderGL(source, ext, this);
 	return nullptr;
 }
 
@@ -52,7 +57,8 @@ void FrontendGL::musicVolume(float volume, bool fever)
 
 ppvs::FeInput FrontendGL::inputState(int pl)
 {
-	if (pl == 0) return input;
+	if (pl == 0)
+		return input;
 	return ppvs::FeInput();
 }
 
@@ -127,9 +133,9 @@ void FrontendGL::unsetColor()
 	glColor4f(1.f, 1.f, 1.f, 1.f);
 }
 
-void FrontendGL::setDepthFunction(ppvs::DepthFunction d) {
-	switch (d)
-	{
+void FrontendGL::setDepthFunction(ppvs::DepthFunction d)
+{
+	switch (d) {
 	case ppvs::Always:
 		glDisable(GL_DEPTH_TEST);
 		glDepthFunc(GL_ALWAYS);
@@ -179,15 +185,20 @@ void FrontendGL::drawRect(ppvs::FeImage* image, double subx, double suby, double
 		v1 = 1. - (suby + subh - 0.5) / th;
 		u2 = (subx + subw - 0.25) / tw;
 		v2 = 1. - (suby + 0.5) / th;
-	}
-	else glBindTexture(GL_TEXTURE_2D, 0);
+	} else
+		glBindTexture(GL_TEXTURE_2D, 0);
 
 	double off = 0.0, toff = 0.0; // Bleed a bit
-	glBegin(GL_QUADS); {
-		glTexCoord2d(u1, v2); glVertex2d(0 + 0.25, 0 + 0.25);
-		glTexCoord2d(u2, v2); glVertex2d(w - 0.25, 0 + 0.25);
-		glTexCoord2d(u2, v1); glVertex2d(w - 0.25, h + 0.25);
-		glTexCoord2d(u1, v1); glVertex2d(0 + 0.25, h + 0.25);
+	glBegin(GL_QUADS);
+	{
+		glTexCoord2d(u1, v2);
+		glVertex2d(0 + 0.25, 0 + 0.25);
+		glTexCoord2d(u2, v2);
+		glVertex2d(w - 0.25, 0 + 0.25);
+		glTexCoord2d(u2, v1);
+		glVertex2d(w - 0.25, h + 0.25);
+		glTexCoord2d(u1, v1);
+		glVertex2d(0 + 0.25, h + 0.25);
 	}
 	glEnd();
 }

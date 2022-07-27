@@ -1,13 +1,12 @@
 #pragma once
 
-#include <QtOpenGL>
-#include <QObject>
-#include "glextensions.h"
-#include "gameaudio.h"
 #include "../Puyolib/Frontend.h"
+#include "gameaudio.h"
+#include "glextensions.h"
+#include <QObject>
+#include <QtOpenGL>
 
-class FrontendGL : public QObject, public ppvs::Frontend
-{
+class FrontendGL : public QObject, public ppvs::Frontend {
 	Q_OBJECT
 
 public:

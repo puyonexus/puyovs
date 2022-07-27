@@ -7,28 +7,33 @@ namespace ppvs {
 
 class Player;
 
-class AI {
+class AI final {
 public:
-    explicit AI(Player* pl);
-	virtual ~AI();
+	explicit AI(Player* pl);
+	~AI() = default;
 
-    void prepare(MovePuyoType mpt, int color1, int color2);
+	AI(const AI&) = delete;
+	AI& operator=(const AI&) = delete;
+	AI(AI&&) = delete;
+	AI& operator=(AI&&) = delete;
+
+	void prepare(MovePuyoType mpt, int color1, int color2);
 	void findLargest();
 
-	int m_bestPos;
-	int m_bestRot;
-	int m_bestChain;
-	int m_timer;
-	bool m_pinch;
+	int m_bestPos = 0;
+	int m_bestRot = 0;
+	int m_bestChain = 0;
+	int m_timer = 0;
+	bool m_pinch = false;
 
 private:
 	int predictChain();
 	void setRotation();
-	MovePuyoType m_type;
-	PosVectorInt m_pos[4];
-	unsigned int m_rotation;
-	int m_color1, m_color2;
-	unsigned int m_bigColor;
+	MovePuyoType m_type = DOUBLET;
+	PosVectorInt m_pos[4] = {};
+	unsigned int m_rotation = 0u;
+	int m_color1 = 0, m_color2 = 0;
+	unsigned int m_bigColor = 0;
 
 	Player* m_player;
 };

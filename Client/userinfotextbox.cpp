@@ -1,7 +1,7 @@
 #include "userinfotextbox.h"
 
-UserInfoTextBox::UserInfoTextBox(QWidget* parent) :
-	QTextEdit(parent)
+UserInfoTextBox::UserInfoTextBox(QWidget* parent)
+	: QTextEdit(parent)
 {
 	setTextInteractionFlags(Qt::TextBrowserInteraction);
 	setReadOnly(true);

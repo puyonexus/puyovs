@@ -1,5 +1,7 @@
 #include "Animation.h"
 
+#include <algorithm>
+#include <cmath>
 #include <utility>
 
 namespace ppvs {
@@ -554,7 +556,7 @@ void Animation::move(const std::string& name, const std::string& path, float x)
 
 	// Get total distance of path
 	const float totalDist = getTotalDistance(path);
-	if (totalDist == 0)
+	if (totalDist == 0) // NOLINT(clang-diagnostic-float-equal)
 		return; // Danger of dividing by 0
 
 	// x must be between 0 and 1
@@ -655,10 +657,10 @@ void Animation::updateChildren(const std::string& parent)
 		const float cx = childSprite.position.x + childSprite.pathPos.x + childSprite.childOffset.x;
 		const float cy = childSprite.position.y + childSprite.pathPos.y + childSprite.childOffset.y;
 		const float r = sqrt(cx * cx * psx * psx + cy * cy * psy * psy);
-		const float a = atan2(-cy * psy, cx * psx) * 180 / PI;
+		const float a = atan2(-cy * psy, cx * psx) * 180 / kPiF;
 		childSprite.sprite->setPosition(
-			m_offset.x + (px + r * cos((pr + a) * PI / 180)) * m_globalScale,
-			m_offset.y + (py + r * sin((pr + a) * PI / -180)) * m_globalScale);
+			m_offset.x + (px + r * cos((pr + a) * kPiF / 180)) * m_globalScale,
+			m_offset.y + (py + r * sin((pr + a) * kPiF / -180)) * m_globalScale);
 
 		// Update children
 		updateChildren(child);
@@ -682,28 +684,28 @@ void Animation::resetSprites()
 	}
 }
 
-double Animation::getLocalTimer(const std::string& type, double s, double e, double t, double alpha, double beta) const
+double Animation::getLocalTimer(const std::string& type, const double startVal, const double endVal, const double t, const double alpha, const double beta) const
 {
 	// Input t must go from 0 to 1
 	double out = 0;
 	if (type == "linear")
-		out = (e - s) * t + s;
+		out = (endVal - startVal) * t + startVal;
 	else if (type == "quadratic")
-		out = (e - s) * t * t + s;
+		out = (endVal - startVal) * t * t + startVal;
 	else if (type == "squareroot")
-		out = (e - s) * pow(t, 0.5) + s;
+		out = (endVal - startVal) * pow(t, 0.5) + startVal;
 	else if (type == "cubic")
-		out = (e - s) * t * t * t + s;
+		out = (endVal - startVal) * t * t * t + startVal;
 	else if (type == "cuberoot")
-		out = (e - s) * pow(t, 1.0 / 3.0) + s;
+		out = (endVal - startVal) * pow(t, 1.0 / 3.0) + startVal;
 	else if (type == "exponential")
-		out = (e - s) / (exp(alpha) - 1) * exp(alpha * t) + s - (e - s) / (exp(alpha) - 1);
+		out = (endVal - startVal) / (exp(alpha) - 1) * exp(alpha * t) + startVal - (endVal - startVal) / (exp(alpha) - 1);
 	else if (type == "elastic") // beta=wave number
-		out = (e - s) / (exp(alpha) - 1) * cos(beta * t * 2 * PI) * exp(alpha * t) + s - (e - s) / (exp(alpha) - 1);
+		out = (endVal - startVal) / (exp(alpha) - 1) * cos(beta * t * 2 * kPiD) * exp(alpha * t) + startVal - (endVal - startVal) / (exp(alpha) - 1);
 	else if (type == "sin")
-		out = s + e * sin(alpha * t * 2 * PI); // s=offset, e=amplitude, alpha=wave number
+		out = startVal + endVal * sin(alpha * t * 2 * kPiD); // s=offset, e=amplitude, alpha=wave number
 	else if (type == "cos")
-		out = s + e * cos(alpha * t * 2 * PI); // s=offset, e=amplitude, alpha=wave number
+		out = startVal + endVal * cos(alpha * t * 2 * kPiD); // s=offset, e=amplitude, alpha=wave number
 	return out;
 }
 
@@ -721,7 +723,7 @@ float Animation::getTotalDistance(const std::string& path)
 	return distance;
 }
 
-PosVectorFloat Animation::getPosition(const std::string& path, float target)
+PosVectorFloat Animation::getPosition(const std::string& path, const float target)
 {
 	float distance = 0;
 

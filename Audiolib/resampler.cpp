@@ -3,18 +3,19 @@
 
 namespace alib {
 
-struct Resampler::Priv
-{
-	Priv(int inNumChannels, int outNumChannels) : error(false), needReframe(inNumChannels != outNumChannels),
-		inNumChannels(inNumChannels), outNumChannels(outNumChannels),
-		resampler(nullptr)
+struct Resampler::Priv {
+	Priv(int inNumChannels, int outNumChannels)
+		: error(false)
+		, needReframe(inNumChannels != outNumChannels)
+		, inNumChannels(inNumChannels)
+		, outNumChannels(outNumChannels)
+		, resampler(nullptr)
 	{
 	}
 
 	~Priv()
 	{
-		if (resampler)
-		{
+		if (resampler) {
 			speex_resampler_destroy(resampler);
 		}
 	}
@@ -27,8 +28,7 @@ struct Resampler::Priv
 	{
 		float* in_adj = in;
 
-		if (needReframe)
-		{
+		if (needReframe) {
 			const int looplen = (*in_len);
 			in_adj = new float[(*in_len) * outNumChannels];
 
@@ -47,7 +47,8 @@ struct Resampler::Priv
 		*in_len = u32_in_len;
 		*out_len = u32_out_len;
 
-		if (needReframe) delete[] in_adj;
+		if (needReframe)
+			delete[] in_adj;
 	}
 };
 
@@ -57,8 +58,7 @@ Resampler::Resampler(int inNumChannels, int inSampleRate, int outNumChannels, in
 	int err = RESAMPLER_ERR_SUCCESS;
 	p->resampler = speex_resampler_init(outNumChannels, inSampleRate, outSampleRate, 0, &err);
 
-	if (err != RESAMPLER_ERR_SUCCESS)
-	{
+	if (err != RESAMPLER_ERR_SUCCESS) {
 		p->error = true;
 	}
 }

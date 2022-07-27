@@ -7,8 +7,7 @@
 
 class QGLWidget;
 
-class FImageGL : public ppvs::FeImage, public QObject
-{
+class FImageGL : public ppvs::FeImage, public QObject {
 public:
 	FImageGL(const QString& fn, QGLWidget* gl, QObject* parent);
 	~FImageGL() override;
@@ -23,7 +22,6 @@ public:
 	void setFilter(ppvs::FilterType) override;
 
 private:
-
 	QImage tx;
 	int w, h, id;
 	QString fn;

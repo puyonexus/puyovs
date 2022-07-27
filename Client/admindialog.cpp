@@ -1,12 +1,12 @@
 #include "admindialog.h"
-#include "ui_admindialog.h"
 #include "netclient.h"
+#include "ui_admindialog.h"
 #include <QLineEdit>
 
-AdminDialog::AdminDialog(NetClient* client, QWidget* parent) :
-	QDialog(parent),
-	mClient(client),
-	ui(new Ui::AdminDialog)
+AdminDialog::AdminDialog(NetClient* client, QWidget* parent)
+	: QDialog(parent)
+	, mClient(client)
+	, ui(new Ui::AdminDialog)
 {
 	ui->setupUi(this);
 
@@ -24,7 +24,6 @@ void AdminDialog::adminResponseReceived(QString message) const
 	ui->AdminTextEdit->moveCursor(QTextCursor::End);
 	ui->AdminTextEdit->insertPlainText(message + "\n");
 	ui->AdminTextEdit->moveCursor(QTextCursor::End);
-
 }
 
 void AdminDialog::on_SendButton_clicked() const
