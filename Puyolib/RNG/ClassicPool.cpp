@@ -4,7 +4,7 @@
 
 ClassicPool::ClassicPool(ClassicRng* rng)
 {
-	constexpr Piece colorset[5] = {
+	constexpr Piece colorSet[5] = {
 		Red,
 		Yellow,
 		Green,
@@ -12,17 +12,16 @@ ClassicPool::ClassicPool(ClassicRng* rng)
 		Purple
 	};
 
-	// Shuffle the colorset.
+	// Shuffle the color set.
 	for (int i = 0; i < 5; i++) {
 		uint32_t v = 4;
 		rng->next(&v, CLASSICRNG_SP_COLORSWAP);
-		uint32_t x = (v & 0xffff) * 4 >> 16;
-	}
+    }
 
 	// Fill the pools.
 	for (int c = 0; c < 3; c++) {
 		for (int i = 0xff; i >= 0; i--) {
-			m_pool[c][i] = colorset[i % (c + 3)];
+			m_pool[c][i] = colorSet[i % (c + 3)];
 		}
 	}
 

@@ -62,7 +62,7 @@ MersenneTwister::MersenneTwister(void):
 {
     unsigned long init[4] = { 0x123, 0x234, 0x345, 0x456 };
     unsigned long length = 4;
-    init_by_array(init, length);
+    init_by_array(init, static_cast<int>(length));
 }
 
 /**
@@ -111,11 +111,9 @@ void MersenneTwister::init_genrand(unsigned long s)
  */
 void MersenneTwister::init_by_array(unsigned long* init_key, int key_length)
 {
-    // Store the key array
-    int i, j, k;
     init_genrand(19650218UL);
-    i=1; j=0;
-    k = (N>key_length ? N : key_length);
+    int i = 1; int j = 0;
+    int k = (N > key_length ? N : key_length);
     for (; k; k--) {
         mt_[i] = (mt_[i] ^ ((mt_[i-1] ^ (mt_[i-1] >> 30)) * 1664525UL))
           + init_key[j] + j; /* non linear */
@@ -135,11 +133,9 @@ void MersenneTwister::init_by_array(unsigned long* init_key, int key_length)
     mt_[0] = 0x80000000UL; /* MSB is 1; assuring non-zero initial array */
 
     // Store the seed
-    if (init_key_ != nullptr) {
-        delete[] init_key_;
-    }
+    delete[] init_key_;
     init_key_ = new unsigned long[key_length];
-    for (int k = 0; k < key_length; k++) {
+    for (k = 0; k < key_length; k++) {
         init_key_[k] = init_key[k];
     }
     key_length_ = key_length;

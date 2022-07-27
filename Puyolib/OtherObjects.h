@@ -124,7 +124,6 @@ public:
 private:
 	bool m_visible = false;
 	float m_timer = 0.f;
-	float m_trailEffect = 0.f;
 	PosVectorFloat m_end {}, m_start {}, m_middle {};
 	Sprite m_sprite {};
 	Sprite m_tail {};
