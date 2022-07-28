@@ -344,14 +344,14 @@
           <item>
            <widget class="QCheckBox" name="AllowCrashDumpsCheckBox">
             <property name="text">
-             <string>Allow sending crash dumps and error logs</string>
+             <string comment="TelemetryCrashCheckbox">Allow sending crash dumps and error logs</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="AllowUsageStatisticsCheckBox">
             <property name="text">
-             <string>Allow sending usage statistics and telemetry</string>
+             <string comment="TelemetryStatisticCheckbox">Allow sending usage statistics and telemetry</string>
             </property>
            </widget>
           </item>
