@@ -104,7 +104,7 @@ MainWindow::MainWindow(QWidget* parent)
 	ui->ServerComboBox->lineEdit()->setText(settings.string("account", "server", PUYOVS_DEFAULT_SERVER));
 	if (!settings.string("account", "password", "").isEmpty())
 		ui->PasswordLineEdit->setText("*********");
-	ui->AutoLoginCheckbox->setChecked(settings.boolean("launcher","autologin",false));
+	ui->AutoLoginCheckbox->setChecked(settings.boolean("launcher", "autologin", false));
 	passEdited = false;
 	mGameSettings = nullptr;
 	showSettingsDlg = false;
@@ -183,9 +183,9 @@ void MainWindow::connectToServer()
 	if (client->connectToHost(ui->ServerComboBox->currentText())) {
 		ui->ConnectButton->setEnabled(false);
 		ui->AutoLoginCheckbox->setEnabled(false);
-	}
-	else
+	} else {
 		showError("Unknown error...");
+	}
 }
 
 bool MainWindow::isLoggedIn() const
@@ -215,7 +215,7 @@ void MainWindow::closeEvent(QCloseEvent* e)
 		QString passhash = QString(QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md5).toHex());
 		settings.setString("account", "password", passhash);
 	}
-	settings.setBoolean("launcher","autologin",ui->AutoLoginCheckbox->isChecked());
+	settings.setBoolean("launcher", "autologin", ui->AutoLoginCheckbox->isChecked());
 	settings.save();
 
 	// Destroy tabs to force destructor
