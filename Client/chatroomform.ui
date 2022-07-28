@@ -215,13 +215,13 @@
         </sizepolicy>
        </property>
        <property name="title">
-        <string>Status</string>
+        <string comment="Status">Status</string>
        </property>
        <layout class="QFormLayout" name="formLayout">
         <item row="2" column="0">
          <widget class="QLabel" name="RulesLabel">
           <property name="text">
-           <string>Rules</string>
+           <string comment="TitleRules">Rules</string>
           </property>
          </widget>
         </item>
