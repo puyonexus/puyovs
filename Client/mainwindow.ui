@@ -285,19 +285,6 @@
              <item>
               <layout class="QHBoxLayout" name="ConnectButtonHorizontalLayout">
                <item>
-                <spacer name="ConnectButtonLeftSpacer">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>10</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
                 <widget class="QPushButton" name="ConnectButton">
                  <property name="text">
                   <string comment="ButtonConnect">Connect</string>
@@ -316,6 +303,13 @@
                   </size>
                  </property>
                 </spacer>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="AutoLoginCheckbox">
+                  <property name="text">
+                    <string comment="CheckboxAutologin">Auto-login</string>
+                  </property>
+                </widget>
                </item>
               </layout>
              </item>

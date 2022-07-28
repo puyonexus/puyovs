@@ -104,6 +104,7 @@ MainWindow::MainWindow(QWidget* parent)
 	ui->ServerComboBox->lineEdit()->setText(settings.string("account", "server", PUYOVS_DEFAULT_SERVER));
 	if (!settings.string("account", "password", "").isEmpty())
 		ui->PasswordLineEdit->setText("*********");
+	ui->AutoLoginCheckbox->setChecked(settings.boolean("launcher", "autologin", false));
 	passEdited = false;
 	mGameSettings = nullptr;
 	showSettingsDlg = false;
@@ -142,6 +143,8 @@ MainWindow::~MainWindow()
 void MainWindow::exec()
 {
 	show();
+	if (ui->AutoLoginCheckbox->isChecked() && ui->UsernameLineEdit->text().count())
+		connectToServer();
 	gameManager->exec();
 }
 
@@ -177,10 +180,12 @@ void MainWindow::connectToServer()
 		return;
 	}
 
-	if (client->connectToHost(ui->ServerComboBox->currentText()))
+	if (client->connectToHost(ui->ServerComboBox->currentText())) {
 		ui->ConnectButton->setEnabled(false);
-	else
+		ui->AutoLoginCheckbox->setEnabled(false);
+	} else {
 		showError("Unknown error...");
+	}
 }
 
 bool MainWindow::isLoggedIn() const
@@ -210,6 +215,7 @@ void MainWindow::closeEvent(QCloseEvent* e)
 		QString passhash = QString(QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md5).toHex());
 		settings.setString("account", "password", passhash);
 	}
+	settings.setBoolean("launcher", "autologin", ui->AutoLoginCheckbox->isChecked());
 	settings.save();
 
 	// Destroy tabs to force destructor
@@ -417,6 +423,7 @@ void MainWindow::logOut() const
 	ui->RankedFeverTreeWidget->clear();
 
 	ui->ConnectButton->setEnabled(true);
+	ui->AutoLoginCheckbox->setEnabled(true);
 	ui->AdminToolButton->hide();
 }
 
