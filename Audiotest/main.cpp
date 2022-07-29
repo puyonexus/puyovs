@@ -22,17 +22,17 @@ public:
 	HttpStream(QString url)
 		: mUrl(url)
 	{
-		QNetworkAccessManager* manager = new QNetworkAccessManager(qApp);
+		const auto manager = new QNetworkAccessManager(qApp);
 		QNetworkRequest request;
 		request.setUrl(url);
 		reply = manager->get(request);
 
 		QEventLoop loop;
-		loop.connect(reply, SIGNAL(readyRead()), SLOT(quit()));
+        QEventLoop::connect(reply, &QNetworkReply::readyRead, &loop, &QEventLoop::quit);
 		loop.exec();
 	}
 
-	~HttpStream()
+	~HttpStream() override
 	{
 		delete reply;
 	}
