@@ -7,46 +7,51 @@
 #include <alib/stream.h>
 
 #ifdef WIN32
-#include <windows.h>
+#include <Windows.h>
 void yield() { Sleep(5); }
 #else
 #include <unistd.h>
 void yield() { usleep(10000); }
 #endif
 
-class HttpStream : public alib::BinaryStream {
-	QString mUrl;
-	QNetworkReply* reply;
+class HttpStream final : public alib::BinaryStream {
+	QString m_url;
+	QNetworkReply* m_reply = nullptr;
 
 public:
-	HttpStream(QString url)
-		: mUrl(url)
+	explicit HttpStream(const QString& url)
+		: m_url(url)
 	{
 		const auto manager = new QNetworkAccessManager(qApp);
 		QNetworkRequest request;
 		request.setUrl(url);
-		reply = manager->get(request);
+		m_reply = manager->get(request);
 
 		QEventLoop loop;
-        QEventLoop::connect(reply, &QNetworkReply::readyRead, &loop, &QEventLoop::quit);
+		QEventLoop::connect(m_reply, &QNetworkReply::readyRead, &loop, &QEventLoop::quit);
 		loop.exec();
 	}
 
 	~HttpStream() override
 	{
-		delete reply;
+		delete m_reply;
 	}
 
-	int read(void* ptr, size_t size)
+	HttpStream(const HttpStream&) = delete;
+	HttpStream& operator=(const HttpStream&) = delete;
+	HttpStream(HttpStream&&) = delete;
+	HttpStream& operator=(HttpStream&&) = delete;
+
+	int read(void* ptr, size_t size) override
 	{
 		QByteArray data;
-		int totalReceived = 0;
+		quint64 totalReceived = 0;
 
 		while (totalReceived < size) {
-			int bRequest = static_cast<int>(qMin(size_t(4096), size - data.size()));
+			qint64 bRequest = qMin<qint64>(4096, static_cast<qint64>(size) - data.size());
 			char buffer[4096] = { 0 };
-			bRequest = reply->read(buffer, bRequest);
-			data.append(buffer, bRequest);
+			bRequest = m_reply->read(buffer, bRequest);
+			data.append(buffer, static_cast<int>(bRequest));
 			totalReceived += bRequest;
 
 			qApp->sendPostedEvents();
@@ -59,105 +64,105 @@ public:
 		return data.size();
 	}
 
-	int readChar()
+	int readChar() override
 	{
 		char c;
-		if (reply->getChar(&c))
-			return (unsigned)c;
-		else
-			return EOF;
+		return m_reply->getChar(&c) ? static_cast<unsigned char>(c) : EOF;
 	}
 
-	int write(const void*, size_t) { return 0; }
-	bool seekable() { return false; }
-	bool seek(long, SeekOrigin) { return false; }
-	long tell() { return 0; }
-	bool eof() { return reply->atEnd(); }
-	virtual bool hasEof() { return true; }
-	void rewind() { reply->reset(); }
-	bool error() { return reply->error() != QNetworkReply::NoError; }
-	long size() { return reply->size(); }
+	int write(const void*, size_t) override { return 0; }
+	bool seekable() override { return false; }
+	bool seek(long, SeekOrigin) override { return false; }
+	long tell() override { return 0; }
+	bool eof() override { return m_reply->atEnd(); }
+	bool hasEof() override { return true; }
+	void rewind() override { m_reply->reset(); }
+	bool error() override { return m_reply->error() != QNetworkReply::NoError; }
+	long size() override { return static_cast<long>(m_reply->size()); }
 
-	std::string url() const { return mUrl.toStdString(); }
+    [[nodiscard]] std::string url() const override { return m_url.toStdString(); }
 };
 
-class BufferedStream : public alib::BinaryStream {
-	alib::BinaryStream* stm;
-	alib::Buffer buffer;
-	int i;
+class BufferedStream final : public alib::BinaryStream {
+    BinaryStream* m_stream = nullptr;
+	alib::Buffer m_buffer;
+	int m_i = 0;
 
 public:
-	BufferedStream(alib::BinaryStream* stm)
-		: stm(stm)
+    explicit BufferedStream(BinaryStream* stm)
+		: m_stream(stm)
 	{
-		i = 0;
-
-		prebuffer(1024 * 64 * 2);
+		prebuffer(0x20000);
 	}
 
-	~BufferedStream()
+	~BufferedStream() override
 	{
-		delete stm;
+		delete m_stream;
 	}
 
-	int read(void* ptr, size_t size)
+	BufferedStream(const BufferedStream&) = delete;
+	BufferedStream& operator=(const BufferedStream&) = delete;
+	BufferedStream(BufferedStream&&) = delete;
+	BufferedStream& operator=(BufferedStream&&) = delete;
+
+	int read(void* ptr, const size_t size) override
 	{
-		int bufferNeeded = static_cast<int>(size - (buffer.size() - i));
+		int bufferNeeded = static_cast<int>(size - (m_buffer.size() - m_i));
 
 		while (bufferNeeded > 0) {
-			char* newBuffer[4096] = { 0 };
-			int bufferReceived = stm->read(newBuffer, 4096);
-			buffer.append(newBuffer, bufferReceived);
+			char newBuffer[4096] = { 0 };
+            const int bufferReceived = m_stream->read(newBuffer, 4096);
+			m_buffer.append(newBuffer, bufferReceived);
 			bufferNeeded -= bufferReceived;
 
 			yield();
 		}
 
-		int bufferRead = buffer.read(ptr, size, i);
-		i += bufferRead;
+        const int bufferRead = m_buffer.read(ptr, size, m_i);
+		m_i += bufferRead;
 		fprintf(stderr, "[Buffer] Read %u of %u.\n", bufferRead, static_cast<unsigned int>(size));
 		return bufferRead;
 	}
 
-	void prebuffer(size_t bufferNeeded)
+	void prebuffer(const size_t bufferNeeded)
 	{
-		char* newBuffer = new char[bufferNeeded];
-		int bufferReceived = stm->read(newBuffer, bufferNeeded);
-		buffer.append(newBuffer, bufferReceived);
+        const auto newBuffer = new char[bufferNeeded];
+        const int bufferReceived = m_stream->read(newBuffer, bufferNeeded);
+		m_buffer.append(newBuffer, bufferReceived);
 		delete[] newBuffer;
 
-		fprintf(stderr, "Bytes prebuffered: %u\n", static_cast<unsigned int>(buffer.size()));
+		fprintf(stderr, "Bytes prebuffered: %u\n", static_cast<unsigned int>(m_buffer.size()));
 	}
 
-	int write(const void*, size_t) { return 0; }
-	bool seekable() { return true; }
-	bool seek(long to, SeekOrigin origin)
+	int write(const void*, size_t) override { return 0; }
+	bool seekable() override { return true; }
+	bool seek(long to, SeekOrigin origin) override
 	{
 		switch (origin) {
 		case Beginning:
-			i = to;
+			m_i = to;
 			break;
 		case Current:
-			i += to;
+			m_i += to;
 			break;
 		case End:
 			if (size() > 0)
-				i = size() + to;
+				m_i = size() + to;
 			else
-				i = static_cast<int>(buffer.size() + to);
+				m_i = static_cast<int>(m_buffer.size() + to);
 			break;
 		}
 		return true;
 	}
-	long tell() { return i; }
-	bool eof() { return false; }
-	bool hasEof() { return stm->hasEof(); }
-	void rewind() { i = 0; }
-	bool error() { return stm->error(); }
-	long size() { return 0; }
-	char* readAll(int* len) { return stm->readAll(len); }
-	alib::Buffer readAll() { return stm->readAll(); }
-	std::string url() const { return stm->url(); }
+	long tell() override { return m_i; }
+	bool eof() override { return false; }
+	bool hasEof() override { return m_stream->hasEof(); }
+	void rewind() override { m_i = 0; }
+	bool error() override { return m_stream->error(); }
+	long size() override { return 0; }
+	char* readAll(int* len) override { return m_stream->readAll(len); }
+	alib::Buffer readAll() override { return m_stream->readAll(); }
+    [[nodiscard]] std::string url() const override { return m_stream->url(); }
 };
 
 int main(int argc, char* argv[])
