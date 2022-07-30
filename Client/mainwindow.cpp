@@ -30,8 +30,8 @@
 #include "startupdialog.h"
 #include "telemetrydialog.h"
 
-const static Qt::ItemDataRole rulesRole = static_cast<Qt::ItemDataRole>(Qt::UserRole + 1);
-const static Qt::ItemDataRole scoreRole = static_cast<Qt::ItemDataRole>(Qt::UserRole + 2);
+constexpr static Qt::ItemDataRole kRulesRole = static_cast<Qt::ItemDataRole>(Qt::UserRole + 1);
+constexpr static Qt::ItemDataRole kScoreRole = static_cast<Qt::ItemDataRole>(Qt::UserRole + 2);
 
 MainWindow::MainWindow(QWidget* parent)
 	: QMainWindow(parent)
@@ -53,7 +53,7 @@ MainWindow::MainWindow(QWidget* parent)
 	ui->statusBar->showMessage("Developed by Hernan and contributors. https://puyovs.com");
 
 	// Profile Menu
-	QMenu* profileMenu = new QMenu(this);
+    const auto profileMenu = new QMenu(this);
 	profileMenu->addAction(ui->ActionSearch);
 	profileMenu->addAction(ui->ActionLogOut);
 	ui->ProfileToolButton->setMenu(profileMenu);
@@ -62,7 +62,7 @@ MainWindow::MainWindow(QWidget* parent)
 	ui->AdminToolButton->hide();
 	userLevel = 0;
 
-	// Hack: use subclassing to do this 'right.'
+	// Hack: use sub-classing to do this 'right.'
 	// Set fixed tabs.
 	class F : public QTabWidget {
 	public:
@@ -74,24 +74,24 @@ MainWindow::MainWindow(QWidget* parent)
 
 	// Client
 	client = new NetClient;
-	connect(client, SIGNAL(connected()), SLOT(connected()));
-	connect(client, SIGNAL(disconnected()), SLOT(disconnected()));
-	connect(client, SIGNAL(nameSet(QString)), SLOT(nameSet(QString)));
-	connect(client, SIGNAL(nameDenied(QString)), SLOT(nameDenied(QString)));
-	connect(client, SIGNAL(channelJoined(QString, NetPeerList)), SLOT(channelJoined(QString, NetPeerList)));
-	connect(client, SIGNAL(channelCreated(NetChannel)), SLOT(channelCreated(NetChannel)));
-	connect(client, SIGNAL(channelDestroyed(NetChannel)), SLOT(channelDestroyed(NetChannel)));
-	connect(client, SIGNAL(channelDescriptionReceived(NetChannel)), SLOT(channelDescriptionReceived(NetChannel)));
-	connect(client, SIGNAL(channelListReceived(NetChannelList)), SLOT(channelListReceived(NetChannelList)));
-	connect(client, SIGNAL(error(QString)), SLOT(networkError(QString)));
-	connect(client, SIGNAL(loginResponse(uchar, QString)), SLOT(loginResponse(uchar, QString)));
-	connect(client, SIGNAL(kickMessageReceived(QString)), SLOT(kickMessageReceived(QString)));
-	connect(client, SIGNAL(motdMessageReceived(QString)), SLOT(motdMessageReceived(QString)));
-	connect(client, SIGNAL(updateRankedPlayerCount(QString)), SLOT(playerCountMessageReceived(QString)));
+	connect(client, &NetClient::connected, this, &MainWindow::connected);
+	connect(client, &NetClient::disconnected, this, &MainWindow::disconnected);
+	connect(client, &NetClient::nameSet, this, &MainWindow::nameSet);
+	connect(client, &NetClient::nameDenied, this, &MainWindow::nameDenied);
+	connect(client, &NetClient::channelJoined, this, &MainWindow::channelJoined);
+	connect(client, &NetClient::channelCreated, this, &MainWindow::channelCreated);
+	connect(client, &NetClient::channelDestroyed, this, &MainWindow::channelDestroyed);
+	connect(client, &NetClient::channelDescriptionReceived, this, &MainWindow::channelDescriptionReceived);
+	connect(client, &NetClient::channelListReceived, this, &MainWindow::channelListReceived);
+	connect(client, &NetClient::error, this, &MainWindow::networkError);
+	connect(client, &NetClient::loginResponse, this, &MainWindow::loginResponse);
+	connect(client, &NetClient::kickMessageReceived, this, &MainWindow::kickMessageReceived);
+	connect(client, &NetClient::motdMessageReceived, this, &MainWindow::motdMessageReceived);
+	connect(client, &NetClient::updateRankedPlayerCount, this, &MainWindow::playerCountMessageReceived);
 
 	// Update ranked counter every 10 seconds
-	QTimer* timer = new QTimer(this);
-	connect(timer, SIGNAL(timeout()), SLOT(updateRankedCount()));
+    const auto timer = new QTimer(this);
+	connect(timer, &QTimer::timeout, this, &MainWindow::updateRankedCount);
 	timer->start(10000); // Time specified in ms
 
 	// Setup languages
@@ -240,7 +240,7 @@ void MainWindow::addMatchRoom(NetChannel channel)
 
 	QTreeWidgetItem* item = new QTreeWidgetItem();
 	item->setData(0, Qt::DisplayRole, channel.name);
-	item->setData(0, rulesRole, channel.description);
+	item->setData(0, kRulesRole, channel.description);
 
 	QStringList items = channel.description.split('|');
 
@@ -267,7 +267,7 @@ void MainWindow::addMatchRoom(NetChannel channel)
 			}
 			item->setData(4, Qt::DisplayRole, subitem[1]);
 		} else if (subitem[0] == "currentscore") {
-			item->setData(0, scoreRole, subitem[1]);
+			item->setData(0, kScoreRole, subitem[1]);
 		} else if (subitem[0] == "channelname") {
 			// WHY WOULD YOU TELL US THAT
 		}
@@ -308,7 +308,7 @@ NetChannel MainWindow::selectedFriendlyMatch() const
 	QTreeWidgetItem* item = ui->FriendlyMatchesTreeWidget->selectedItems().at(0);
 
 	result.name = item->data(0, Qt::DisplayRole).toString();
-	result.description = item->data(0, rulesRole).toString();
+	result.description = item->data(0, kRulesRole).toString();
 
 	return result;
 }
@@ -938,7 +938,7 @@ void MainWindow::on_FriendlyMatchesTreeWidget_itemSelectionChanged() const
 	ui->ReviewRulesFriendlyButton->setEnabled(validSelection);
 
 	if (validSelection) {
-		ui->FriendlyMatchScore->setText(ui->FriendlyMatchesTreeWidget->selectedItems().at(0)->data(0, scoreRole).toString());
+		ui->FriendlyMatchScore->setText(ui->FriendlyMatchesTreeWidget->selectedItems().at(0)->data(0, kScoreRole).toString());
 	} else {
 		ui->FriendlyMatchScore->setText(tr("Click an item to show scores.", "ShowScores"));
 	}

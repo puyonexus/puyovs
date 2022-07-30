@@ -26,12 +26,18 @@ class GameWidgetGL;
 class CreateChatroomDialog;
 class PasswordDialog;
 class SearchDialog;
+
 class MainWindow : public QMainWindow {
 	Q_OBJECT
 
 public:
 	explicit MainWindow(QWidget* parent = nullptr);
 	~MainWindow() override;
+
+	MainWindow(const MainWindow&) = delete;
+	MainWindow& operator=(const MainWindow&) = delete;
+	MainWindow(MainWindow&&) = delete;
+	MainWindow& operator=(MainWindow&&) = delete;
 
 	void exec();
 	void connectToServer();
@@ -43,8 +49,8 @@ public:
 	void reviewRulesDialog(ppvs::RuleSetInfo& rs);
 
 	void updateServerList();
-	QNetworkReply* serverListReply;
-	QNetworkAccessManager* netMan;
+	QNetworkReply* serverListReply = nullptr;
+	QNetworkAccessManager* netMan = nullptr;
 
 protected:
 	void closeEvent(QCloseEvent*) override;
@@ -117,16 +123,16 @@ private:
 	void startRankedMatch(bool tsu) const;
 	void spectateRankedMatch(bool tsu) const;
 
-	int userLevel;
-	NetChannel rememberSelectedFriendly;
-	Ui::MainWindow* ui;
-	NetClient* client;
-	LanguageManager* languageManager;
-	GameManager* gameManager;
+	int userLevel = 0;
+	NetChannel rememberSelectedFriendly {};
+	Ui::MainWindow* ui = nullptr;
+	NetClient* client = nullptr;
+	LanguageManager* languageManager = nullptr;
+	GameManager* gameManager = nullptr;
 	QString motd;
-	bool passEdited;
-	bool showSettingsDlg;
-	bool showSearchDlg;
-	SearchDialog* searchDlg;
-	ppvs::GameSettings* mGameSettings;
+	bool passEdited = false;
+	bool showSettingsDlg = false;
+	bool showSearchDlg = false;
+	SearchDialog* searchDlg = nullptr;
+	ppvs::GameSettings* mGameSettings = nullptr;
 };
