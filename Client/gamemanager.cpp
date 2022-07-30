@@ -365,7 +365,7 @@ void GameManager::peerPartedChannel(QString channel, QString peer) const
 	}
 	// Spectator or pending player left
 	else {
-		QString langStr = tr("%s left."); // TODO: Needs a translation string!
+		QString langStr = tr("%s left.","Launcher:PlayerLeave");
 		widget->chatWindow()->statusMessage(QString::asprintf(langStr.toUtf8().data(), peer.toUtf8().data()));
 	}
 	// Remove from chatwindow
