@@ -8,12 +8,17 @@ class AdminDialog;
 
 class NetClient;
 
-class AdminDialog : public QDialog {
+class AdminDialog final : public QDialog {
 	Q_OBJECT
 
 public:
 	explicit AdminDialog(NetClient* client, QWidget* parent = nullptr);
 	~AdminDialog() override;
+
+	AdminDialog(const AdminDialog&) = delete;
+	AdminDialog& operator=(const AdminDialog&) = delete;
+	AdminDialog(AdminDialog&&) = delete;
+	AdminDialog& operator=(AdminDialog&&) = delete;
 
 private slots:
 	void adminResponseReceived(QString) const;
@@ -22,7 +27,8 @@ private slots:
 	void on_CommandComboBox_currentIndexChanged(const QString& arg1) const;
 
 private:
-	bool isAdminCommand() const;
+	[[nodiscard]] bool isAdminCommand() const;
+
 	NetClient* mClient;
 	Ui::AdminDialog* ui;
 };
