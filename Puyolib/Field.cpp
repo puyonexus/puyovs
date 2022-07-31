@@ -1351,7 +1351,7 @@ void Field::triggerGlow(PosVectorInt shadowPos[4], const int n, int colors[4])
 		}
 
 		// Out of bounds
-		if (shadowPos[i].x > m_properties.gridX - 1 || shadowPos[i].x < 0 || shadowPos[i].y > m_properties.gridY - 1 || shadowPos[i].y < 0) {
+		if (shadowPos[i].x > m_properties.gridX - 1 || shadowPos[i].x < 0 || shadowPos[i].y > m_properties.gridY - 4 || shadowPos[i].y < 0) {
 			return;
 		}
 	}
