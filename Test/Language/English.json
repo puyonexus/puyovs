@@ -197,7 +197,12 @@
 		"EnterRoomPassword":	"Enter the password for this game room:",
 		"PrivateRoom":		"Private room",
 		"WrongPassword":	"Wrong Password!",
-		"SendPrivate":		"Send private"
+		"SendPrivate":		"Send private",
+
+		"TelemetryTitle":	"Puyo VS Telemetry",
+		"TelemetryNotice":	"Would you like to send crash dumps and/or usage information to the Puyo VS team? This information is kept private and will be used to find bugs and prioritize improvements. This is completely optional, but helpful to us.",
+		"TelemetryCrashCheckbox":	"Allow sending crash dumps and error logs",
+		"TelemetryStatisticCheckbox":	"Allow sending usage statistics and telemetry"
 	},
 	"Messages":
 	{

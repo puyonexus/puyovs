@@ -307,9 +307,9 @@ void GameManager::channelJoined(QString channel, NetPeerList peers) const
 
 		// Populate userlist
 		if (peer.status == 1) {
-			widget->chatWindow()->addUser(peer.username, QString("Player %1").arg(playernum));
+			widget->chatWindow()->addUser(peer.username, QString(tr("Player %1", "Launcher:ChatwindowPl")).arg(playernum));
 		} else if (peer.status == 2) {
-			widget->chatWindow()->addUser(peer.username, "Spectator");
+			widget->chatWindow()->addUser(peer.username, tr("Spectator","Launcher:ChatwindowSp"));
 		}
 	}
 }
@@ -365,7 +365,7 @@ void GameManager::peerPartedChannel(QString channel, QString peer) const
 	}
 	// Spectator or pending player left
 	else {
-		QString langStr = tr("%s left."); // TODO: Needs a translation string!
+		QString langStr = tr("%s left.","Launcher:PlayerLeave");
 		widget->chatWindow()->statusMessage(QString::asprintf(langStr.toUtf8().data(), peer.toUtf8().data()));
 	}
 	// Remove from chatwindow
@@ -573,9 +573,9 @@ void GameManager::peerStatusReceived(QString channel, QString peer, uchar status
 
 	// Add to userlist
 	if (status == 1)
-		widget->chatWindow()->addUser(peer, QString("Player %1").arg(pln));
+		widget->chatWindow()->addUser(peer, QString(tr("Player %1", "Launcher:ChatwindowPl")).arg(pln));
 	else if (status == 2)
-		widget->chatWindow()->addUser(peer, "Spectator");
+		widget->chatWindow()->addUser(peer, tr("Spectator","Launcher:ChatwindowSp"));
 }
 
 void GameManager::updateControls(GameWidget* game)

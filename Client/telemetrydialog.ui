@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Puyo VS Telemetry</string>
+   <string comment="TelemetryTitle">Puyo VS Telemetry</string>
   </property>
   <property name="windowIcon">
    <iconset resource="client.qrc">
@@ -21,7 +21,7 @@
    <item>
     <widget class="QLabel" name="explanationLabel">
      <property name="text">
-      <string>Would you like to send crash dumps and/or usage information to the Puyo VS team? This information is kept private and will be used to find bugs and prioritize improvements. This is completely optional, but helpful to us.</string>
+      <string comment="TelemetryNotice">Would you like to send crash dumps and/or usage information to the Puyo VS team? This information is kept private and will be used to find bugs and prioritize improvements. This is completely optional, but helpful to us.</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -31,14 +31,14 @@
    <item>
     <widget class="QCheckBox" name="allowCrashDumpsCheckBox">
      <property name="text">
-      <string>Allow sending crash dumps and error logs</string>
+      <string comment="TelemetryCrashCheckbox">Allow sending crash dumps and error logs</string>
      </property>
     </widget>
    </item>
    <item>
     <widget class="QCheckBox" name="allowUsageStatisticsCheckBox">
      <property name="text">
-      <string>Allow sending usage statistics and telemetry</string>
+      <string comment="TelemetryStatisticCheckbox">Allow sending usage statistics and telemetry</string>
      </property>
     </widget>
    </item>
@@ -58,7 +58,7 @@
    <item>
     <widget class="QLabel" name="explainConfigLabel">
      <property name="text">
-      <string>&lt;i&gt;If you change your mind, you can disable or enable these options in Settings.&lt;/i&gt;</string>
+      <string comment="TelemetrySettingsRemind">&lt;i&gt;If you change your mind, you can disable or enable these options in Settings.&lt;/i&gt;</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
