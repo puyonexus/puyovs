@@ -64,9 +64,9 @@ void InputDialog::process()
 {
 	drv->process();
 
-	ilib::InputEvent e;
+	ilib::InputEvent e {};
 	while (drv->getEvent(&e)) {
-		if (e.type == ilib::InputEvent::AxisEvent && fabs(e.axis.value) < 0.5)
+		if (e.type == ilib::InputEvent::Type::AxisEvent && fabs(e.axis.value) < 0.5)
 			continue;
 
 		in = InputCondition(e).toString();

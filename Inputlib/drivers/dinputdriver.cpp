@@ -81,7 +81,7 @@ struct DInputDriver::Priv {
 
 				for (int i = 0; i < 128; ++i) {
 					if (events && buttons[i] != static_cast<bool>(state.rgbButtons[i])) {
-						const InputEvent::Type type = state.rgbButtons[i] ? InputEvent::ButtonDownEvent : InputEvent::ButtonUpEvent;
+						const InputEvent::Type type = state.rgbButtons[i] ? InputEvent::Type::ButtonDownEvent : InputEvent::Type::ButtonUpEvent;
 						p->queue(InputEvent::createButtonEvent(type, id, i));
 					}
 

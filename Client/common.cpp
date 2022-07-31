@@ -130,19 +130,19 @@ QString createRulesetString(ppvs::RuleSetInfo* rs)
 InputCondition::InputCondition(const ilib::InputEvent& e)
 {
 	switch (e.type) {
-	case ilib::InputEvent::ButtonUpEvent:
-	case ilib::InputEvent::ButtonDownEvent:
+	case ilib::InputEvent::Type::ButtonUpEvent:
+	case ilib::InputEvent::Type::ButtonDownEvent:
 		type = ConditionType::ButtonType;
 		button.device = e.device;
 		button.id = e.button.id;
 		break;
-	case ilib::InputEvent::AxisEvent:
+	case ilib::InputEvent::Type::AxisEvent:
 		type = ConditionType::AxisType;
 		axis.device = e.device;
 		axis.id = e.axis.id;
 		axis.direction = e.axis.value > 0 ? 1 : -1;
 		break;
-	case ilib::InputEvent::HatEvent:
+	case ilib::InputEvent::Type::HatEvent:
 		type = ConditionType::HatType;
 		hat.device = e.device;
 		hat.id = e.hat.id;
@@ -207,8 +207,8 @@ InputCondition::~InputCondition()
 InputCondition::MatchResult InputCondition::match(const ilib::InputEvent& e) const
 {
 	switch (e.type) {
-	case ilib::InputEvent::ButtonUpEvent:
-	case ilib::InputEvent::ButtonDownEvent:
+	case ilib::InputEvent::Type::ButtonUpEvent:
+	case ilib::InputEvent::Type::ButtonDownEvent:
 		if (type != ConditionType::ButtonType)
 			return MatchResult::NoMatch;
 		if (e.device != button.device)
@@ -216,12 +216,12 @@ InputCondition::MatchResult InputCondition::match(const ilib::InputEvent& e) con
 		if (e.button.id != button.id)
 			return MatchResult::NoMatch;
 
-		if (e.type == ilib::InputEvent::ButtonDownEvent)
+		if (e.type == ilib::InputEvent::Type::ButtonDownEvent)
 			return MatchResult::MatchDown;
 		return MatchResult::MatchUp;
 
 		break;
-	case ilib::InputEvent::AxisEvent:
+	case ilib::InputEvent::Type::AxisEvent:
 		if (type != ConditionType::AxisType)
 			return MatchResult::NoMatch;
 		if (e.device != axis.device)
@@ -237,7 +237,7 @@ InputCondition::MatchResult InputCondition::match(const ilib::InputEvent& e) con
 			return MatchResult::MatchDown;
 
 		break;
-	case ilib::InputEvent::HatEvent:
+	case ilib::InputEvent::Type::HatEvent:
 		if (type != ConditionType::HatType)
 			return MatchResult::NoMatch;
 		if (e.device != hat.device)

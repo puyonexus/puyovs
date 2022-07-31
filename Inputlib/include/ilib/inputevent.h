@@ -5,10 +5,12 @@
 namespace ilib {
 
 struct InputEvent {
-	enum Type { ButtonDownEvent,
+	enum class Type {
+	    ButtonDownEvent,
 		ButtonUpEvent,
 		AxisEvent,
-		HatEvent };
+		HatEvent
+	};
 
 	Type type;
 	int device;
@@ -47,7 +49,7 @@ struct InputEvent {
 	{
 		InputEvent e;
 
-		e.type = AxisEvent;
+		e.type = Type::AxisEvent;
 		e.device = device;
 		e.axis.id = axis;
 		e.axis.value = value;
@@ -59,7 +61,7 @@ struct InputEvent {
 	{
 		InputEvent e;
 
-		e.type = HatEvent;
+		e.type = Type::HatEvent;
 		e.device = device;
 		e.hat.id = hat;
 		e.hat.value = value;

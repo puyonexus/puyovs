@@ -22,17 +22,17 @@ int main()
 		ilib::InputEvent e;
 		while (driver->getEvent(&e)) {
 			switch (e.type) {
-			case ilib::InputEvent::ButtonDownEvent:
-			case ilib::InputEvent::ButtonUpEvent:
+			case ilib::InputEvent::Type::ButtonDownEvent:
+			case ilib::InputEvent::Type::ButtonUpEvent:
 				printf("Button %i %s on controller %i.\n",
-					e.button.id, e.type == ilib::InputEvent::ButtonDownEvent ? "pressed" : "released", e.device);
+					e.button.id, e.type == ilib::InputEvent::Type::ButtonDownEvent ? "pressed" : "released", e.device);
 				break;
-			case ilib::InputEvent::AxisEvent:
+			case ilib::InputEvent::Type::AxisEvent:
 				if (fabs(e.axis.value) > 0.5)
 					printf("Axis %i moved to %f on controller %i.\n",
 						e.axis.id, e.axis.value, e.device);
 				break;
-			case ilib::InputEvent::HatEvent:
+			case ilib::InputEvent::Type::HatEvent:
 				printf("Hat %i moved to %i on controller %i.\n",
 					e.hat.id, int(e.hat.value), e.device);
 			default:
