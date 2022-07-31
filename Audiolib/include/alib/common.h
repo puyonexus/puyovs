@@ -25,12 +25,14 @@ namespace alib {
 
 class NonCopyable {
 protected:
-	NonCopyable() { }
-	~NonCopyable() { }
+	NonCopyable() = default;
+    virtual ~NonCopyable() = default;
 
-private:
-	NonCopyable(const NonCopyable&);
-	NonCopyable& operator=(const NonCopyable&);
+public:
+	NonCopyable(const NonCopyable&) = delete;
+	NonCopyable& operator=(const NonCopyable&) = delete;
+	NonCopyable(NonCopyable&&) = delete;
+	NonCopyable& operator=(NonCopyable&&) = delete;
 };
 
 template <class T>
@@ -71,9 +73,10 @@ public:
 	void detach()
 	{
 		T* t = data.get();
-		if (!(t == 0 || data.unique())) {
-			data = std::shared_ptr<T>(new T(*t));
+		if (t == nullptr || data.unique()) {
+			return;
 		}
+		data = std::make_shared<T>(*t);
 	}
 };
 
