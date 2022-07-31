@@ -34,7 +34,7 @@ public:
 
 class BinaryStream {
 public:
-	enum SeekOrigin {
+	enum class SeekOrigin {
 		Beginning,
 		Current,
 		End

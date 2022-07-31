@@ -139,13 +139,13 @@ public:
 	bool seek(long to, SeekOrigin origin) override
 	{
 		switch (origin) {
-		case Beginning:
+		case SeekOrigin::Beginning:
 			m_i = to;
 			break;
-		case Current:
+		case SeekOrigin::Current:
 			m_i += to;
 			break;
-		case End:
+		case SeekOrigin::End:
 			if (size() > 0)
 				m_i = size() + to;
 			else

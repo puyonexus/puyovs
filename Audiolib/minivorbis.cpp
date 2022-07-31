@@ -801,7 +801,7 @@ static void skip(vorb *z, int n)
 
    {
       long x = z->f->tell();
-      z->f->seek(x+n, alib::BinaryStream::Beginning);
+      z->f->seek(x+n, alib::BinaryStream::SeekOrigin::Beginning);
    }
 
 }
@@ -826,10 +826,10 @@ static int set_file_offset(stb_vorbis *f, unsigned int loc)
    } else {
       loc += f->f_start;
    }
-   if (f->f->seek(loc, alib::BinaryStream::Beginning))
+   if (f->f->seek(loc, alib::BinaryStream::SeekOrigin::Beginning))
       return 1;
    f->eof = 1;
-   f->f->seek(f->f_start, alib::BinaryStream::End);
+   f->f->seek(f->f_start, alib::BinaryStream::SeekOrigin::End);
    return 0;
 }
 
@@ -3078,7 +3078,7 @@ static int start_decoder(vorb *f)
        getn(f, (uint8*)f->comments[i], comment_len);
    }
 
-   f->f->seek(prev_loc, alib::BinaryStream::Beginning); // HACK
+   f->f->seek(prev_loc, alib::BinaryStream::SeekOrigin::Beginning); // HACK
    // END COMMENT READING
    //////////////////////////////////////////////
 

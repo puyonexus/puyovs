@@ -206,7 +206,7 @@ static size_t alib_streamfile_read(STREAMFILE* sf, uint8_t* dest, off_t offset, 
 
 	if (streamfile->offset != offset)
 	{
-		streamfile->alibStream->seek(offset, BinaryStream::Beginning);
+		streamfile->alibStream->seek(offset, BinaryStream::SeekOrigin::Beginning);
 		streamfile->offset = offset;
 	}
 

@@ -190,9 +190,9 @@ long BinaryStream::size()
 	if (!seekable())
 		return 0;
 	const long pos = tell();
-	seek(0, End);
+	seek(0, SeekOrigin::End);
 	const long size = tell();
-	seek(pos, Beginning);
+	seek(pos, SeekOrigin::Beginning);
 	return size;
 }
 
@@ -297,7 +297,7 @@ bool FileStream::seekable()
 
 bool FileStream::seek(long to, SeekOrigin origin)
 {
-	return ::fseek(p->file, to, (origin == Beginning ? SEEK_SET : (origin == End ? SEEK_END : SEEK_CUR))) == 0;
+	return ::fseek(p->file, to, (origin == SeekOrigin::Beginning ? SEEK_SET : (origin == SeekOrigin::End ? SEEK_END : SEEK_CUR))) == 0;
 }
 
 long FileStream::tell()
@@ -389,13 +389,13 @@ struct MemoryStream::Priv {
 		const int bufSize = static_cast<int>(buffer.size());
 
 		switch (origin) {
-		case MemoryStream::Beginning:
+		case MemoryStream::SeekOrigin::Beginning:
 			c = to;
 			break;
-		case MemoryStream::Current:
+		case MemoryStream::SeekOrigin::Current:
 			c += to;
 			break;
-		case MemoryStream::End:
+		case MemoryStream::SeekOrigin::End:
 			c = bufSize + to;
 			break;
 		}
@@ -456,7 +456,7 @@ bool MemoryStream::hasEof()
 
 void MemoryStream::rewind()
 {
-	p->seek(0, Beginning);
+	p->seek(0, SeekOrigin::Beginning);
 }
 
 bool MemoryStream::error()
