@@ -40,7 +40,7 @@ ChatroomForm::ChatroomForm(NetPeerList peers, NetChannelProxy* proxy, GameManage
 	connect(mProxy, SIGNAL(userInfoReceived(QString)), SLOT(userInfoReceived(QString)));
 	connect(ui->ChatTextEdit, SIGNAL(anchorClicked(QString)), SLOT(urlClicked(QString)));
 
-	statusMessage(ChannelJoinedEvent, mProxy->friendlyChannel());
+	statusMessage(StatusEvent::ChannelJoinedEvent, mProxy->friendlyChannel());
 
 	loadSettings();
 	updateChallengeDisplay();
@@ -77,53 +77,39 @@ void ChatroomForm::refreshLanguages()
 	countUsers();
 }
 
-enum StatusEvent {
-	ChannelJoinedEvent,
-	ChannelLeftEvent,
-
-	PeerJoinedEvent,
-	PeerLeftEvent,
-
-	MatchCancelEvent,
-	MatchLeftEvent,
-	MatchAutorejectEvent,
-	MatchAutorejectSelfEvent,
-	MatchDeclineEvent,
-	MatchAcceptEvent
-};
 void ChatroomForm::statusMessage(ChatroomForm::StatusEvent type, QString arg) const
 {
 	QString message;
 
 	switch (type) {
-	case ChannelJoinedEvent:
+	case StatusEvent::ChannelJoinedEvent:
 		message = tr("Chatroom %s joined.", "Messages:ChannelJoined");
 		break;
-	case ChannelLeftEvent:
+	case StatusEvent::ChannelLeftEvent:
 		message = tr("Chatroom %s left.", "Messages:ChannelLeft");
 		break;
-	case PeerJoinedEvent:
+	case StatusEvent::PeerJoinedEvent:
 		message = tr("%s joined chatroom.", "Messages:PeerJoined");
 		break;
-	case PeerLeftEvent:
+	case StatusEvent::PeerLeftEvent:
 		message = tr("%s left chatroom.", "Messages:PeerLeft");
 		break;
-	case MatchCancelEvent:
+	case StatusEvent::MatchCancelEvent:
 		message = tr("Matchmaking canceled.", "Messages:MatchCancel");
 		break;
-	case MatchLeftEvent:
+	case StatusEvent::MatchLeftEvent:
 		message = tr("Challenger left.", "Messages:MatchLeft");
 		break;
-	case MatchAutorejectEvent:
+	case StatusEvent::MatchAutoRejectEvent:
 		message = tr("User autorejected.", "Messages:MatchAutoreject");
 		break;
-	case MatchAutorejectSelfEvent:
+	case StatusEvent::MatchAutoRejectSelfEvent:
 		message = tr("Autorejected a challenge.", "Messages:MatchAutorejectSelf");
 		break;
-	case MatchDeclineEvent:
+	case StatusEvent::MatchDeclineEvent:
 		message = tr("User declined the challenge.", "Messages:MatchDecline");
 		break;
-	case MatchAcceptEvent:
+	case StatusEvent::MatchAcceptEvent:
 		message = tr("Get ready to play...", "Messages:MatchAccept");
 		break;
 	}
@@ -318,7 +304,7 @@ void ChatroomForm::peerMessageReceived(uchar subchannel, QString nick, QString m
 	case CHANNEL_CHALLENGE:
 		if (msg == "cancel") {
 			challenge = ChallengeState();
-			statusMessage(MatchCancelEvent);
+			statusMessage(StatusEvent::MatchCancelEvent);
 		} else if (msg == "autoreject") {
 			challenge.challengedUser = QString();
 
@@ -329,11 +315,11 @@ void ChatroomForm::peerMessageReceived(uchar subchannel, QString nick, QString m
 				challenge = ChallengeState();
 			}
 
-			statusMessage(MatchAutorejectEvent);
+			statusMessage(StatusEvent::MatchAutoRejectEvent);
 		} else {
 			if (challenge.beingChallenged || challenge.challenging || isAutoRejectEnabled()) {
 				mProxy->sendChallengeMessage(nick, "autoreject");
-				statusMessage(MatchAutorejectSelfEvent);
+				statusMessage(StatusEvent::MatchAutoRejectSelfEvent);
 
 				return;
 			}
@@ -363,7 +349,7 @@ void ChatroomForm::peerMessageReceived(uchar subchannel, QString nick, QString m
 			return;
 
 		if (msg == "reject") {
-			statusMessage(MatchDeclineEvent);
+			statusMessage(StatusEvent::MatchDeclineEvent);
 			challenge.challengedUser = QString();
 
 			if (challenge.rules.numPlayers == 2)
@@ -378,7 +364,7 @@ void ChatroomForm::peerMessageReceived(uchar subchannel, QString nick, QString m
 			// Maximum number of players
 			if (challenge.challengedList.count() >= challenge.rules.numPlayers - 1) {
 				challenge.challenging = false;
-				statusMessage(MatchAcceptEvent);
+				statusMessage(StatusEvent::MatchAcceptEvent);
 
 				inviteToMatch();
 				/*
@@ -453,7 +439,7 @@ void ChatroomForm::peerJoined(QString peer) const
 		item->setData(Qt::UserRole, 0);
 	}
 	ui->UserListWidget->sortItems(Qt::AscendingOrder);
-	statusMessage(PeerJoinedEvent, peer);
+	statusMessage(StatusEvent::PeerJoinedEvent, peer);
 	updateChallengeButton();
 	countUsers();
 }
@@ -465,12 +451,12 @@ void ChatroomForm::peerParted(QString peer)
 	foreach (QListWidgetItem* item, list)
 		delete item;
 
-	statusMessage(PeerLeftEvent, peer);
+	statusMessage(StatusEvent::PeerLeftEvent, peer);
 
 	if (challenge.beingChallenged && peer == challenge.challenger || challenge.challenging && peer == challenge.challengedUser) {
 		if (challenge.beingChallenged) {
 			challenge = ChallengeState();
-			statusMessage(MatchCancelEvent);
+			statusMessage(StatusEvent::MatchCancelEvent);
 		} else if (challenge.challenging) {
 			challenge.challengedUser = QString();
 			if (challenge.rules.numPlayers == 2)

@@ -41,7 +41,7 @@ class ChatroomForm : public QWidget {
 	Q_OBJECT
 
 public:
-	enum StatusEvent {
+	enum class StatusEvent {
 		ChannelJoinedEvent,
 		ChannelLeftEvent,
 
@@ -50,8 +50,8 @@ public:
 
 		MatchCancelEvent,
 		MatchLeftEvent,
-		MatchAutorejectEvent,
-		MatchAutorejectSelfEvent,
+		MatchAutoRejectEvent,
+		MatchAutoRejectSelfEvent,
 		MatchDeclineEvent,
 		MatchAcceptEvent
 	};
