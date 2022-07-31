@@ -192,7 +192,7 @@ void UpdateDialog::taskReadyRead()
 
 void UpdateDialog::beginUpdate()
 {
-	UpdaterUDB udb;
+	UpdaterUdb udb;
 	{
 		QBuffer udbBuffer(&taskBuffer);
 		udbBuffer.open(QBuffer::ReadOnly);
@@ -205,7 +205,7 @@ void UpdateDialog::beginUpdate()
 	}
 	taskBuffer.clear();
 
-	foreach (const UpdaterFile& file, udb.files) {
+	foreach (const UpdaterFile& file, udb.m_files) {
 		QString filename = file.filename();
 		QString localFn = file.localFilename();
 		QString platform = file.platform();

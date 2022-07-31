@@ -74,5 +74,5 @@ private:
 	DownloaderTask task;
 	Ui::UpdateDialog* ui;
 	QNetworkAccessManager* netMan;
-	UpdaterLDB ldb;
+	UpdaterLdb ldb;
 };

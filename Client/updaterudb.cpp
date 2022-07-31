@@ -1,16 +1,18 @@
 #include "updaterudb.h"
 #include <QIODevice>
 
-bool fullread(QIODevice* device, char* data, qint64 size)
+bool fullRead(QIODevice* device, char* data, qint64 size)
 {
 	qint64 have = 0;
 	while (have < size) {
-		qint64 got = device->read(data, size - have);
-		if (got < 0)
+		const qint64 got = device->read(data, size - have);
+		if (got < 0) {
 			return false;
+		}
 		have += got;
-		if (device->atEnd())
+		if (device->atEnd()) {
 			return false;
+		}
 		device->waitForReadyRead(1000);
 	}
 
@@ -19,52 +21,52 @@ bool fullread(QIODevice* device, char* data, qint64 size)
 
 bool UpdaterFile::read(QIODevice* stream)
 {
-	if (!fullread(stream, (char*)&header, sizeof header))
+	if (!fullRead(stream, reinterpret_cast<char*>(&m_header), sizeof m_header))
 		return false;
 
-	fname = QString::fromUtf8(stream->read(header.namelen));
+	m_filename = QString::fromUtf8(stream->read(m_header.nameLen));
 
 	return true;
 }
 
 qint32 UpdaterFile::version() const
 {
-	return header.revision;
+	return m_header.revision;
 }
 
 QString UpdaterFile::filename() const
 {
-	return fname;
+	return m_filename;
 }
 
 QString UpdaterFile::localFilename() const
 {
-	if (fname.startsWith("Platform-"))
-		return fname.right(fname.length() - fname.indexOf('/', 1) - 1);
-	return fname;
+	if (m_filename.startsWith("Platform-"))
+		return m_filename.right(m_filename.length() - m_filename.indexOf('/', 1) - 1);
+	return m_filename;
 }
 
 QString UpdaterFile::platform() const
 {
-	if (fname.startsWith("Platform-"))
-		return fname.left(fname.indexOf('/', 1)).remove(0, 9);
-	return QString();
+	if (m_filename.startsWith("Platform-"))
+		return m_filename.left(m_filename.indexOf('/', 1)).remove(0, 9);
+	return {};
 }
 
 bool UpdaterFile::isFolder() const
 {
-	return header.flags & UDBDirectory;
+	return m_header.flags & UdbFileFlags::Directory;
 }
 
-bool UpdaterUDB::read(QIODevice* stream)
+bool UpdaterUdb::read(QIODevice* stream)
 {
-	if (!fullread(stream, (char*)&header, sizeof header))
+	if (!fullRead(stream, reinterpret_cast<char*>(&m_header), sizeof m_header))
 		return false;
 
-	for (int i = 0; i < header.numfiles; ++i) {
+	for (int i = 0; i < m_header.numFiles; ++i) {
 		UpdaterFile file;
 		if (file.read(stream))
-			files.append(file);
+			m_files.append(file);
 		else
 			return false;
 	}

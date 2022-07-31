@@ -5,13 +5,13 @@
 
 class QIODevice;
 
-class UpdaterLDB {
+class UpdaterLdb {
 public:
 	bool read(QIODevice* stream);
 	bool write(QIODevice* stream) const;
 
-	qint32 version(QString fn);
-	void setVersion(QString fn, int version);
+    [[nodiscard]] quint32 version(const QString& fn) const;
+	void setVersion(const QString& fn, int version);
 
-	QMap<QString, quint32> fileVersions;
+	QMap<QString, quint32> m_fileVersions;
 };

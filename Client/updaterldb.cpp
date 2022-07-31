@@ -3,19 +3,20 @@
 #include <QIODevice>
 #include <QMapIterator>
 
-bool UpdaterLDB::read(QIODevice* stream)
+bool UpdaterLdb::read(QIODevice* stream)
 {
 	QDataStream dataStream(stream);
 	dataStream.setByteOrder(QDataStream::LittleEndian);
 
 	quint32 numEntries;
 	char magic[4];
-	uint magicLen = 4;
+	constexpr uint magicLen = sizeof(magic);
 
 	// Magic number
 	dataStream.readRawData(magic, magicLen);
-	if (memcmp(magic, "LDBV", 4))
+	if (memcmp(magic, "LDBV", 4) != 0) {
 		return false;
+	}
 
 	// Number of entries
 	dataStream >> numEntries;
@@ -25,19 +26,19 @@ bool UpdaterLDB::read(QIODevice* stream)
 		char* filename = nullptr;
 
 		dataStream >> fnLength;
-		filename = (char*)malloc(fnLength + 1);
+		filename = static_cast<char*>(malloc(fnLength + 1));
 		memset(filename, 0, fnLength + 1);
 		dataStream.readRawData(filename, fnLength);
 		dataStream >> fnVersion;
 
-		fileVersions[QString::fromUtf8(filename)] = fnVersion;
+		m_fileVersions[QString::fromUtf8(filename)] = fnVersion;
 		free(filename);
 	}
 
 	return true;
 }
 
-bool UpdaterLDB::write(QIODevice* stream) const
+bool UpdaterLdb::write(QIODevice* stream) const
 {
 	QDataStream dataStream(stream);
 	dataStream.setByteOrder(QDataStream::LittleEndian);
@@ -46,29 +47,26 @@ bool UpdaterLDB::write(QIODevice* stream) const
 	dataStream.writeRawData("LDBV", 4);
 
 	// Number of entries
-	dataStream << quint32(fileVersions.count());
+	dataStream << static_cast<quint32>(m_fileVersions.count());
 
-	QMapIterator<QString, quint32> it(fileVersions);
+	QMapIterator it(m_fileVersions);
 	while (it.hasNext()) {
 		it.next();
 		QByteArray filename = it.key().toUtf8();
-		dataStream << quint32(filename.size());
+		dataStream << static_cast<quint32>(filename.size());
 		dataStream.writeRawData(filename.constData(), filename.size());
-		dataStream << quint32(it.value());
+		dataStream << it.value();
 	}
 
 	return true;
 }
 
-qint32 UpdaterLDB::version(QString fn)
+quint32 UpdaterLdb::version(const QString& fn) const
 {
-	if (fileVersions.contains(fn))
-		return fileVersions[fn];
-
-	return -1;
+	return m_fileVersions.value(fn, -1);
 }
 
-void UpdaterLDB::setVersion(QString fn, int version)
+void UpdaterLdb::setVersion(const QString& fn, const int version)
 {
-	fileVersions[fn] = version;
+	m_fileVersions[fn] = version;
 }
