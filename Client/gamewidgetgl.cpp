@@ -162,18 +162,18 @@ GameWidgetGL::~GameWidgetGL()
 void GameWidgetGL::keyPressEvent(QKeyEvent* k)
 {
 	InputCondition::MatchResult r;
-#define HANDLEKEY(i, button)            \
-	r = mControls[i].match(k);          \
-	if (r == InputCondition::MatchDown) \
+#define HANDLE_KEY(i, button)                         \
+	r = mControls[i].match(k);                       \
+	if (r == InputCondition::MatchResult::MatchDown) \
 	d->inputState.button = true
-	HANDLEKEY(0, up);
-	HANDLEKEY(1, down);
-	HANDLEKEY(2, left);
-	HANDLEKEY(3, right);
-	HANDLEKEY(4, a);
-	HANDLEKEY(5, b);
-	HANDLEKEY(6, start);
-#undef HANDLEKEY
+	HANDLE_KEY(0, up);
+	HANDLE_KEY(1, down);
+	HANDLE_KEY(2, left);
+	HANDLE_KEY(3, right);
+	HANDLE_KEY(4, a);
+	HANDLE_KEY(5, b);
+	HANDLE_KEY(6, start);
+#undef HANDLE_KEY
 
 	// I'm putting this here for the moment.
 	// This is not part of Puyolib, because it may be hard
@@ -224,18 +224,18 @@ void GameWidgetGL::keyPressEvent(QKeyEvent* k)
 void GameWidgetGL::keyReleaseEvent(QKeyEvent* k)
 {
 	InputCondition::MatchResult r;
-#define HANDLEKEY(i, button)          \
+#define HANDLE_KEY(i, button)          \
 	r = mControls[i].match(k);        \
-	if (r == InputCondition::MatchUp) \
+	if (r == InputCondition::MatchResult::MatchUp) \
 	d->inputState.button = false
-	HANDLEKEY(0, up);
-	HANDLEKEY(1, down);
-	HANDLEKEY(2, left);
-	HANDLEKEY(3, right);
-	HANDLEKEY(4, a);
-	HANDLEKEY(5, b);
-	HANDLEKEY(6, start);
-#undef HANDLEKEY
+	HANDLE_KEY(0, up);
+	HANDLE_KEY(1, down);
+	HANDLE_KEY(2, left);
+	HANDLE_KEY(3, right);
+	HANDLE_KEY(4, a);
+	HANDLE_KEY(5, b);
+	HANDLE_KEY(6, start);
+#undef HANDLE_KEY
 }
 
 void GameWidgetGL::paintEvent(QPaintEvent*)
@@ -302,24 +302,24 @@ void GameWidgetGL::process()
 			d->inputDriver->process();
 			ilib::InputEvent e;
 			while (d->inputDriver->getEvent(&e)) {
-#define HANDLEJOY(i, button)                 \
+#define HANDLE_JOY(i, button)                 \
 	r = mControls[i].match(e);               \
-	if (r == InputCondition::MatchUp)        \
+	if (r == InputCondition::MatchResult::MatchUp)        \
 		d->inputState.button = false;        \
-	else if (r == InputCondition::MatchDown) \
+	else if (r == InputCondition::MatchResult::MatchDown) \
 		d->inputState.button = true;
-				HANDLEJOY(0, up);
-				HANDLEJOY(1, down);
-				HANDLEJOY(2, left);
-				HANDLEJOY(3, right);
-				HANDLEJOY(4, a);
-				HANDLEJOY(5, b);
-				HANDLEJOY(6, start);
-#undef HANDLEJOY
+				HANDLE_JOY(0, up);
+				HANDLE_JOY(1, down);
+				HANDLE_JOY(2, left);
+				HANDLE_JOY(3, right);
+				HANDLE_JOY(4, a);
+				HANDLE_JOY(5, b);
+				HANDLE_JOY(6, start);
+#undef HANDLE_JOY
 			}
 		}
 
-		// Frameskipping
+		// Frame skipping
 		while (now > d->nextFrame) {
 			mGame->playGame();
 			d->nextFrame += 1000 / 60;
@@ -329,7 +329,6 @@ void GameWidgetGL::process()
 
 		if (!mGame->m_runGame) {
 			close();
-			return;
 		}
 	}
 }

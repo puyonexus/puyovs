@@ -210,51 +210,51 @@ InputCondition::MatchResult InputCondition::match(const ilib::InputEvent& e) con
 	case ilib::InputEvent::ButtonUpEvent:
 	case ilib::InputEvent::ButtonDownEvent:
 		if (type != buttontype)
-			return NoMatch;
+			return MatchResult::NoMatch;
 		if (e.device != button.device)
-			return NoMatch;
+			return MatchResult::NoMatch;
 		if (e.button.id != button.id)
-			return NoMatch;
+			return MatchResult::NoMatch;
 
 		if (e.type == ilib::InputEvent::ButtonDownEvent)
-			return MatchDown;
-		return MatchUp;
+			return MatchResult::MatchDown;
+		return MatchResult::MatchUp;
 
 		break;
 	case ilib::InputEvent::AxisEvent:
 		if (type != axistype)
-			return NoMatch;
+			return MatchResult::NoMatch;
 		if (e.device != axis.device)
-			return NoMatch;
+			return MatchResult::NoMatch;
 		if (e.axis.id != axis.id)
-			return NoMatch;
+			return MatchResult::NoMatch;
 
 		if (e.axis.value >= -0.5 && e.axis.value <= 0.5)
-			return MatchUp;
+			return MatchResult::MatchUp;
 		if (axis.direction == 1 && e.axis.value > 0.5)
-			return MatchDown;
+			return MatchResult::MatchDown;
 		if (axis.direction == -1 && e.axis.value < -0.5)
-			return MatchDown;
+			return MatchResult::MatchDown;
 
 		break;
 	case ilib::InputEvent::HatEvent:
 		if (type != hattype)
-			return NoMatch;
+			return MatchResult::NoMatch;
 		if (e.device != hat.device)
-			return NoMatch;
+			return MatchResult::NoMatch;
 		if (e.hat.id != hat.id)
-			return NoMatch;
+			return MatchResult::NoMatch;
 
 		if (e.hat.value | hat.direction)
-			return MatchUp;
-		return MatchDown;
+			return MatchResult::MatchUp;
+		return MatchResult::MatchDown;
 
 		break;
 	default:
 		break;
 	}
 
-	return NoMatch;
+	return MatchResult::NoMatch;
 }
 
 InputCondition::MatchResult InputCondition::match(QKeyEvent* e) const
@@ -262,15 +262,15 @@ InputCondition::MatchResult InputCondition::match(QKeyEvent* e) const
 	switch (e->type()) {
 	case QEvent::KeyPress:
 		if (e->key() == key.code)
-			return MatchDown;
+			return MatchResult::MatchDown;
 	case QEvent::KeyRelease:
 		if (e->key() == key.code)
-			return MatchUp;
+			return MatchResult::MatchUp;
 	default:
 		break;
 	}
 
-	return NoMatch;
+	return MatchResult::NoMatch;
 }
 
 QString InputCondition::toString() const

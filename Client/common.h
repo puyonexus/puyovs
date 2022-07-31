@@ -43,9 +43,11 @@ extern QHash<int, QString> codeToName;
 
 class InputCondition {
 public:
-	enum MatchResult { NoMatch,
+	enum class MatchResult {
+		NoMatch,
 		MatchUp,
-		MatchDown };
+		MatchDown
+	};
 
 	InputCondition(const ilib::InputEvent& e);
 	InputCondition(QKeyEvent* e);
