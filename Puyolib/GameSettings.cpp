@@ -58,6 +58,7 @@ GameSettings::GameSettings(const RuleSetInfo& ruleSetInfo)
 	defaultPuyoCharacter = ARLE;
 	useCharacterField = true;
 	startWithCharacterSelect = true;
+	swapABConfirm = false;
 	pickColors = true;
 	useCpuPlayers = false;
 	spectating = false;

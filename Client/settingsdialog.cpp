@@ -89,6 +89,7 @@ void SettingsDialog::load()
 	ui->AInput->setText(settings.string("controlsp1", "a", "x"));
 	ui->BInput->setText(settings.string("controlsp1", "b", "z"));
 	ui->StartInput->setText(settings.string("controlsp1", "start", "return"));
+	ui->SwapABConfirmCheckBox->setChecked(settings.boolean("controlsp1", "swapabconfirm", false));
 
 	// Customization
 	fetchFileLists();
@@ -158,6 +159,7 @@ void SettingsDialog::save()
 	settings.setString("controlsp1", "a", ui->AInput->text());
 	settings.setString("controlsp1", "b", ui->BInput->text());
 	settings.setString("controlsp1", "start", ui->StartInput->text());
+	settings.setBoolean("controlsp1", "swapabconfirm", ui->SwapABConfirmCheckBox->isChecked());
 
 	// Customization
 	settings.setString("custom", "background", ui->BackgroundComboBox->currentText());

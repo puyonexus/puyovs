@@ -33,7 +33,8 @@
          "down" : "down",
          "up" : "up",
          "b" : "z",
-         "left" : "left"
+         "left" : "left",
+         "swapabconfirm" : false
       },
       "custom" : {
          "puyo" : "Default",

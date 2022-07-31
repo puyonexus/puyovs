@@ -12,7 +12,7 @@ Menu::Menu(Game* g)
 	m_background.setScale(2 * 192, 336);
 	m_background.setColor(0, 0, 0);
 	m_background.setTransparency(0.5f);
-    const FieldProp p = m_currentGame->m_players[0]->m_activeField->getProperties();
+	const FieldProp p = m_currentGame->m_players[0]->m_activeField->getProperties();
 	m_background.setPosition(p.offsetX - 192.f / 2.f, p.offsetY - 336.f / 4.f);
 	m_select = 0;
 
@@ -37,7 +37,7 @@ void Menu::draw()
 
 void Menu::play()
 {
-    const FieldProp p = m_currentGame->m_players[0]->m_activeField->getProperties();
+	const FieldProp p = m_currentGame->m_players[0]->m_activeField->getProperties();
 
 	// Set option sprite
 	for (int i = 0; i < 3; i++) {
@@ -83,8 +83,12 @@ void Menu::play()
 		m_data->snd.cursor.play(m_data);
 	}
 	// Choose
-	if (controls->m_a == 1) {
-		controls->m_a++;
+	if ((controls->m_a == 1) || ((controls->m_b == 1 && m_currentGame->m_settings->swapABConfirm == true))) {
+		if (m_currentGame->m_settings->swapABConfirm == false) {
+			controls->m_a++;
+		} else {
+			controls->m_b++;
+		}
 		if (!(m_select == 0 && m_disableRematch))
 			m_data->snd.decide.play(m_data);
 		if (m_select == 0) {
@@ -103,7 +107,7 @@ void Menu::play()
 						// Set everyone in channel to active and add them to list
 						for (const auto& player : m_currentGame->m_players) {
 							if (!player->m_onlineName.empty()) {
-                                player->m_active = true;
+								player->m_active = true;
 								peers += "|" + toString(player->m_onlineId);
 							}
 						}

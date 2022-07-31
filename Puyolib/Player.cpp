@@ -78,10 +78,10 @@ Player::Player(const PlayerType type, const int playerNum, const int totalPlayer
 		// All player are active
 		m_active = true;
 	} else {
-        initValues(static_cast<int>(m_currentGame->m_randomSeedNextList + m_onlineId));
-    }
+		initValues(static_cast<int>(m_currentGame->m_randomSeedNextList + m_onlineId));
+	}
 
-    // TEMP
+	// TEMP
 	// Field size may be set up by rule set. For now, use standard field size
 	m_properties.gridHeight = 28;
 	m_properties.gridWidth = 32;
@@ -473,7 +473,7 @@ void Player::playerSetup(FieldProp& properties, const int playerNum, const int p
 		// Other players
 		m_globalScale = 1.0f / static_cast<float>(width);
 		properties.offsetX = 400.f + static_cast<float>((playerNum - 2) % width) * 320.f * m_globalScale - 75.f * m_globalScale * static_cast<float>(width - 1);
-		properties.offsetY = 84.f + static_cast<float>((playerNum - 2) / width) * 438.f * m_globalScale - 42.f * m_globalScale * static_cast<float>(width - 1);  // NOLINT(bugprone-integer-division)
+		properties.offsetY = 84.f + static_cast<float>((playerNum - 2) / width) * 438.f * m_globalScale - 42.f * m_globalScale * static_cast<float>(width - 1); // NOLINT(bugprone-integer-division)
 		m_fieldNormal.init(properties, this);
 		m_fieldFever.init(properties, this);
 		m_fieldTemp.init(properties, this);
@@ -990,7 +990,11 @@ void Player::chooseColor()
 	}
 
 	if (m_takeover) {
-		m_controls.m_a = m_currentGame->m_players[0]->m_controls.m_a;
+		if (m_currentGame->m_settings->swapABConfirm == false) {
+			m_controls.m_a = m_currentGame->m_players[0]->m_controls.m_a;
+		} else {
+			m_controls.m_b = m_currentGame->m_players[0]->m_controls.m_b;
+		}
 		m_controls.m_down = m_currentGame->m_players[0]->m_controls.m_down;
 		m_controls.m_up = m_currentGame->m_players[0]->m_controls.m_up;
 	}
@@ -1045,15 +1049,23 @@ void Player::chooseColor()
 
 		// Automatic choice
 		if (m_currentGame->m_colorTimer == 1 && m_colorMenuTimer > 25 && m_pickedColor == false) {
-			m_controls.m_a = 1;
+			if (m_currentGame->m_settings->swapABConfirm == false) {
+				m_controls.m_a = 1;
+			} else {
+				m_controls.m_b = 1;
+			}
 		}
 
 		// Make choice
-		if (m_controls.m_a == 1 && m_colorMenuTimer > 25) {
+		if ((m_controls.m_a == 1 && m_colorMenuTimer > 25) || ((m_controls.m_b == 1 && m_currentGame->m_settings->swapABConfirm == true && m_colorMenuTimer > 25))) {
 			m_normalGarbage.gq += m_normalGarbage.cq;
 			m_normalGarbage.cq = 0;
 			m_data->snd.decide.play(m_data);
-			m_controls.m_a++;
+			if (m_currentGame->m_settings->swapABConfirm == false) {
+				m_controls.m_a++;
+			} else {
+				m_controls.m_b++;
+			}
 			if (m_takeover) {
 				m_currentGame->m_players[0]->m_controls.m_a++;
 			}
@@ -1224,7 +1236,7 @@ void Player::destroyPuyos()
 	m_destroyPuyosTimer++;
 	if (m_destroyPuyosTimer == m_chainPopSpeed) {
 		// Create "XX Chain" word
-        const FieldProp prop = m_activeField->getProperties();
+		const FieldProp prop = m_activeField->getProperties();
 		m_chainWord->showAt(
 			static_cast<float>(prop.gridWidth * m_rememberX) * prop.scaleX,
 			static_cast<float>(prop.gridHeight * (prop.gridY - 3 - (m_rememberMaxY + 3))) * prop.scaleY, m_chain);
@@ -1245,7 +1257,7 @@ void Player::destroyPuyos()
 				div = max(2, m_divider);
 			}
 
-			m_eq = static_cast<int>(static_cast<float>(m_currentScore / m_targetPoint) * power * 3.f / static_cast<float>(div + 1));  // NOLINT(bugprone-integer-division)
+			m_eq = static_cast<int>(static_cast<float>(m_currentScore / m_targetPoint) * power * 3.f / static_cast<float>(div + 1)); // NOLINT(bugprone-integer-division)
 			m_currentScore -= m_targetPoint * (m_currentScore / m_targetPoint);
 
 			if (m_bonusEq) {
@@ -1445,12 +1457,12 @@ void Player::startGarbage()
 				startPv = m_activeField->getGlobalCoordinates(m_rememberX, m_rememberMaxY);
 				endPv = player->m_activeField->getTopCoordinates(-1);
 
-			    // Calculate a middle
+				// Calculate a middle
 				const int dir = m_nextPuyo.getOrientation();
 				middlePv.x = startPv.x - static_cast<float>(dir) * kPuyoX * 3.f;
 				middlePv.y = startPv.y - kPuyoY * 3;
 
-			    m_lightEffect.push_back(new LightEffect(m_data, startPv, middlePv, endPv));
+				m_lightEffect.push_back(new LightEffect(m_data, startPv, middlePv, endPv));
 
 				// Add self to garbage accumulator
 				player->addAttacker(m_targetGarbage[player], this);
@@ -1483,17 +1495,17 @@ void Player::startGarbage()
 			}
 		}
 
-	    // Create light effect for defense
-        const PosVectorFloat startPv = m_activeField->getGlobalCoordinates(m_rememberX, m_rememberMaxY);
-        const PosVectorFloat endPv = m_activeField->getTopCoordinates(-1);
+		// Create light effect for defense
+		const PosVectorFloat startPv = m_activeField->getGlobalCoordinates(m_rememberX, m_rememberMaxY);
+		const PosVectorFloat endPv = m_activeField->getTopCoordinates(-1);
 
-	    // Calculate a middle
+		// Calculate a middle
 		const int dir = m_nextPuyo.getOrientation();
 		PosVectorFloat middlePv;
 		middlePv.x = startPv.x - static_cast<float>(dir) * kPuyoX * 3.f;
 		middlePv.y = startPv.y - kPuyoY * 3;
 
-	    m_lightEffect.push_back(new LightEffect(m_data, startPv, middlePv, endPv));
+		m_lightEffect.push_back(new LightEffect(m_data, startPv, middlePv, endPv));
 	} else {
 		m_attackState = NO_ATTACK;
 	}
@@ -1507,7 +1519,7 @@ void Player::garbagePhase()
 		return;
 	}
 
-	if (m_garbageTimer == 0) {  // NOLINT(clang-diagnostic-float-equal)
+	if (m_garbageTimer == 0) { // NOLINT(clang-diagnostic-float-equal)
 		m_hasMoved = false;
 
 		// Trigger voice
@@ -1776,7 +1788,7 @@ void Player::checkLoser(bool endphase)
 	// Check if player places puyo on spawnpoint
 	// Doesn't necessarily mean losing, but the phase will change according to rules
 	PosVectorInt spawn = m_movePuyo.getSpawnPoint();
-    bool lose2 = false;
+	bool lose2 = false;
 	bool lose = m_activeField->isPuyo(spawn.x, spawn.y);
 
 	// Is there a 2nd spawnpoint?
@@ -2631,9 +2643,9 @@ void Player::draw()
 		m_data->front->setColor(255, 255, 255, 255);
 		if (m_currentGame->m_forceStatusText
 			|| (m_type == ONLINE || m_type == HUMAN)
-			&& m_currentGame->m_currentGameStatus != GameStatus::PLAYING
-            && m_currentGame->m_currentGameStatus != GameStatus::SPECTATING
-			&& !m_currentGame->m_settings->useCpuPlayers) {
+				&& m_currentGame->m_currentGameStatus != GameStatus::PLAYING
+				&& m_currentGame->m_currentGameStatus != GameStatus::SPECTATING
+				&& !m_currentGame->m_settings->useCpuPlayers) {
 			m_statusText->draw(0, 0);
 		}
 	}
@@ -2681,10 +2693,10 @@ float round(const float r) { return (r > 0.0f) ? floor(r + 0.5f) : ceil(r - 0.5f
 void Player::drawFieldFeverBack(PosVectorFloat /*position*/, float rotation)
 {
 	if (!m_feverMode) {
-        return;
-    }
+		return;
+	}
 
-    m_fieldFeverSprite.setPosition(0, 0);
+	m_fieldFeverSprite.setPosition(0, 0);
 	m_fieldFeverSprite.setCenter(0, 0);
 	m_fieldFeverSprite.setScale(1, 1);
 	m_fieldFeverSprite.setRotation(rotation);
@@ -2800,12 +2812,12 @@ void Player::drawColorMenu()
 void Player::setStatusText(const char* utf8)
 {
 	if (utf8 == m_lastText) {
-        return;
-    }
-    if (!m_statusFont) {
-        return;
-    }
-    delete m_statusText;
+		return;
+	}
+	if (!m_statusFont) {
+		return;
+	}
+	delete m_statusText;
 
 	m_statusText = m_statusFont->render(utf8);
 	m_lastText = utf8;
@@ -2815,9 +2827,9 @@ void Player::setDropSetSprite(int x, int y, PuyoCharacter pc)
 {
 	// Get total width and center drop set
 	float length = 0;
-    const float scale = m_globalScale * 0.75f;
+	const float scale = m_globalScale * 0.75f;
 	for (int j = 0; j < 16; j++) {
-        const MovePuyoType mpt = getFromDropPattern(pc, j);
+		const MovePuyoType mpt = getFromDropPattern(pc, j);
 		length += mpt == MovePuyoType::DOUBLET ? 10 : 18;
 	}
 	float xx = -length / 2.f - 5.f;

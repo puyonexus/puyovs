@@ -466,7 +466,11 @@ void Game::playGame()
 		// Time is up
 		if (m_choiceTimer == 0) {
 			m_players[0]->m_controls.release();
-			m_players[0]->m_controls.m_a = 1;
+			if (m_settings->swapABConfirm == false) {
+				m_players[0]->m_controls.m_a = 1;
+			} else {
+				m_players[0]->m_controls.m_b = 1;
+			}
 			// Select rematch
 			m_mainMenu->m_select = 0;
 		}

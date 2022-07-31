@@ -136,7 +136,7 @@ void CharacterSelect::play()
 			if (numPlayers > 4) {
 				const int width = static_cast<int>(ceil(sqrt(static_cast<double>(numPlayers))));
 				posX = 640.f / static_cast<float>(width * 2) * static_cast<float>(i % width * 2 + 1);
-				posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale;  // NOLINT(bugprone-integer-division)
+				posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale; // NOLINT(bugprone-integer-division)
 			}
 			const double tt = static_cast<double>(m_timer) / 30.0 - static_cast<double>(i) * 1.0 / static_cast<double>(numPlayers);
 			float move = static_cast<float>(interpolate("elastic", 1, 0, tt, -5, 0.5));
@@ -187,7 +187,7 @@ void CharacterSelect::play()
 
 				// TEMP chance to cancel
 				if (m_madeChoice[i]) {
-					if (m_currentGame->m_players[currentPlayer]->m_controls.m_b == 1) {
+					if ((m_currentGame->m_players[currentPlayer]->m_controls.m_b == 1 && m_currentGame->m_settings->swapABConfirm == false) || (m_currentGame->m_players[currentPlayer]->m_controls.m_a == 1 && m_currentGame->m_settings->swapABConfirm == true)) {
 						int j = i;
 
 						// Check if CPU should be canceled first
@@ -199,7 +199,11 @@ void CharacterSelect::play()
 							}
 						}
 						m_data->snd.cancel.play(m_data);
-						m_currentGame->m_players[currentPlayer]->m_controls.m_b++;
+						if (m_currentGame->m_settings->swapABConfirm == false) {
+							m_currentGame->m_players[currentPlayer]->m_controls.m_b++;
+						} else {
+							m_currentGame->m_players[currentPlayer]->m_controls.m_a++;
+						}
 						m_madeChoice[j] = false;
 						m_selectSprite[j].setVisible(true);
 						if (j > 8) {
@@ -261,11 +265,11 @@ void CharacterSelect::play()
 			if (numPlayers > 4) {
 				const int width = static_cast<int>(ceil(sqrt(static_cast<double>(numPlayers))));
 				posX = 640.f / static_cast<float>(width * 2) * static_cast<float>(i % width * 2 + 1);
-				posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale;  // NOLINT(bugprone-integer-division)
+				posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale; // NOLINT(bugprone-integer-division)
 			}
 
 			// Make choice
-			if (m_currentGame->m_players[currentPlayer]->m_controls.m_a == 1 && m_timer > 80) {
+			if ((m_currentGame->m_players[currentPlayer]->m_controls.m_a == 1 && m_currentGame->m_settings->swapABConfirm == false && m_timer > 80) || (m_currentGame->m_players[currentPlayer]->m_controls.m_b == 1 && m_currentGame->m_settings->swapABConfirm == true && m_timer > 80)) {
 				m_data->snd.decide.play(m_data);
 				m_madeChoice[i] = true;
 				m_currentGame->m_players[i]->setCharacter(m_order[m_sel[i]]);
@@ -390,7 +394,7 @@ void CharacterSelect::play()
 			if (numPlayers > 4) {
 				const int width = static_cast<int>(ceil(sqrt(static_cast<double>(numPlayers))));
 				posX = 640.f / static_cast<float>(width * 2) * static_cast<float>(i % width * 2 + 1);
-				posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale;  // NOLINT(bugprone-integer-division)
+				posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale; // NOLINT(bugprone-integer-division)
 			}
 			const double tt = static_cast<double>(-m_timer) / 30.0 - static_cast<double>(i) / static_cast<double>(numPlayers);
 			float move = static_cast<float>(interpolate("elastic", 1, 0, tt, -5, 0.5));
@@ -511,7 +515,7 @@ void CharacterSelect::prepare()
 			const int width = static_cast<int>(ceil(sqrt(static_cast<double>(m_numPlayers))));
 			m_scale = 2.0f / static_cast<float>(width);
 			posX = 640.f / static_cast<float>(width * 2) * static_cast<float>(i % width * 2 + 1);
-			posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale;  // NOLINT(bugprone-integer-division)
+			posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale; // NOLINT(bugprone-integer-division)
 		}
 
 		m_selectSprite[i].setImage(m_data->imgPlayerCharSelect);
@@ -688,7 +692,7 @@ void CharacterSelect::setCharacter(const int playerNum, const int selection, con
 		if (m_numPlayers > 4) {
 			const int width = static_cast<int>(ceil(sqrt(static_cast<double>(m_numPlayers))));
 			posX = 640.f / static_cast<float>((width * 2) * (i % width * 2 + 1));
-			posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale;  // NOLINT(bugprone-integer-division)
+			posY = 480.f - static_cast<float>(i / width) * 128.f * m_scale; // NOLINT(bugprone-integer-division)
 		}
 
 		// Move

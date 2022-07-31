@@ -67,6 +67,7 @@ struct GameSettings {
 	std::map<PuyoCharacter, std::string> characterSetup;
 	std::map<std::string, std::string> controls;
 	PuyoCharacter defaultPuyoCharacter;
+	bool swapABConfirm;
 	bool useCharacterField;
 	bool startWithCharacterSelect;
 	bool pickColors;
