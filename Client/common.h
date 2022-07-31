@@ -60,14 +60,14 @@ public:
 	[[nodiscard]] QString toString() const;
 
 private:
-	enum ConditionType {
+	enum class ConditionType {
 		KeyType,
 		ButtonType,
 		AxisType,
 		HatType,
 		Unknown
 	};
-	int type;
+	ConditionType type;
 	union {
 		struct {
 			int code;

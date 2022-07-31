@@ -132,18 +132,18 @@ InputCondition::InputCondition(const ilib::InputEvent& e)
 	switch (e.type) {
 	case ilib::InputEvent::ButtonUpEvent:
 	case ilib::InputEvent::ButtonDownEvent:
-		type = ButtonType;
+		type = ConditionType::ButtonType;
 		button.device = e.device;
 		button.id = e.button.id;
 		break;
 	case ilib::InputEvent::AxisEvent:
-		type = AxisType;
+		type = ConditionType::AxisType;
 		axis.device = e.device;
 		axis.id = e.axis.id;
 		axis.direction = e.axis.value > 0 ? 1 : -1;
 		break;
 	case ilib::InputEvent::HatEvent:
-		type = HatType;
+		type = ConditionType::HatType;
 		hat.device = e.device;
 		hat.id = e.hat.id;
 		hat.direction = (int)e.hat.value;
@@ -153,7 +153,7 @@ InputCondition::InputCondition(const ilib::InputEvent& e)
 
 InputCondition::InputCondition(QKeyEvent* e)
 {
-	type = KeyType;
+	type = ConditionType::KeyType;
 	key.code = e->key();
 }
 
@@ -165,39 +165,39 @@ InputCondition::InputCondition(QString str)
 		if (condparts[0] == "pad" && condparts.size() >= 4 && condparts.size() <= 5) {
 			int device = condparts[1].toInt();
 			if (condparts[2] == "button" && condparts.size() == 4) {
-				type = ButtonType;
+				type = ConditionType::ButtonType;
 				button.device = device;
 				button.id = condparts[3].toInt();
 			} else if (condparts[2] == "axis" && condparts.size() == 5) {
-				type = AxisType;
+				type = ConditionType::AxisType;
 				axis.device = device;
 				axis.id = condparts[3].toInt();
 				axis.direction = condparts[4] == "+" ? 1 : -1;
 			} else if (condparts[2] == "hat" && condparts.size() == 5) {
-				type = HatType;
+				type = ConditionType::HatType;
 				hat.device = device;
 				hat.id = condparts[3].toInt();
 				hat.direction = condparts[4].toInt();
 			} else
-				type = Unknown;
+				type = ConditionType::Unknown;
 		} else if (condparts[0] == "key" && condparts.size() == 2) {
-			type = KeyType;
+			type = ConditionType::KeyType;
 			key.code = condparts[1].toInt();
 		} else
-			type = Unknown;
+			type = ConditionType::Unknown;
 	} else {
 		int code = nameToCode[str.toLower()];
 		if (code != 0) {
-			type = KeyType;
+			type = ConditionType::KeyType;
 			key.code = code;
 		} else
-			type = Unknown;
+			type = ConditionType::Unknown;
 	}
 }
 
 InputCondition::InputCondition()
 {
-	type = Unknown;
+	type = ConditionType::Unknown;
 }
 
 InputCondition::~InputCondition()
@@ -209,7 +209,7 @@ InputCondition::MatchResult InputCondition::match(const ilib::InputEvent& e) con
 	switch (e.type) {
 	case ilib::InputEvent::ButtonUpEvent:
 	case ilib::InputEvent::ButtonDownEvent:
-		if (type != ButtonType)
+		if (type != ConditionType::ButtonType)
 			return MatchResult::NoMatch;
 		if (e.device != button.device)
 			return MatchResult::NoMatch;
@@ -222,7 +222,7 @@ InputCondition::MatchResult InputCondition::match(const ilib::InputEvent& e) con
 
 		break;
 	case ilib::InputEvent::AxisEvent:
-		if (type != AxisType)
+		if (type != ConditionType::AxisType)
 			return MatchResult::NoMatch;
 		if (e.device != axis.device)
 			return MatchResult::NoMatch;
@@ -238,7 +238,7 @@ InputCondition::MatchResult InputCondition::match(const ilib::InputEvent& e) con
 
 		break;
 	case ilib::InputEvent::HatEvent:
-		if (type != HatType)
+		if (type != ConditionType::HatType)
 			return MatchResult::NoMatch;
 		if (e.device != hat.device)
 			return MatchResult::NoMatch;
@@ -276,7 +276,7 @@ QString InputCondition::toString() const
 {
 	QString name;
 	switch (type) {
-	case KeyType:
+	case ConditionType::KeyType:
 		name = codeToName[key.code];
 
 		if (!name.isEmpty())
@@ -284,16 +284,16 @@ QString InputCondition::toString() const
 
 		return (QStringList() << "key" << QString::number(key.code)).join(":");
 		break;
-	case ButtonType:
+	case ConditionType::ButtonType:
 		return (QStringList() << "pad" << QString::number(button.device) << "button" << QString::number(button.id)).join(":");
 		break;
-	case AxisType:
+	case ConditionType::AxisType:
 		return (QStringList() << "pad" << QString::number(axis.device) << "axis" << QString::number(axis.id) << (axis.direction > 0 ? "+" : "-")).join(":");
 		break;
-	case HatType:
+	case ConditionType::HatType:
 		return (QStringList() << "pad" << QString::number(hat.device) << "hat" << QString::number(hat.id) << QString::number(hat.direction)).join(":");
 		break;
-	case Unknown:
+	case ConditionType::Unknown:
 		return "unknown";
 		break;
 	}
