@@ -20,11 +20,14 @@ public:
 	Settings& settings() const;
 
 	// Music
-	enum MusicMode { MusicOff,
+	enum class MusicMode {
+	    MusicOff,
 		MusicPause,
 		MusicNormal,
-		MusicFever };
-	void setMusicMode(MusicMode mode, bool advance = false) const;
+		MusicFever
+	};
+
+    void setMusicMode(MusicMode mode, bool advance = false) const;
 	void setMusicVolume(float volume, bool fever = false) const;
 
 	MusicPlayer& musicPlayer() const;

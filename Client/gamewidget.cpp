@@ -66,7 +66,7 @@ GameWidget::GameWidget(ppvs::Game* game, NetChannelProxy* proxy, QWidget* parent
 GameWidget::~GameWidget()
 {
 	if (isActiveWindow())
-		pvsApp->setMusicMode(PVSApplication::MusicPause);
+		pvsApp->setMusicMode(PVSApplication::MusicMode::MusicPause);
 
 	emit exiting(this);
 }
@@ -114,7 +114,7 @@ void GameWidget::replaceProxy(NetChannelProxy* newproxy)
 void GameWidget::playMusic()
 {
 	mFeverMusic = mGame->isFever();
-	pvsApp->setMusicMode(mFeverMusic ? PVSApplication::MusicFever : PVSApplication::MusicNormal);
+	pvsApp->setMusicMode(mFeverMusic ? PVSApplication::MusicMode::MusicFever : PVSApplication::MusicMode::MusicNormal);
 }
 
 void GameWidget::contextMenu(const QPoint& pos)
@@ -243,27 +243,27 @@ void GameWidget::setupMusic(int evt)
 
 		if (focused) {
 			if (pvsApp->settings().boolean("music", "looponce", true))
-				pvsApp->setMusicMode(PVSApplication::MusicPause);
+				pvsApp->setMusicMode(PVSApplication::MusicMode::MusicPause);
 			else
-				pvsApp->setMusicMode(PVSApplication::MusicOff);
+				pvsApp->setMusicMode(PVSApplication::MusicMode::MusicOff);
 		}
 		break;
 
 	case ppvs::MusicContinue:
 		mMusicPlaying = true;
 		if (focused)
-			pvsApp->setMusicMode(PVSApplication::MusicNormal, pvsApp->settings().boolean("music", "advance", true));
+			pvsApp->setMusicMode(PVSApplication::MusicMode::MusicNormal, pvsApp->settings().boolean("music", "advance", true));
 		break;
 
 	case ppvs::MusicEnterFever:
 		if (focused)
-			pvsApp->setMusicMode(PVSApplication::MusicFever, true);
+			pvsApp->setMusicMode(PVSApplication::MusicMode::MusicFever, true);
 		mFeverMusic = true;
 		break;
 
 	case ppvs::MusicExitFever:
 		if (focused)
-			pvsApp->setMusicMode(PVSApplication::MusicNormal, false);
+			pvsApp->setMusicMode(PVSApplication::MusicMode::MusicNormal, false);
 		mFeverMusic = false;
 		break;
 	}

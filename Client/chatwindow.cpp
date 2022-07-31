@@ -137,7 +137,7 @@ void ChatWindow::on_PlayMusicCheckBox_stateChanged(int arg1) const
 		mGame->m_data->playMusic = arg1;
 	if (arg1 == 0) {
 		pvsApp->settings().setBoolean("launcher", "enablemusic", false);
-		pvsApp->setMusicMode(PVSApplication::MusicPause);
+		pvsApp->setMusicMode(PVSApplication::MusicMode::MusicPause);
 	} else {
 		pvsApp->settings().setBoolean("launcher", "enablemusic", true);
 		mGameWidget->playMusic();
