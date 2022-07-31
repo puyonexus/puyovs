@@ -218,17 +218,17 @@ void SettingsDialog::updateEnabled(SettingsDialog::Rule rule) const
 		return;
 
 	switch (rule) {
-	case Tsu:
+	case Rule::Tsu:
 		ui->InitialFeverCountSpinBox->setEnabled(false);
 		ui->FeverPowerSpinBox->setEnabled(false);
 		break;
-	case Fever:
+	case Rule::Fever:
 		ui->PuyoToClearSpinBox->setEnabled(false);
 		break;
-	case Fever15:
+	case Rule::Fever15:
 		// ...Everything can be enabled?
 		break;
-	case EndlessFever:
+	case Rule::EndlessFever:
 		ui->PuyoToClearSpinBox->setEnabled(false);
 		ui->InitialFeverCountSpinBox->setEnabled(false);
 		break;
@@ -304,16 +304,16 @@ void SettingsDialog::setDefaultRuleSettings() const
 {
 	int index = ui->BaseRulesComboBox->currentIndex();
 	switch (Rule(index)) {
-	case Tsu:
+	case Rule::Tsu:
 		ui->TargetPointsSpinBox->setValue(70);
 		break;
-	case Fever15:
+	case Rule::Fever15:
 		ui->TargetPointsSpinBox->setValue(120);
 		break;
-	case Fever:
+	case Rule::Fever:
 		ui->TargetPointsSpinBox->setValue(120);
 		break;
-	case EndlessFever:
+	case Rule::EndlessFever:
 		ui->TargetPointsSpinBox->setValue(120);
 		break;
 	}

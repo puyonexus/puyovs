@@ -14,7 +14,7 @@ class SettingsDialog : public QDialog {
 	Q_OBJECT
 
 public:
-	enum Rule {
+	enum class Rule {
 		Tsu,
 		Fever,
 		Fever15,
