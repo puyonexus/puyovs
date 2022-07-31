@@ -42,7 +42,7 @@ jobs:
       run: |
         mkdir Build
         mkdir Build\Release
-        xcopy /D/Y/S/I Test Build\Release
+        xcopy /D/Y/S/I Assets Build\Release
         cp .build\Client\Release\PuyoVS.exe Build\Release
     - name: Package Build Artifact
       run: 7z a puyovs-windows-${{ matrix.arch }}.7z "${{ github.workspace }}\Build\Release\*"
@@ -73,7 +73,7 @@ jobs:
       run: cmake --build . --parallel 4
       working-directory: .build
     - name: Copy Assets To Bundle
-      run: cp -r ${{ github.workspace }}/Test/* "./Client/PuyoVS.app/Contents/MacOS/"
+      run: cp -r ${{ github.workspace }}/Assets/* "./Client/PuyoVS.app/Contents/MacOS/"
       working-directory: .build
     - name: Package Build Artifact
       run: 7z a puyovs-macos-amd64.7z "./.build/Client/PuyoVS.app"

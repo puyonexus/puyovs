@@ -38,7 +38,7 @@ echo "MACOSX Deployment: Providing Qt frameworks in application bundle..."
 macdeployqt $DESTDIR/$TARGET.app/
 
 echo "MACOSX Deployment: Copying additional files..."
-cp -R $BASEDIR/Test/* $DESTDIR/$TARGET.app/Contents/MacOS/ 
+cp -R $BASEDIR/Assets/* $DESTDIR/$TARGET.app/Contents/MacOS/ 
 
 if [[ -f $DESTDIR/$TARGET-temp.dmg ]];
 then
