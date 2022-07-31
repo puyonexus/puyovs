@@ -754,18 +754,18 @@ void Field::createPuyo()
 		}
 
 		// Place puyos
-		if (type == DOUBLET) {
+		if (type == MovePuyoType::DOUBLET) {
 			addColorPuyo(posX1, posY1, color1);
 			addColorPuyo(posX2, posY2, color2);
-		} else if (type == TRIPLET && transpose == false) {
+		} else if (type == MovePuyoType::TRIPLET && transpose == false) {
 			addColorPuyo(posX1, posY1, color1);
 			addColorPuyo(posX2, posY2, color2);
 			addColorPuyo(posX3, posY3, color1);
-		} else if (type == TRIPLET && transpose == true) {
+		} else if (type == MovePuyoType::TRIPLET && transpose == true) {
 			addColorPuyo(posX1, posY1, color1);
 			addColorPuyo(posX2, posY2, color1);
 			addColorPuyo(posX3, posY3, color2);
-		} else if (type == QUADRUPLET) {
+		} else if (type == MovePuyoType::QUADRUPLET) {
 			if (rotation == 1) {
 				addColorPuyo(posX1, posY1, color2);
 				addColorPuyo(posX2, posY2, color1);
@@ -787,7 +787,7 @@ void Field::createPuyo()
 				addColorPuyo(posX3, posY3, color1);
 				addColorPuyo(posX4, posY4, color1);
 			}
-		} else if (type == BIG) {
+		} else if (type == MovePuyoType::BIG) {
 			addColorPuyo(posX1, posY1, colorBig);
 			addColorPuyo(posX2, posY2, colorBig);
 			addColorPuyo(posX3, posY3, colorBig);

@@ -29,7 +29,7 @@ public:
 private:
 	int predictChain();
 	void setRotation();
-	MovePuyoType m_type = DOUBLET;
+	MovePuyoType m_type = MovePuyoType::DOUBLET;
 	PosVectorInt m_pos[4] = {};
 	unsigned int m_rotation = 0u;
 	int m_color1 = 0, m_color2 = 0;

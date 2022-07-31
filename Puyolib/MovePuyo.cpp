@@ -53,7 +53,7 @@ MovePuyo::MovePuyo()
 
 	m_visible = false;
 	m_player = nullptr;
-	m_type = DOUBLET;
+	m_type = MovePuyoType::DOUBLET;
 	m_spawnX = 0;
 	m_spawnY = 0;
 	m_color1 = 0;
@@ -128,7 +128,7 @@ void MovePuyo::init(GameData* data)
 	m_quick2.setTransparency(0);
 
 	// Call init to initialize default values
-	m_type = DOUBLET;
+	m_type = MovePuyoType::DOUBLET;
 	m_pos[0].x = 0;
 	m_pos[0].y = 0;
 	m_pos[1].x = 0;
@@ -187,15 +187,15 @@ void MovePuyo::prepare(MovePuyoType type, Player* player, int color1, int color2
 	m_shadow4.init(player->m_data);
 
 	// Triplet and quadruplet start in rotation=1 mode
-	if (type == DOUBLET || type == BIG) {
+	if (type == MovePuyoType::DOUBLET || type == MovePuyoType::BIG) {
 		m_rotation = 0;
-	} else if (type == TRIPLET || type == TRIPLET_R || type == QUADRUPLET) {
+	} else if (type == MovePuyoType::TRIPLET || type == MovePuyoType::TRIPLET_R || type == MovePuyoType::QUADRUPLET) {
 		m_rotation = 1;
 	}
 
 	// Set to triplet if tripletR
-	if (type == TRIPLET_R) {
-		setType(TRIPLET);
+	if (type == MovePuyoType::TRIPLET_R) {
+		setType(MovePuyoType::TRIPLET);
 		m_transpose = true;
 	} else {
 		setType(type);
@@ -234,7 +234,7 @@ void MovePuyo::prepare(MovePuyoType type, Player* player, int color1, int color2
 // Set sprites of movePuyos
 void MovePuyo::setSprite()
 {
-	if (m_type == DOUBLET) {
+	if (m_type == MovePuyoType::DOUBLET) {
 		m_subRectX1 = 0;
 		m_subRectY1 = static_cast<float>(kPuyoY * m_color1);
 		m_subRectWidth1 = static_cast<float>(kPuyoX);
@@ -259,7 +259,7 @@ void MovePuyo::setSprite()
 		m_sprite2.setVisible(true);
 		m_spriteEye1.setVisible(false);
 		m_spriteEye2.setVisible(false);
-	} else if (m_type == TRIPLET && m_color1 != m_color2) {
+	} else if (m_type == MovePuyoType::TRIPLET && m_color1 != m_color2) {
 		m_subRectX1 = static_cast<float>(kPuyoX * m_color1);
 		m_subRectY1 = static_cast<float>(kPuyoY * 5 + 1);
 		m_subRectWidth1 = static_cast<float>(kPuyoX);
@@ -288,7 +288,7 @@ void MovePuyo::setSprite()
 		m_spriteEye2.setCenter(kPuyoX / 2, kPuyoY / 2);
 		m_spriteEye1.setVisible(true);
 		m_spriteEye2.setVisible(false);
-	} else if (m_type == TRIPLET && m_color1 == m_color2) {
+	} else if (m_type == MovePuyoType::TRIPLET && m_color1 == m_color2) {
 		m_subRectX1 = static_cast<float>(5 * kPuyoX + 2 * kPuyoX * m_color1);
 		m_subRectY1 = static_cast<float>(kPuyoY * 5 + 1);
 		m_subRectWidth1 = static_cast<float>(kPuyoX * 2);
@@ -317,7 +317,7 @@ void MovePuyo::setSprite()
 		m_spriteEye2.setCenter(kPuyoX / 2, kPuyoY / 2);
 		m_spriteEye1.setVisible(true);
 		m_spriteEye2.setVisible(false);
-	} else if (m_type == QUADRUPLET) {
+	} else if (m_type == MovePuyoType::QUADRUPLET) {
 		m_subRectX1 = 10.f * static_cast<float>(kPuyoX) + (static_cast<float>(kPuyoX) + static_cast<float>(kPuyoX) / 6.4f) * m_color1;
 		m_subRectY1 = static_cast<float>(kPuyoY) * 13.f;
 		m_subRectWidth1 = static_cast<float>(kPuyoX) + static_cast<float>(kPuyoX) / 6.4f;
@@ -346,7 +346,7 @@ void MovePuyo::setSprite()
 		m_spriteEye2.setCenter(kPuyoX / 2, kPuyoY / 2);
 		m_spriteEye1.setVisible(true);
 		m_spriteEye2.setVisible(true);
-	} else if (m_type == BIG) {
+	} else if (m_type == MovePuyoType::BIG) {
 		m_subRectX1 = static_cast<float>(2 * kPuyoX + 2 * kPuyoX * m_bigColor);
 		m_subRectY1 = static_cast<float>(kPuyoY * 7);
 		m_subRectWidth1 = static_cast<float>(kPuyoX * 2);
@@ -523,7 +523,7 @@ void MovePuyo::setSpriteAngle()
 	int gridSizeY = m_player->m_activeField->getProperties().gridHeight;
 
 	// Actual movement
-	if (m_type == DOUBLET) {
+	if (m_type == MovePuyoType::DOUBLET) {
 		// Doublet does not rotate puyo sprites
 		m_sprite1Angle = 0;
 		m_sprite2Angle = 0;
@@ -531,7 +531,7 @@ void MovePuyo::setSpriteAngle()
 		m_posReal[1].x = m_posReal[0].x + gridSizeX * sin(m_movePuyoAngle * kPiF / 180);
 		m_posReal[1].y = m_posReal[0].y - gridSizeY * cos(m_movePuyoAngle * kPiF / 180);
 	}
-	if (m_type == TRIPLET && (m_transpose == false || m_color1 == m_color2)) {
+	if (m_type == MovePuyoType::TRIPLET && (m_transpose == false || m_color1 == m_color2)) {
 		// Sprite angle
 		m_sprite1Angle = m_movePuyoAngle - 90;
 		m_sprite2Angle = 0;
@@ -539,7 +539,7 @@ void MovePuyo::setSpriteAngle()
 		m_posReal[1].x = m_posReal[0].x + gridSizeX * sin(m_movePuyoAngle * kPiF / 180);
 		m_posReal[1].y = m_posReal[0].y - gridSizeY * cos(m_movePuyoAngle * kPiF / 180);
 	}
-	if (m_type == TRIPLET && m_color1 != m_color2 && m_transpose == true) {
+	if (m_type == MovePuyoType::TRIPLET && m_color1 != m_color2 && m_transpose == true) {
 		// Sprite angle
 		m_sprite1Angle = m_movePuyoAngle;
 		m_sprite2Angle = 0;
@@ -547,7 +547,7 @@ void MovePuyo::setSpriteAngle()
 		m_posReal[1].x = m_posReal[0].x + gridSizeX * sin((m_movePuyoAngle - 90) * kPiF / 180);
 		m_posReal[1].y = m_posReal[0].y - gridSizeY * cos((m_movePuyoAngle - 90) * kPiF / 180);
 	}
-	if (m_type == QUADRUPLET) {
+	if (m_type == MovePuyoType::QUADRUPLET) {
 		// Quadruplet: the two pieces stay in place and rotate around the center
 		// Sprite angle
 		m_sprite1Angle = m_movePuyoAngle + 90;
@@ -556,7 +556,7 @@ void MovePuyo::setSpriteAngle()
 		m_posReal[1].x = m_posReal[0].x;
 		m_posReal[1].y = m_posReal[0].y;
 	}
-	if (m_type == BIG) {
+	if (m_type == MovePuyoType::BIG) {
 		m_sprite1Angle = 0;
 		m_sprite2Angle = 0;
 	}
@@ -564,7 +564,7 @@ void MovePuyo::setSpriteAngle()
 	// Controller movement
 	if (m_player->m_currentPhase == Phase::MOVE) {
 		// (This movement is incomplete for nazo puyo: it doesn't check for collisions upwards)
-		if (m_type == DOUBLET) {
+		if (m_type == MovePuyoType::DOUBLET) {
 			// ROTATION
 			// Clockwise
 			int hor = 0, ver = 0;
@@ -629,7 +629,7 @@ void MovePuyo::setSpriteAngle()
 			}
 		}
 
-		else if (m_type == TRIPLET) {
+		else if (m_type == MovePuyoType::TRIPLET) {
 			// ROTATION
 			// Clockwise
 			int hor = 0, ver = 0;
@@ -691,7 +691,7 @@ void MovePuyo::setSpriteAngle()
 				// Play sound
 				m_data->snd.rotate.play(m_data);
 			}
-		} else if (m_type == QUADRUPLET) {
+		} else if (m_type == MovePuyoType::QUADRUPLET) {
 			if (m_player->m_controls.m_a == 1) {
 				m_rotation++;
 				m_rotation %= 4;
@@ -708,7 +708,7 @@ void MovePuyo::setSpriteAngle()
 				// Play sound
 				m_data->snd.rotate.play(m_data);
 			}
-		} else if (m_type == BIG) {
+		} else if (m_type == MovePuyoType::BIG) {
 			if (m_player->m_controls.m_a == 1) {
 				m_bigColor++;
 				m_bigColor %= m_player->m_colors;
@@ -725,7 +725,7 @@ void MovePuyo::setSpriteAngle()
 			}
 		}
 
-		if (m_type == DOUBLET) {
+		if (m_type == MovePuyoType::DOUBLET) {
 			// 7Rule
 			if (m_player->m_controls.m_a == 1 && m_rotation == 0 && m_player->m_activeField->isEmpty(m_pos[0].x + 1, m_pos[0].y + 1) && !m_player->m_activeField->isEmpty(m_pos[0].x + 1, m_pos[0].y) && !m_player->m_activeField->isEmpty(m_pos[0].x - 1, m_pos[0].y)) {
 				m_pos[0].y += 1;
@@ -748,7 +748,7 @@ void MovePuyo::setSpriteAngle()
 				m_data->snd.rotate.play(m_data);
 			}
 		}
-		if (m_type == TRIPLET) {
+		if (m_type == MovePuyoType::TRIPLET) {
 			// 7Rule
 			if (m_player->m_controls.m_a == 1 && m_rotation == 0 && m_player->m_activeField->isEmpty(m_pos[0].x + 1, m_pos[0].y + 1)) {
 				m_pos[0].y += 1;
@@ -772,7 +772,7 @@ void MovePuyo::setSpriteAngle()
 			}
 		}
 
-		if (m_type == DOUBLET) {
+		if (m_type == MovePuyoType::DOUBLET) {
 			// Wall kick
 			// Right wall
 			if (m_player->m_controls.m_a == 1 && m_rotation == 0 && !m_player->m_activeField->isEmpty(m_pos[0].x + 1, m_pos[0].y) && m_player->m_activeField->isEmpty(m_pos[0].x - 1, m_pos[0].y)) {
@@ -810,7 +810,7 @@ void MovePuyo::setSpriteAngle()
 				m_data->snd.rotate.play(m_data);
 			}
 		}
-		if (m_type == DOUBLET || m_type == TRIPLET) {
+		if (m_type == MovePuyoType::DOUBLET || m_type == MovePuyoType::TRIPLET) {
 			// Ground kick
 			if (m_player->m_controls.m_a == 1 && m_rotation == 1 && m_player->m_activeField->isEmpty(m_pos[0].x, m_pos[0].y + 1) && !m_player->m_activeField->isEmpty(m_pos[0].x, m_pos[0].y - 1)) {
 				m_player->m_controls.m_a += 1;
@@ -833,7 +833,7 @@ void MovePuyo::setSpriteAngle()
 				m_data->snd.rotate.play(m_data);
 			}
 		}
-		if (m_type == TRIPLET) {
+		if (m_type == MovePuyoType::TRIPLET) {
 			// Ground kick
 			if (m_player->m_controls.m_b == 1 && m_rotation == 0 && m_player->m_activeField->isEmpty(m_pos[2].x, m_pos[2].y + 1) && !m_player->m_activeField->isEmpty(m_pos[0].x, m_pos[0].y - 1)) {
 				m_player->m_controls.m_b += 1;
@@ -846,7 +846,7 @@ void MovePuyo::setSpriteAngle()
 				m_data->snd.rotate.play(m_data);
 			}
 		}
-		if (m_type == DOUBLET) {
+		if (m_type == MovePuyoType::DOUBLET) {
 			// Flip
 			if (m_player->m_controls.m_a == 1 && m_flip == 0 && m_flipCounter > 0 && !m_player->m_activeField->isEmpty(m_pos[0].x + 1, m_pos[0].y) && !m_player->m_activeField->isEmpty(m_pos[0].x - 1, m_pos[0].y) && m_player->m_activeField->isEmpty(m_pos[0].x, m_pos[0].y - 1)) {
 				m_flipCounter = -8;
@@ -863,7 +863,7 @@ void MovePuyo::setSpriteAngle()
 				m_data->snd.rotate.play(m_data);
 			}
 		}
-		if (m_type == DOUBLET) {
+		if (m_type == MovePuyoType::DOUBLET) {
 			// Flip & Ground Kick
 			if (m_player->m_controls.m_a == 1 && m_flip == 0 && m_rotation == 0 && m_flipCounter > 0 && !m_player->m_activeField->isEmpty(m_pos[0].x + 1, m_pos[0].y) && !m_player->m_activeField->isEmpty(m_pos[0].x - 1, m_pos[0].y) && !m_player->m_activeField->isEmpty(m_pos[0].x, m_pos[0].y - 1)) {
 				m_flipCounter = -8;
@@ -886,7 +886,7 @@ void MovePuyo::setSpriteAngle()
 				m_data->snd.rotate.play(m_data);
 			}
 		}
-		if (m_type == TRIPLET) {
+		if (m_type == MovePuyoType::TRIPLET) {
 			// "Flip" & Ground Kick
 			if (m_player->m_controls.m_a == 1 && m_rotation == 2 && !m_player->m_activeField->isEmpty(m_pos[1].x + 1, m_pos[1].y) && !m_player->m_activeField->isEmpty(m_pos[1].x - 1, m_pos[1].y) && !m_player->m_activeField->isEmpty(m_pos[2].x, m_pos[2].y - 1)) {
 				m_rotateCounter = -8;
@@ -909,7 +909,7 @@ void MovePuyo::setSpriteAngle()
 				m_data->snd.rotate.play(m_data);
 			}
 		}
-		if (m_type == TRIPLET) {
+		if (m_type == MovePuyoType::TRIPLET) {
 			// Wall kick
 			// Right wall
 			if (m_player->m_controls.m_a == 1 && m_rotation == 0 && !m_player->m_activeField->isEmpty(m_pos[0].x + 1, m_pos[0].y) && m_player->m_activeField->isEmpty(m_pos[0].x - 1, m_pos[0].y)) {
@@ -970,7 +970,7 @@ void MovePuyo::setSpriteAngle()
 	m_movePuyoAngle = static_cast<float>(m_rotation * 90) + static_cast<float>(m_rotateCounter) / 8.0f * 90 + static_cast<float>(m_flipCounter) / 8.0f * 180 * static_cast<float>(m_flip);
 
 	// Trigger flip
-	if (m_type == DOUBLET && m_dropCounter < 90) {
+	if (m_type == MovePuyoType::DOUBLET && m_dropCounter < 90) {
 		if (m_player->m_controls.m_a == 1 && m_flip == 0 && m_flipCounter <= 0 && !m_player->m_activeField->isEmpty(m_pos[0].x + 1, m_pos[0].y) && !m_player->m_activeField->isEmpty(m_pos[0].x - 1, m_pos[0].y))
 			m_flipCounter = 20;
 		if (m_player->m_controls.m_b == 1 && m_flip == 0 && m_flipCounter >= 0 && !m_player->m_activeField->isEmpty(m_pos[0].x + 1, m_pos[0].y) && !m_player->m_activeField->isEmpty(m_pos[0].x - 1, m_pos[0].y))
@@ -980,7 +980,7 @@ void MovePuyo::setSpriteAngle()
 
 void MovePuyo::setRotation()
 {
-	if (m_type == DOUBLET || m_type == TRIPLET) {
+	if (m_type == MovePuyoType::DOUBLET || m_type == MovePuyoType::TRIPLET) {
 		// Set variables
 		if (m_rotation == 0) {
 			m_pos[1].x = m_pos[0].x;
@@ -996,7 +996,7 @@ void MovePuyo::setRotation()
 			m_pos[1].y = m_pos[0].y;
 		}
 	}
-	if (m_type == TRIPLET) {
+	if (m_type == MovePuyoType::TRIPLET) {
 		// Set variables
 		if (m_rotation == 1) {
 			m_pos[2].x = m_pos[0].x;
@@ -1012,7 +1012,7 @@ void MovePuyo::setRotation()
 			m_pos[2].y = m_pos[0].y;
 		}
 	}
-	if (m_type == QUADRUPLET || m_type == BIG) {
+	if (m_type == MovePuyoType::QUADRUPLET || m_type == MovePuyoType::BIG) {
 		// Quadruplet and big simply stay in pos==1 state
 		m_pos[1].x = m_pos[0].x + 1;
 		m_pos[1].y = m_pos[0].y;
@@ -1154,13 +1154,13 @@ void MovePuyo::setType(MovePuyoType mpt)
 {
 	m_type = mpt;
 	// Unset the other variables
-	if (mpt == DOUBLET) {
+	if (mpt == MovePuyoType::DOUBLET) {
 		m_pos[2].x = -10;
 		m_pos[2].y = -10;
 		m_pos[3].x = -10;
 		m_pos[3].y = -10;
 	}
-	if (mpt == TRIPLET) {
+	if (mpt == MovePuyoType::TRIPLET) {
 		m_pos[3].x = -10;
 		m_pos[3].y = -10;
 	}
@@ -1276,10 +1276,10 @@ void MovePuyo::placeShadow()
 	colors[1] = m_color2;
 	colors[2] = m_color1;
 	colors[3] = m_color2;
-	if (m_type == TRIPLET && m_transpose) {
+	if (m_type == MovePuyoType::TRIPLET && m_transpose) {
 		colors[1] = m_color1;
 		colors[2] = m_color2;
-	} else if (m_type == QUADRUPLET) {
+	} else if (m_type == MovePuyoType::QUADRUPLET) {
 		if (m_rotation == 0) {
 			colors[0] = m_color2;
 			colors[1] = m_color2;
@@ -1301,7 +1301,7 @@ void MovePuyo::placeShadow()
 			colors[2] = m_color1;
 			colors[3] = m_color2;
 		}
-	} else if (m_type == BIG) {
+	} else if (m_type == MovePuyoType::BIG) {
 		colors[0] = m_bigColor;
 		colors[1] = m_bigColor;
 		colors[2] = m_bigColor;
@@ -1313,17 +1313,17 @@ void MovePuyo::placeShadow()
 	m_shadow4.setColor(colors[3]);
 
 	// Set color and visibility
-	if (m_type == DOUBLET) {
+	if (m_type == MovePuyoType::DOUBLET) {
 		m_shadow1.setVisible(true);
 		m_shadow2.setVisible(true);
 		m_shadow3.setVisible(false);
 		m_shadow4.setVisible(false);
-	} else if (m_type == TRIPLET) {
+	} else if (m_type == MovePuyoType::TRIPLET) {
 		m_shadow1.setVisible(true);
 		m_shadow2.setVisible(true);
 		m_shadow3.setVisible(true);
 		m_shadow4.setVisible(false);
-	} else if (m_type == QUADRUPLET || m_type == BIG) {
+	} else if (m_type == MovePuyoType::QUADRUPLET || m_type == MovePuyoType::BIG) {
 		m_shadow1.setVisible(true);
 		m_shadow2.setVisible(true);
 		m_shadow3.setVisible(true);
@@ -1332,11 +1332,11 @@ void MovePuyo::placeShadow()
 
 	// Trigger glow
 	int n = 2;
-	if (m_type == TRIPLET || m_type == TRIPLET_R) {
+	if (m_type == MovePuyoType::TRIPLET || m_type == MovePuyoType::TRIPLET_R) {
 		n = 3;
 		m_shadowPos[3].x = -1;
 		m_shadowPos[3].y = -1;
-	} else if (m_type == QUADRUPLET || m_type == BIG) {
+	} else if (m_type == MovePuyoType::QUADRUPLET || m_type == MovePuyoType::BIG) {
 		n = 4;
 	} else {
 		m_shadowPos[2].x = -1;
@@ -1368,7 +1368,7 @@ void MovePuyo::draw()
 	float posY2 = (m_posReal[1].y - prop.offsetY);
 
 	float posX_Qcor = 0, posY_Qcor = 0;
-	if (m_type == QUADRUPLET) {
+	if (m_type == MovePuyoType::QUADRUPLET) {
 		// Set correction factor for quadruplet puyo
 		posX_Qcor = static_cast<float>(kPuyoX / 2);
 		posY_Qcor = static_cast<float>(-kPuyoY / 2) + static_cast<float>(kPuyoY) * 0.18f;
@@ -1377,7 +1377,7 @@ void MovePuyo::draw()
 	float xcorrection = -m_pos[0].x * 2.f + static_cast<float>(prop.gridX / 2);
 
 	// Eye position
-	if (m_type != QUADRUPLET) {
+	if (m_type != MovePuyoType::QUADRUPLET) {
 		m_posXEye1Real = posX1 + kPuyoY * sin(m_sprite1Angle * kPiF / 180);
 		m_posYEye1Real = posY1 - kPuyoY * cos(m_sprite1Angle * kPiF / 180);
 		m_posXEye2Real = posX1 + kPuyoY * sin(m_sprite2Angle * kPiF / 180);
@@ -1403,11 +1403,11 @@ void MovePuyo::draw()
 	m_shadow3.draw(m_data->front);
 	m_shadow4.draw(m_data->front);
 
-	if (m_type == DOUBLET) {
+	if (m_type == MovePuyoType::DOUBLET) {
 		m_sprite1.draw(m_data->front);
 		m_sprite2.draw(m_data->front);
 
-	} else if (m_type == TRIPLET) {
+	} else if (m_type == MovePuyoType::TRIPLET) {
 		if (m_color1 != m_color2) {
 			m_sprite1.draw(m_data->front);
 			m_sprite2.draw(m_data->front);
@@ -1416,13 +1416,13 @@ void MovePuyo::draw()
 			m_sprite1.draw(m_data->front);
 			m_spriteEye1.draw(m_data->front);
 		}
-	} else if (m_type == QUADRUPLET) {
+	} else if (m_type == MovePuyoType::QUADRUPLET) {
 		m_sprite1.draw(m_data->front);
 		m_sprite2.draw(m_data->front);
 		m_spriteEye1.draw(m_data->front);
 		m_spriteEye2.draw(m_data->front);
 
-	} else if (m_type == BIG) {
+	} else if (m_type == MovePuyoType::BIG) {
 		m_sprite1.draw(m_data->front);
 	}
 }

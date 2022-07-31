@@ -45,7 +45,7 @@ private:
 	int m_color11, m_color12, m_color21, m_color22, m_color31, m_color32;
 	int m_goNext;
 	int m_sign;
-	MovePuyoType m_type1 = DOUBLET, m_type2 = DOUBLET, m_type3 = DOUBLET;
+	MovePuyoType m_type1 = MovePuyoType::DOUBLET, m_type2 = MovePuyoType::DOUBLET, m_type3 = MovePuyoType::DOUBLET;
 };
 
 }

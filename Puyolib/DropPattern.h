@@ -7,7 +7,7 @@ namespace ppvs
 // Contains drop patterns, fever patterns, voice patterns etc.
 
 // Define types of move puyo
-enum MovePuyoType
+enum class MovePuyoType
 {
 	DOUBLET,
 	TRIPLET,

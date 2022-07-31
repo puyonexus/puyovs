@@ -105,7 +105,7 @@ Player::Player(const PlayerType type, const int playerNum, const int totalPlayer
 	m_chainWord->setScale(m_globalScale);
 
 	// Initialize movePuyos at least once
-	m_movePuyo.prepare(DOUBLET, this, 0, 0);
+	m_movePuyo.prepare(MovePuyoType::DOUBLET, this, 0, 0);
 
 	// Initialize garbage tray
 	m_normalTray.align(m_properties.offsetX, m_properties.offsetY - (32) * m_globalScale, m_globalScale);
@@ -214,7 +214,7 @@ void Player::reset()
 	m_fieldNormal.setTransformScale(1);
 	m_fieldFever.setTransformScale(1);
 
-	m_movePuyo.prepare(DOUBLET, this, 0, 0);
+	m_movePuyo.prepare(MovePuyoType::DOUBLET, this, 0, 0);
 	m_movePuyo.setVisible(false);
 
 	// Reset fever mode
@@ -1154,7 +1154,7 @@ void Player::prepare()
 	addNewColorPair(m_colors);
 	popColor();
 
-	MovePuyoType mpt = DOUBLET;
+	MovePuyoType mpt = MovePuyoType::DOUBLET;
 	if (m_useDropPattern) {
 		mpt = getFromDropPattern(m_character, m_turns);
 	}
@@ -1181,7 +1181,7 @@ void Player::prepare()
 void Player::cpuMove()
 {
 	// Get current rotation
-	if (m_movePuyo.getType() == BIG) {
+	if (m_movePuyo.getType() == MovePuyoType::BIG) {
 		if (m_movePuyo.getColorBig() != m_cpuAi->m_bestRot) {
 			m_controls.m_a = m_cpuAi->m_timer % 12;
 		}
@@ -1719,7 +1719,7 @@ void Player::addNewColorPair(int n)
 
 	// Regenerate color 2 if type is quadruple and colors are the same
 	if (m_useDropPattern) {
-		while (color1 == color2 && getFromDropPattern(m_character, m_turns + 3) == QUADRUPLET) {
+		while (color1 == color2 && getFromDropPattern(m_character, m_turns + 3) == MovePuyoType::QUADRUPLET) {
 			color2 = this->getRandom(n, m_rngNextList);
 		}
 	}
@@ -2818,7 +2818,7 @@ void Player::setDropSetSprite(int x, int y, PuyoCharacter pc)
     const float scale = m_globalScale * 0.75f;
 	for (int j = 0; j < 16; j++) {
         const MovePuyoType mpt = getFromDropPattern(pc, j);
-		length += mpt == DOUBLET ? 10 : 18;
+		length += mpt == MovePuyoType::DOUBLET ? 10 : 18;
 	}
 	float xx = -length / 2.f - 5.f;
 
@@ -2827,27 +2827,27 @@ void Player::setDropSetSprite(int x, int y, PuyoCharacter pc)
 		m_dropSet[j].setPosition(static_cast<float>(x) + xx * scale, static_cast<float>(y));
 		m_dropSet[j].setScale(scale);
 		switch (mpt) {
-		case DOUBLET:
+		case MovePuyoType::DOUBLET:
 			m_dropSet[j].setSubRect(0, 0, 16, 24);
 			m_dropSet[j].setCenter(0, 24);
 			xx += 10;
 			break;
-		case TRIPLET:
+		case MovePuyoType::TRIPLET:
 			m_dropSet[j].setSubRect(16, 0, 24, 24);
 			m_dropSet[j].setCenter(0, 24);
 			xx += 18;
 			break;
-		case TRIPLET_R:
+		case MovePuyoType::TRIPLET_R:
 			m_dropSet[j].setSubRect(40, 0, 24, 24);
 			m_dropSet[j].setCenter(0, 24);
 			xx += 18;
 			break;
-		case QUADRUPLET:
+		case MovePuyoType::QUADRUPLET:
 			m_dropSet[j].setSubRect(64, 0, 24, 24);
 			m_dropSet[j].setCenter(0, 24);
 			xx += 18;
 			break;
-		case BIG:
+		case MovePuyoType::BIG:
 			m_dropSet[j].setSubRect(88, 0, 24, 24);
 			m_dropSet[j].setCenter(0, 24);
 			xx += 18;

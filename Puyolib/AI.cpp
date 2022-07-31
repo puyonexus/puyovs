@@ -27,7 +27,7 @@ void AI::findLargest()
 		m_pos[0].x = i;
 		m_pos[0].y = prop.gridY;
 		for (int j = 0; j < 4; j++) { // Set rotation
-			if (m_type != BIG)
+			if (m_type != MovePuyoType::BIG)
 				m_rotation = j;
 			else
 				m_color1 = j;
@@ -63,7 +63,7 @@ void AI::setRotation()
 	m_pos[3].x = 0;
 	m_pos[3].y = 0;
 
-	if (m_type == DOUBLET || m_type == TRIPLET) {
+	if (m_type == MovePuyoType::DOUBLET || m_type == MovePuyoType::TRIPLET) {
 		// Set variables
 		if (m_rotation == 0) {
 			m_pos[1].x = m_pos[0].x;
@@ -79,7 +79,7 @@ void AI::setRotation()
 			m_pos[1].y = m_pos[0].y;
 		}
 	}
-	if (m_type == TRIPLET) {
+	if (m_type == MovePuyoType::TRIPLET) {
 		// Set variables
 		if (m_rotation == 1) {
 			m_pos[2].x = m_pos[0].x;
@@ -95,7 +95,7 @@ void AI::setRotation()
 			m_pos[2].y = m_pos[0].y;
 		}
 	}
-	if (m_type == QUADRUPLET || m_type == BIG) {
+	if (m_type == MovePuyoType::QUADRUPLET || m_type == MovePuyoType::BIG) {
 		// Quadruplet and big simply stay in pos==1 state
 		m_pos[1].x = m_pos[0].x + 1;
 		m_pos[1].y = m_pos[0].y;
@@ -122,11 +122,11 @@ int AI::predictChain()
 	}
 
 	int n = 2;
-	if (m_type == TRIPLET || m_type == TRIPLET_R) {
+	if (m_type == MovePuyoType::TRIPLET || m_type == MovePuyoType::TRIPLET_R) {
 		n = 3;
 		tempPos[3].x = -1;
 		tempPos[3].y = -1;
-	} else if (m_type == QUADRUPLET || m_type == BIG) {
+	} else if (m_type == MovePuyoType::QUADRUPLET || m_type == MovePuyoType::BIG) {
 		n = 4;
 	} else {
 		tempPos[2].x = -1;
@@ -162,10 +162,10 @@ int AI::predictChain()
 	// Set colors
 	colors[0] = m_color1;
 	colors[1] = m_color2;
-	if (m_type == TRIPLET_R) {
+	if (m_type == MovePuyoType::TRIPLET_R) {
 		colors[1] = m_color1;
 		colors[2] = m_color2;
-	} else if (m_type == QUADRUPLET) {
+	} else if (m_type == MovePuyoType::QUADRUPLET) {
 		if (m_rotation == 0) {
 			colors[0] = m_color2;
 			colors[1] = m_color2;
@@ -187,7 +187,7 @@ int AI::predictChain()
 			colors[2] = m_color1;
 			colors[3] = m_color2;
 		}
-	} else if (m_type == BIG) {
+	} else if (m_type == MovePuyoType::BIG) {
 		colors[0] = m_color1;
 		colors[1] = m_color1;
 		colors[2] = m_color1;

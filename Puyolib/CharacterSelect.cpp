@@ -617,27 +617,27 @@ void CharacterSelect::setDropset(const int x, const int y, const int pl)
 		m_dropSet[pl * 16 + j].setPosition(static_cast<float>(x) + xx * m_scale, static_cast<float>(y));
 		m_dropSet[pl * 16 + j].setScale(m_scale);
 		switch (mpt) {
-		case DOUBLET:
+		case MovePuyoType::DOUBLET:
 			m_dropSet[pl * 16 + j].setSubRect(0, 0, 16, 24);
 			m_dropSet[pl * 16 + j].setCenter(0, 24);
 			xx += 10;
 			break;
-		case TRIPLET:
+		case MovePuyoType::TRIPLET:
 			m_dropSet[pl * 16 + j].setSubRect(16, 0, 24, 24);
 			m_dropSet[pl * 16 + j].setCenter(0, 24);
 			xx += 18;
 			break;
-		case TRIPLET_R:
+		case MovePuyoType::TRIPLET_R:
 			m_dropSet[pl * 16 + j].setSubRect(40, 0, 24, 24);
 			m_dropSet[pl * 16 + j].setCenter(0, 24);
 			xx += 18;
 			break;
-		case QUADRUPLET:
+		case MovePuyoType::QUADRUPLET:
 			m_dropSet[pl * 16 + j].setSubRect(64, 0, 24, 24);
 			m_dropSet[pl * 16 + j].setCenter(0, 24);
 			xx += 18;
 			break;
-		case BIG:
+		case MovePuyoType::BIG:
 			m_dropSet[pl * 16 + j].setSubRect(88, 0, 24, 24);
 			m_dropSet[pl * 16 + j].setCenter(0, 24);
 			xx += 18;

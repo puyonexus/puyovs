@@ -71,7 +71,7 @@ void NextPuyo::initImage()
 		m_eye31.setImage(m_data->imgPuyo); m_eye32.setImage(m_data->imgPuyo);
 	}
 
-    constexpr MovePuyoType mpt = DOUBLET;
+    constexpr MovePuyoType mpt = MovePuyoType::DOUBLET;
 	setSprite(m_sprite11, m_sprite12, m_eye11, m_eye12, m_color11, m_color12, mpt);
 	setSprite(m_sprite21, m_sprite22, m_eye21, m_eye22, m_color21, m_color22, mpt);
 	setSprite(m_sprite31, m_sprite32, m_eye31, m_eye32, m_color31, m_color32, mpt);
@@ -182,7 +182,7 @@ void NextPuyo::setSprite(Sprite& sprite1, Sprite& sprite2, Sprite& spriteEye1, S
 {
 	int subRectX1, subRectY1, subRectWidth1, subRectHeight1, subRectX2, subRectY2, subRectWidth2, subRectHeight2;
 	const int m_bigColor = color1;
-	if (type == DOUBLET)
+	if (type == MovePuyoType::DOUBLET)
 	{
 		subRectX1 = 0; subRectY1 = kPuyoY * color1;
 		subRectWidth1 = kPuyoX; subRectHeight1 = kPuyoY;
@@ -197,7 +197,7 @@ void NextPuyo::setSprite(Sprite& sprite1, Sprite& sprite2, Sprite& spriteEye1, S
 		spriteEye1.setVisible(false);
 		spriteEye2.setVisible(false);
 	}
-	else if (type == TRIPLET && color1 != color2)
+	else if (type == MovePuyoType::TRIPLET && color1 != color2)
 	{
 		subRectX1 = kPuyoX * color1; subRectY1 = kPuyoY * 5 + 1;
 		subRectWidth1 = kPuyoX; subRectHeight1 = kPuyoY * 2 - 1;
@@ -216,7 +216,7 @@ void NextPuyo::setSprite(Sprite& sprite1, Sprite& sprite2, Sprite& spriteEye1, S
 		spriteEye1.setVisible(true);
 		spriteEye2.setVisible(false);
 	}
-	else if ((type == TRIPLET || type == TRIPLET_R) && color1 == color2)
+	else if ((type == MovePuyoType::TRIPLET || type == MovePuyoType::TRIPLET_R) && color1 == color2)
 	{
 		subRectX1 = 5 * kPuyoX + 2 * kPuyoX * color1; subRectY1 = kPuyoY * 5 + 1;
 		subRectWidth1 = kPuyoX * 2; subRectHeight1 = kPuyoY * 2 - 1;
@@ -235,7 +235,7 @@ void NextPuyo::setSprite(Sprite& sprite1, Sprite& sprite2, Sprite& spriteEye1, S
 		spriteEye1.setVisible(true);
 		spriteEye2.setVisible(false);
 	}
-	else if (type == TRIPLET_R && color1 != color2)
+	else if (type == MovePuyoType::TRIPLET_R && color1 != color2)
 	{
 		subRectX1 = kPuyoX * color1; subRectY1 = kPuyoY * 5 + 1;
 		subRectWidth1 = kPuyoX; subRectHeight1 = kPuyoY * 2 - 1;
@@ -255,7 +255,7 @@ void NextPuyo::setSprite(Sprite& sprite1, Sprite& sprite2, Sprite& spriteEye1, S
 		spriteEye2.setVisible(false);
 
 	}
-	else if (type == QUADRUPLET)
+	else if (type == MovePuyoType::QUADRUPLET)
 	{
 		subRectX1 = static_cast<int>(10.f * static_cast<float>(kPuyoX) + (static_cast<float>(kPuyoX) + static_cast<float>(kPuyoX) / 6.4f) * static_cast<float>(color1)); subRectY1 = kPuyoY * 13;
 		subRectWidth1 = static_cast<int>(static_cast<float>(kPuyoX) + static_cast<float>(kPuyoX) / 6.4f); subRectHeight1 = kPuyoY * 2;
@@ -277,7 +277,7 @@ void NextPuyo::setSprite(Sprite& sprite1, Sprite& sprite2, Sprite& spriteEye1, S
 		spriteEye1.setVisible(true);
 		spriteEye2.setVisible(true);
 	}
-	else if (type == BIG)
+	else if (type == MovePuyoType::BIG)
 	{
 		subRectX1 = 2 * kPuyoX + 2 * kPuyoX * m_bigColor; subRectY1 = kPuyoY * 7;
 		subRectWidth1 = kPuyoX * 2; subRectHeight1 = kPuyoY * 2;
@@ -292,12 +292,12 @@ void NextPuyo::setSprite(Sprite& sprite1, Sprite& sprite2, Sprite& spriteEye1, S
 		spriteEye1.setVisible(false);
 		spriteEye2.setVisible(false);
 	}
-	if (type == TRIPLET_R && color1 != color2)
+	if (type == MovePuyoType::TRIPLET_R && color1 != color2)
 	{
 		sprite1.setRotation(-90);
 		sprite2.setRotation(0);
 	}
-	else if (type == QUADRUPLET)
+	else if (type == MovePuyoType::QUADRUPLET)
 	{
 		sprite1.setRotation(0);
 		sprite2.setRotation(180);
