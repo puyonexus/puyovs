@@ -13,11 +13,11 @@ CONFIG(release, debug|release):DESTDIR = $${PWD}/../Build/Release
 CONFIG(debug, debug|release):DESTDIR = $${PWD}/../Build/Debug
 
 win32 {
-    QMAKE_POST_LINK += XCOPY /D/Y/S/I "$$shell_path($${PWD}/../Test)" "$$shell_path($${DESTDIR})"
+    QMAKE_POST_LINK += XCOPY /D/Y/S/I "$$shell_path($${PWD}/../Assets)" "$$shell_path($${DESTDIR})"
 } else:macx {
     QMAKE_POST_LINK += $${PWD}/../BuildScripts/MacOSX/macx-post-link.sh "$${PWD}/../" "$${DESTDIR}" "$${TARGET}"
 } else {
-    QMAKE_POST_LINK += cp -R $${PWD}/../Test/* $${DESTDIR}/
+    QMAKE_POST_LINK += cp -R $${PWD}/../Assets/* $${DESTDIR}/
 }
 
 win32 {
@@ -151,7 +151,7 @@ target.path = $${PREFIX}/bin
 INSTALLS += target
 
 gamedata.path = $${PREFIX}/share/puyovs
-gamedata.files = ../Test/*
+gamedata.files = ../Assets/*
 INSTALLS += gamedata
 
 defined(${{PREFIX}}) {

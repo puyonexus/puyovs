@@ -1,41 +1,37 @@
 #pragma once
 
-#include "Controller.h"
-#include "MovePuyo.h"
-#include "FieldProp.h"
-#include "Field.h"
-#include "RuleSet/RuleSet.h"
-#include "NextPuyo.h"
-#include "FeverCounter.h"
-#include "Animation.h"
 #include "AI.h"
-#include "global.h"
-#include "RNG/PuyoRng.h"
+#include "Animation.h"
+#include "Controller.h"
+#include "FeverCounter.h"
+#include "Field.h"
+#include "FieldProp.h"
+#include "MovePuyo.h"
+#include "NextPuyo.h"
 #include "RNG/MersenneTwister.h"
+#include "RNG/PuyoRng.h"
+#include "RuleSet/RuleSet.h"
+#include "global.h"
+#include <deque>
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
-#include <deque>
 
-namespace ppvs
-{
+namespace ppvs {
 
 class Player;
 class Game;
 
-struct GarbageCounter
-{
+struct GarbageCounter {
 	int cq = 0, gq = 0;
 	std::vector<Player*> accumulator;
 };
 
-struct Voices
-{
+struct Voices {
 	Sound chain[12], damage1, damage2, fever, feverSuccess, feverFail, lose, win, choose;
 };
 
-enum AttackState
-{
+enum AttackState {
 	NO_ATTACK,
 	ATTACK,
 	DEFEND,
@@ -44,13 +40,12 @@ enum AttackState
 	COUNTER_IDLE,
 };
 
-struct ReplayPlayerHeader
-{
+struct ReplayPlayerHeader {
 	char name[32];
 	short currentWins;
 	int onlineId;
 	char playerNum;
-	PlayerType playerType;// (HUMAN or ONLINE)
+	PlayerType playerType; // (HUMAN or ONLINE)
 	PuyoCharacter character;
 	char active; // Active at start
 	char colors;
@@ -60,14 +55,12 @@ struct ReplayPlayerHeader
 	int vectorSizeCompressedMessage;
 };
 
-struct MessageEvent
-{
+struct MessageEvent {
 	int time;
 	char message[64];
 };
 
-class Player
-{
+class Player {
 public:
 	Player(PlayerType type, int playerNum, int totalPlayers, Game*);
 	~Player();
@@ -87,7 +80,7 @@ public:
 	void setRandomSeed(unsigned long seedIn, PuyoRng**);
 
 	// Get and set
-    static int getRandom(int in, PuyoRng*);
+	static int getRandom(int in, PuyoRng*);
 	[[nodiscard]] int getPlayerNum() const { return m_playerNum; }
 	[[nodiscard]] PlayerType getPlayerType() const { return m_type; }
 	void setPlayerType(PlayerType playerType);
@@ -102,7 +95,7 @@ public:
 	// Garbage
 	void updateTray(const GarbageCounter* c = nullptr);
 	void playGarbageSound();
-    [[nodiscard]] int getGarbageSum() const;
+	[[nodiscard]] int getGarbageSum() const;
 	[[nodiscard]] int getAttackSum() const;
 	void playLightEffect();
 	void addFeverCount();
@@ -129,7 +122,7 @@ public:
 	void endPhase();
 	void prepareVoice(int chain, int predicted);
 	void playVoice();
-	void getReady();// Phase 0
+	void getReady(); // Phase 0
 	void chooseColor();
 	void prepare(); // Phase 1
 	void cpuMove(); // Phase 10
@@ -143,9 +136,9 @@ public:
 	void checkWinner();
 	void loseGame();
 	void winGame();
-	void checkFever();// Phase 50
-	void startFever();// Phase 51
-	void checkEndFever();// Phase 50
+	void checkFever(); // Phase 50
+	void startFever(); // Phase 51
+	void checkEndFever(); // Phase 50
 	void checkEndFeverOnline();
 	void dropFeverChain(); // Phase 52
 	void endFever(); // Phase 54
@@ -167,11 +160,11 @@ public:
 	GameData* m_data = nullptr;
 	Controller m_controls;
 	Field* m_activeField = nullptr;
-	FieldProp m_properties{};
+	FieldProp m_properties {};
 	Game* m_currentGame = nullptr;
 	MovePuyo m_movePuyo;
 	ChainWord* m_chainWord = nullptr;
-	Phase m_currentPhase{};
+	Phase m_currentPhase {};
 	FeverCounter m_feverGauge;
 	Animation m_characterAnimation;
 	Voices m_characterVoices;
@@ -184,7 +177,7 @@ public:
 	bool m_createPuyo = false;
 	bool m_forgiveGarbage = false;
 	bool m_useDropPattern = false;
-	LoseWinState m_loseWin{};
+	LoseWinState m_loseWin {};
 	unsigned int m_randomSeedFever = 0u;
 	int m_marginTimer = 0;
 	bool m_nextPuyoActive = false;

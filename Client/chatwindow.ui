@@ -91,12 +91,12 @@
          </attribute>
          <column>
           <property name="text">
-           <string>Name</string>
+           <string comment="ChatwindowName">Name</string>
           </property>
          </column>
          <column>
           <property name="text">
-           <string>Type</string>
+           <string comment="ChatwindowType">Type</string>
           </property>
          </column>
         </widget>

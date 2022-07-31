@@ -144,4 +144,4 @@ target_include_directories(PuyoVS PRIVATE .)
 target_compile_features(PuyoVS PUBLIC cxx_std_17)
 
 install(TARGETS PuyoVS DESTINATION ${bindir})
-install(DIRECTORY ../Test/ DESTINATION ${datadir})
+install(DIRECTORY ../Assets/ DESTINATION ${datadir})
