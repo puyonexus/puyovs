@@ -18,7 +18,7 @@ class MusicPlayer : public QObject {
 	Priv* p;
 
 public:
-	enum LoopMode {
+	enum class LoopMode {
 		NoLoop,
 		LoopAtLeastOnce,
 		LoopSingle,

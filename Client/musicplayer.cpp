@@ -149,13 +149,13 @@ struct MusicPlayer::Priv : QObject {
 		looped++;
 
 		switch (loopMode) {
-		case MusicPlayer::NoLoop:
+		case MusicPlayer::LoopMode::NoLoop:
 			break;
-		case MusicPlayer::LoopSingle:
+		case MusicPlayer::LoopMode::LoopSingle:
 			stop();
 			play();
 			break;
-		case MusicPlayer::LoopAll:
+		case MusicPlayer::LoopMode::LoopAll:
 			next();
 			currentStream.setVolume(1.0f);
 			break;

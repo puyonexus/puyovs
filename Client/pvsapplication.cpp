@@ -139,9 +139,9 @@ void PVSApplication::reloadSettings() const
 		setMusicMode(MusicOff);
 
 	if (p->settings->integer("music", "loopmode", 0) == 0)
-		p->normalPlayer.setLoopMode(MusicPlayer::LoopSingle);
+		p->normalPlayer.setLoopMode(MusicPlayer::LoopMode::LoopSingle);
 	else
-		p->normalPlayer.setLoopMode(MusicPlayer::LoopAll);
+		p->normalPlayer.setLoopMode(MusicPlayer::LoopMode::LoopAll);
 
 	alib::Device* device = alib::open();
 	int soundVolume = qBound(qint64(0), p->settings->integer("music", "soundvolume", 100), qint64(100));
