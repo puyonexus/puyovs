@@ -10,7 +10,7 @@
 // Language
 struct LanguagePriv {
 	LanguagePriv(QString fn)
-		: currentError(Language::NoError)
+		: currentError(Language::Error::NoError)
 		, filename(std::move(fn))
 	{
 	}
@@ -30,7 +30,7 @@ Language::Language(const QString& filename, QObject* parent)
 
 	// Open file.
 	if (!file.open(QFile::ReadOnly)) {
-		d->currentError = FileError;
+		d->currentError = Error::FileError;
 		return;
 	}
 
@@ -39,7 +39,7 @@ Language::Language(const QString& filename, QObject* parent)
 
 	// Handle empty file/file read error.
 	if (data.isEmpty()) {
-		d->currentError = ReadError;
+		d->currentError = Error::ReadError;
 		return;
 	}
 
@@ -51,7 +51,7 @@ Language::Language(const QString& filename, QObject* parent)
 
 	// Parse JSON data.
 	if (!d->reader.parse(data.data(), d->langRoot, false)) {
-		d->currentError = JsonError;
+		d->currentError = Error::JsonError;
 		return;
 	}
 }
@@ -69,13 +69,13 @@ Language::Error Language::error() const
 QString Language::errorString() const
 {
 	switch (d->currentError) {
-	case NoError:
+	case Error::NoError:
 		return QString("No error.");
-	case FileError:
+	case Error::FileError:
 		return QString("An error occured while trying to open the file for reading.");
-	case ReadError:
+	case Error::ReadError:
 		return QString("An error occured while trying to read the file.");
-	case JsonError:
+	case Error::JsonError:
 		return QString("An error occured while trying to parse the file.\n").append(QString::fromStdString(d->reader.getFormattedErrorMessages()));
 	default:
 		return QString("An unknown error occured.");
@@ -280,7 +280,7 @@ void LanguageManager::refreshLanguageList(QString)
 #endif
 
 	// Load languages.
-	foreach (QString file, files) {
+	for (QString file : files) {
 		// Add file to fswatch
 		mFsWatcher->addPath(langDir + file);
 		mLanguages.append(new Language(langDir + file, this));
@@ -288,9 +288,11 @@ void LanguageManager::refreshLanguageList(QString)
 
 	// Determine if any loads failed.
 	QList<Language*> loadFailures;
-	foreach (Language* language, mLanguages)
-		if (language->error())
+	for (Language* language : mLanguages) {
+		if (language->error() != Language::Error::NoError) {
 			loadFailures.append(language);
+		}
+	}
 
 	bool lostLanguage = false;
 

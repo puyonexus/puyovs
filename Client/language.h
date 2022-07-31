@@ -7,8 +7,9 @@ class QFileSystemWatcher;
 struct LanguagePriv;
 class Language : public QObject {
 	Q_OBJECT
+
 public:
-	enum Error {
+	enum class Error {
 		NoError,
 		FileError,
 		ReadError,
