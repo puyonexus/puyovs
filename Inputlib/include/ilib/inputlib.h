@@ -11,7 +11,7 @@
 namespace ilib {
 
 // Not sure where to put this
-enum HatPosition {
+enum class HatPosition : int {
 	HatCentered = 0,
 	HatUp = 1,
 	HatRight = 2,
@@ -23,14 +23,27 @@ enum HatPosition {
 	HatLeftDown = HatLeft | HatDown
 };
 
+inline HatPosition operator|=(HatPosition& lhs, HatPosition rhs)
+{
+	lhs = static_cast<HatPosition>(static_cast<int>(lhs) | static_cast<int>(rhs));
+	return lhs;
+}
+
+inline bool operator&(HatPosition lhs, HatPosition rhs)
+{
+	return (static_cast<int>(lhs) & static_cast<int>(rhs)) != 0;
+}
+
 class NonCopyable {
 protected:
-	NonCopyable() { }
-	~NonCopyable() { }
+	NonCopyable() = default;
+	virtual ~NonCopyable() = default;
 
-private:
-	NonCopyable(const NonCopyable&);
-	NonCopyable& operator=(const NonCopyable&);
+public:
+	NonCopyable(const NonCopyable&) = delete;
+	NonCopyable& operator=(const NonCopyable&) = delete;
+	NonCopyable(NonCopyable&&) = delete;
+	NonCopyable& operator=(NonCopyable&&) = delete;
 };
 
 }

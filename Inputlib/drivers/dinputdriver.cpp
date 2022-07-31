@@ -31,7 +31,7 @@ struct DInputDriver::Priv {
 		struct Gamepad : Driver::Gamepad {
 			LPDIRECTINPUTDEVICE8 handle;
 
-			short hats[4] = { HatCentered };
+			HatPosition hats[4] = { HatPosition::HatCentered };
 			short axes[6] = { 0 };
 			bool buttons[128] = { false };
 			int id;
@@ -47,19 +47,19 @@ struct DInputDriver::Priv {
 				const bool events = p->processEvents > 0;
 
 				for (int i = 0; i < 4; ++i) {
-					const unsigned hatBefore = hats[i];
-					hats[i] = HatCentered;
+					const HatPosition hatBefore = hats[i];
+					hats[i] = HatPosition::HatCentered;
 
 					const unsigned pov = state.rgdwPOV[i];
 					if (pov < 36000) {
 						if (pov >= 31500 || pov <= 4500)
-							hats[i] |= HatUp;
+							hats[i] |= HatPosition::HatUp;
 						if (pov >= 4500 && pov <= 13500)
-							hats[i] |= HatRight;
+							hats[i] |= HatPosition::HatRight;
 						if (pov >= 13500 && pov <= 22500)
-							hats[i] |= HatDown;
+							hats[i] |= HatPosition::HatDown;
 						if (pov >= 22500 && pov <= 31500)
-							hats[i] |= HatLeft;
+							hats[i] |= HatPosition::HatLeft;
 					}
 
 					if (events && hats[i] != hatBefore) {
@@ -113,7 +113,7 @@ struct DInputDriver::Priv {
 			[[nodiscard]] HatPosition hat(int num) const override
 			{
 				if (num < 0 || num >= 4)
-					return HatCentered;
+					return HatPosition::HatCentered;
 
 				return static_cast<HatPosition>(hats[num]);
 			}

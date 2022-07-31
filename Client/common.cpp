@@ -146,7 +146,7 @@ InputCondition::InputCondition(const ilib::InputEvent& e)
 		type = ConditionType::HatType;
 		hat.device = e.device;
 		hat.id = e.hat.id;
-		hat.direction = (int)e.hat.value;
+		hat.direction = e.hat.value;
 		break;
 	}
 }
@@ -177,7 +177,7 @@ InputCondition::InputCondition(QString str)
 				type = ConditionType::HatType;
 				hat.device = device;
 				hat.id = condparts[3].toInt();
-				hat.direction = condparts[4].toInt();
+				hat.direction = static_cast<ilib::HatPosition>(condparts[4].toInt());
 			} else
 				type = ConditionType::Unknown;
 		} else if (condparts[0] == "key" && condparts.size() == 2) {
@@ -216,11 +216,8 @@ InputCondition::MatchResult InputCondition::match(const ilib::InputEvent& e) con
 		if (e.button.id != button.id)
 			return MatchResult::NoMatch;
 
-		if (e.type == ilib::InputEvent::Type::ButtonDownEvent)
-			return MatchResult::MatchDown;
-		return MatchResult::MatchUp;
+		return e.type == ilib::InputEvent::Type::ButtonDownEvent ? MatchResult::MatchDown : MatchResult::MatchUp;
 
-		break;
 	case ilib::InputEvent::Type::AxisEvent:
 		if (type != ConditionType::AxisType)
 			return MatchResult::NoMatch;
@@ -235,8 +232,8 @@ InputCondition::MatchResult InputCondition::match(const ilib::InputEvent& e) con
 			return MatchResult::MatchDown;
 		if (axis.direction == -1 && e.axis.value < -0.5)
 			return MatchResult::MatchDown;
+		return MatchResult::NoMatch;
 
-		break;
 	case ilib::InputEvent::Type::HatEvent:
 		if (type != ConditionType::HatType)
 			return MatchResult::NoMatch;
@@ -245,11 +242,8 @@ InputCondition::MatchResult InputCondition::match(const ilib::InputEvent& e) con
 		if (e.hat.id != hat.id)
 			return MatchResult::NoMatch;
 
-		if (e.hat.value | hat.direction)
-			return MatchResult::MatchUp;
-		return MatchResult::MatchDown;
+		return e.hat.value & hat.direction ? MatchResult::MatchDown : MatchResult::MatchUp;
 
-		break;
 	default:
 		break;
 	}
@@ -274,28 +268,20 @@ InputCondition::MatchResult InputCondition::match(const QKeyEvent* e) const
 
 QString InputCondition::toString() const
 {
-	QString name;
 	switch (type) {
 	case ConditionType::KeyType:
-		name = codeToName[key.code];
-
-		if (!name.isEmpty())
+		if (QString name = codeToName[key.code]; !name.isEmpty()) {
 			return name;
-
+		}
 		return (QStringList() << "key" << QString::number(key.code)).join(":");
-		break;
 	case ConditionType::ButtonType:
 		return (QStringList() << "pad" << QString::number(button.device) << "button" << QString::number(button.id)).join(":");
-		break;
 	case ConditionType::AxisType:
 		return (QStringList() << "pad" << QString::number(axis.device) << "axis" << QString::number(axis.id) << (axis.direction > 0 ? "+" : "-")).join(":");
-		break;
 	case ConditionType::HatType:
-		return (QStringList() << "pad" << QString::number(hat.device) << "hat" << QString::number(hat.id) << QString::number(hat.direction)).join(":");
-		break;
+		return (QStringList() << "pad" << QString::number(hat.device) << "hat" << QString::number(hat.id) << QString::number(static_cast<int>(hat.direction))).join(":");
 	case ConditionType::Unknown:
 		return "unknown";
-		break;
 	}
-	return QString();
+	return {};
 }

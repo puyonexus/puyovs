@@ -33,6 +33,7 @@ QString getDataLocation();
 QString createRulesetString(ppvs::RuleSetInfo* rs);
 
 namespace ilib {
+enum class HatPosition : int;
 struct InputEvent;
 }
 
@@ -49,13 +50,13 @@ public:
 		MatchDown
 	};
 
-    explicit InputCondition(const ilib::InputEvent& e);
-    explicit InputCondition(QKeyEvent* e);
-    explicit InputCondition(QString str);
+	explicit InputCondition(const ilib::InputEvent& e);
+	explicit InputCondition(QKeyEvent* e);
+	explicit InputCondition(QString str);
 	InputCondition();
 	~InputCondition();
 
-    [[nodiscard]] MatchResult match(const ilib::InputEvent& e) const;
+	[[nodiscard]] MatchResult match(const ilib::InputEvent& e) const;
 	[[nodiscard]] MatchResult match(const QKeyEvent* e) const;
 	[[nodiscard]] QString toString() const;
 
@@ -84,7 +85,7 @@ private:
 		struct {
 			int device;
 			int id;
-			int direction;
+			ilib::HatPosition direction;
 		} hat;
 	};
 };
