@@ -309,7 +309,7 @@ void GameManager::channelJoined(QString channel, NetPeerList peers) const
 		if (peer.status == 1) {
 			widget->chatWindow()->addUser(peer.username, QString(tr("Player %1", "Launcher:ChatwindowPl")).arg(playernum));
 		} else if (peer.status == 2) {
-			widget->chatWindow()->addUser(peer.username, tr("Spectator","Launcher:ChatwindowSp"));
+			widget->chatWindow()->addUser(peer.username, tr("Spectator", "Launcher:ChatwindowSp"));
 		}
 	}
 }
@@ -365,7 +365,7 @@ void GameManager::peerPartedChannel(QString channel, QString peer) const
 	}
 	// Spectator or pending player left
 	else {
-		QString langStr = tr("%s left.","Launcher:PlayerLeave");
+		QString langStr = tr("%s left.", "Launcher:PlayerLeave");
 		widget->chatWindow()->statusMessage(QString::asprintf(langStr.toUtf8().data(), peer.toUtf8().data()));
 	}
 	// Remove from chatwindow
@@ -575,20 +575,20 @@ void GameManager::peerStatusReceived(QString channel, QString peer, uchar status
 	if (status == 1)
 		widget->chatWindow()->addUser(peer, QString(tr("Player %1", "Launcher:ChatwindowPl")).arg(pln));
 	else if (status == 2)
-		widget->chatWindow()->addUser(peer, tr("Spectator","Launcher:ChatwindowSp"));
+		widget->chatWindow()->addUser(peer, tr("Spectator", "Launcher:ChatwindowSp"));
 }
 
 void GameManager::updateControls(GameWidget* game)
 {
 	Settings& settings = pvsApp->settings();
 	game->setControls(
-		settings.string("controlsp1", "up", "up"),
-		settings.string("controlsp1", "down", "down"),
-		settings.string("controlsp1", "left", "left"),
-		settings.string("controlsp1", "right", "right"),
-		settings.string("controlsp1", "a", "x"),
-		settings.string("controlsp1", "b", "z"),
-		settings.string("controlsp1", "start", "return"));
+		InputCondition(settings.string("controlsp1", "up", "up")),
+		InputCondition(settings.string("controlsp1", "down", "down")),
+		InputCondition(settings.string("controlsp1", "left", "left")),
+		InputCondition(settings.string("controlsp1", "right", "right")),
+		InputCondition(settings.string("controlsp1", "a", "x")),
+		InputCondition(settings.string("controlsp1", "b", "z")),
+		InputCondition(settings.string("controlsp1", "start", "return")));
 }
 
 void GameManager::updateAllControls()
