@@ -52,29 +52,29 @@ struct SDLDriver::Priv {
 		[[nodiscard]] HatPosition hat(int num) const override
 		{
 			if (num < 0 || num >= mNumHats) {
-				return HatCentered;
+				return HatPosition::HatCentered;
 			}
 
 			switch (SDL_JoystickGetHat(mJoystick, num)) {
 			default:
 			case SDL_HAT_CENTERED:
-				return HatCentered;
+				return HatPosition::HatCentered;
 			case SDL_HAT_UP:
-				return HatUp;
+				return HatPosition::HatUp;
 			case SDL_HAT_RIGHT:
-				return HatRight;
+				return HatPosition::HatRight;
 			case SDL_HAT_DOWN:
-				return HatDown;
+				return HatPosition::HatDown;
 			case SDL_HAT_LEFT:
-				return HatLeft;
+				return HatPosition::HatLeft;
 			case SDL_HAT_RIGHTUP:
-				return HatRightUp;
+				return HatPosition::HatRightUp;
 			case SDL_HAT_RIGHTDOWN:
-				return HatRightDown;
+				return HatPosition::HatRightDown;
 			case SDL_HAT_LEFTUP:
-				return HatLeftUp;
+				return HatPosition::HatLeftUp;
 			case SDL_HAT_LEFTDOWN:
-				return HatLeftDown;
+				return HatPosition::HatLeftDown;
 			}
 		}
 	};
@@ -130,11 +130,11 @@ struct SDLDriver::Priv {
 		while (SDL_PeepEvents(&e, 1, SDL_GETEVENT, SDL_JOYAXISMOTION, SDL_JOYDEVICEREMOVED) > 0) {
 			switch (e.type) {
 			case SDL_JOYBUTTONDOWN:
-				events.push_back(InputEvent::createButtonEvent(InputEvent::ButtonDownEvent, e.jbutton.which, e.jbutton.button));
+				events.push_back(InputEvent::createButtonEvent(InputEvent::Type::ButtonDownEvent, e.jbutton.which, e.jbutton.button));
 				break;
 
 			case SDL_JOYBUTTONUP:
-				events.push_back(InputEvent::createButtonEvent(InputEvent::ButtonUpEvent, e.jbutton.which, e.jbutton.button));
+				events.push_back(InputEvent::createButtonEvent(InputEvent::Type::ButtonUpEvent, e.jbutton.which, e.jbutton.button));
 				break;
 
 			case SDL_JOYAXISMOTION:
@@ -147,19 +147,31 @@ struct SDLDriver::Priv {
 				switch (e.jhat.value) {
 				default:
 				case SDL_HAT_CENTERED:
-					position = HatCentered;
+					position = HatPosition::HatCentered;
 					break;
 				case SDL_HAT_UP:
-					position = HatUp;
+					position = HatPosition::HatUp;
 					break;
 				case SDL_HAT_RIGHT:
-					position = HatRight;
+					position = HatPosition::HatRight;
 					break;
 				case SDL_HAT_DOWN:
-					position = HatDown;
+					position = HatPosition::HatDown;
 					break;
 				case SDL_HAT_LEFT:
-					position = HatLeft;
+					position = HatPosition::HatLeft;
+					break;
+				case SDL_HAT_RIGHTUP:
+					position = HatPosition::HatRightUp;
+					break;
+				case SDL_HAT_RIGHTDOWN:
+					position = HatPosition::HatRightDown;
+					break;
+				case SDL_HAT_LEFTUP:
+					position = HatPosition::HatLeftUp;
+					break;
+				case SDL_HAT_LEFTDOWN:
+					position = HatPosition::HatLeftDown;
 					break;
 				}
 

@@ -49,7 +49,7 @@ bool UpdaterLdb::write(QIODevice* stream) const
 	// Number of entries
 	dataStream << static_cast<quint32>(m_fileVersions.count());
 
-	QMapIterator it(m_fileVersions);
+	QMapIterator<QString, quint32> it(m_fileVersions);
 	while (it.hasNext()) {
 		it.next();
 		QByteArray filename = it.key().toUtf8();
