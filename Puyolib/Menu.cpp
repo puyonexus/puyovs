@@ -83,12 +83,10 @@ void Menu::play()
 		m_data->snd.cursor.play(m_data);
 	}
 	// Choose
-    if ((controls->m_a == 1) || ((controls->m_b == 1 and m_currentGame->m_settings->SwapABConfirm == true))) {
-        if (m_currentGame->m_settings->SwapABConfirm == false) {
+    if ((controls->m_a == 1) || ((controls->m_b == 1 && m_currentGame->m_settings->swapABConfirm == true))) {
+        if (m_currentGame->m_settings->swapABConfirm == false) {
             controls->m_a++;
-        }
-        else
-        {
+        } else {
             controls->m_b++;
         }
 		if (!(m_select == 0 && m_disableRematch))

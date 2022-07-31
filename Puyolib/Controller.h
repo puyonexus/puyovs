@@ -41,7 +41,6 @@ public:
 	bool m_delayB = false;
 	bool m_delayStart = false;
 
-
 	void init(int playerNumber, PlayerType type, RecordState s = RecordState::NOT_RECORDING);
 	void setState(const FeInput& input, int t);
 	void release();

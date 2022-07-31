@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>382</width>
-    <height>648</height>
+    <width>341</width>
+    <height>502</height>
    </rect>
   </property>
   <property name="acceptDrops">
@@ -24,7 +24,7 @@
    <item>
     <widget class="QTabWidget" name="SettingsTabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="GeneralTab">
       <attribute name="title">
@@ -795,8 +795,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>309</width>
-               <height>894</height>
+               <width>282</width>
+               <height>560</height>
               </rect>
              </property>
              <layout class="QFormLayout" name="formLayout_3">

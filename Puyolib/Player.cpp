@@ -473,7 +473,7 @@ void Player::playerSetup(FieldProp& properties, const int playerNum, const int p
 		// Other players
 		m_globalScale = 1.0f / static_cast<float>(width);
 		properties.offsetX = 400.f + static_cast<float>((playerNum - 2) % width) * 320.f * m_globalScale - 75.f * m_globalScale * static_cast<float>(width - 1);
-		properties.offsetY = 84.f + static_cast<float>((playerNum - 2) / width) * 438.f * m_globalScale - 42.f * m_globalScale * static_cast<float>(width - 1);  // NOLINT(bugprone-integer-division)
+        properties.offsetY = 84.f + static_cast<float>((playerNum - 2) / width) * 438.f * m_globalScale - 42.f * m_globalScale * static_cast<float>(width - 1); // NOLINT(bugprone-integer-division)
 		m_fieldNormal.init(properties, this);
 		m_fieldFever.init(properties, this);
 		m_fieldTemp.init(properties, this);
@@ -990,10 +990,9 @@ void Player::chooseColor()
 	}
 
 	if (m_takeover) {
-        if (m_currentGame->m_settings->SwapABConfirm == false) {
+        if (m_currentGame->m_settings->swapABConfirm == false) {
             m_controls.m_a = m_currentGame->m_players[0]->m_controls.m_a;
-        }
-        else {
+        } else {
             m_controls.m_b = m_currentGame->m_players[0]->m_controls.m_b;
         }
 		m_controls.m_down = m_currentGame->m_players[0]->m_controls.m_down;
@@ -1050,24 +1049,21 @@ void Player::chooseColor()
 
 		// Automatic choice
 		if (m_currentGame->m_colorTimer == 1 && m_colorMenuTimer > 25 && m_pickedColor == false) {
-            if (m_currentGame->m_settings->SwapABConfirm == false) {
+            if (m_currentGame->m_settings->swapABConfirm == false) {
                 m_controls.m_a = 1;
-            }
-            else
-            {
+            } else {
                 m_controls.m_b = 1;
             }
 		}
 
 		// Make choice
-        if ((m_controls.m_a == 1 && m_colorMenuTimer > 25) || ((m_controls.m_b == 1 && m_currentGame->m_settings->SwapABConfirm == true && m_colorMenuTimer > 25))) {
+        if ((m_controls.m_a == 1 && m_colorMenuTimer > 25) || ((m_controls.m_b == 1 && m_currentGame->m_settings->swapABConfirm == true && m_colorMenuTimer > 25))) {
 			m_normalGarbage.gq += m_normalGarbage.cq;
 			m_normalGarbage.cq = 0;
 			m_data->snd.decide.play(m_data);
-            if (m_currentGame->m_settings->SwapABConfirm == false) {
+            if (m_currentGame->m_settings->swapABConfirm == false) {
                 m_controls.m_a++;
-            }
-            else {
+            } else {
                 m_controls.m_b++;
             }
 			if (m_takeover) {
@@ -1261,7 +1257,7 @@ void Player::destroyPuyos()
 				div = max(2, m_divider);
 			}
 
-			m_eq = static_cast<int>(static_cast<float>(m_currentScore / m_targetPoint) * power * 3.f / static_cast<float>(div + 1));  // NOLINT(bugprone-integer-division)
+            m_eq = static_cast<int>(static_cast<float>(m_currentScore / m_targetPoint) * power * 3.f / static_cast<float>(div + 1)); // NOLINT(bugprone-integer-division)
 			m_currentScore -= m_targetPoint * (m_currentScore / m_targetPoint);
 
 			if (m_bonusEq) {
@@ -1461,12 +1457,12 @@ void Player::startGarbage()
 				startPv = m_activeField->getGlobalCoordinates(m_rememberX, m_rememberMaxY);
 				endPv = player->m_activeField->getTopCoordinates(-1);
 
-			    // Calculate a middle
+                // Calculate a middle
 				const int dir = m_nextPuyo.getOrientation();
 				middlePv.x = startPv.x - static_cast<float>(dir) * kPuyoX * 3.f;
 				middlePv.y = startPv.y - kPuyoY * 3;
 
-			    m_lightEffect.push_back(new LightEffect(m_data, startPv, middlePv, endPv));
+                m_lightEffect.push_back(new LightEffect(m_data, startPv, middlePv, endPv));
 
 				// Add self to garbage accumulator
 				player->addAttacker(m_targetGarbage[player], this);
@@ -1499,17 +1495,17 @@ void Player::startGarbage()
 			}
 		}
 
-	    // Create light effect for defense
+        // Create light effect for defense
         const PosVectorFloat startPv = m_activeField->getGlobalCoordinates(m_rememberX, m_rememberMaxY);
         const PosVectorFloat endPv = m_activeField->getTopCoordinates(-1);
 
-	    // Calculate a middle
+        // Calculate a middle
 		const int dir = m_nextPuyo.getOrientation();
 		PosVectorFloat middlePv;
 		middlePv.x = startPv.x - static_cast<float>(dir) * kPuyoX * 3.f;
 		middlePv.y = startPv.y - kPuyoY * 3;
 
-	    m_lightEffect.push_back(new LightEffect(m_data, startPv, middlePv, endPv));
+        m_lightEffect.push_back(new LightEffect(m_data, startPv, middlePv, endPv));
 	} else {
 		m_attackState = NO_ATTACK;
 	}
@@ -1523,7 +1519,7 @@ void Player::garbagePhase()
 		return;
 	}
 
-	if (m_garbageTimer == 0) {  // NOLINT(clang-diagnostic-float-equal)
+    if (m_garbageTimer == 0) { // NOLINT(clang-diagnostic-float-equal)
 		m_hasMoved = false;
 
 		// Trigger voice
@@ -2647,9 +2643,9 @@ void Player::draw()
 		m_data->front->setColor(255, 255, 255, 255);
 		if (m_currentGame->m_forceStatusText
 			|| (m_type == ONLINE || m_type == HUMAN)
-			&& m_currentGame->m_currentGameStatus != GameStatus::PLAYING
-            && m_currentGame->m_currentGameStatus != GameStatus::SPECTATING
-			&& !m_currentGame->m_settings->useCpuPlayers) {
+                && m_currentGame->m_currentGameStatus != GameStatus::PLAYING
+                && m_currentGame->m_currentGameStatus != GameStatus::SPECTATING
+                && !m_currentGame->m_settings->useCpuPlayers) {
 			m_statusText->draw(0, 0);
 		}
 	}
