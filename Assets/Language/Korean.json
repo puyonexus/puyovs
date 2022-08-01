@@ -194,7 +194,12 @@
 		"EnterRoomPassword": "이 방의 비밀번호를 설정해주세요:",
 		"PrivateRoom": "비밀 방",
 		"WrongPassword": "비밀번호가 잘못되었습니다!",
-		"SendPrivate": "비밀 메시지 보내기"
+		"SendPrivate": "비밀 메시지 보내기",
+
+		"TelemetryTitle":	"Puyo VS 장치 정보 전송",
+		"TelemetryNotice":	"Puyo VS 팀에 크래시 덤프와 사용 정보를 전송하시겠습니까? 이러한 정보는 비밀이 유지되며 오류를 찾거나 성능 향상의 우선순위를 정하는 데에 활용됩니다. 이는 온전히 선택적이나, 저희에게 도움이 됩니다.",
+		"TelemetryCrashCheckbox":	"크래시 덤프와 오류 로그 전송 허용",
+		"TelemetryStatisticCheckbox":	"사용 정보와 장치 정보 전송 허용"
 	},
 	"Messages": {
 		"ErrorInit": "네트워크 초기화 실패",
