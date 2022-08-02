@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2022 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -18,7 +18,7 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
-#include "SDL_config.h"
+#include "../../SDL_internal.h"
 
 #if SDL_VIDEO_DRIVER_X11
 
@@ -40,14 +40,10 @@ static int shm_errhandler(Display *d, XErrorEvent *e)
         return(X_handler(d,e));
 }
 
-static SDL_bool have_mitshm(void)
+static SDL_bool have_mitshm(Display *dpy)
 {
     /* Only use shared memory on local X servers */
-    if ( (SDL_strncmp(XDisplayName(NULL), ":", 1) == 0) ||
-         (SDL_strncmp(XDisplayName(NULL), "unix:", 5) == 0) ) {
-        return SDL_X11_HAVE_SHM;
-    }
-    return SDL_FALSE;
+    return X11_XShmQueryExtension(dpy) ? SDL_X11_HAVE_SHM : SDL_FALSE;
 }
 
 #endif /* !NO_SHARED_MEMORY */
@@ -66,22 +62,19 @@ X11_CreateWindowFramebuffer(_THIS, SDL_Window * window, Uint32 * format,
 
     /* Create the graphics context for drawing */
     gcv.graphics_exposures = False;
-    data->gc = XCreateGC(display, data->xwindow, GCGraphicsExposures, &gcv);
+    data->gc = X11_XCreateGC(display, data->xwindow, GCGraphicsExposures, &gcv);
     if (!data->gc) {
-        SDL_SetError("Couldn't create graphics context");
-        return -1;
+        return SDL_SetError("Couldn't create graphics context");
     }
 
     /* Find out the pixel format and depth */
     if (X11_GetVisualInfoFromVisual(display, data->visual, &vinfo) < 0) {
-        SDL_SetError("Couldn't get window visual information");
-        return -1;
+        return SDL_SetError("Couldn't get window visual information");
     }
 
     *format = X11_GetPixelFormatFromVisualInfo(display, &vinfo);
     if (*format == SDL_PIXELFORMAT_UNKNOWN) {
-        SDL_SetError("Unknown window pixel format");
-        return -1;
+        return SDL_SetError("Unknown window pixel format");
     }
 
     /* Calculate pitch */
@@ -89,7 +82,7 @@ X11_CreateWindowFramebuffer(_THIS, SDL_Window * window, Uint32 * format,
 
     /* Create the actual image */
 #ifndef NO_SHARED_MEMORY
-    if (have_mitshm()) {
+    if (have_mitshm(display)) {
         XShmSegmentInfo *shminfo = &data->shminfo;
 
         shminfo->shmid = shmget(IPC_PRIVATE, window->h*(*pitch), IPC_CREAT | 0777);
@@ -98,10 +91,10 @@ X11_CreateWindowFramebuffer(_THIS, SDL_Window * window, Uint32 * format,
             shminfo->readOnly = False;
             if ( shminfo->shmaddr != (char *)-1 ) {
                 shm_error = False;
-                X_handler = XSetErrorHandler(shm_errhandler);
-                XShmAttach(display, shminfo);
-                XSync(display, True);
-                XSetErrorHandler(X_handler);
+                X_handler = X11_XSetErrorHandler(shm_errhandler);
+                X11_XShmAttach(display, shminfo);
+                X11_XSync(display, False);
+                X11_XSetErrorHandler(X_handler);
                 if ( shm_error )
                     shmdt(shminfo->shmaddr);
             } else {
@@ -112,16 +105,17 @@ X11_CreateWindowFramebuffer(_THIS, SDL_Window * window, Uint32 * format,
             shm_error = True;
         }
         if (!shm_error) {
-            data->ximage = XShmCreateImage(display, data->visual,
+            data->ximage = X11_XShmCreateImage(display, data->visual,
                              vinfo.depth, ZPixmap,
-                             shminfo->shmaddr, shminfo, 
+                             shminfo->shmaddr, shminfo,
                              window->w, window->h);
             if (!data->ximage) {
-                XShmDetach(display, shminfo);
-                XSync(display, False);
+                X11_XShmDetach(display, shminfo);
+                X11_XSync(display, False);
                 shmdt(shminfo->shmaddr);
             } else {
                 /* Done! */
+                data->ximage->byte_order = (SDL_BYTEORDER == SDL_BIG_ENDIAN) ? MSBFirst : LSBFirst;
                 data->use_mitshm = SDL_TRUE;
                 *pixels = shminfo->shmaddr;
                 return 0;
@@ -132,23 +126,22 @@ X11_CreateWindowFramebuffer(_THIS, SDL_Window * window, Uint32 * format,
 
     *pixels = SDL_malloc(window->h*(*pitch));
     if (*pixels == NULL) {
-        SDL_OutOfMemory();
-        return -1;
+        return SDL_OutOfMemory();
     }
 
-    data->ximage = XCreateImage(display, data->visual,
-                      vinfo.depth, ZPixmap, 0, (char *)(*pixels), 
+    data->ximage = X11_XCreateImage(display, data->visual,
+                      vinfo.depth, ZPixmap, 0, (char *)(*pixels),
                       window->w, window->h, 32, 0);
     if (!data->ximage) {
         SDL_free(*pixels);
-        SDL_SetError("Couldn't create XImage");
-        return -1;
+        return SDL_SetError("Couldn't create XImage");
     }
+    data->ximage->byte_order = (SDL_BYTEORDER == SDL_BIG_ENDIAN) ? MSBFirst : LSBFirst;
     return 0;
 }
 
 int
-X11_UpdateWindowFramebuffer(_THIS, SDL_Window * window, SDL_Rect * rects,
+X11_UpdateWindowFramebuffer(_THIS, SDL_Window * window, const SDL_Rect * rects,
                             int numrects)
 {
     SDL_WindowData *data = (SDL_WindowData *) window->driverdata;
@@ -182,7 +175,7 @@ X11_UpdateWindowFramebuffer(_THIS, SDL_Window * window, SDL_Rect * rects,
             if (y + h > window->h)
                 h = window->h - y;
 
-            XShmPutImage(display, data->xwindow, data->gc, data->ximage,
+            X11_XShmPutImage(display, data->xwindow, data->gc, data->ximage,
                 x, y, x, y, w, h, False);
         }
     }
@@ -214,12 +207,12 @@ X11_UpdateWindowFramebuffer(_THIS, SDL_Window * window, SDL_Rect * rects,
             if (y + h > window->h)
                 h = window->h - y;
 
-            XPutImage(display, data->xwindow, data->gc, data->ximage,
+            X11_XPutImage(display, data->xwindow, data->gc, data->ximage,
                 x, y, x, y, w, h);
         }
     }
 
-    XSync(display, False);
+    X11_XSync(display, False);
 
     return 0;
 }
@@ -242,8 +235,8 @@ X11_DestroyWindowFramebuffer(_THIS, SDL_Window * window)
 
 #ifndef NO_SHARED_MEMORY
         if (data->use_mitshm) {
-            XShmDetach(display, &data->shminfo);
-            XSync(display, False);
+            X11_XShmDetach(display, &data->shminfo);
+            X11_XSync(display, False);
             shmdt(data->shminfo.shmaddr);
             data->use_mitshm = SDL_FALSE;
         }
@@ -252,7 +245,7 @@ X11_DestroyWindowFramebuffer(_THIS, SDL_Window * window)
         data->ximage = NULL;
     }
     if (data->gc) {
-        XFreeGC(display, data->gc);
+        X11_XFreeGC(display, data->gc);
         data->gc = NULL;
     }
 }

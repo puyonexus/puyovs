@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2022 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -18,31 +18,49 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
-#include "SDL_config.h"
+#include "../../SDL_internal.h"
 
 /* Output audio to nowhere... */
 
+#include "SDL_timer.h"
 #include "SDL_audio.h"
 #include "../SDL_audio_c.h"
 #include "SDL_dummyaudio.h"
 
 static int
-DUMMYAUD_OpenDevice(_THIS, const char *devname, int iscapture)
+DUMMYAUDIO_OpenDevice(_THIS, const char *devname)
 {
-    return 1;                   /* always succeeds. */
+    _this->hidden = (void *) 0x1;  /* just something non-NULL */
+    return 0;                   /* always succeeds. */
 }
 
 static int
-DUMMYAUD_Init(SDL_AudioDriverImpl * impl)
+DUMMYAUDIO_CaptureFromDevice(_THIS, void *buffer, int buflen)
 {
-    /* Set the function pointers */
-    impl->OpenDevice = DUMMYAUD_OpenDevice;
-    impl->OnlyHasDefaultOutputDevice = 1;
-    return 1;   /* this audio target is available. */
+    /* Delay to make this sort of simulate real audio input. */
+    SDL_Delay((_this->spec.samples * 1000) / _this->spec.freq);
+
+    /* always return a full buffer of silence. */
+    SDL_memset(buffer, _this->spec.silence, buflen);
+    return buflen;
 }
 
-AudioBootStrap DUMMYAUD_bootstrap = {
-    "dummy", "SDL dummy audio driver", DUMMYAUD_Init, 1
+static SDL_bool
+DUMMYAUDIO_Init(SDL_AudioDriverImpl * impl)
+{
+    /* Set the function pointers */
+    impl->OpenDevice = DUMMYAUDIO_OpenDevice;
+    impl->CaptureFromDevice = DUMMYAUDIO_CaptureFromDevice;
+
+    impl->OnlyHasDefaultOutputDevice = SDL_TRUE;
+    impl->OnlyHasDefaultCaptureDevice = SDL_TRUE;
+    impl->HasCaptureSupport = SDL_TRUE;
+
+    return SDL_TRUE;   /* this audio target is available. */
+}
+
+AudioBootStrap DUMMYAUDIO_bootstrap = {
+    "dummy", "SDL dummy audio driver", DUMMYAUDIO_Init, SDL_TRUE
 };
 
 /* vi: set ts=4 sw=4 expandtab: */

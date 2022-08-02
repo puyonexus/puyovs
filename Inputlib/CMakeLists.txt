@@ -17,5 +17,5 @@ endif()
 
 include_directories(. include/ilib)
 target_include_directories(Inputlib PUBLIC include)
-target_link_libraries(Inputlib PUBLIC SDL)
+target_link_libraries(Inputlib PUBLIC SDL2-static)
 target_compile_features(Inputlib PUBLIC cxx_std_17)

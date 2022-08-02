@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2022 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -18,7 +18,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
-#include "SDL_config.h"
+#include "../SDL_internal.h"
+
+#if SDL_HAVE_BLIT_0
 
 #include "SDL_video.h"
 #include "SDL_blit.h"
@@ -363,7 +365,10 @@ BlitBtoNAlpha(SDL_BlitInfo * info)
     SDL_PixelFormat *dstfmt = info->dst_fmt;
     int dstbpp;
     int c;
-    const int A = info->a;
+    Uint32 pixel;
+    unsigned sR, sG, sB;
+    unsigned dR, dG, dB, dA;
+    const unsigned A = info->a;
 
     /* Set up some basic variables */
     dstbpp = dstfmt->BytesPerPixel;
@@ -377,15 +382,12 @@ BlitBtoNAlpha(SDL_BlitInfo * info)
             }
             bit = (byte & 0x80) >> 7;
             if (1) {
-                Uint32 pixel;
-                unsigned sR, sG, sB;
-                unsigned dR, dG, dB;
                 sR = srcpal[bit].r;
                 sG = srcpal[bit].g;
                 sB = srcpal[bit].b;
-                DISEMBLE_RGB(dst, dstbpp, dstfmt, pixel, dR, dG, dB);
-                ALPHA_BLEND(sR, sG, sB, A, dR, dG, dB);
-                ASSEMBLE_RGB(dst, dstbpp, dstfmt, dR, dG, dB);
+                DISEMBLE_RGBA(dst, dstbpp, dstfmt, pixel, dR, dG, dB, dA);
+                ALPHA_BLEND_RGBA(sR, sG, sB, A, dR, dG, dB, dA);
+                ASSEMBLE_RGBA(dst, dstbpp, dstfmt, dR, dG, dB, dA);
             }
             byte <<= 1;
             dst += dstbpp;
@@ -409,7 +411,10 @@ BlitBtoNAlphaKey(SDL_BlitInfo * info)
     const SDL_Color *srcpal = srcfmt->palette->colors;
     int dstbpp;
     int c;
-    const int A = info->a;
+    Uint32 pixel;
+    unsigned sR, sG, sB;
+    unsigned dR, dG, dB, dA;
+    const unsigned A = info->a;
     Uint32 ckey = info->colorkey;
 
     /* Set up some basic variables */
@@ -424,15 +429,12 @@ BlitBtoNAlphaKey(SDL_BlitInfo * info)
             }
             bit = (byte & 0x80) >> 7;
             if (bit != ckey) {
-                int sR, sG, sB;
-                int dR, dG, dB;
-                Uint32 pixel;
                 sR = srcpal[bit].r;
                 sG = srcpal[bit].g;
                 sB = srcpal[bit].b;
-                DISEMBLE_RGB(dst, dstbpp, dstfmt, pixel, dR, dG, dB);
-                ALPHA_BLEND(sR, sG, sB, A, dR, dG, dB);
-                ASSEMBLE_RGB(dst, dstbpp, dstfmt, dR, dG, dB);
+                DISEMBLE_RGBA(dst, dstbpp, dstfmt, pixel, dR, dG, dB, dA);
+                ALPHA_BLEND_RGBA(sR, sG, sB, A, dR, dG, dB, dA);
+                ASSEMBLE_RGBA(dst, dstbpp, dstfmt, dR, dG, dB, dA);
             }
             byte <<= 1;
             dst += dstbpp;
@@ -443,21 +445,104 @@ BlitBtoNAlphaKey(SDL_BlitInfo * info)
 }
 
 static const SDL_BlitFunc bitmap_blit[] = {
-    NULL, BlitBto1, BlitBto2, BlitBto3, BlitBto4
+    (SDL_BlitFunc) NULL, BlitBto1, BlitBto2, BlitBto3, BlitBto4
 };
 
 static const SDL_BlitFunc colorkey_blit[] = {
-    NULL, BlitBto1Key, BlitBto2Key, BlitBto3Key, BlitBto4Key
+    (SDL_BlitFunc) NULL, BlitBto1Key, BlitBto2Key, BlitBto3Key, BlitBto4Key
 };
+
+
+static void
+Blit4bto4(SDL_BlitInfo * info)
+{
+    int width = info->dst_w;
+    int height = info->dst_h;
+    Uint8 *src = info->src;
+    Uint32 *dst = (Uint32 *) info->dst;
+    int srcskip = info->src_skip;
+    int dstskip = info->dst_skip;
+    Uint32 *map = (Uint32 *) info->table;
+    int c;
+
+    /* Set up some basic variables */
+    srcskip += width - (width + 1) / 2;
+
+    while (height--) {
+        Uint8 byte = 0, bit;
+        for (c = 0; c < width; ++c) {
+            if ((c & 0x1) == 0) {
+                byte = *src++;
+            }
+            bit = (byte & 0xF0) >> 4;
+            if (1) {
+                *dst = map[bit];
+            }
+            byte <<= 4;
+            dst++;
+        }
+        src += srcskip;
+        dst = (Uint32 *) ((Uint8 *) dst + dstskip);
+    }
+}
+
+static void
+Blit4bto4Key(SDL_BlitInfo * info)
+{
+    int width = info->dst_w;
+    int height = info->dst_h;
+    Uint8 *src = info->src;
+    Uint32 *dst = (Uint32 *) info->dst;
+    int srcskip = info->src_skip;
+    int dstskip = info->dst_skip;
+    Uint32 ckey = info->colorkey;
+    Uint32 *map = (Uint32 *) info->table;
+    int c;
+
+    /* Set up some basic variables */
+    srcskip += width - (width + 1) / 2;
+
+    while (height--) {
+        Uint8 byte = 0, bit;
+        for (c = 0; c < width; ++c) {
+            if ((c & 0x1) == 0) {
+                byte = *src++;
+            }
+            bit = (byte & 0xF0) >> 4;
+            if (bit != ckey) {
+                *dst = map[bit];
+            }
+            byte <<= 4;
+            dst++;
+        }
+        src += srcskip;
+        dst = (Uint32 *) ((Uint8 *) dst + dstskip);
+    }
+}
 
 SDL_BlitFunc
 SDL_CalculateBlit0(SDL_Surface * surface)
 {
     int which;
 
+    /* 4bits to 32bits */
+    if (surface->format->BitsPerPixel == 4) {
+        if (surface->map->dst->format->BytesPerPixel == 4) {
+            switch (surface->map->info.flags & ~SDL_COPY_RLE_MASK) {
+                case 0:
+                    return Blit4bto4;
+
+                case SDL_COPY_COLORKEY:
+                    return Blit4bto4Key;
+            }
+        }
+        /* We don't fully support 4-bit packed pixel modes */
+        return NULL;
+    }
+
     if (surface->format->BitsPerPixel != 1) {
         /* We don't support sub 8-bit packed pixel modes */
-        return NULL;
+        return (SDL_BlitFunc) NULL;
     }
     if (surface->map->dst->format->BitsPerPixel < 8) {
         which = 0;
@@ -472,12 +557,14 @@ SDL_CalculateBlit0(SDL_Surface * surface)
         return colorkey_blit[which];
 
     case SDL_COPY_MODULATE_ALPHA | SDL_COPY_BLEND:
-        return which >= 2 ? BlitBtoNAlpha : NULL;
+        return which >= 2 ? BlitBtoNAlpha : (SDL_BlitFunc) NULL;
 
     case SDL_COPY_COLORKEY | SDL_COPY_MODULATE_ALPHA | SDL_COPY_BLEND:
-        return which >= 2 ? BlitBtoNAlphaKey : NULL;
+        return which >= 2 ? BlitBtoNAlphaKey : (SDL_BlitFunc) NULL;
     }
-    return NULL;
+    return (SDL_BlitFunc) NULL;
 }
+
+#endif /* SDL_HAVE_BLIT_0 */
 
 /* vi: set ts=4 sw=4 expandtab: */

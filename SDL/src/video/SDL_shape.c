@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2022 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -18,10 +18,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
-#include "SDL_config.h"
+#include "../SDL_internal.h"
 
 #include "SDL.h"
-#include "SDL_assert.h"
 #include "SDL_video.h"
 #include "SDL_sysvideo.h"
 #include "SDL_pixels.h"
@@ -30,10 +29,15 @@
 #include "SDL_shape_internals.h"
 
 SDL_Window*
-SDL_CreateShapedWindow(const char *title,unsigned int x,unsigned int y,unsigned int w,unsigned int h,Uint32 flags) {
+SDL_CreateShapedWindow(const char *title,unsigned int x,unsigned int y,unsigned int w,unsigned int h,Uint32 flags)
+{
     SDL_Window *result = NULL;
-    result = SDL_CreateWindow(title,-1000,-1000,w,h,(flags | SDL_WINDOW_BORDERLESS) & (~SDL_WINDOW_FULLSCREEN) & (~SDL_WINDOW_RESIZABLE) /*& (~SDL_WINDOW_SHOWN)*/);
+    result = SDL_CreateWindow(title,-1000,-1000,w,h,(flags | SDL_WINDOW_BORDERLESS) & (~SDL_WINDOW_FULLSCREEN) & (~SDL_WINDOW_RESIZABLE) /* & (~SDL_WINDOW_SHOWN) */);
     if(result != NULL) {
+        if (SDL_GetVideoDevice()->shape_driver.CreateShaper == NULL) {
+            SDL_DestroyWindow(result);
+            return NULL;
+        }
         result->shaper = SDL_GetVideoDevice()->shape_driver.CreateShaper(result);
         if(result->shaper != NULL) {
             result->shaper->userx = x;
@@ -53,7 +57,8 @@ SDL_CreateShapedWindow(const char *title,unsigned int x,unsigned int y,unsigned 
 }
 
 SDL_bool
-SDL_IsShapedWindow(const SDL_Window *window) {
+SDL_IsShapedWindow(const SDL_Window *window)
+{
     if(window == NULL)
         return SDL_FALSE;
     else
@@ -62,24 +67,27 @@ SDL_IsShapedWindow(const SDL_Window *window) {
 
 /* REQUIRES that bitmap point to a w-by-h bitmap with ppb pixels-per-byte. */
 void
-SDL_CalculateShapeBitmap(SDL_WindowShapeMode mode,SDL_Surface *shape,Uint8* bitmap,Uint8 ppb) {
+SDL_CalculateShapeBitmap(SDL_WindowShapeMode mode,SDL_Surface *shape,Uint8* bitmap,Uint8 ppb)
+{
     int x = 0;
     int y = 0;
     Uint8 r = 0,g = 0,b = 0,alpha = 0;
     Uint8* pixel = NULL;
-    Uint32 bitmap_pixel,pixel_value = 0,mask_value = 0;
+    Uint32 pixel_value = 0,mask_value = 0;
+    int bytes_per_scanline = (shape->w + (ppb - 1)) / ppb;
+    Uint8 *bitmap_scanline;
     SDL_Color key;
     if(SDL_MUSTLOCK(shape))
         SDL_LockSurface(shape);
-    pixel = (Uint8*)shape->pixels;
     for(y = 0;y<shape->h;y++) {
+        bitmap_scanline = bitmap + y * bytes_per_scanline;
         for(x=0;x<shape->w;x++) {
             alpha = 0;
             pixel_value = 0;
             pixel = (Uint8 *)(shape->pixels) + (y*shape->pitch) + (x*shape->format->BytesPerPixel);
             switch(shape->format->BytesPerPixel) {
                 case(1):
-                    pixel_value = *(Uint8*)pixel;
+                    pixel_value = *pixel;
                     break;
                 case(2):
                     pixel_value = *(Uint16*)pixel;
@@ -92,7 +100,6 @@ SDL_CalculateShapeBitmap(SDL_WindowShapeMode mode,SDL_Surface *shape,Uint8* bitm
                     break;
             }
             SDL_GetRGBA(pixel_value,shape->format,&r,&g,&b,&alpha);
-            bitmap_pixel = y*shape->w + x;
             switch(mode.mode) {
                 case(ShapeModeDefault):
                     mask_value = (alpha >= 1 ? 1 : 0);
@@ -108,7 +115,7 @@ SDL_CalculateShapeBitmap(SDL_WindowShapeMode mode,SDL_Surface *shape,Uint8* bitm
                     mask_value = ((key.r != r || key.g != g || key.b != b) ? 1 : 0);
                     break;
             }
-            bitmap[bitmap_pixel / ppb] |= mask_value << (7 - ((ppb - 1) - (bitmap_pixel % ppb)));
+            bitmap_scanline[x / ppb] |= mask_value << (x % ppb);
         }
     }
     if(SDL_MUSTLOCK(shape))
@@ -126,13 +133,14 @@ RecursivelyCalculateShapeTree(SDL_WindowShapeMode mode,SDL_Surface* mask,SDL_Rec
     SDL_Color key;
     SDL_ShapeTree* result = (SDL_ShapeTree*)SDL_malloc(sizeof(SDL_ShapeTree));
     SDL_Rect next = {0,0,0,0};
+
     for(y=dimensions.y;y<dimensions.y + dimensions.h;y++) {
         for(x=dimensions.x;x<dimensions.x + dimensions.w;x++) {
             pixel_value = 0;
             pixel = (Uint8 *)(mask->pixels) + (y*mask->pitch) + (x*mask->format->BytesPerPixel);
             switch(mask->format->BytesPerPixel) {
                 case(1):
-                    pixel_value = *(Uint8*)pixel;
+                    pixel_value = *pixel;
                     break;
                 case(2):
                     pixel_value = *(Uint16*)pixel;
@@ -163,37 +171,54 @@ RecursivelyCalculateShapeTree(SDL_WindowShapeMode mode,SDL_Surface* mask,SDL_Rec
             if(last_opaque == -1)
                 last_opaque = pixel_opaque;
             if(last_opaque != pixel_opaque) {
+                const int halfwidth = dimensions.w / 2;
+                const int halfheight = dimensions.h / 2;
+
                 result->kind = QuadShape;
-                //These will stay the same.
-                next.w = dimensions.w / 2;
-                next.h = dimensions.h / 2;
-                //These will change from recursion to recursion.
+
                 next.x = dimensions.x;
                 next.y = dimensions.y;
+                next.w = halfwidth;
+                next.h = halfheight;
                 result->data.children.upleft = (struct SDL_ShapeTree *)RecursivelyCalculateShapeTree(mode,mask,next);
-                next.x += next.w;
-                //Unneeded: next.y = dimensions.y;
+
+                next.x = dimensions.x + halfwidth;
+                next.w = dimensions.w - halfwidth;
                 result->data.children.upright = (struct SDL_ShapeTree *)RecursivelyCalculateShapeTree(mode,mask,next);
+
                 next.x = dimensions.x;
-                next.y += next.h;
+                next.w = halfwidth;
+                next.y = dimensions.y + halfheight;
+                next.h = dimensions.h - halfheight;
                 result->data.children.downleft = (struct SDL_ShapeTree *)RecursivelyCalculateShapeTree(mode,mask,next);
-                next.x += next.w;
-                //Unneeded: next.y = dimensions.y + dimensions.h /2;
+
+                next.x = dimensions.x + halfwidth;
+                next.w = dimensions.w - halfwidth;
                 result->data.children.downright = (struct SDL_ShapeTree *)RecursivelyCalculateShapeTree(mode,mask,next);
+
                 return result;
             }
         }
     }
-    //If we never recursed, all the pixels in this quadrant have the same "value".
+
+
+    /* If we never recursed, all the pixels in this quadrant have the same "value". */
     result->kind = (last_opaque == SDL_TRUE ? OpaqueShape : TransparentShape);
     result->data.shape = dimensions;
     return result;
 }
 
 SDL_ShapeTree*
-SDL_CalculateShapeTree(SDL_WindowShapeMode mode,SDL_Surface* shape) {
-    SDL_Rect dimensions = {0,0,shape->w,shape->h};
+SDL_CalculateShapeTree(SDL_WindowShapeMode mode,SDL_Surface* shape)
+{
+    SDL_Rect dimensions;
     SDL_ShapeTree* result = NULL;
+
+    dimensions.x = 0;
+    dimensions.y = 0;
+    dimensions.w = shape->w;
+    dimensions.h = shape->h;
+
     if(SDL_MUSTLOCK(shape))
         SDL_LockSurface(shape);
     result = RecursivelyCalculateShapeTree(mode,shape,dimensions);
@@ -203,7 +228,8 @@ SDL_CalculateShapeTree(SDL_WindowShapeMode mode,SDL_Surface* shape) {
 }
 
 void
-SDL_TraverseShapeTree(SDL_ShapeTree *tree,SDL_TraversalFunction function,void* closure) {
+SDL_TraverseShapeTree(SDL_ShapeTree *tree,SDL_TraversalFunction function,void* closure)
+{
     SDL_assert(tree != NULL);
     if(tree->kind == QuadShape) {
         SDL_TraverseShapeTree((SDL_ShapeTree *)tree->data.children.upleft,function,closure);
@@ -216,27 +242,29 @@ SDL_TraverseShapeTree(SDL_ShapeTree *tree,SDL_TraversalFunction function,void* c
 }
 
 void
-SDL_FreeShapeTree(SDL_ShapeTree** shape_tree) {
+SDL_FreeShapeTree(SDL_ShapeTree** shape_tree)
+{
     if((*shape_tree)->kind == QuadShape) {
-        SDL_FreeShapeTree((SDL_ShapeTree **)&(*shape_tree)->data.children.upleft);
-        SDL_FreeShapeTree((SDL_ShapeTree **)&(*shape_tree)->data.children.upright);
-        SDL_FreeShapeTree((SDL_ShapeTree **)&(*shape_tree)->data.children.downleft);
-        SDL_FreeShapeTree((SDL_ShapeTree **)&(*shape_tree)->data.children.downright);
+        SDL_FreeShapeTree((SDL_ShapeTree **)(char*)&(*shape_tree)->data.children.upleft);
+        SDL_FreeShapeTree((SDL_ShapeTree **)(char*)&(*shape_tree)->data.children.upright);
+        SDL_FreeShapeTree((SDL_ShapeTree **)(char*)&(*shape_tree)->data.children.downleft);
+        SDL_FreeShapeTree((SDL_ShapeTree **)(char*)&(*shape_tree)->data.children.downright);
     }
     SDL_free(*shape_tree);
     *shape_tree = NULL;
 }
 
 int
-SDL_SetWindowShape(SDL_Window *window,SDL_Surface *shape,SDL_WindowShapeMode *shape_mode) {
+SDL_SetWindowShape(SDL_Window *window,SDL_Surface *shape,SDL_WindowShapeMode *shape_mode)
+{
     int result;
     if(window == NULL || !SDL_IsShapedWindow(window))
-        //The window given was not a shapeable window.
+        /* The window given was not a shapeable window. */
         return SDL_NONSHAPEABLE_WINDOW;
     if(shape == NULL)
-        //Invalid shape argument.
+        /* Invalid shape argument. */
         return SDL_INVALID_SHAPE_ARGUMENT;
-    
+
     if(shape_mode != NULL)
         window->shaper->mode = *shape_mode;
     result = SDL_GetVideoDevice()->shape_driver.SetWindowShape(window->shaper,shape,shape_mode);
@@ -250,21 +278,23 @@ SDL_SetWindowShape(SDL_Window *window,SDL_Surface *shape,SDL_WindowShapeMode *sh
 }
 
 static SDL_bool
-SDL_WindowHasAShape(SDL_Window *window) {
+SDL_WindowHasAShape(SDL_Window *window)
+{
     if (window == NULL || !SDL_IsShapedWindow(window))
         return SDL_FALSE;
     return window->shaper->hasshape;
 }
 
 int
-SDL_GetShapedWindowMode(SDL_Window *window,SDL_WindowShapeMode *shape_mode) {
+SDL_GetShapedWindowMode(SDL_Window *window,SDL_WindowShapeMode *shape_mode)
+{
     if(window != NULL && SDL_IsShapedWindow(window)) {
         if(shape_mode == NULL) {
             if(SDL_WindowHasAShape(window))
-                //The window given has a shape.
+                /* The window given has a shape. */
                 return 0;
             else
-                //The window given is shapeable but lacks a shape.
+                /* The window given is shapeable but lacks a shape. */
                 return SDL_WINDOW_LACKS_SHAPE;
         }
         else {
@@ -273,6 +303,6 @@ SDL_GetShapedWindowMode(SDL_Window *window,SDL_WindowShapeMode *shape_mode) {
         }
     }
     else
-        //The window given is not a valid shapeable window.
+        /* The window given is not a valid shapeable window. */
         return SDL_NONSHAPEABLE_WINDOW;
 }

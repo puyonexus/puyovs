@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2022 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -18,15 +18,15 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
-#include "SDL_config.h"
+#include "../../SDL_internal.h"
 
-#ifndef _SDL_winmm_h
-#define _SDL_winmm_h
+#ifndef SDL_winmm_h_
+#define SDL_winmm_h_
 
 #include "../SDL_sysaudio.h"
 
 /* Hidden "this" pointer for the audio functions */
-#define _THIS	SDL_AudioDevice *this
+#define _THIS   SDL_AudioDevice *this
 
 #define NUM_BUFFERS 2           /* -- Don't lower this! */
 
@@ -40,6 +40,6 @@ struct SDL_PrivateAudioData
     int next_buffer;
 };
 
-#endif /* _SDL_winmm_h */
+#endif /* SDL_winmm_h_ */
 
 /* vi: set ts=4 sw=4 expandtab: */

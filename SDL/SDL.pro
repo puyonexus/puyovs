@@ -16,6 +16,8 @@ SOURCES += \
     $$files(src/file/*.c) \
     $$files(src/haptic/*.c) \
     $$files(src/joystick/*.c) \
+    $$files(src/joystick/steam/*.c) \
+    $$files(src/joystick/hidapi/*.c) \
     $$files(src/libm/*.c) \
     $$files(src/loadso/*.c) \
     $$files(src/main/*.c) \
@@ -25,10 +27,23 @@ SOURCES += \
     $$files(src/test/*.c) \
     $$files(src/thread/*.c) \
     $$files(src/timer/*.c) \
-    $$files(src/video/*.c)
+    $$files(src/video/*.c) \
+    $$files(src/video/yuv2rgb/*.c) \
+    $$files(src/dynapi/*.c) \
+    $$files(src/sensor/*.c) \
+    $$files(src/hidapi/*.c) \
+    $$files(src/misc/*.c) \
+    $$files(src/locale/*.c)
 
 # core
 win32:SOURCES += $$files(src/core/windows/*.c)
+linux:SOURCES += \
+    src/core/linux/SDL_evdev_capabilities.c \
+    src/core/linux/SDL_evdev_kbd.c \
+    src/core/linux/SDL_evdev.c \
+    src/core/linux/SDL_ime.c \
+    src/core/linux/SDL_threadprio.c \
+    src/core/linux/SDL_udev.c
 
 # audio
 SOURCES += $$files(src/audio/dummy/*.c)
@@ -44,6 +59,11 @@ win32:SOURCES += $$files(src/audio/directsound/*.c) \
 # file
 macx:OBJECTIVE_SOURCES += $$files(src/file/cocoa/*.m)
 
+# filesystem
+unix:!macx:SOURCES += $$files(src/filesystem/unix/*.c)
+macx:OBJECTIVE_SOURCES += $$files(src/filesystem/cocoa/*.m)
+win32:SOURCES += $$files(src/filesystem/windows/*.c)
+
 # haptic
 SOURCES += $$files(src/haptic/dummy/*.c)
 
@@ -52,7 +72,7 @@ macx:SOURCES  += $$files(src/haptic/darwin/*.c)
 win32:SOURCES += $$files(src/haptic/windows/*.c)
 
 # joystick
-unix:SOURCES += $$files(src/joystick/linux/*.c)
+linux:SOURCES += $$files(src/joystick/linux/*.c)
 macx:SOURCES  += $$files(src/joystick/darwin/*.c)
 win32:SOURCES += $$files(src/joystick/dummy/*.c)
 
@@ -87,5 +107,23 @@ SOURCES += $$files(src/video/dummy/*.c)
 win32:SOURCES += $$files(src/video/windows/*.c)
 unix:!macx:SOURCES += $$files(src/video/x11/*.c)
 macx:OBJECTIVE_SOURCES += $$files(src/video/cocoa/*.m)
+
+# sensor
+SOURCES += $$files(src/sensor/dummy/*.c)
+
+# hidapi
+win32:SOURCES += $$files(src/hidapi/windows/*.c)
+linux:SOURCES += $$files(src/hidapi/linux/*.c)
+macx:SOURCES += $$files(src/hidapi/mac/*.c)
+
+# misc
+win32:SOURCES += $$files(src/misc/windows/*.c)
+unix:!macx:SOURCES += $$files(src/misc/unix/*.c)
+macx:OBJECTIVE_SOURCES += $$files(src/misc/macosx/*.m)
+
+# locale
+win32:SOURCES += $$files(src/locale/windows/*.c)
+unix:!macx:SOURCES += $$files(src/locale/unix/*.c)
+macx:OBJECTIVE_SOURCES += $$files(src/locale/macosx/*.m)
 
 HEADERS += $$files(include/*.h)

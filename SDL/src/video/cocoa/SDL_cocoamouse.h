@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2022 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -18,16 +18,34 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
-#include "SDL_config.h"
+#include "../../SDL_internal.h"
 
-#ifndef _SDL_cocoamouse_h
-#define _SDL_cocoamouse_h
+#ifndef SDL_cocoamouse_h_
+#define SDL_cocoamouse_h_
 
-extern void Cocoa_InitMouse(_THIS);
+#include "SDL_cocoavideo.h"
+
+extern int Cocoa_InitMouse(_THIS);
 extern void Cocoa_HandleMouseEvent(_THIS, NSEvent * event);
 extern void Cocoa_HandleMouseWheel(SDL_Window *window, NSEvent * event);
+extern void Cocoa_HandleMouseWarp(CGFloat x, CGFloat y);
 extern void Cocoa_QuitMouse(_THIS);
 
-#endif /* _SDL_cocoamouse_h */
+typedef struct {
+    /* Wether we've seen a cursor warp since the last move event. */
+    SDL_bool seenWarp;
+    /* What location our last cursor warp was to. */
+    CGFloat lastWarpX;
+    CGFloat lastWarpY;
+    /* What location we last saw the cursor move to. */
+    CGFloat lastMoveX;
+    CGFloat lastMoveY;
+} SDL_MouseData;
+
+@interface NSCursor (InvisibleCursor)
++ (NSCursor *)invisibleCursor;
+@end
+
+#endif /* SDL_cocoamouse_h_ */
 
 /* vi: set ts=4 sw=4 expandtab: */

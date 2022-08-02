@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2022 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -18,20 +18,41 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
-#include "SDL_config.h"
+#include "../../SDL_internal.h"
 
-#ifndef _SDL_cocoaopengl_h
-#define _SDL_cocoaopengl_h
+#ifndef SDL_cocoaopengl_h_
+#define SDL_cocoaopengl_h_
 
 #if SDL_VIDEO_OPENGL_CGL
 
-/* Define this if you want to be able to toggle fullscreen mode seamlessly */
-#define FULLSCREEN_TOGGLEABLE
+#include "SDL_atomic.h"
+#import <Cocoa/Cocoa.h>
+
+/* We still support OpenGL as long as Apple offers it, deprecated or not, so disable deprecation warnings about it. */
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
 
 struct SDL_GLDriverData
 {
     int initialized;
 };
+
+@interface SDLOpenGLContext : NSOpenGLContext {
+    SDL_atomic_t dirty;
+    SDL_Window *window;
+}
+
+- (id)initWithFormat:(NSOpenGLPixelFormat *)format
+        shareContext:(NSOpenGLContext *)share;
+- (void)scheduleUpdate;
+- (void)updateIfNeeded;
+- (void)setWindow:(SDL_Window *)window;
+- (SDL_Window*)window;
+- (void)explicitUpdate;
+
+@end
 
 /* OpenGL functions */
 extern int Cocoa_GL_LoadLibrary(_THIS, const char *path);
@@ -40,13 +61,19 @@ extern void Cocoa_GL_UnloadLibrary(_THIS);
 extern SDL_GLContext Cocoa_GL_CreateContext(_THIS, SDL_Window * window);
 extern int Cocoa_GL_MakeCurrent(_THIS, SDL_Window * window,
                                 SDL_GLContext context);
+extern void Cocoa_GL_GetDrawableSize(_THIS, SDL_Window * window,
+                                     int * w, int * h);
 extern int Cocoa_GL_SetSwapInterval(_THIS, int interval);
 extern int Cocoa_GL_GetSwapInterval(_THIS);
-extern void Cocoa_GL_SwapWindow(_THIS, SDL_Window * window);
+extern int Cocoa_GL_SwapWindow(_THIS, SDL_Window * window);
 extern void Cocoa_GL_DeleteContext(_THIS, SDL_GLContext context);
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 #endif /* SDL_VIDEO_OPENGL_CGL */
 
-#endif /* _SDL_cocoaopengl_h */
+#endif /* SDL_cocoaopengl_h_ */
 
 /* vi: set ts=4 sw=4 expandtab: */

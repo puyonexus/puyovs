@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2022 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -18,7 +18,7 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
-#include "SDL_config.h"
+#include "../../SDL_internal.h"
 
 #ifdef SDL_TIMER_UNIX
 
@@ -28,91 +28,160 @@
 #include <errno.h>
 
 #include "SDL_timer.h"
+#include "SDL_hints.h"
+#include "../SDL_timer_c.h"
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 
 /* The clock_gettime provides monotonous time, so we should use it if
    it's available. The clock_gettime function is behind ifdef
    for __USE_POSIX199309
    Tommi Kyntola (tommi.kyntola@ray.fi) 27/09/2005
 */
+/* Reworked monotonic clock to not assume the current system has one
+   as not all linux kernels provide a monotonic clock (yeah recent ones
+   probably do)
+   Also added OS X Monotonic clock support
+   Based on work in https://github.com/ThomasHabets/monotonic_clock
+ */
 #if HAVE_NANOSLEEP || HAVE_CLOCK_GETTIME
 #include <time.h>
 #endif
+#ifdef __APPLE__
+#include <mach/mach_time.h>
+#endif
+
+/* Use CLOCK_MONOTONIC_RAW, if available, which is not subject to adjustment by NTP */
+#if HAVE_CLOCK_GETTIME
+#ifdef CLOCK_MONOTONIC_RAW
+#define SDL_MONOTONIC_CLOCK CLOCK_MONOTONIC_RAW
+#else
+#define SDL_MONOTONIC_CLOCK CLOCK_MONOTONIC
+#endif
+#endif
 
 /* The first ticks value of the application */
-#ifdef HAVE_CLOCK_GETTIME
-static struct timespec start;
-#else
-static struct timeval start;
-#endif /* HAVE_CLOCK_GETTIME */
-
+#if HAVE_CLOCK_GETTIME
+static struct timespec start_ts;
+#elif defined(__APPLE__)
+static uint64_t start_mach;
+mach_timebase_info_data_t mach_base_info;
+#endif
+static SDL_bool has_monotonic_time = SDL_FALSE;
+static struct timeval start_tv;
+static SDL_bool ticks_started = SDL_FALSE;
 
 void
-SDL_StartTicks(void)
+SDL_TicksInit(void)
 {
+    if (ticks_started) {
+        return;
+    }
+    ticks_started = SDL_TRUE;
+
     /* Set first ticks value */
 #if HAVE_CLOCK_GETTIME
-    clock_gettime(CLOCK_MONOTONIC, &start);
-#else
-    gettimeofday(&start, NULL);
+    if (clock_gettime(SDL_MONOTONIC_CLOCK, &start_ts) == 0) {
+        has_monotonic_time = SDL_TRUE;
+    } else
+#elif defined(__APPLE__)
+    kern_return_t ret = mach_timebase_info(&mach_base_info);
+    if (ret == 0) {
+        has_monotonic_time = SDL_TRUE;
+        start_mach = mach_absolute_time();
+    } else
 #endif
+    {
+        gettimeofday(&start_tv, NULL);
+    }
 }
 
-Uint32
-SDL_GetTicks(void)
+void
+SDL_TicksQuit(void)
 {
+    ticks_started = SDL_FALSE;
+}
+
+Uint64
+SDL_GetTicks64(void)
+{
+    if (!ticks_started) {
+        SDL_TicksInit();
+    }
+
+    if (has_monotonic_time) {
 #if HAVE_CLOCK_GETTIME
-    Uint32 ticks;
-    struct timespec now;
-
-    clock_gettime(CLOCK_MONOTONIC, &now);
-    ticks =
-        (now.tv_sec - start.tv_sec) * 1000 + (now.tv_nsec -
-                                              start.tv_nsec) / 1000000;
-    return (ticks);
+        struct timespec now;
+        clock_gettime(SDL_MONOTONIC_CLOCK, &now);
+        return (Uint64)(((Sint64)(now.tv_sec - start_ts.tv_sec) * 1000) + ((now.tv_nsec - start_ts.tv_nsec) / 1000000));
+#elif defined(__APPLE__)
+        const uint64_t now = mach_absolute_time();
+        return ((((now - start_mach) * mach_base_info.numer) / mach_base_info.denom) / 1000000);
 #else
-    Uint32 ticks;
-    struct timeval now;
-
-    gettimeofday(&now, NULL);
-    ticks =
-        (now.tv_sec - start.tv_sec) * 1000 + (now.tv_usec -
-                                              start.tv_usec) / 1000;
-    return (ticks);
+        SDL_assert(SDL_FALSE);
+        return 0;
 #endif
+    } else {
+        struct timeval now;
+        gettimeofday(&now, NULL);
+        return (Uint64)(((Sint64)(now.tv_sec - start_tv.tv_sec) * 1000) + ((now.tv_usec - start_tv.tv_usec) / 1000));
+    }
 }
 
 Uint64
 SDL_GetPerformanceCounter(void)
 {
+    Uint64 ticks;
+    if (!ticks_started) {
+        SDL_TicksInit();
+    }
+
+    if (has_monotonic_time) {
 #if HAVE_CLOCK_GETTIME
-    Uint64 ticks;
-    struct timespec now;
+        struct timespec now;
 
-    clock_gettime(CLOCK_MONOTONIC, &now);
-    ticks = now.tv_sec;
-    ticks *= 1000000000;
-    ticks += now.tv_nsec;
-    return (ticks);
+        clock_gettime(SDL_MONOTONIC_CLOCK, &now);
+        ticks = now.tv_sec;
+        ticks *= 1000000000;
+        ticks += now.tv_nsec;
+#elif defined(__APPLE__)
+        ticks = mach_absolute_time();
 #else
-    Uint64 ticks;
-    struct timeval now;
-
-    gettimeofday(&now, NULL);
-    ticks = now.tv_sec;
-    ticks *= 1000000;
-    ticks += now.tv_usec;
-    return (ticks);
+        SDL_assert(SDL_FALSE);
+        ticks = 0;
 #endif
+    } else {
+        struct timeval now;
+
+        gettimeofday(&now, NULL);
+        ticks = now.tv_sec;
+        ticks *= 1000000;
+        ticks += now.tv_usec;
+    }
+    return (ticks);
 }
 
 Uint64
 SDL_GetPerformanceFrequency(void)
 {
+    if (!ticks_started) {
+        SDL_TicksInit();
+    }
+
+    if (has_monotonic_time) {
 #if HAVE_CLOCK_GETTIME
-    return 1000000000;
-#else
-    return 1000000;
+        return 1000000000;
+#elif defined(__APPLE__)
+        Uint64 freq = mach_base_info.denom;
+        freq *= 1000000000;
+        freq /= mach_base_info.numer;
+        return freq;
 #endif
+    } 
+        
+    return 1000000;
 }
 
 void
@@ -124,7 +193,15 @@ SDL_Delay(Uint32 ms)
     struct timespec elapsed, tv;
 #else
     struct timeval tv;
-    Uint32 then, now, elapsed;
+    Uint64 then, now, elapsed;
+#endif
+
+#ifdef __EMSCRIPTEN__
+    if (emscripten_has_asyncify() && SDL_GetHintBoolean(SDL_HINT_EMSCRIPTEN_ASYNCIFY, SDL_TRUE)) {
+        /* pseudo-synchronous pause, used directly or through e.g. SDL_WaitEvent */
+        emscripten_sleep(ms);
+        return;
+    }
 #endif
 
     /* Set the timeout interval */
@@ -132,7 +209,7 @@ SDL_Delay(Uint32 ms)
     elapsed.tv_sec = ms / 1000;
     elapsed.tv_nsec = (ms % 1000) * 1000000;
 #else
-    then = SDL_GetTicks();
+    then = SDL_GetTicks64();
 #endif
     do {
         errno = 0;
@@ -143,13 +220,13 @@ SDL_Delay(Uint32 ms)
         was_error = nanosleep(&tv, &elapsed);
 #else
         /* Calculate the time interval left (in case of interrupt) */
-        now = SDL_GetTicks();
+        now = SDL_GetTicks64();
         elapsed = (now - then);
         then = now;
-        if (elapsed >= ms) {
+        if (elapsed >= ((Uint64)ms)) {
             break;
         }
-        ms -= elapsed;
+        ms -= (Uint32)elapsed;
         tv.tv_sec = ms / 1000;
         tv.tv_usec = (ms % 1000) * 1000;
 

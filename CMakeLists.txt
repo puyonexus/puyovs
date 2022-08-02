@@ -56,6 +56,9 @@ if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
+set(SDL_TEST off)
+set(SDL_SHARED off)
+
 # Add sub-projects.
 add_subdirectory(Audiolib)
 add_subdirectory(Audiotest)

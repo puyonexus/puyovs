@@ -104,6 +104,7 @@
 #define HAVE_SYSCONF     1
 #define HAVE_ATAN        1
 #define HAVE_ATAN2       1
+#define HAVE_INOTIFY     1
 
 // Audio drivers
 #define SDL_AUDIO_DRIVER_ALSA	        1
@@ -112,8 +113,12 @@
 #define SDL_AUDIO_DRIVER_PULSEAUDIO_DYNAMIC "libpulse-simple.so.0"
 #define SDL_AUDIO_DRIVER_OSS            1
 
+// Input
+#define SDL_INPUT_LINUXEV               1
+
 // Joystick drivers
 #define SDL_JOYSTICK_LINUX              1
+#define SDL_JOYSTICK_HIDAPI             1
 
 // Haptic drivers (or not)
 #define SDL_HAPTIC_DISABLED             1
@@ -133,5 +138,11 @@
 #define SDL_VIDEO_OPENGL_GLX            0
 #define SDL_VIDEO_DRIVER_DUMMY          1
 #define SDL_VIDEO_RENDER_SOFTWARE       1
+
+// Sensor
+#define SDL_SENSOR_DUMMY                1
+
+// Filesystem
+#define SDL_FILESYSTEM_UNIX             1
 
 #endif /* _SDL_config_minimal_h */

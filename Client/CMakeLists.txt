@@ -131,7 +131,7 @@ target_link_libraries(PuyoVS
     Puyolib
     Audiolib
     Inputlib
-    SDL
+    SDL2-static
     Zlib
     Qt5::Widgets
     Qt5::OpenGL

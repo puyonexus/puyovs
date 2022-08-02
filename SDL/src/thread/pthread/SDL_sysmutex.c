@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2022 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -18,9 +18,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
-#include "SDL_config.h"
+#include "../../SDL_internal.h"
 
-#define _GNU_SOURCE
+#include <errno.h>
 #include <pthread.h>
 
 #include "SDL_thread.h"
@@ -78,19 +78,16 @@ SDL_DestroyMutex(SDL_mutex * mutex)
 
 /* Lock the mutex */
 int
-SDL_mutexP(SDL_mutex * mutex)
+SDL_LockMutex(SDL_mutex * mutex)
 {
-    int retval;
 #if FAKE_RECURSIVE_MUTEX
     pthread_t this_thread;
 #endif
 
     if (mutex == NULL) {
-        SDL_SetError("Passed a NULL mutex");
-        return -1;
+        return SDL_InvalidParamError("mutex");
     }
 
-    retval = 0;
 #if FAKE_RECURSIVE_MUTEX
     this_thread = pthread_self();
     if (mutex->owner == this_thread) {
@@ -104,30 +101,70 @@ SDL_mutexP(SDL_mutex * mutex)
             mutex->owner = this_thread;
             mutex->recursive = 0;
         } else {
-            SDL_SetError("pthread_mutex_lock() failed");
-            retval = -1;
+            return SDL_SetError("pthread_mutex_lock() failed");
         }
     }
 #else
-    if (pthread_mutex_lock(&mutex->id) < 0) {
-        SDL_SetError("pthread_mutex_lock() failed");
-        retval = -1;
+    if (pthread_mutex_lock(&mutex->id) != 0) {
+        return SDL_SetError("pthread_mutex_lock() failed");
+    }
+#endif
+    return 0;
+}
+
+int
+SDL_TryLockMutex(SDL_mutex * mutex)
+{
+    int retval;
+    int result;
+#if FAKE_RECURSIVE_MUTEX
+    pthread_t this_thread;
+#endif
+
+    if (mutex == NULL) {
+        return SDL_InvalidParamError("mutex");
+    }
+
+    retval = 0;
+#if FAKE_RECURSIVE_MUTEX
+    this_thread = pthread_self();
+    if (mutex->owner == this_thread) {
+        ++mutex->recursive;
+    } else {
+        /* The order of operations is important.
+         We set the locking thread id after we obtain the lock
+         so unlocks from other threads will fail.
+         */
+        result = pthread_mutex_trylock(&mutex->id);
+        if (result == 0) {
+            mutex->owner = this_thread;
+            mutex->recursive = 0;
+        } else if (result == EBUSY) {
+            retval = SDL_MUTEX_TIMEDOUT;
+        } else {
+            retval = SDL_SetError("pthread_mutex_trylock() failed");
+        }
+    }
+#else
+    result = pthread_mutex_trylock(&mutex->id);
+    if (result != 0) {
+        if (result == EBUSY) {
+            retval = SDL_MUTEX_TIMEDOUT;
+        } else {
+            retval = SDL_SetError("pthread_mutex_trylock() failed");
+        }
     }
 #endif
     return retval;
 }
 
 int
-SDL_mutexV(SDL_mutex * mutex)
+SDL_UnlockMutex(SDL_mutex * mutex)
 {
-    int retval;
-
     if (mutex == NULL) {
-        SDL_SetError("Passed a NULL mutex");
-        return -1;
+        return SDL_InvalidParamError("mutex");
     }
 
-    retval = 0;
 #if FAKE_RECURSIVE_MUTEX
     /* We can only unlock the mutex if we own it */
     if (pthread_self() == mutex->owner) {
@@ -143,18 +180,16 @@ SDL_mutexV(SDL_mutex * mutex)
             pthread_mutex_unlock(&mutex->id);
         }
     } else {
-        SDL_SetError("mutex not owned by this thread");
-        retval = -1;
+        return SDL_SetError("mutex not owned by this thread");
     }
 
 #else
-    if (pthread_mutex_unlock(&mutex->id) < 0) {
-        SDL_SetError("pthread_mutex_unlock() failed");
-        retval = -1;
+    if (pthread_mutex_unlock(&mutex->id) != 0) {
+        return SDL_SetError("pthread_mutex_unlock() failed");
     }
 #endif /* FAKE_RECURSIVE_MUTEX */
 
-    return retval;
+    return 0;
 }
 
 /* vi: set ts=4 sw=4 expandtab: */

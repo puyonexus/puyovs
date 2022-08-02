@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2022 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -18,18 +18,24 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
-#include "SDL_config.h"
+#include "../../SDL_internal.h"
 
 /* Thread management routines for SDL */
 
 #include "SDL_thread.h"
 #include "../SDL_systhread.h"
 
+#ifdef SDL_PASSED_BEGINTHREAD_ENDTHREAD
 int
-SDL_SYS_CreateThread(SDL_Thread * thread, void *args)
+SDL_SYS_CreateThread(SDL_Thread * thread,
+                     pfnSDL_CurrentBeginThread pfnBeginThread,
+                     pfnSDL_CurrentEndThread pfnEndThread)
+#else
+int
+SDL_SYS_CreateThread(SDL_Thread * thread)
+#endif /* SDL_PASSED_BEGINTHREAD_ENDTHREAD */
 {
-    SDL_SetError("Threads are not supported on this platform");
-    return (-1);
+    return SDL_SetError("Threads are not supported on this platform");
 }
 
 void
@@ -52,6 +58,12 @@ SDL_SYS_SetThreadPriority(SDL_ThreadPriority priority)
 
 void
 SDL_SYS_WaitThread(SDL_Thread * thread)
+{
+    return;
+}
+
+void
+SDL_SYS_DetachThread(SDL_Thread * thread)
 {
     return;
 }
