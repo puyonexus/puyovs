@@ -33,3 +33,5 @@ add_library(Puyolib
 )
 
 target_compile_features(Puyolib PUBLIC cxx_std_17)
+
+target_link_libraries(Puyolib ZLIB::ZLIB)

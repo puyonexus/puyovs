@@ -79,7 +79,11 @@ add_subdirectory(Puyolib)
 add_subdirectory(PVS_ENet)
 add_subdirectory(SDL)
 add_subdirectory(VgmStream)
-add_subdirectory(Zlib)
+
+add_subdirectory(ThirdParty/glm)
+add_subdirectory(ThirdParty/zlib-ng)
+add_subdirectory(ThirdParty/libspng)
+add_subdirectory(ThirdParty/sdl-ttf)
 
 # CPack support.
 set(CPACK_SET_DESTDIR                 ON)

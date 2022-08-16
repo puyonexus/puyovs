@@ -1,0 +1,17 @@
+/glm/glm/doc
+/sdl-ttf/sdl-ttf/external/freetype/docs
+
+# CI manifests
+.travis.yml
+.appveyor.yml
+
+# Visual Studio projects
+*.dsp
+*.dsw
+*.sln
+*.vcproj
+*.vcxproj
+*.user.props
+
+# Documentation
+*.html
