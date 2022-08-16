@@ -12,6 +12,7 @@ add_library(ENet
 
 if(WIN32)
     target_sources(ENet PRIVATE win32.c)
+	target_link_libraries(ENet ws2_32.lib)
 else()
     target_sources(ENet PRIVATE unix.c)
     add_compile_definitions(HAS_SOCKLEN_T)
