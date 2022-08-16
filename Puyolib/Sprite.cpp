@@ -26,7 +26,7 @@ Sprite::Sprite()
 	, m_colorG(255)
 	, m_colorB(255)
 	, m_rotation(0)
-	, m_blendMode(AlphaBlending)
+	, m_blendMode(BlendingMode::AlphaBlending)
 	, m_image(nullptr)
 	, m_colorRInternal(255)
 	, m_colorGInternal(255)
@@ -249,7 +249,7 @@ void Sprite::draw(FeRenderTarget* target, FeShader* shader)
 
 void Sprite::redraw(FeRenderTarget* target)
 {
-	target->setBlendMode(AdditiveBlending);
+	target->setBlendMode(BlendingMode::AdditiveBlending);
 	if (m_colorRInternal > 255 || m_colorGInternal > 255 || m_colorBInternal > 255) {
 		int cR = m_colorRInternal, cG = m_colorGInternal, cB = m_colorBInternal;
 		while (cR > 255 || cG > 255 || cB > 255) {
@@ -262,7 +262,7 @@ void Sprite::redraw(FeRenderTarget* target)
 			target->drawRect(m_image, m_subRectX, m_subRectY, m_subRectW, m_subRectH);
 		}
 	}
-	target->setBlendMode(AlphaBlending);
+	target->setBlendMode(BlendingMode::AlphaBlending);
 }
 
 FeImage* Sprite::getImage() const

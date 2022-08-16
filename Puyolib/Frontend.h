@@ -4,19 +4,19 @@
 
 namespace ppvs {
 
-enum FilterType {
+enum class FilterType {
 	NearestFilter,
 	LinearFilter
 };
 
-enum BlendingMode {
+enum class BlendingMode {
 	NoBlending,
 	AlphaBlending,
 	AdditiveBlending,
 	MultiplyBlending
 };
 
-enum DepthFunction {
+enum class DepthFunction {
 	Always,
 	LessOrEqual,
 	GreaterOrEqual,

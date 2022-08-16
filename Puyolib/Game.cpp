@@ -67,6 +67,7 @@ void Game::close()
 void Game::loadGlobal()
 {
 	// Load user settings
+	m_baseAssetDir = m_settings->baseAssetDir;
 	m_data->gUserSettings.backgroundDirPath = m_settings->background;
 	m_data->gUserSettings.puyoDirPath = m_settings->puyo;
 	m_data->gUserSettings.sfxDirPath = m_settings->sfx;
@@ -169,7 +170,7 @@ void Game::loadSounds() const
 void Game::loadImages() const
 {
 	// Load puyo
-	m_data->imgPuyo = m_data->front->loadImage(kFolderUserPuyo + m_data->gUserSettings.puyoDirPath + std::string(".png"));
+	m_data->imgPuyo = m_data->front->loadImage(m_baseAssetDir + kFolderUserPuyo + m_data->gUserSettings.puyoDirPath + std::string(".png"));
 
 	// Check rotation center of quadruplet
 	if (m_data->imgPuyo && !m_data->imgPuyo->error() && m_data->imgPuyo->height() > 10) {
@@ -180,17 +181,17 @@ void Game::loadImages() const
 			}
 		}
 	}
-	m_data->imgPuyo->setFilter(LinearFilter);
+	m_data->imgPuyo->setFilter(FilterType::LinearFilter);
 
 	// Lights
-	m_data->imgLight = m_data->front->loadImage("Data/Light.png");
-	m_data->imgLightS = m_data->front->loadImage("Data/Light_s.png");
-	m_data->imgLightHit = m_data->front->loadImage("Data/Light_hit.png");
-	m_data->imgFSparkle = m_data->front->loadImage("Data/CharSelect/fsparkle.png");
-	m_data->imgFLight = m_data->front->loadImage("Data/fLight.png");
-	m_data->imgFLightHit = m_data->front->loadImage("Data/fLight_hit.png");
+	m_data->imgLight = m_data->front->loadImage(m_baseAssetDir + "Data/Light.png");
+	m_data->imgLightS = m_data->front->loadImage(m_baseAssetDir + "Data/Light_s.png");
+	m_data->imgLightHit = m_data->front->loadImage(m_baseAssetDir + "Data/Light_hit.png");
+	m_data->imgFSparkle = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/fsparkle.png");
+	m_data->imgFLight = m_data->front->loadImage(m_baseAssetDir + "Data/fLight.png");
+	m_data->imgFLightHit = m_data->front->loadImage(m_baseAssetDir + "Data/fLight_hit.png");
 
-	m_data->imgTime = m_data->front->loadImage(kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/time.png"));
+	m_data->imgTime = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/time.png"));
 
 	// Menu
 	for (int i = 0; i < 3; ++i) {
@@ -198,55 +199,55 @@ void Game::loadImages() const
 			// Safe (because i/j have defined ranges)
 			char buffer[128];
 			sprintf(buffer, "Data/Menu/menu%i%i.png", i, j);
-			m_data->imgMenu[i][j] = m_data->front->loadImage(buffer);
+			m_data->imgMenu[i][j] = m_data->front->loadImage(m_baseAssetDir + buffer);
 		}
 	}
 
 	// Backgrounds
-	m_data->imgBackground = m_data->front->loadImage(kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/back.png"));
-	m_data->imgFieldFever = m_data->front->loadImage(kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/ffield.png"));
+	m_data->imgBackground = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/back.png"));
+	m_data->imgFieldFever = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/ffield.png"));
 
 	// Background of next puyo
-	m_data->imgNextPuyoBackgroundR = m_data->front->loadImage(kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/nextR.png"));
-	m_data->imgNextPuyoBackgroundL = m_data->front->loadImage(kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/nextL.png"));
+	m_data->imgNextPuyoBackgroundR = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/nextR.png"));
+	m_data->imgNextPuyoBackgroundL = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/nextL.png"));
 
 	if (!useShaders) {
 		for (int i = 0; i < 30; ++i) {
-			m_data->imgFeverBack[i] = m_data->front->loadImage(std::string("Data/Fever/f" + toString(i) + ".png").c_str());
+			m_data->imgFeverBack[i] = m_data->front->loadImage(m_baseAssetDir + std::string("Data/Fever/f" + toString(i) + ".png").c_str());
 		}
 	}
 
 	// Load default fields. Custom fields should be loaded per character
-	m_data->imgField1 = m_data->front->loadImage(kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/field1.png"));
-	m_data->imgField2 = m_data->front->loadImage(kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/field2.png"));
-	m_data->imgBorder1 = m_data->front->loadImage(kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/border1.png"));
-	m_data->imgBorder2 = m_data->front->loadImage(kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/border2.png"));
-	m_data->imgPlayerBorder = m_data->front->loadImage("Data/border.png");
-	m_data->imgSpice = m_data->front->loadImage("Data/spice.png");
+	m_data->imgField1 = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/field1.png"));
+	m_data->imgField2 = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/field2.png"));
+	m_data->imgBorder1 = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/border1.png"));
+	m_data->imgBorder2 = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/border2.png"));
+	m_data->imgPlayerBorder = m_data->front->loadImage(m_baseAssetDir + "Data/border.png");
+	m_data->imgSpice = m_data->front->loadImage(m_baseAssetDir + "Data/spice.png");
 
 	// Other
-	m_data->imgScore = m_data->front->loadImage(kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/score.png"));
-	m_data->imgAllClear = m_data->front->loadImage(kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/allclear.png"));
-	m_data->imgLose = m_data->front->loadImage(kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/lose.png"));
-	m_data->imgWin = m_data->front->loadImage(kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/win.png"));
-	m_data->imgFeverGauge = m_data->front->loadImage(kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/fgauge.png"));
-	m_data->imgSeconds = m_data->front->loadImage(kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/fcounter.png"));
-	m_data->imgCharHolder = m_data->front->loadImage("Data/CharSelect/charHolder.png");
-	m_data->imgNameHolder = m_data->front->loadImage("Data/CharSelect/nameHolder.png");
-	m_data->imgBlack = m_data->front->loadImage("Data/CharSelect/black.png");
-	m_data->imgDropSet = m_data->front->loadImage("Data/CharSelect/dropset.png");
-	m_data->imgChain = m_data->front->loadImage(std::string("User/Backgrounds/") + m_data->gUserSettings.backgroundDirPath + std::string("/chain.png"));
-	m_data->imgCheckMark = m_data->front->loadImage("Data/checkmark.png");
-	m_data->imgPlayerCharSelect = m_data->front->loadImage("Data/CharSelect/charSelect.png");
+	m_data->imgScore = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/score.png"));
+	m_data->imgAllClear = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/allclear.png"));
+	m_data->imgLose = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/lose.png"));
+	m_data->imgWin = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/win.png"));
+	m_data->imgFeverGauge = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/fgauge.png"));
+	m_data->imgSeconds = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/fcounter.png"));
+	m_data->imgCharHolder = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/charHolder.png");
+	m_data->imgNameHolder = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/nameHolder.png");
+	m_data->imgBlack = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/black.png");
+	m_data->imgDropSet = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/dropset.png");
+	m_data->imgChain = m_data->front->loadImage(m_baseAssetDir + std::string("User/Backgrounds/") + m_data->gUserSettings.backgroundDirPath + std::string("/chain.png"));
+	m_data->imgCheckMark = m_data->front->loadImage(m_baseAssetDir + "Data/checkmark.png");
+	m_data->imgPlayerCharSelect = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/charSelect.png");
 
 	for (int i = 0; i < kNumCharacters; ++i) {
-		m_data->imgCharField[i] = m_data->front->loadImage(kFolderUserCharacter + m_settings->characterSetup[static_cast<PuyoCharacter>(i)] + "/field.png");
-		m_data->imgCharSelect[i] = m_data->front->loadImage(kFolderUserCharacter + m_settings->characterSetup[static_cast<PuyoCharacter>(i)] + "/select.png");
-		m_data->imgCharName[i] = m_data->front->loadImage(kFolderUserCharacter + m_settings->characterSetup[static_cast<PuyoCharacter>(i)] + "/name.png");
-		m_data->imgSelect[i] = m_data->front->loadImage(kFolderUserCharacter + m_settings->characterSetup[static_cast<PuyoCharacter>(i)] + "/select.png");
+		m_data->imgCharField[i] = m_data->front->loadImage(m_baseAssetDir + kFolderUserCharacter + m_settings->characterSetup[static_cast<PuyoCharacter>(i)] + "/field.png");
+		m_data->imgCharSelect[i] = m_data->front->loadImage(m_baseAssetDir + kFolderUserCharacter + m_settings->characterSetup[static_cast<PuyoCharacter>(i)] + "/select.png");
+		m_data->imgCharName[i] = m_data->front->loadImage(m_baseAssetDir + kFolderUserCharacter + m_settings->characterSetup[static_cast<PuyoCharacter>(i)] + "/name.png");
+		m_data->imgSelect[i] = m_data->front->loadImage(m_baseAssetDir + kFolderUserCharacter + m_settings->characterSetup[static_cast<PuyoCharacter>(i)] + "/select.png");
 	}
 
-	m_data->imgPlayerNumber = m_data->front->loadImage("Data/CharSelect/playernumber.png");
+	m_data->imgPlayerNumber = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/playernumber.png");
 }
 
 void Game::initPlayers()
@@ -312,8 +313,8 @@ void Game::initGame(Frontend* f)
 	m_timerEndMatch = 0;
 
 	// Initialize readygo animation
-	m_readyGoObj.init(m_data, PosVectorFloat(320, 240), 1, kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + "/Animation/", "ready.xml", 3 * 60);
-	m_backgroundAnimation.init(m_data, PosVectorFloat(320, 240), 1, kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + "/Animation/", "animation.xml", 30 * 60);
+	m_readyGoObj.init(m_data, PosVectorFloat(320, 240), 1, m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + "/Animation/", "ready.xml", 3 * 60);
+	m_backgroundAnimation.init(m_data, PosVectorFloat(320, 240), 1, m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + "/Animation/", "animation.xml", 30 * 60);
 	m_backgroundAnimation.prepareAnimation("background");
 
 	// Other stuff

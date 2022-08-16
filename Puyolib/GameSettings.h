@@ -60,6 +60,7 @@ struct GameSettings {
 	// Custom settings
 	bool playSound;
 	bool playMusic;
+	std::string baseAssetDir;
 	std::string language;
 	std::string background;
 	std::string puyo;

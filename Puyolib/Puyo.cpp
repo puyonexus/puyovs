@@ -321,13 +321,13 @@ void ColorPuyo::draw(FeRenderTarget* target)
 			m_sprite.draw(target, m_data->glowShader);
 		} else {
 			// Without shaders
-			m_sprite.setBlendMode(AlphaBlending);
+			m_sprite.setBlendMode(BlendingMode::AlphaBlending);
 			m_sprite.draw(target);
-			m_sprite.setBlendMode(AdditiveBlending);
+			m_sprite.setBlendMode(BlendingMode::AdditiveBlending);
 			m_sprite.setTransparency(0.20f + 0.20f * sin(static_cast<float>(m_data->globalTimer) / 8.f));
 			m_sprite.draw(target);
 			m_sprite.setTransparency(1);
-			m_sprite.setBlendMode(AlphaBlending);
+			m_sprite.setBlendMode(BlendingMode::AlphaBlending);
 		}
 	}
 }

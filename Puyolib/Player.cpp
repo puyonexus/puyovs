@@ -544,7 +544,7 @@ void Player::setCharacter(PuyoCharacter character, bool show)
 		m_activeField->getProperties().centerY / 2.0f * 1);
 	const std::string currentCharacter = m_currentGame->m_settings->characterSetup[character];
 	if (m_currentGame->m_players.size() <= 10)
-		m_characterAnimation.init(m_data, offset, 1, kFolderUserCharacter + currentCharacter + std::string("/Animation/"));
+		m_characterAnimation.init(m_data, offset, 1, m_currentGame->m_baseAssetDir + kFolderUserCharacter + currentCharacter + std::string("/Animation/"));
 	else
 		m_characterAnimation.init(m_data, offset, 1, "");
 	if (m_currentGame->m_settings->useCharacterField)
@@ -553,7 +553,7 @@ void Player::setCharacter(PuyoCharacter character, bool show)
 	if (!show)
 		return;
 
-	m_currentCharacterSprite.setImage(m_data->front->loadImage((kFolderUserCharacter + m_currentGame->m_settings->characterSetup[character] + "/icon.png").c_str()));
+	m_currentCharacterSprite.setImage(m_data->front->loadImage((m_currentGame->m_baseAssetDir + kFolderUserCharacter + m_currentGame->m_settings->characterSetup[character] + "/icon.png").c_str()));
 	m_currentCharacterSprite.setCenter();
 	m_currentCharacterSprite.setPosition(m_charHolderSprite.getPosition() + PosVectorFloat(1, 1) - PosVectorFloat(2, 4)); // Correct for shadow
 	m_currentCharacterSprite.setVisible(true);
@@ -2587,8 +2587,8 @@ void Player::draw()
 	m_data->front->scale(m_properties.scaleX * getGlobalScale(), m_properties.scaleY * getGlobalScale(), 1);
 
 	m_data->front->clearDepth();
-	m_data->front->setDepthFunction(LessOrEqual);
-	m_data->front->setBlendMode(AlphaBlending);
+	m_data->front->setDepthFunction(DepthFunction::LessOrEqual);
+	m_data->front->setBlendMode(BlendingMode::AlphaBlending);
 	m_data->front->setColor(0, 0, 0, 0);
 	m_data->front->drawRect(nullptr, 0, 0, 192, 336);
 
@@ -2599,9 +2599,9 @@ void Player::draw()
 	m_data->front->scale(m_transformScale, 1, 1);
 	m_data->front->translate(-192.f / 2.f, 0, 0);
 	m_activeField->draw();
-	m_data->front->setDepthFunction(Equal);
+	m_data->front->setDepthFunction(DepthFunction::Equal);
 	m_movePuyo.draw();
-	m_data->front->setDepthFunction(Always);
+	m_data->front->setDepthFunction(DepthFunction::Always);
 	m_data->front->popMatrix();
 	// ----------------------
 	m_borderSprite.draw(m_data->front);

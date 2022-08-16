@@ -105,18 +105,18 @@ bool FrontendGL::hasShaders()
 void FrontendGL::setBlendMode(ppvs::BlendingMode b)
 {
 	switch (b) {
-	case ppvs::NoBlending:
+	case ppvs::BlendingMode::NoBlending:
 		glDisable(GL_BLEND);
 		break;
-	case ppvs::AlphaBlending:
+	case ppvs::BlendingMode::AlphaBlending:
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		break;
-	case ppvs::AdditiveBlending:
+	case ppvs::BlendingMode::AdditiveBlending:
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 		break;
-	case ppvs::MultiplyBlending:
+	case ppvs::BlendingMode::MultiplyBlending:
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_DST_COLOR, GL_ZERO);
 		break;
@@ -136,19 +136,19 @@ void FrontendGL::unsetColor()
 void FrontendGL::setDepthFunction(ppvs::DepthFunction d)
 {
 	switch (d) {
-	case ppvs::Always:
+	case ppvs::DepthFunction::Always:
 		glDisable(GL_DEPTH_TEST);
 		glDepthFunc(GL_ALWAYS);
 		break;
-	case ppvs::LessOrEqual:
+	case ppvs::DepthFunction::LessOrEqual:
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		break;
-	case ppvs::GreaterOrEqual:
+	case ppvs::DepthFunction::GreaterOrEqual:
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_GEQUAL);
 		break;
-	case ppvs::Equal:
+	case ppvs::DepthFunction::Equal:
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_EQUAL);
 		break;

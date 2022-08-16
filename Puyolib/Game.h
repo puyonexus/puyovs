@@ -101,6 +101,7 @@ public:
 	Animation m_readyGoObj {};
 	Animation m_backgroundAnimation {};
 	GameData* m_data = nullptr;
+	std::string m_baseAssetDir;
 	RuleSet* m_currentRuleSet = nullptr;
 	std::vector<Player*> m_players;
 	GameSettings* m_settings = nullptr;

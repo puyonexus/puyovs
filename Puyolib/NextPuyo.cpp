@@ -76,7 +76,7 @@ void NextPuyo::initImage()
 	setSprite(m_sprite21, m_sprite22, m_eye21, m_eye22, m_color21, m_color22, mpt);
 	setSprite(m_sprite31, m_sprite32, m_eye31, m_eye32, m_color31, m_color32, mpt);
 
-	m_cutSprite.setBlendMode(MultiplyBlending);
+	m_cutSprite.setBlendMode(BlendingMode::MultiplyBlending);
 
 }
 
@@ -148,12 +148,12 @@ void NextPuyo::draw()
 	if (!m_data)
 		return;
 	m_data->front->clearDepth();
-	m_data->front->setDepthFunction(LessOrEqual);
+	m_data->front->setDepthFunction(DepthFunction::LessOrEqual);
 	m_data->front->enableAlphaTesting(0.1f);
 	m_background.draw(m_data->front);
 
 	// Draw puyos
-	m_data->front->setDepthFunction(Equal);
+	m_data->front->setDepthFunction(DepthFunction::Equal);
 	m_sprite11.draw(m_data->front);
 	m_sprite12.draw(m_data->front);
 	m_sprite21.draw(m_data->front);
@@ -173,7 +173,7 @@ void NextPuyo::draw()
 	m_eye22.draw(m_data->front);
 	m_eye31.draw(m_data->front);
 	m_eye32.draw(m_data->front);
-	m_data->front->setDepthFunction(Always);
+	m_data->front->setDepthFunction(DepthFunction::Always);
 	m_data->front->disableAlphaTesting();
 }
 

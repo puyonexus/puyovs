@@ -405,7 +405,7 @@ void Animation::newSprite(const std::string& name, const std::string& image, con
 {
 	m_sprites[name].sprite = new Sprite();
 	m_sprites[name].sprite->setImage(m_gameData->front->loadImage(m_sourceFolder + image));
-	m_gameData->front->loadImage(m_sourceFolder + image)->setFilter(LinearFilter);
+	m_gameData->front->loadImage(m_sourceFolder + image)->setFilter(FilterType::LinearFilter);
 	m_sprites[name].angle = 0;
 	m_sprites[name].transparency = 0;
 	m_sprites[name].position.x = 0;
@@ -476,13 +476,13 @@ void Animation::setBlendMode(const std::string& name, std::string blend)
 		return;
 	blend = Lower(blend);
 	if (blend == "none")
-		m_sprites[name].sprite->setBlendMode(NoBlending);
+		m_sprites[name].sprite->setBlendMode(BlendingMode::NoBlending);
 	else if (blend == "add")
-		m_sprites[name].sprite->setBlendMode(AdditiveBlending);
+		m_sprites[name].sprite->setBlendMode(BlendingMode::AdditiveBlending);
 	else if (blend == "multiply")
-		m_sprites[name].sprite->setBlendMode(MultiplyBlending);
+		m_sprites[name].sprite->setBlendMode(BlendingMode::MultiplyBlending);
 	else if (blend == "alpha")
-		m_sprites[name].sprite->setBlendMode(AlphaBlending);
+		m_sprites[name].sprite->setBlendMode(BlendingMode::AlphaBlending);
 }
 
 void Animation::setScaleX(const std::string& name, const float x)

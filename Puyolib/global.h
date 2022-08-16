@@ -89,8 +89,6 @@ struct UserSettings {
 	std::string puyoDirPath;
 	std::string backgroundDirPath;
 	std::string sfxDirPath;
-	std::string voiceDirPath;
-	std::string replayDirPath;
 };
 
 // Variables through that are global in game

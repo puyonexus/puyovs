@@ -617,7 +617,7 @@ void Field::drawField() const
 	m_player->drawFieldFeverBack(getBottomCoordinates(true), m_properties.angle);
 	m_player->drawCross(m_data->front);
 	m_player->drawAllClear(getBottomCoordinates(true), 1, 1, m_properties.angle);
-	m_data->front->setDepthFunction(Equal);
+	m_data->front->setDepthFunction(DepthFunction::Equal);
 
 	// Draw puyos on the field
 	for (int i = 0; i < m_properties.gridX; i++) {
