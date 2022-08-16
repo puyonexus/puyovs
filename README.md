@@ -85,7 +85,7 @@ Other IDEs and text editors that support CMake should work just fine. For most t
 
 ### Linux
 
-#### Install Dependenices
+#### Install Dependencies
 
 You need to install GCC, CMake and GNU Make (or, if you prefer, Ninja.) Puyo VS also depends on `libpulse`, `libasound2`, `libx11`, and Qt 5, so you need to install the development packages for these. The packages vary per distro, but on Ubuntu you can install them with:
 
