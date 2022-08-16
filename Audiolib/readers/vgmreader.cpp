@@ -4,8 +4,8 @@
 #include "buffer.h"
 
 extern "C" {
-#include <../VgmStream/src/vgmstream.h>
-#include <../VgmStream/src/streamfile.h>
+#include <vgmstream.h>
+#include <streamfile.h>
 }
 #include <cstring>
 #include <cmath>

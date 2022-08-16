@@ -291,6 +291,8 @@ add_library(VgmStream
     src/meta/2dx.c
 )
 
+target_include_directories(VgmStream PUBLIC src)
+
 if(MSVC)
     # Disable warnings: we're not modifying VgmStream code.
     add_definitions("/wd4018")
