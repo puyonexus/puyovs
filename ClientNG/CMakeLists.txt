@@ -1,3 +1,5 @@
+find_package(OpenGL REQUIRED COMPONENTS OpenGL)
+
 add_executable(vs2 WIN32
 	"main.cpp"
 	"Scenes/Intro/Logo.cpp"
@@ -33,10 +35,5 @@ target_link_libraries(vs2
 	ZLIB::ZLIB
 	spng
 	glm::glm
+	${OPENGL_LIBRARIES}
 )
-
-if(WIN32)
-	target_link_libraries(vs2 OpenGL32)
-else()
-	target_link_libraries(vs2 GL)
-endif()
