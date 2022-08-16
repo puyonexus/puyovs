@@ -53,7 +53,7 @@ GameSettings::GameSettings(const RuleSetInfo& ruleSetInfo)
 	playSound = true;
 	playMusic = true;
 	background = "Forest";
-	puyo = "aqua";
+	puyo = "Default";
 	sfx = "Default";
 	defaultPuyoCharacter = ARLE;
 	useCharacterField = true;
