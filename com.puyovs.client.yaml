@@ -12,6 +12,7 @@ finish-args:
 modules:
   - name: PuyoVS
     buildsystem: cmake
+    builddir: true
     config-opts:
       - "-DENABLE_UPDATER=Off"
     sources:
