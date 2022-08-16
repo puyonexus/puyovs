@@ -69,13 +69,13 @@ add_subdirectory(JsonCpp)
 add_subdirectory(Puyolib)
 add_subdirectory(PVS_ENet)
 
+add_subdirectory(ThirdParty/zlib-ng)
 add_subdirectory(ThirdParty/glm)
 add_subdirectory(ThirdParty/libspng)
 add_subdirectory(ThirdParty/sdl)
 add_subdirectory(ThirdParty/sdl-ttf)
 add_subdirectory(ThirdParty/vgmstream)
 add_subdirectory(ThirdParty/enet)
-add_subdirectory(ThirdParty/zlib-ng)
 
 # CPack support.
 set(CPACK_SET_DESTDIR                 ON)

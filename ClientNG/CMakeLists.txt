@@ -24,9 +24,9 @@ add_executable(vs2 WIN32
 target_compile_features(vs2 PUBLIC cxx_std_17)
 
 target_link_libraries(vs2
-	PVS_ENet
 	JsonCpp
 	Puyolib
+	PVS_ENet
 	SDL2-static
 	SDL2main
 	SDL2_ttf::SDL2_ttf-static

@@ -25,8 +25,8 @@ public:
 
 	GameWindow(const GameWindow&) = delete;
 	GameWindow& operator=(const GameWindow&) = delete;
-	GameWindow(GameWindow&&) = default;
-	GameWindow& operator=(GameWindow&&) = default;
+	GameWindow(GameWindow&&);
+	GameWindow& operator=(GameWindow&&);
 
 	void handleEvent(const SDL_Event& event);
 	void handleFrame();
@@ -40,7 +40,7 @@ private:
 	Game* m_game;
 	SDL_Window* m_window;
 	RenderTarget* m_renderTarget;
-	std::unique_ptr<Scene> m_scene = nullptr;
+	std::unique_ptr<Scene> m_scene;
 };
 
 class Game final {

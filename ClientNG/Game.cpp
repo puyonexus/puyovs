@@ -49,6 +49,10 @@ GameWindow::~GameWindow()
 	SDL_DestroyWindow(m_window);
 }
 
+GameWindow::GameWindow(GameWindow&&) = default;
+
+GameWindow& GameWindow::operator=(GameWindow&&) = default;
+
 void GameWindow::handleEvent(const SDL_Event& event)
 {
 	if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED) {
