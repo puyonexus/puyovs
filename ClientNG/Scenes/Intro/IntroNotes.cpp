@@ -9,7 +9,7 @@
 
 constexpr const char kIntroNotes[] = u8"Puyo VS 2 is open source software licensed under the GNU General Public "
 									 u8"License v3.0. For more information about your rights, please consult the "
-									 u8"included LICENSE.txt file. \x201cPuyo Puyo\x201d is a registered U.S. "
+									 u8"included LICENSE.txt file. \u201cPuyo Puyo\u201d is a registered U.S. "
 									 u8"trademark of SEGA CORPORATION. Puyo VS is not endorsed or related to SEGA "
 									 u8"CORPORATION in any way.";
 
