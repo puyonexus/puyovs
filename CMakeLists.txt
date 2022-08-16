@@ -56,7 +56,7 @@ if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
-option(SDL2_DISABLE_SDL2MAIN "" ON)
+option(SDL2_DISABLE_SDL2MAIN "" OFF)
 option(SDL2_DISABLE_INSTALL "" ON)
 option(SDL2_DISABLE_UNINSTALL "" ON)
 set(SDL_SHARED OFF)
