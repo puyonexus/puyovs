@@ -1,6 +1,6 @@
 #include "Game.h"
-#include "Scenes/Scene.h"
 #include "Scenes/Intro/IntroLogo.h"
+#include "Scenes/Scene.h"
 
 #include <SDL_timer.h>
 #include <stdexcept>
@@ -41,6 +41,7 @@ GameWindow::GameWindow(Game* game, const WindowSettings& windowConfig)
 	}
 
 	m_renderTarget = createRenderer(m_window, windowConfig.renderConfig);
+	m_frameSkip = windowConfig.frameSkip;
 }
 
 GameWindow::~GameWindow()
@@ -64,17 +65,27 @@ void GameWindow::handleEvent(const SDL_Event& event)
 	}
 }
 
-void GameWindow::handleFrame()
+void GameWindow::update()
 {
 	if (m_scene) {
 		m_scene->update(m_t);
-		m_scene->draw();
-	} else {
-		m_renderTarget->clear(0, 0, 0, 1);
 	}
 
 	// Temporary: it's a lie.
 	m_t += 0.016;
+}
+
+void GameWindow::render()
+{
+	if (m_frameStep++ % m_frameSkip > 0) {
+		return;
+	}
+
+	if (m_scene) {
+		m_scene->draw();
+	} else {
+		m_renderTarget->clear(0, 0, 0, 1);
+	}
 }
 
 void GameWindow::setScene(std::unique_ptr<Scene> scene)
@@ -125,28 +136,56 @@ void Game::handleEvent(const SDL_Event& event)
 	}
 }
 
-void Game::handleFrame()
-{
-	for (auto& window : m_windows) {
-		window.handleFrame();
-	}
-}
-
-void Game::iterate()
+void Game::update()
 {
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
 		handleEvent(event);
 	}
-	handleFrame();
+	for (auto& window : m_windows) {
+		window.update();
+	}
+}
+
+void Game::render()
+{
+	for (auto& window : m_windows) {
+		window.render();
+	}
 }
 
 void Game::run()
 {
-	while (m_running) {
-		iterate();
+	size_t frameStep = 0;
+	constexpr Sint64 frameDelays[] = { 16, 17, 17 };
+	auto nextFrame = static_cast<Sint64>(SDL_GetTicks64());
 
-		// For now :) We'll handle time-step more seriously later...
-		SDL_Delay(16);
+	while (m_running) {
+		const auto frameDelay = frameDelays[frameStep++ % std::size(frameDelays)];
+		nextFrame += frameDelay;
+
+		update();
+		render();
+
+		Sint64 drift = nextFrame - static_cast<Sint64>(SDL_GetTicks64());
+
+		// If the drift becomes intolerable, just reset the clock.
+		if (drift > 1000 || drift < -1000) {
+			nextFrame = static_cast<Sint64>(SDL_GetTicks64());
+			continue;
+		}
+
+		if (drift > 2) {
+			SDL_Delay(static_cast<Uint32>(drift - 1));
+		} else {
+			while (drift < -frameDelays[0]) {
+				const auto frameDelay = frameDelays[frameStep++ % std::size(frameDelays)];
+
+				update();
+
+				drift += frameDelay;
+				nextFrame += frameDelay;
+			}
+		}
 	}
 }

@@ -11,10 +11,11 @@ class Scene;
 
 struct WindowSettings {
 	std::string title;
-	int width;
-	int height;
-	int fullscreen;
-	bool resizable;
+	int width = 1024;
+	int height = 768;
+	int fullscreen = false;
+	bool resizable = true;
+	int frameSkip = 1;
 	RenderSettings renderConfig;
 };
 
@@ -29,7 +30,9 @@ public:
 	GameWindow& operator=(GameWindow&&);
 
 	void handleEvent(const SDL_Event& event);
-	void handleFrame();
+
+    void update();
+	void render();
 
 	void setScene(std::unique_ptr<Scene> scene);
     [[nodiscard]] RenderTarget* renderTarget() const { return m_renderTarget; }
@@ -41,6 +44,8 @@ private:
 	SDL_Window* m_window;
 	RenderTarget* m_renderTarget;
 	std::unique_ptr<Scene> m_scene;
+	int m_frameStep = 0;
+	int m_frameSkip = 1;
 };
 
 class Game final {
@@ -48,9 +53,9 @@ public:
 	Game();
 
 	void handleEvent(const SDL_Event& event);
-	void handleFrame();
 
-	void iterate();
+	void update();
+	void render();
 	void run();
 
 private:

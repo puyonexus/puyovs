@@ -21,6 +21,8 @@ add_executable(vs2 WIN32
 	"Scenes/Game/Frontend.h"
 	"Paths.h"
 	"Paths.cpp"
+	"Renderers/Software/Software.cpp"
+	"Renderers/Software/Software.h"
 )
 
 target_compile_features(vs2 PUBLIC cxx_std_17)

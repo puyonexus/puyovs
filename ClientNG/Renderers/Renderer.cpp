@@ -2,6 +2,8 @@
 
 #include "../Font.h"
 #include "./OpenGL/OpenGL.h"
+#include "./Software/Software.h"
+
 #include <SDL_ttf.h>
 #include <spng.h>
 
@@ -38,6 +40,7 @@ RenderTarget* createRenderer(SDL_Window* window, const RenderSettings& settings)
 		return new RenderTargetGL(window, settings.debug);
 	case RenderBackend::Vulkan:
 	case RenderBackend::Software:
+		return new RenderTargetSoft(window, settings.debug);
 	case RenderBackend::Metal:
 		break;
 	}
