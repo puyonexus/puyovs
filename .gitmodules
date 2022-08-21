@@ -1,3 +1,6 @@
 [submodule "ThirdParty/glm/glm"]
 	path = ThirdParty/glm/glm
 	url = https://github.com/g-truc/glm
+[submodule "ThirdParty/zlib-ng/zlib-ng"]
+	path = ThirdParty/zlib-ng/zlib-ng
+	url = https://github.com/zlib-ng/zlib-ng.git
