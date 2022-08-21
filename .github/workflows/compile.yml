@@ -23,6 +23,8 @@ jobs:
       run: echo "C:\Qt\Qt-5.15.2\bin" | Out-File -FilePath $Env:GITHUB_PATH -Encoding utf8 -Append
     - name: Checkout
       uses: actions/checkout@v3
+      with:
+        submodules: recursive
     - name: Make CMake Build Dir
       run: |
         mkdir .build
@@ -64,6 +66,8 @@ jobs:
       run: echo "$HOME/Qt-5.15.2/bin" >> $GITHUB_PATH
     - name: Checkout
       uses: actions/checkout@v3
+      with:
+        submodules: recursive
     - name: Make CMake Build Dir
       run: mkdir .build
     - name: Configure PuyoVS
@@ -89,6 +93,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+      with:
+        submodules: recursive
     - name: Install Flatpak builder
       run: sudo apt update && sudo apt install -y flatpak-builder
     - name: Add Flathub repo
