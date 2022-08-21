@@ -7,3 +7,6 @@
 [submodule "ThirdParty/libspng/libspng"]
 	path = ThirdParty/libspng/libspng
 	url = https://github.com/randy408/libspng.git
+[submodule "ThirdParty/sdl-ttf/sdl-ttf"]
+	path = ThirdParty/sdl-ttf/sdl-ttf
+	url = https://github.com/libsdl-org/SDL_ttf.git
