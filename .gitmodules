@@ -4,3 +4,6 @@
 [submodule "ThirdParty/zlib-ng/zlib-ng"]
 	path = ThirdParty/zlib-ng/zlib-ng
 	url = https://github.com/zlib-ng/zlib-ng.git
+[submodule "ThirdParty/libspng/libspng"]
+	path = ThirdParty/libspng/libspng
+	url = https://github.com/randy408/libspng.git
