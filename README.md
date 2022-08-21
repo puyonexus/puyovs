@@ -8,6 +8,14 @@ We hope that the community can benefit from this release and build a robust futu
 
 **Note**: There is no longer support for the QMake build system. Sorry! You may continue to use Qt Creator with CMake instead. If you have any issues using CMake, please file issues; we would like full parity with QMake as soon as possible.
 
+**Note**: _Some dependencies now use submodules._ Please use:
+
+```
+git submodule update --init --recursive
+```
+
+to grab submodules.
+
 ## Trademark Notice
 "Puyo Puyo" is a registered U.S. trademark of SEGA CORPORATION since 2017. Puyo VS is not endorsed or related to SEGA CORPORATION in any way.
 
