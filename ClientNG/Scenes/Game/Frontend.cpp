@@ -3,7 +3,9 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
-GameFrontend::GameFrontend(RenderTarget* target)
+namespace PuyoVS::ClientNG::Scenes::Game {
+
+GameFrontend::GameFrontend(Renderers::RenderTarget* target)
 	: m_target(target)
 {
 	m_blankTexture = m_target->makeTexture();
@@ -132,16 +134,16 @@ void GameFrontend::setBlendMode(ppvs::BlendingMode b)
 {
 	switch (b) {
     case ppvs::BlendingMode::NoBlending:
-        m_target->setBlendMode(BlendingMode::NoBlending);
+        m_target->setBlendMode(Renderers::BlendingMode::NoBlending);
         break;
     case ppvs::BlendingMode::AlphaBlending:
-        m_target->setBlendMode(BlendingMode::AlphaBlending);
+		m_target->setBlendMode(Renderers::BlendingMode::AlphaBlending);
         break;
     case ppvs::BlendingMode::AdditiveBlending:
-        m_target->setBlendMode(BlendingMode::AdditiveBlending);
+		m_target->setBlendMode(Renderers::BlendingMode::AdditiveBlending);
         break;
     case ppvs::BlendingMode::MultiplyBlending:
-        m_target->setBlendMode(BlendingMode::MultiplyBlending);
+		m_target->setBlendMode(Renderers::BlendingMode::MultiplyBlending);
         break;
     }
 }
@@ -160,16 +162,16 @@ void GameFrontend::setDepthFunction(const ppvs::DepthFunction func)
 {
 	switch (func) {
     case ppvs::DepthFunction::Always:
-        m_target->setDepthFunction(DepthFunction::Always);
+		m_target->setDepthFunction(Renderers::DepthFunction::Always);
         break;
     case ppvs::DepthFunction::LessOrEqual:
-        m_target->setDepthFunction(DepthFunction::LessOrEqual);
+		m_target->setDepthFunction(Renderers::DepthFunction::LessOrEqual);
         break;
     case ppvs::DepthFunction::GreaterOrEqual:
-        m_target->setDepthFunction(DepthFunction::GreaterOrEqual);
+		m_target->setDepthFunction(Renderers::DepthFunction::GreaterOrEqual);
         break;
     case ppvs::DepthFunction::Equal:
-        m_target->setDepthFunction(DepthFunction::Equal);
+		m_target->setDepthFunction(Renderers::DepthFunction::Equal);
         break;
     }
 }
@@ -222,7 +224,7 @@ void GameFrontend::drawRect(ppvs::FeImage* image, double subx, double suby, doub
 	m_quadVertices[3].color = m_color;
 	m_quadBuffer->uploadVertices(m_quadVertices, std::size(m_quadVertices));
 	m_target->setModelView(m_matrixStack.top());
-	m_quadBuffer->render(PolyShader::Simple);
+	m_quadBuffer->render(Renderers::PolyShader::Simple);
 }
 
 void GameFrontend::clear()
@@ -239,7 +241,7 @@ void GameFrontend::setInputState(ppvs::FeInput inputState)
 	m_inputState = inputState;
 }
 
-GameImage::GameImage(std::unique_ptr<Texture> texture)
+GameImage::GameImage(std::unique_ptr<Renderers::Texture> texture)
 	: m_texture(std::move(texture))
 {
 }
@@ -303,4 +305,6 @@ void GameSound::play()
 
 void GameSound::stop()
 {
+}
+
 }

@@ -1,5 +1,7 @@
 #include "Font.h"
 
+namespace PuyoVS::ClientNG {
+
 Font::Font(const unsigned char* data, size_t length)
 {
 	m_font = TTF_OpenFontRW(SDL_RWFromMem((void*)data, length), 1, 12);
@@ -55,4 +57,6 @@ void Font::setFontKerning(const int kerning)
 void Font::setFontHinting(const int hinting)
 {
 	TTF_SetFontHinting(m_font, hinting);
+}
+
 }

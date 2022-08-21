@@ -1,12 +1,18 @@
 #pragma once
 #include "SDL_ttf.h"
 
+namespace PuyoVS::Renderers {
+class Texture;
+}
+
+namespace PuyoVS::ClientNG {
+
 class Font final {
-	friend class Texture;
+	friend class Renderers::Texture;
 
 public:
 	enum class Style {
-	    Normal,
+		Normal,
 		Italic,
 		Bold,
 		Strikethrough,
@@ -22,7 +28,7 @@ public:
 	Font& operator=(Font&&) = default;
 
 	void setFontSize(int size);
-    void setFontStyle(Style renderStyle);
+	void setFontStyle(Style renderStyle);
 	void setFontOutline(int outline);
 	void setFontKerning(int kerning);
 	void setFontHinting(int hinting);
@@ -30,3 +36,5 @@ public:
 private:
 	TTF_Font* m_font;
 };
+
+}

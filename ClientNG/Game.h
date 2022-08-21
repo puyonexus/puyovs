@@ -6,8 +6,13 @@
 #include <string>
 #include <vector>
 
+namespace PuyoVS::ClientNG {
+
 class Game;
-class Scene;
+
+namespace Scenes {
+    class Scene;
+}
 
 struct WindowSettings {
 	std::string title;
@@ -16,7 +21,7 @@ struct WindowSettings {
 	int fullscreen = false;
 	bool resizable = true;
 	int frameSkip = 1;
-	RenderSettings renderConfig;
+    Renderers::RenderSettings renderConfig;
 };
 
 class GameWindow final {
@@ -34,16 +39,16 @@ public:
     void update();
 	void render();
 
-	void setScene(std::unique_ptr<Scene> scene);
-    [[nodiscard]] RenderTarget* renderTarget() const { return m_renderTarget; }
+	void setScene(std::unique_ptr<Scenes::Scene> scene);
+    [[nodiscard]] Renderers::RenderTarget* renderTarget() const { return m_renderTarget; }
     [[nodiscard]] Uint32 id() const;
 
 private:
 	double m_t = 0.0;
 	Game* m_game;
 	SDL_Window* m_window;
-	RenderTarget* m_renderTarget;
-	std::unique_ptr<Scene> m_scene;
+    Renderers::RenderTarget* m_renderTarget;
+	std::unique_ptr<Scenes::Scene> m_scene;
 	int m_frameStep = 0;
 	int m_frameSkip = 1;
 };
@@ -65,3 +70,5 @@ private:
 	std::vector<GameWindow> m_windows;
 	bool m_running = true;
 };
+
+}

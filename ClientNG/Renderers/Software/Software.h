@@ -4,6 +4,8 @@
 #include <memory>
 #include <vector>
 
+namespace PuyoVS::Renderers::Software {
+
 class RenderTargetSoft;
 
 class TextureSoft final : public Texture {
@@ -137,3 +139,5 @@ private:
 	DepthFunction m_depthFunction = DepthFunction::Always;
 	TextureSoft* m_currentTexture = nullptr;
 };
+
+}

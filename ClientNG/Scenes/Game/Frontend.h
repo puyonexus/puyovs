@@ -4,11 +4,11 @@
 
 #include <stack>
 
-class RenderTarget;
+namespace PuyoVS::ClientNG::Scenes::Game {
 
 class GameFrontend final : public ppvs::Frontend {
 public:
-	GameFrontend(RenderTarget* target);
+	GameFrontend(Renderers::RenderTarget* target);
 	~GameFrontend() override;
 
 	ppvs::FeImage* loadImage(const char* nameu8) override;
@@ -47,11 +47,11 @@ public:
 	void setInputState(ppvs::FeInput inputState);
 
 private:
-	RenderTarget* m_target;
+    Renderers::RenderTarget* m_target;
 	std::stack<glm::mat4> m_matrixStack;
-	std::unique_ptr<PolyBuffer> m_quadBuffer;
-	std::unique_ptr<Texture> m_blankTexture;
-	Vertex m_quadVertices[4] {};
+	std::unique_ptr<Renderers::PolyBuffer> m_quadBuffer;
+	std::unique_ptr<Renderers::Texture> m_blankTexture;
+    Renderers::Vertex m_quadVertices[4] {};
 	unsigned short m_quadIndices[6] = { 0, 1, 2, 2, 3, 0 };
 	glm::vec4 m_color{};
 	ppvs::FeInput m_inputState{};
@@ -59,7 +59,7 @@ private:
 
 class GameImage final : public ppvs::FeImage {
 public:
-	GameImage(std::unique_ptr<Texture> texture);
+	GameImage(std::unique_ptr<Renderers::Texture> texture);
 	~GameImage() override;
 
 	GameImage(const GameImage&) = delete;
@@ -77,7 +77,7 @@ public:
 	void bind() { m_texture->bind(0); }
 
 private:
-	std::unique_ptr<Texture> m_texture;
+	std::unique_ptr<Renderers::Texture> m_texture;
 };
 
 class GameFont final : public ppvs::FeFont {
@@ -111,3 +111,5 @@ public:
 	void play() override;
 	void stop() override;
 };
+
+}

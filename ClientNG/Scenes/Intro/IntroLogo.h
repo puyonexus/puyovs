@@ -1,11 +1,15 @@
 #pragma once
 #include "../Scene.h"
 
+namespace PuyoVS::ClientNG {
 class GameWindow;
+}
+
+namespace PuyoVS::ClientNG::Scenes::Intro {
 
 class IntroLogo final : public Scene {
 public:
-    IntroLogo(GameWindow &w);
+	explicit IntroLogo(GameWindow& w);
 	~IntroLogo() override;
 
 	bool handleEvent(const SDL_Event& event) override;
@@ -16,11 +20,11 @@ public:
 
 private:
 	GameWindow& m_window;
-	std::unique_ptr<PolyBuffer> m_quadBuffer;
-	std::unique_ptr<Texture> m_logoTexture;
+	std::unique_ptr<Renderers::PolyBuffer> m_quadBuffer;
+	std::unique_ptr<Renderers::Texture> m_logoTexture;
 
-    glm::vec4 m_clearColor { 0.15, 0.18, 0.20, 1.0 };
-	Vertex m_quadVertices[4 * 9] {};
+	glm::vec4 m_clearColor { 0.15, 0.18, 0.20, 1.0 };
+	Renderers::Vertex m_quadVertices[4 * 9] {};
 	unsigned short m_quadIndices[6 * 9] = {
 		0, 1, 2, 2, 3, 0, // Quad 1
 		4, 5, 6, 6, 7, 4, // Quad 2
@@ -33,3 +37,5 @@ private:
 		32, 33, 34, 34, 35, 32, // Quad 9
 	};
 };
+
+}

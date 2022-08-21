@@ -1,8 +1,10 @@
 #include "InGame.h"
 
-#include "Frontend.h"
-#include "../../Game.h"
 #include "../../../Puyolib/Game.h"
+#include "../../Game.h"
+#include "Frontend.h"
+
+namespace PuyoVS::ClientNG::Scenes::Game {
 
 InGame::InGame(GameWindow& w, std::unique_ptr<ppvs::Game> game)
 	: Scene(w.renderTarget())
@@ -29,13 +31,13 @@ void InGame::update(double t)
 	}
 
 	const auto& state = SDL_GetKeyboardState(nullptr);
-	m_frontend->setInputState(ppvs::FeInput{
+	m_frontend->setInputState(ppvs::FeInput {
 		state[SDL_SCANCODE_UP] != 0,
 		state[SDL_SCANCODE_DOWN] != 0,
 		state[SDL_SCANCODE_LEFT] != 0,
-        state[SDL_SCANCODE_RIGHT] != 0,
-        state[SDL_SCANCODE_X] != 0,
-        state[SDL_SCANCODE_Z] != 0,
+		state[SDL_SCANCODE_RIGHT] != 0,
+		state[SDL_SCANCODE_X] != 0,
+		state[SDL_SCANCODE_Z] != 0,
 	});
 	m_game->playGame();
 }
@@ -43,9 +45,11 @@ void InGame::update(double t)
 void InGame::draw()
 {
 	m_game->renderGame();
-	if (m_fadeVal != 0) {  // NOLINT(clang-diagnostic-float-equal)
+	if (m_fadeVal != 0) { // NOLINT(clang-diagnostic-float-equal)
 		m_frontend->setColor(0, 0, 0, m_fadeVal * 255);
 		m_frontend->drawRect(nullptr, -1000, -1000, 1000, 1000);
 	}
 	m_target->present();
+}
+
 }

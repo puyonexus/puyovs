@@ -3,6 +3,8 @@
 #include "SDL_video.h"
 #include <memory>
 
+namespace PuyoVS::Renderers::OpenGL {
+
 class RenderTargetGL;
 struct OpenGLExtensions;
 
@@ -15,12 +17,12 @@ public:
 	void upload(int width, int height, void* data) override;
 	int width() override;
 	int height() override;
-    void setFilter(FilterType filter) override;
+	void setFilter(FilterType filter) override;
 
 private:
 	int m_width = 0, m_height = 0;
 	RenderTargetGL* m_target;
-	unsigned int m_texture{};
+	unsigned int m_texture {};
 };
 
 class PolyBufferGL final : public PolyBuffer {
@@ -87,3 +89,5 @@ private:
 	int m_simpleShaderProj;
 	int m_simpleShaderModel;
 };
+
+}

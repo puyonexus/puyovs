@@ -1,5 +1,7 @@
 #pragma once
 
+namespace PuyoVS::ClientNG::Scenes::Intro {
+
 extern const unsigned char kLogoPng[10287];
 
 // Size of the texture.
@@ -30,3 +32,5 @@ constexpr int kLetterPositions[9][2] = {
 	{ 1066, 557 },
 	{ 1153, 555 },
 };
+
+}

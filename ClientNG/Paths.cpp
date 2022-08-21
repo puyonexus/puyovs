@@ -1,5 +1,7 @@
 #include "Paths.h"
 
+namespace PuyoVS::ClientNG {
+
 #ifndef PREFIX
 #if defined(_WIN32)
 #define PREFIX "C:\\PuyoVS"
@@ -15,3 +17,5 @@ const char* defaultAssetPath = PREFIX;
 #else
 const char* defaultAssetPath = PREFIX "/share/puyovs";
 #endif
+
+}

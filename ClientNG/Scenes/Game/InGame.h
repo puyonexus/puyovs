@@ -7,7 +7,12 @@ class Frontend;
 class Game;
 }
 
+namespace PuyoVS::ClientNG {
 class GameWindow;
+}
+
+namespace PuyoVS::ClientNG::Scenes::Game {
+
 class GameFrontend;
 
 class InGame final : public Scene {
@@ -25,3 +30,5 @@ private:
 	GameFrontend* m_frontend;
 	double m_fadeVal = 1.0;
 };
+
+}

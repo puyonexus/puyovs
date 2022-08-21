@@ -8,10 +8,18 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-class Font;
+struct SDL_Window;
+
+namespace PuyoVS {
+namespace ClientNG {
+    class Font;
+}
+}
+
+namespace PuyoVS::Renderers {
 
 enum class PolyShader {
-    Simple
+	Simple
 };
 
 enum class FilterType {
@@ -46,7 +54,7 @@ public:
 	PolyBuffer() = default;
 	virtual ~PolyBuffer() = default;
 
-    PolyBuffer(const PolyBuffer&) = delete;
+	PolyBuffer(const PolyBuffer&) = delete;
 	PolyBuffer& operator=(const PolyBuffer&) = delete;
 	PolyBuffer(PolyBuffer&&) = delete;
 	PolyBuffer& operator=(PolyBuffer&&) = delete;
@@ -72,8 +80,8 @@ public:
 	virtual int height() = 0;
 	virtual void setFilter(FilterType filter) = 0;
 
-    void loadPng(const void* data, size_t length);
-	void renderText(const Font &font, const char* text, SDL_Color color, unsigned int wrapLength, int &w, int &h);
+	void loadPng(const void* data, size_t length);
+	void renderText(const ClientNG::Font& font, const char* text, SDL_Color color, unsigned int wrapLength, int& w, int& h);
 };
 
 class RenderTarget {
@@ -81,7 +89,7 @@ public:
 	RenderTarget() = default;
 	virtual ~RenderTarget() = default;
 
-    RenderTarget(const RenderTarget&) = delete;
+	RenderTarget(const RenderTarget&) = delete;
 	RenderTarget& operator=(const RenderTarget&) = delete;
 	RenderTarget(RenderTarget&&) = delete;
 	RenderTarget& operator=(RenderTarget&&) = delete;
@@ -94,15 +102,13 @@ public:
 	virtual std::unique_ptr<Texture> makeTexture() = 0;
 
 	virtual void setViewport(int width, int height) = 0;
-	virtual void setProjection(const glm::mat4 &projection) = 0;
-	virtual void setModelView(const glm::mat4 &modelView) = 0;
+	virtual void setProjection(const glm::mat4& projection) = 0;
+	virtual void setModelView(const glm::mat4& modelView) = 0;
 	virtual void setBlendMode(BlendingMode mode) = 0;
 	virtual void setDepthFunction(DepthFunction func) = 0;
 
-    [[nodiscard]] virtual const glm::ivec2& viewport() const = 0;
+	[[nodiscard]] virtual const glm::ivec2& viewport() const = 0;
 };
-
-struct SDL_Window;
 
 enum class RenderBackend {
 	OpenGL,
@@ -117,3 +123,5 @@ struct RenderSettings {
 };
 
 RenderTarget* createRenderer(SDL_Window* window, const RenderSettings& settings);
+
+}

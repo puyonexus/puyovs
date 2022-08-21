@@ -2,9 +2,11 @@
 #include "../Renderers/Renderer.h"
 #include <SDL_events.h>
 
+namespace PuyoVS::ClientNG::Scenes {
+
 class Scene {
 public:
-	explicit Scene(RenderTarget* target)
+	explicit Scene(Renderers::RenderTarget* target)
 		: m_target(target)
 	{
 	}
@@ -15,5 +17,7 @@ public:
 	virtual void draw() = 0;
 
 protected:
-	RenderTarget* m_target;
+    Renderers::RenderTarget* m_target;
 };
+
+}

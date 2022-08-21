@@ -6,9 +6,15 @@
 #include <SDL_video.h>
 #include <glm/ext/matrix_clip_space.hpp>
 
-static void GLAPIENTRY debugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* msg, const void* data)
-{
-	SDL_Log("GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s", (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, severity, msg);
+namespace PuyoVS::Renderers::OpenGL {
+
+namespace {
+
+	void GLAPIENTRY debugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* msg, const void* data)
+	{
+		SDL_Log("GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s", (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, severity, msg);
+	}
+
 }
 
 struct OpenGLExtensions {
@@ -394,4 +400,6 @@ unsigned RenderTargetGL::loadShader(const char* vertexSource, const char* fragme
 	ext.glUniform1i(texUniform, 0);
 
 	return program;
+}
+
 }

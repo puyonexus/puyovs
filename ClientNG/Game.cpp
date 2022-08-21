@@ -5,20 +5,26 @@
 #include <SDL_timer.h>
 #include <stdexcept>
 
+namespace PuyoVS::ClientNG {
+
+namespace {
+    
 constexpr char kDefaultWindowTitle[] = "Puyo Puyo VS 2";
 constexpr int kDefaultWindowWidth = 1280;
 constexpr int kDefaultWindowHeight = 720;
+
+}
 
 GameWindow::GameWindow(Game* game, const WindowSettings& windowConfig)
 	: m_game(game)
 {
 	Uint32 flags = 0;
 
-	if (windowConfig.renderConfig.backend == RenderBackend::OpenGL) {
+	if (windowConfig.renderConfig.backend == Renderers::RenderBackend::OpenGL) {
 		flags |= SDL_WINDOW_OPENGL;
-	} else if (windowConfig.renderConfig.backend == RenderBackend::Vulkan) {
+	} else if (windowConfig.renderConfig.backend == Renderers::RenderBackend::Vulkan) {
 		flags |= SDL_WINDOW_VULKAN;
-	} else if (windowConfig.renderConfig.backend == RenderBackend::Metal) {
+	} else if (windowConfig.renderConfig.backend == Renderers::RenderBackend::Metal) {
 		flags |= SDL_WINDOW_METAL;
 	}
 
@@ -88,7 +94,7 @@ void GameWindow::render()
 	}
 }
 
-void GameWindow::setScene(std::unique_ptr<Scene> scene)
+void GameWindow::setScene(std::unique_ptr<Scenes::Scene> scene)
 {
 	m_t = 0.0;
 	m_scene = std::move(scene);
@@ -107,13 +113,13 @@ Game::Game()
 	settings.height = kDefaultWindowHeight;
 	settings.fullscreen = false;
 	settings.resizable = true;
-	settings.renderConfig.backend = RenderBackend::OpenGL;
+	settings.renderConfig.backend = Renderers::RenderBackend::OpenGL;
 
 	auto& window = m_windows.emplace_back(this, settings);
 	m_windowById[window.id()] = &window;
 	m_mainWindow = &window;
 	m_activeWindow = &window;
-	m_mainWindow->setScene(std::make_unique<IntroLogo>(*m_mainWindow));
+	m_mainWindow->setScene(std::make_unique<Scenes::Intro::IntroLogo>(*m_mainWindow));
 }
 
 void Game::handleEvent(const SDL_Event& event)
@@ -188,4 +194,6 @@ void Game::run()
 			}
 		}
 	}
+}
+
 }

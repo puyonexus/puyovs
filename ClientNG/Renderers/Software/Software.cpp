@@ -4,6 +4,8 @@
 
 #include <algorithm>
 
+namespace PuyoVS::Renderers::Software {
+
 void TextureSoft::bind(const int slot)
 {
 	m_target->setTexture(slot, this);
@@ -277,4 +279,6 @@ void RenderTargetSoft::renderTriangle(const PolyShader shader, const glm::mat4& 
 #undef CALL_RENDER_TRIANGLE_ALGORITHM_2
 #undef CALL_RENDER_TRIANGLE_ALGORITHM_1
 #undef CALL_RENDER_TRIANGLE_ALGORITHM_0
+}
+
 }

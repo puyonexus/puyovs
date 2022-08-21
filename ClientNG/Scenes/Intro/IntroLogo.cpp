@@ -5,14 +5,20 @@
 #include "IntroNotes.h"
 #include "Logo.h"
 
-static double easeOut(double x)
-{
-	return x == 1 ? 1 : 1 - pow(2, -10 * x);
-}
+namespace PuyoVS::ClientNG::Scenes::Intro {
 
-static double easeInOutQuart(double x)
-{
-	return x < 0.5 ? 8.0 * x * x * x * x : 1.0 - pow(-2.0 * x + 2.0, 4.0) / 2.0;
+namespace {
+
+	double easeOut(double x)
+	{
+		return x == 1 ? 1 : 1 - pow(2, -10 * x);
+	}
+
+	double easeInOutQuart(double x)
+	{
+		return x < 0.5 ? 8.0 * x * x * x * x : 1.0 - pow(-2.0 * x + 2.0, 4.0) / 2.0;
+	}
+
 }
 
 IntroLogo::IntroLogo(GameWindow& w)
@@ -140,11 +146,13 @@ void IntroLogo::draw()
 {
 	m_target->clear(m_clearColor.r, m_clearColor.g, m_clearColor.b, m_clearColor.a);
 	m_logoTexture->bind(0);
-	m_quadBuffer->render(PolyShader::Simple);
+	m_quadBuffer->render(Renderers::PolyShader::Simple);
 	m_target->present();
 }
 
 void IntroLogo::finish()
 {
 	m_window.setScene(std::make_unique<IntroNotes>(m_window));
+}
+
 }

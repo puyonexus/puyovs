@@ -4,14 +4,20 @@
 #include "../Game/InGame.h"
 
 #include "../../Game.h"
-#include "../../Paths.h"
 #include "../../PTSans.h"
+#include "../../Paths.h"
 
-constexpr const char kIntroNotes[] = u8"Puyo VS 2 is open source software licensed under the GNU General Public "
-									 u8"License v3.0. For more information about your rights, please consult the "
-									 u8"included LICENSE.txt file. \u201cPuyo Puyo\u201d is a registered U.S. "
-									 u8"trademark of SEGA CORPORATION. Puyo VS is not endorsed or related to SEGA "
-									 u8"CORPORATION in any way.";
+namespace PuyoVS::ClientNG::Scenes::Intro {
+
+namespace {
+
+	constexpr char kIntroNotes[] = u8"Puyo VS 2 is open source software licensed under the GNU General Public "
+								   u8"License v3.0. For more information about your rights, please consult the "
+								   u8"included LICENSE.txt file. \u201cPuyo Puyo\u201d is a registered U.S. "
+								   u8"trademark of SEGA CORPORATION. Puyo VS is not endorsed or related to SEGA "
+								   u8"CORPORATION in any way.";
+
+}
 
 IntroNotes::IntroNotes(GameWindow& w)
 	: Scene(w.renderTarget())
@@ -74,7 +80,7 @@ void IntroNotes::draw()
 {
 	m_target->clear(m_clearColor.r, m_clearColor.g, m_clearColor.b, m_clearColor.a);
 	m_text->bind(0);
-	m_quadBuffer->render(PolyShader::Simple);
+	m_quadBuffer->render(Renderers::PolyShader::Simple);
 	m_target->present();
 }
 
@@ -83,5 +89,7 @@ void IntroNotes::finish()
 	auto gs = new ppvs::GameSettings();
 	gs->useCpuPlayers = true;
 	gs->baseAssetDir = std::string(defaultAssetPath) + "/";
-	m_window.setScene(std::make_unique<InGame>(m_window, std::make_unique<ppvs::Game>(gs)));
+	m_window.setScene(std::make_unique<Game::InGame>(m_window, std::make_unique<ppvs::Game>(gs)));
+}
+
 }
