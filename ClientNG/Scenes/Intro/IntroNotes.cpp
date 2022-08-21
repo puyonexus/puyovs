@@ -61,6 +61,7 @@ void IntroNotes::update(double t)
 {
 	if (t > 6.0) {
 		finish();
+		return;
 	}
 	for (auto& vertex : m_quadVertices) {
 		if (t < 1.0) {

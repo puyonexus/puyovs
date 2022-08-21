@@ -65,6 +65,7 @@ void IntroLogo::update(double t)
 	const auto keyState = SDL_GetKeyboardState(nullptr);
 	if (t > 4) {
 		finish();
+		return;
 	}
 	t /= 2;
 	if (t < 1.5) {
