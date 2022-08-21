@@ -10,3 +10,6 @@
 [submodule "ThirdParty/sdl-ttf/sdl-ttf"]
 	path = ThirdParty/sdl-ttf/sdl-ttf
 	url = https://github.com/libsdl-org/SDL_ttf.git
+[submodule "ThirdParty/sdl/sdl"]
+	path = ThirdParty/sdl/sdl
+	url = https://github.com/libsdl-org/SDL.git
