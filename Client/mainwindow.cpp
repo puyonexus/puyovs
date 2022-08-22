@@ -48,7 +48,9 @@ MainWindow::MainWindow(QWidget* parent)
 	// UI
 	languageManager->setLanguageFromFilename(settings.string("launcher", "language", ""));
 	ui->setupUi(this);
-	ui->LogoLabel->setPixmap(QPixmap("Data/Lobby/title.png"));
+	QPixmap titlePixmap("Data/Lobby/title2x.png");
+	titlePixmap.setDevicePixelRatio(2.0);
+	ui->LogoLabel->setPixmap(titlePixmap);
 	ui->UsernameLineEdit->setFocus();
 	ui->statusBar->showMessage("Developed by Hernan and contributors. https://puyovs.com");
 
