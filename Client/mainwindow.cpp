@@ -48,14 +48,18 @@ MainWindow::MainWindow(QWidget* parent)
 	// UI
 	languageManager->setLanguageFromFilename(settings.string("launcher", "language", ""));
 	ui->setupUi(this);
-	QPixmap titlePixmap("Data/Lobby/title2x.png");
-	titlePixmap.setDevicePixelRatio(2.0);
+	QPixmap titlePixmap;
+	if (titlePixmap.load("Data/Lobby/title2x.png")) {
+		titlePixmap.setDevicePixelRatio(2.0);
+	} else {
+		titlePixmap.load("Data/Lobby/title.png");
+	}
 	ui->LogoLabel->setPixmap(titlePixmap);
 	ui->UsernameLineEdit->setFocus();
 	ui->statusBar->showMessage("Developed by Hernan and contributors. https://puyovs.com");
 
 	// Profile Menu
-    const auto profileMenu = new QMenu(this);
+	const auto profileMenu = new QMenu(this);
 	profileMenu->addAction(ui->ActionSearch);
 	profileMenu->addAction(ui->ActionLogOut);
 	ui->ProfileToolButton->setMenu(profileMenu);
@@ -92,7 +96,7 @@ MainWindow::MainWindow(QWidget* parent)
 	connect(client, &NetClient::updateRankedPlayerCount, this, &MainWindow::playerCountMessageReceived);
 
 	// Update ranked counter every 10 seconds
-    const auto timer = new QTimer(this);
+	const auto timer = new QTimer(this);
 	connect(timer, &QTimer::timeout, this, &MainWindow::updateRankedCount);
 	timer->start(10000); // Time specified in ms
 
