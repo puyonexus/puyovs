@@ -7,7 +7,7 @@ ChatTextEntry::ChatTextEntry(QWidget* parent)
 {
 	fontLineHeight = QFontMetrics(QFont()).lineSpacing();
 
-	connect(this, SIGNAL(textChanged()), SLOT(fitText()));
+	connect(this, &QTextEdit::textChanged, this, &ChatTextEntry::fitText);
 
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
 }

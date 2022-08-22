@@ -351,18 +351,18 @@ NetChannelProxy::NetChannelProxy(QString channel, NetClient* client, QObject* pa
 	, mChannel(channel)
 	, mClient(client)
 {
-	connect(client, SIGNAL(serverMessageReceived(uchar, QString)),
-		SLOT(serverMessageReceived(uchar, QString)));
-	connect(client, SIGNAL(channelMessageReceived(QString, uchar, QString, QString)),
-		SLOT(channelMessageReceived(QString, uchar, QString, QString)));
-	connect(client, SIGNAL(peerChannelMessageReceived(QString, uchar, QString, QString)),
-		SLOT(peerChannelMessageReceived(QString, uchar, QString, QString)));
-	connect(client, SIGNAL(peerStatusReceived(QString, QString, uchar)),
-		SLOT(peerStatusReceived(QString, QString, uchar)));
-	connect(client, SIGNAL(peerJoinedChannel(QString, QString)),
-		SLOT(peerJoinedChannel(QString, QString)));
-	connect(client, SIGNAL(peerPartedChannel(QString, QString)),
-		SLOT(peerPartedChannel(QString, QString)));
+	connect(client, &NetClient::serverMessageReceived,
+		this, &NetChannelProxy::serverMessageReceived);
+	connect(client, &NetClient::channelMessageReceived,
+		this, &NetChannelProxy::channelMessageReceived);
+	connect(client, &NetClient::peerChannelMessageReceived,
+		this, &NetChannelProxy::peerChannelMessageReceived);
+	connect(client, &NetClient::peerStatusReceived,
+		this, &NetChannelProxy::peerStatusReceived);
+	connect(client, &NetClient::peerJoinedChannel,
+		this, &NetChannelProxy::peerJoinedChannel);
+	connect(client, &NetClient::peerPartedChannel,
+		this, &NetChannelProxy::peerPartedChannel);
 }
 
 NetChannelProxy::~NetChannelProxy()

@@ -23,7 +23,7 @@ InputDialog::InputDialog(QWidget* parent)
 		;
 
 	QTimer* processTimer = new QTimer(this);
-	connect(processTimer, SIGNAL(timeout()), SLOT(process()));
+	connect(processTimer, &QTimer::timeout, this, &InputDialog::process);
 	processTimer->start(100);
 
 	QTimer::singleShot(1000 * 5, this, SLOT(timeout()));

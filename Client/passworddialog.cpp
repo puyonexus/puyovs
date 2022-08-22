@@ -11,6 +11,7 @@ PasswordDialog::PasswordDialog(QWidget* parent, GameManager* gameManager, NetCha
 	, ui(new Ui::PasswordDialog)
 {
 	ui->setupUi(this);
+	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
 	ui->label_2->hide();
 }

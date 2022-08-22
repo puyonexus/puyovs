@@ -32,13 +32,13 @@ ChatroomForm::ChatroomForm(NetPeerList peers, NetChannelProxy* proxy, GameManage
 
 	ui->UserListWidget->sortItems(Qt::AscendingOrder);
 
-	connect(mProxy, SIGNAL(messageReceived(uchar, QString, QString)), SLOT(messageReceived(uchar, QString, QString)));
-	connect(mProxy, SIGNAL(peerMessageReceived(uchar, QString, QString)), SLOT(peerMessageReceived(uchar, QString, QString)));
-	connect(mProxy, SIGNAL(statusReceived(QString, uchar)), SLOT(statusReceived(QString, uchar)));
-	connect(mProxy, SIGNAL(peerJoined(QString)), SLOT(peerJoined(QString)));
-	connect(mProxy, SIGNAL(peerParted(QString)), SLOT(peerParted(QString)));
-	connect(mProxy, SIGNAL(userInfoReceived(QString)), SLOT(userInfoReceived(QString)));
-	connect(ui->ChatTextEdit, SIGNAL(anchorClicked(QString)), SLOT(urlClicked(QString)));
+	connect(mProxy, &NetChannelProxy::messageReceived, this, &ChatroomForm::messageReceived);
+	connect(mProxy, &NetChannelProxy::peerMessageReceived, this, &ChatroomForm::peerMessageReceived);
+	connect(mProxy, &NetChannelProxy::statusReceived, this, &ChatroomForm::statusReceived);
+	connect(mProxy, &NetChannelProxy::peerJoined, this, &ChatroomForm::peerJoined);
+	connect(mProxy, &NetChannelProxy::peerParted, this, &ChatroomForm::peerParted);
+	connect(mProxy, &NetChannelProxy::userInfoReceived, this, &ChatroomForm::userInfoReceived);
+	connect(ui->ChatTextEdit, &ChatroomTextEdit::anchorClicked, this, &ChatroomForm::urlClicked);
 
 	statusMessage(StatusEvent::ChannelJoinedEvent, mProxy->friendlyChannel());
 

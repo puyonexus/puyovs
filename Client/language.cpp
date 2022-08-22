@@ -159,8 +159,8 @@ LanguageManager::LanguageManager(QObject* parent)
 	: QObject(parent)
 {
 	mFsWatcher = new QFileSystemWatcher(QStringList() << "./Language/", this);
-	connect(mFsWatcher, SIGNAL(directoryChanged(QString)), SLOT(refreshLanguageList(QString)));
-	connect(mFsWatcher, SIGNAL(fileChanged(QString)), SLOT(refreshLanguageList(QString)));
+	connect(mFsWatcher, &QFileSystemWatcher::directoryChanged, this, &LanguageManager::refreshLanguageList);
+	connect(mFsWatcher, &QFileSystemWatcher::fileChanged, this, &LanguageManager::refreshLanguageList);
 	mTranslator = new Translator(this);
 
 	mCurrentLanguage = -1;

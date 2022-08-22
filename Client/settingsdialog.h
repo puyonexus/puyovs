@@ -35,7 +35,7 @@ private slots:
 	void on_LanguageComboBox_currentIndexChanged(int index) const;
 	void on_SettingsButtonBox_rejected() const;
 	void on_DefaultRulesCheckbox_clicked() const;
-	void characterSlotIndexChanged(QString indexName) const;
+	void characterSlotIndexChanged(const QString& indexName) const;
 	void on_DefaultButton_clicked() const;
 	void on_PlaylistComboBox_currentIndexChanged(int index) const;
 	void on_PlaylistAddButton_clicked();

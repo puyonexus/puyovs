@@ -10,10 +10,10 @@ TelemetryDialog::TelemetryDialog(LanguageManager* lm, QWidget* parent)
 	, languageManager(lm)
 {
 	ui->setupUi(this);
-	connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-	connect(ui->languageBox, SIGNAL(currentIndexChanged(int)), this, SLOT(languageChanged(int)));
-	connect(languageManager, SIGNAL(languagesModified()), this, SLOT(updateLanguagesBox()));
+	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &TelemetryDialog::accept);
+	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &TelemetryDialog::reject);
+	connect(ui->languageBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &TelemetryDialog::languageChanged);
+	connect(languageManager, &LanguageManager::languagesModified, this, &TelemetryDialog::updateLanguagesBox);
 
 	updateLanguagesBox();
 	load();

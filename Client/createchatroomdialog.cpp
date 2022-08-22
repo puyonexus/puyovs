@@ -6,6 +6,8 @@ CreateChatroomDialog::CreateChatroomDialog(QWidget* parent)
 	, ui(new Ui::CreateChatroomDialog)
 {
 	ui->setupUi(this);
+	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &CreateChatroomDialog::accept);
+	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &CreateChatroomDialog::reject);
 }
 
 CreateChatroomDialog::~CreateChatroomDialog()

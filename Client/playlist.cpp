@@ -56,7 +56,7 @@ QIODevice* UrlDispatcher::openUrl(QUrl url)
 
 	if (file->inherits("QNetworkReply")) {
 		QEventLoop loop;
-		loop.connect(file, SIGNAL(finished()), SLOT(quit()));
+		QObject::connect(static_cast<QNetworkReply*>(file), &QNetworkReply::finished, &loop, &QEventLoop::quit);
 		QTimer::singleShot(10 * 1000, &loop, SLOT(quit())); // 10 sec timeout
 		loop.exec();
 	}
@@ -198,7 +198,7 @@ void Playlist::discover(QString dir)
 		QFileSystemWatcher* watcher = new QFileSystemWatcher(this);
 		watcher->addPath(dir);
 
-		connect(watcher, SIGNAL(directoryChanged(QString)), SLOT(discover(QString)));
+		connect(watcher, &QFileSystemWatcher::directoryChanged, this, &Playlist::discover);
 	}
 
 	QDir discoverDir(dir);
@@ -343,18 +343,18 @@ PlaylistModel::PlaylistModel(Playlist* playlist, QObject* parent)
 	p->playlist = playlist;
 
 	// Hook up notifiers
-	connect(p->playlist, SIGNAL(aboutToInsertRow(int)),
-		SLOT(notifyAboutToInsertRow(int)));
-	connect(p->playlist, SIGNAL(rowInserted(int)),
-		SLOT(notifyRowInserted(int)));
-	connect(p->playlist, SIGNAL(aboutToRemoveRow(int)),
-		SLOT(notifyAboutToRemoveRow(int)));
-	connect(p->playlist, SIGNAL(rowRemoved(int)),
-		SLOT(notifyRowRemoved(int)));
-	connect(p->playlist, SIGNAL(aboutToMoveRows(int, int, int)),
-		SLOT(notifyAboutToMoveRows(int, int, int)));
-	connect(p->playlist, SIGNAL(rowsMoved(int, int, int)),
-		SLOT(notifyRowsMoved(int, int, int)));
+	connect(p->playlist, &Playlist::aboutToInsertRow,
+		this, &PlaylistModel::notifyAboutToInsertRow);
+	connect(p->playlist, &Playlist::rowInserted,
+		this, &PlaylistModel::notifyRowInserted);
+	connect(p->playlist, &Playlist::aboutToRemoveRow,
+		this, &PlaylistModel::notifyAboutToRemoveRow);
+	connect(p->playlist, &Playlist::rowRemoved,
+		this, &PlaylistModel::notifyRowRemoved);
+	connect(p->playlist, &Playlist::aboutToMoveRows,
+		this, &PlaylistModel::notifyAboutToMoveRows);
+	connect(p->playlist, &Playlist::rowsMoved,
+		this, &PlaylistModel::notifyRowsMoved);
 }
 
 PlaylistModel::~PlaylistModel()

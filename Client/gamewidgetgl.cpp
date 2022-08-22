@@ -261,8 +261,8 @@ void GameWidgetGL::initialize()
 	d->gl->makeCurrent();
 	auto frontend = new FrontendGL(d->gl, d->audio, d->inputState, d->ext, this);
 	mGame->initGame(frontend);
-	connect(frontend, SIGNAL(musicStateChanged(int)), SLOT(setupMusic(int)));
-	connect(frontend, SIGNAL(musicVolumeChanged(float, bool)), SLOT(changeMusicVolume(float, bool)));
+	connect(frontend, &FrontendGL::musicStateChanged, this, &GameWidgetGL::setupMusic);
+	connect(frontend, &FrontendGL::musicVolumeChanged, this, &GameWidgetGL::changeMusicVolume);
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_ALWAYS);

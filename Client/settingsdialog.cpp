@@ -14,6 +14,8 @@ SettingsDialog::SettingsDialog(LanguageManager* lm, QWidget* parent)
 	, ui(new Ui::SettingsDialog)
 {
 	ui->setupUi(this);
+	connect(ui->SettingsButtonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
+	connect(ui->SettingsButtonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
 	normalPlaylistModel = new PlaylistModel(&pvsApp->playlist(), this);
 	feverPlaylistModel = new PlaylistModel(&pvsApp->feverPlaylist(), this);
@@ -30,10 +32,10 @@ SettingsDialog::SettingsDialog(LanguageManager* lm, QWidget* parent)
 	languageManager = lm;
 	languagesModified();
 	oldLanguage = lm->currentLanguageIndex();
-	connect(languageManager, SIGNAL(languagesModified()), SLOT(languagesModified()));
+	connect(languageManager, &LanguageManager::languagesModified, this, &SettingsDialog::languagesModified);
 	foreach (QComboBox* combobox, characterComboBoxList)
-		connect(combobox, SIGNAL(currentIndexChanged(QString)),
-			SLOT(characterSlotIndexChanged(QString)));
+		connect(combobox, QOverload<const QString&>::of(&QComboBox::currentIndexChanged),
+			this, &SettingsDialog::characterSlotIndexChanged);
 	translateDefaultCharacters();
 
 	load();
@@ -267,7 +269,7 @@ void SettingsDialog::on_DefaultRulesCheckbox_clicked() const
 	updateEnabled(Rule(ui->BaseRulesComboBox->currentIndex()));
 }
 
-void SettingsDialog::characterSlotIndexChanged(QString) const
+void SettingsDialog::characterSlotIndexChanged(const QString&) const
 {
 	QComboBox* comboBox = qobject_cast<QComboBox*>(sender());
 	QString senderName = comboBox->objectName();

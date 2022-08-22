@@ -41,18 +41,18 @@ GameWidget::GameWidget(ppvs::Game* game, NetChannelProxy* proxy, QWidget* parent
 		mToggleChat->setCheckable(true);
 
 		addDockWidget(Qt::LeftDockWidgetArea, mChatDockWidget, Qt::Vertical);
-		connect(mChatDockWidget, SIGNAL(visibilityChanged(bool)), SLOT(chatVisibilityChanged(bool)));
+		connect(mChatDockWidget, &QDockWidget::visibilityChanged, this, &GameWidget::chatVisibilityChanged);
 	}
 	mFullScreen = new QAction("FullScreen", this);
 	mFullScreen->setCheckable(true);
-	connect(mToggleChat, SIGNAL(toggled(bool)), SLOT(chatToggled(bool)));
-	connect(mFullScreen, SIGNAL(toggled(bool)), SLOT(fullScreenToggled(bool)));
+	connect(mToggleChat, &QAction::toggled, this, &GameWidget::chatToggled);
+	connect(mFullScreen, &QAction::toggled, this, &GameWidget::fullScreenToggled);
 
 	setContextMenuPolicy(Qt::CustomContextMenu);
-	connect(this, SIGNAL(customContextMenuRequested(QPoint)), SLOT(contextMenu(QPoint)));
+	connect(this, &QWidget::customContextMenuRequested, this, &GameWidget::contextMenu);
 	if (mGame->m_settings->recording == ppvs::RecordState::REPLAYING) {
 		QTimer* timer = new QTimer(this);
-		connect(timer, SIGNAL(timeout()), this, SLOT(showReplayTimer()));
+		connect(timer, &QTimer::timeout, this, &GameWidget::showReplayTimer);
 		timer->start(20);
 	}
 	setWindowIcon(QIcon(":/icons/redpuyo.ico"));

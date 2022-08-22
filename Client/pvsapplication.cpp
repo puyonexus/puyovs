@@ -46,7 +46,7 @@ PVSApplication::PVSApplication(int& argc, char** argv)
 	pvsApp = this;
 
 	reloadSettings();
-	connect(p->settings, SIGNAL(saved()), SLOT(reloadSettings()));
+	connect(p->settings, &Settings::saved, this, &PVSApplication::reloadSettings);
 }
 
 PVSApplication::~PVSApplication()

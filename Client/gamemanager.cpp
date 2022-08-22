@@ -17,21 +17,22 @@ GameManager::GameManager(NetClient* network, QObject* parent)
 	: QObject(parent)
 	, network(network)
 {
-	connect(network, SIGNAL(channelJoined(QString, NetPeerList)),
-		SLOT(channelJoined(QString, NetPeerList)));
-	connect(network, SIGNAL(peerJoinedChannel(QString, QString)),
-		SLOT(peerJoinedChannel(QString, QString)));
-	connect(network, SIGNAL(peerPartedChannel(QString, QString)),
-		SLOT(peerPartedChannel(QString, QString)));
-	connect(network, SIGNAL(channelMessageReceived(QString, uchar, QString, QString)),
-		SLOT(channelMessageReceived(QString, uchar, QString, QString)));
-	connect(network, SIGNAL(peerChannelMessageReceived(QString, uchar, QString, QString)),
-		SLOT(peerChannelMessageReceived(QString, uchar, QString, QString)));
-	connect(network, SIGNAL(peerStatusReceived(QString, QString, uchar)),
-		SLOT(peerStatusReceived(QString, QString, uchar)));
-	connect(network, SIGNAL(rankedMatchMessageReceived(QString)),
-		SLOT(rankedMatchmessageReceived(QString)));
-	connect(&pvsApp->settings(), SIGNAL(saved()), SLOT(updateAllControls()));
+	connect(network, &NetClient::channelJoined,
+		this, &GameManager::channelJoined);
+	connect(network, &NetClient::peerJoinedChannel,
+		this, &GameManager::peerJoinedChannel);
+	connect(network, &NetClient::peerPartedChannel,
+		this, &GameManager::peerPartedChannel);
+	connect(network, &NetClient::channelMessageReceived,
+		this, &GameManager::channelMessageReceived);
+	connect(network, &NetClient::peerChannelMessageReceived,
+		this, &GameManager::peerChannelMessageReceived);
+	connect(network, &NetClient::peerStatusReceived,
+		this, &GameManager::peerStatusReceived);
+	connect(network, &NetClient::rankedMatchMessageReceived,
+		this, &GameManager::rankedMatchmessageReceived);
+	connect(&pvsApp->settings(), &Settings::saved,
+		this, &GameManager::updateAllControls);
 
 	audio = new GameAudio;
 }
@@ -60,8 +61,8 @@ void GameManager::addGame(GameWidget* game)
 	updateControls(game);
 	games.append(game);
 
-	connect(game, SIGNAL(exiting(GameWidget*)), SLOT(gameDestroyed(GameWidget*)));
-	connect(this, SIGNAL(exiting()), game, SLOT(close()));
+	connect(game, &GameWidget::exiting, this, &GameManager::gameDestroyed);
+	connect(this, &GameManager::exiting, game, &GameWidget::close);
 }
 
 ppvs::RuleSetInfo GameManager::createRules()

@@ -29,7 +29,7 @@ void ReplayDialog::on_AddPushButton_clicked()
 	QFileDialog* dialog = new QFileDialog(this, "Open replay files", "User/Replays/", "PuyoVS replay files (*.rvs)");
 	dialog->setFileMode(QFileDialog::ExistingFiles);
 
-	connect(dialog, SIGNAL(filesSelected(const QStringList&)), this, SLOT(on_FileDialog_Finished(const QStringList&)));
+	connect(dialog, &QFileDialog::filesSelected, this, &ReplayDialog::on_FileDialog_Finished);
 
 	dialog->show();
 }

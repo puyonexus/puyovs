@@ -145,9 +145,9 @@ UpdateDialog::UpdateDialog(QString binPath, QWidget* parent)
 	request.setUrl(fullUrl("update.udb"));
 	request.setRawHeader("User-Agent", PUYOVS_USER_AGENT);
 	QNetworkReply* reply = netMan->get(request);
-	connect(reply, SIGNAL(downloadProgress(qint64, qint64)), SLOT(taskProgress(qint64, qint64)));
-	connect(reply, SIGNAL(readyRead()), SLOT(taskReadyRead()));
-	connect(reply, SIGNAL(finished()), SLOT(beginUpdate()));
+	connect(reply, &QNetworkReply::downloadProgress, this, &UpdateDialog::taskProgress);
+	connect(reply, &QNetworkReply::readyRead, this, &UpdateDialog::taskReadyRead);
+	connect(reply, &QNetworkReply::finished, this, &UpdateDialog::beginUpdate);
 	taskDevice = reply;
 	ui->overallProgress->setVisible(false);
 }
@@ -272,9 +272,9 @@ void UpdateDialog::nextTask()
 	request.setUrl(task.url);
 	request.setRawHeader("User-Agent", PUYOVS_USER_AGENT);
 	QNetworkReply* reply = netMan->get(request);
-	connect(reply, SIGNAL(downloadProgress(qint64, qint64)), SLOT(taskProgress(qint64, qint64)));
-	connect(reply, SIGNAL(readyRead()), SLOT(taskReadyRead()));
-	connect(reply, SIGNAL(finished()), SLOT(taskDone()));
+	connect(reply, &QNetworkReply::downloadProgress, this, &UpdateDialog::taskProgress);
+	connect(reply, &QNetworkReply::readyRead, this, &UpdateDialog::taskReadyRead);
+	connect(reply, &QNetworkReply::finished, this, &UpdateDialog::beginUpdate);
 	taskDevice = reply;
 }
 

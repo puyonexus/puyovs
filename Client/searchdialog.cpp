@@ -9,10 +9,10 @@ SearchDialog::SearchDialog(QWidget* parent, NetClient* client)
 	ui->setupUi(this);
 	searchState = 0;
 	timerState = 0;
-	connect(&timer, SIGNAL(timeout()), this, SLOT(on_TimeOut()));
+	connect(&timer, &QTimer::timeout, this, &SearchDialog::on_TimeOut);
 
 	if (client) {
-		connect(client, SIGNAL(searchResultReceived(QString)), this, SLOT(on_GetSearchResult(QString)));
+		connect(client, &NetClient::searchResultReceived, this, &SearchDialog::on_GetSearchResult);
 	}
 	netClient = client;
 }
