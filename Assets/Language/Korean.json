@@ -275,7 +275,7 @@
 
     "GameWaitingForPlayer": "플레이어를 기다리고 있습니다...",
     "GameDisconnected": "플레이어의 연결이 끊겼습니다.",
-    "GameRankedWaiting": "Start 버튼을 눌러\n새 상대를 검색하세요. (기본값: \"Enter\")",
+    "GameRankedWaiting": "Start 버튼을 눌러\n새 상대를 탐새하세요. (기본값: \"Enter\")",
     "GameRankedSearching": "새 대결 상대를 찾고 있습니다..."
   },
   "Updater": {
