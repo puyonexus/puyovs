@@ -56,6 +56,12 @@ if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
+# enable mp3
+add_definitions(-DALIB_MP3_SUPPORT)
+
+# enable ogg
+# add_definitions(-DALIB_OGG_SUPPORT)
+
 set(OPT_DEF_LIBC ON)
 
 # Add sub-projects.
