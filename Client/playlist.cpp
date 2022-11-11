@@ -72,7 +72,7 @@ CacheDB* CacheDB::instance = nullptr;
 
 CacheDB::CacheDB()
 {
-	QFile cache("User/Music/cache.db");
+	QFile cache(getCacheLocation()+"/ppvs_cache.db");
 	cache.open(QIODevice::ReadOnly);
 	QDataStream dataStream(&cache);
 
@@ -113,7 +113,7 @@ void CacheDB::removeHashCode(unsigned hash)
 
 void CacheDB::write()
 {
-	QFile cache("User/Music/cache.db");
+	QFile cache(getCacheLocation()+"/ppvs_cache.db");
 	cache.open(QIODevice::WriteOnly);
 	QDataStream dataStream(&cache);
 

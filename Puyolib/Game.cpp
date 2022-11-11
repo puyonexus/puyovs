@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "../PVS_ENet/PVS_Channel.h"
 #include "../PVS_ENet/PVS_Client.h"
+#include <algorithm>
 #include <cstdio>
 #include <ctime>
 #include <fstream>

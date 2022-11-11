@@ -29,7 +29,9 @@ typedef QList<GameModePair> GameModeList;
 typedef QListIterator<QPair<ppvs::Rules, QString>> GameModeListIterator;
 GameModeList getModeList();
 void readRulesetString(QString str, ppvs::RuleSetInfo* rs);
+QString getCacheLocation();
 QString getDataLocation();
+QString getSettingsLocation();
 QString createRulesetString(ppvs::RuleSetInfo* rs);
 
 namespace ilib {
