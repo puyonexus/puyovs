@@ -1,4 +1,4 @@
-﻿{
+{
 	"LanguageNative": "한국어",
 	"Launcher": {
 		"Title": "Puyo Puyo VS %1",
@@ -197,10 +197,10 @@
 		"WrongPassword": "비밀번호가 잘못되었습니다!",
 		"SendPrivate": "비밀 메시지 보내기",
 
-		"TelemetryTitle":	"Puyo VS 장치 정보 전송",
-		"TelemetryNotice":	"Puyo VS 팀에 크래시 덤프와 사용 정보를 전송하시겠습니까? 이러한 정보는 비밀이 유지되며 오류를 찾거나 성능 향상의 우선순위를 정하는 데에 활용됩니다. 이는 온전히 선택적이나, 저희에게 도움이 됩니다.",
-		"TelemetryCrashCheckbox":	"크래시 덤프와 오류 로그 전송 허용",
-		"TelemetryStatisticCheckbox":	"사용 정보와 장치 정보 전송 허용"
+		"TelemetryTitle": "Puyo VS 장치 정보 전송",
+		"TelemetryNotice": "Puyo VS 팀에 크래시 덤프와 사용 정보를 전송하시겠습니까? 이러한 정보는 비밀이 유지되며 오류를 찾거나 성능 향상의 우선순위를 정하는 데에 활용됩니다. 이는 온전히 선택적이나, 저희에게 도움이 됩니다.",
+		"TelemetryCrashCheckbox": "크래시 덤프와 오류 로그 전송 허용",
+		"TelemetryStatisticCheckbox": "사용 정보와 장치 정보 전송 허용"
 	},
 	"Messages": {
 		"ErrorInit": "네트워크 초기화 실패",
@@ -224,7 +224,7 @@
 		"ChannelLeft": "채팅방 %s 에서 퇴장하였습니다.",
 		"PeerJoined": "유저 %s 가 채널에 입장하였습니다.",
 		"PeerLeft": "유저 %s 가 채널에서 퇴장하였습니다.",
-		"MatchStarting": "대전이 이루어집니다.  : ",
+		"MatchStarting": "대전이 이루어집니다.	: ",
 		"MatchSpectate": "관전을 하고 싶다면 클릭하세요!",
 		"MatchCancel": "대전이 취소되었습니다.",
 		"MatchLeft": "대전상대가 퇴장하셨습니다.",
@@ -271,14 +271,19 @@
 
 		"ReviewRules": "마진 타임: %i\n목표 점수: %i\n최소 연쇄 수: %i\n초기 피버 카운트: %i\n피버 파워: %i\n발화를 위한 뿌요 갯수: %i\n퀵 드랍: %i\n플레이어 수: %i\n색깔 수: %i",
 		"SpectateMes": "대전이 시작됩니다 : ",
-		"SpectateLink": "관전을 하고 싶다면 클릭하세요!"
+		"SpectateLink": "관전을 하고 싶다면 클릭하세요!",
+
+		"GameWaitingForPlayer": "플레이어를 기다리고 있습니다...",
+		"GameDisconnected": "플레이어의 연결이 끊겼습니다.",
+		"GameRankedWaiting": "Start 버튼을 눌러\n새 상대를 탐새하세요. (기본값: \"Enter\")",
+		"GameRankedSearching": "새 대결 상대를 찾고 있습니다..."
 	},
 	"Updater": {
 		"Title": "Puyo VS 2 자동 업데이트",
 		"DatabaseDownloadError": "업데이트 데이터의 다운로드가 실패하였습니다.",
 		"DatabaseInvalidError": "업데이트 데이터 파일이 유효하지 않거나 손상되었습니다.",
 		"DatabaseVersionError": "현재 최신 업데이트 파일로 이 버젼을 업데이트 하기에는 이식성에 문제가 있습니다. 수동으로 업데이트 하시길 바랍니다. (http://puyonexus.net/) ",
-		"FileDownloadError": "다음 항목의 다운로드에 실패하였습니다. :  %s",
+		"FileDownloadError": "다음 항목의 다운로드에 실패하였습니다. :	%s",
 		"FileSaveError": "다음 항목이 시스템에서 사용 중입니다. 해당 항목을 종료하고 다시 진행해주십시오. : %s",
 		"LocalDBSaveError": "로컬에 위치한 데이터베이스 파일을 저장하는데 실패하였습니다."
 	}

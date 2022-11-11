@@ -546,7 +546,7 @@ void Player::setCharacter(PuyoCharacter character, bool show)
 	if (m_currentGame->m_players.size() <= 10)
 		m_characterAnimation.init(m_data, offset, 1, m_currentGame->m_baseAssetDir + kFolderUserCharacter + currentCharacter + std::string("/Animation/"));
 	else
-		m_characterAnimation.init(m_data, offset, 1, "");
+        m_characterAnimation.init(m_data, offset, 1, "");
 	if (m_currentGame->m_settings->useCharacterField)
 		setFieldImage(character);
 
@@ -1057,17 +1057,21 @@ void Player::chooseColor()
 		}
 
 		// Make choice
-		if ((m_controls.m_a == 1 && m_colorMenuTimer > 25) || ((m_controls.m_b == 1 && m_currentGame->m_settings->swapABConfirm == true && m_colorMenuTimer > 25))) {
+        if ((m_controls.m_a == 1 && m_currentGame->m_settings->swapABConfirm == false && m_colorMenuTimer > 25) || ((m_controls.m_b == 1 && m_currentGame->m_settings->swapABConfirm == true && m_colorMenuTimer > 25))) {
 			m_normalGarbage.gq += m_normalGarbage.cq;
 			m_normalGarbage.cq = 0;
 			m_data->snd.decide.play(m_data);
 			if (m_currentGame->m_settings->swapABConfirm == false) {
 				m_controls.m_a++;
 			} else {
-				m_controls.m_b++;
+                m_controls.m_b++;
 			}
 			if (m_takeover) {
-				m_currentGame->m_players[0]->m_controls.m_a++;
+                if (m_currentGame->m_settings->swapABConfirm == false) {
+                    m_currentGame->m_players[0]->m_controls.m_a++;
+                } else {
+                    m_currentGame->m_players[0]->m_controls.m_b++;
+                }
 			}
 			m_currentGame->m_colorTimer = 0;
 			m_colorMenuTimer = -50;
