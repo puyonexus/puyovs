@@ -27,6 +27,7 @@ public:
 		const auto manager = new QNetworkAccessManager(qApp);
 		QNetworkRequest request;
 		request.setUrl(url);
+		request.setSslConfiguration(QSslConfiguration::defaultConfiguration());
 		m_reply = manager->get(request);
 
 		QEventLoop loop;
