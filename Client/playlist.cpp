@@ -51,7 +51,6 @@ QIODevice* UrlDispatcher::openUrl(QUrl url)
 
 	QNetworkRequest request;
 	request.setUrl(url);
-	request.setSslConfiguration(QSslConfiguration::defaultConfiguration());
 	request.setRawHeader("User-Agent", PUYOVS_USER_AGENT);
 	QIODevice* file = manager->get(request);
 
