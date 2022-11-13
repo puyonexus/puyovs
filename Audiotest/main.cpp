@@ -27,7 +27,12 @@ public:
 		const auto manager = new QNetworkAccessManager(qApp);
 		QNetworkRequest request;
 		request.setUrl(url);
+		// This is a hack.
+		#ifdef _WIN32
+		
+		#else
 		request.setSslConfiguration(QSslConfiguration::defaultConfiguration());
+		#endif
 		m_reply = manager->get(request);
 
 		QEventLoop loop;
