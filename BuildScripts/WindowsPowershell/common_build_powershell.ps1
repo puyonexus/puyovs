@@ -87,7 +87,7 @@ pause
 ### Phase 6. Finalizing
 cls
 echo "Build finished. Cleaning up..."
-explorer.exe --path "$GITHUB_PATH\.build\Client\RelWithDebInfo"
+$GITHUB_PATH\.build\Client\RelWithDebInfo\PuyoVS.exe
 del C:\qt -Recurse -Force
-del C:\qt.zip
+del C:\qt.7z
 pause
