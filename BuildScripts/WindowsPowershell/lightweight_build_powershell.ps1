@@ -10,18 +10,15 @@ echo "Before start, you SHOULD install these programs manually."
 echo "If installed, press ENTER to continue."
 echo ""
 echo "Programs:"
-echo "  - Git"
 echo "  - 7z"
-echo "  - CMake"
-echo "  - Also, you should have setted up VC++ build environment."
-echo "  If not, please use the common one."
+echo "  - cmake"
+echo "  - CMake Build Environment"
 echo ""
 echo "Also, please run this script with Administrator privillige."
 ## other programs are handlable through ps1 script
 pause
 echo ""
 
-## [IntPtr]::Size is 4 on x86 and 8 on x64/ARM64
 if ( [IntPtr]::Size -eq 4 ) {
     $SYSARCH = 'Win32'
     $MATARCH = 'x86'
@@ -31,56 +28,57 @@ if ( [IntPtr]::Size -eq 8 ) {
     $MATARCH = 'x64'
 }
 
-$GITHUB_PATH = "$env:USERPROFILE\GitHub\PuyoVS"
-del "$GITHUB_PATH" -Recurse -Force
+$GitHubPath = ($MyInvocation.MyCommand).Path
+for ($i = 0; $i -le 3; $i++) {
+	Split-Path $GitHubPath -Parent
+}
 
-### Phase 1. Install winget if not installed
-## This phase is skipped since it's lightweight:
-## the lightweight build script is used if you have installed Visual C++ build environment.
+$QtPath = "C:\"
+
+### Phase 1. Skipped. Installing Visual Studio / BuildTools is skipped on Lightweight script.
 
 ### Phase 2. Download Qt SDK
 clear
+echo "Visual Studio BuildTools has been installed successfully."
+echo ""
 echo "Now this will download Qt SDK, required to build Puyo VS."
 ## Download from GitHub...
-Invoke-WebRequest -Uri "https://github.com/puyonexus/qt-sdk-builder/releases/download/v2/qt-windows-5.15.2-$MATARCH-msvc-static-release.7z" -OutFile "C:\qt.7z"
+Invoke-WebRequest -Uri "https://github.com/puyonexus/qt-sdk-builder/releases/download/v2/qt-windows-5.15.2-$MATARCH-msvc-static-release.7z" -OutFile "$QtPath\qt.7z"
 
 ### Phase 3. Extract Qt SDK
 echo "Extracting..."
 echo "If error occurs, please install 7z and run the script from the beginning."
 ## Use 7z to extract qt.7z
-7z x C:\qt.7z -oC:\Qt\
+7z x "$QtPath\qt.7z" -o"$QtPath\Qt\"
 ## ..and add to path
 #### Quote: https://techexpert.tips/powershell/powershell-edit-path-variable/
-$TEMPQT = "C:\Qt\Qt-5.15.2\bin"
+$TEMPQT = "$QtPath\Qt\Qt-5.15.2\bin"
 $OLDPATH = [System.Environment]::GetEnvironmentVariable('PATH','machine')
-$NEWPATH = "$OLDPATH;$TEMP_CMAKE;$TEMPQT"
+$NEWPATH = "$OLDPATH;$TEMPQT"
 [Environment]::SetEnvironmentVariable('PATH', "$NEWPATH", 'MACHINE')
 #### Cleanup
 $TEMPQT = ""
 $OLDPATH = ""
 $NEWPATH = ""
 
-### Phase 4. Git Clone
-clear
-echo "Now this will clone Puyo VS repository."
-echo "Ignore the git error."
-git clone --recursive "https://github.com/puyonexus/puyovs.git" "$GITHUB_PATH"
-cd "$GITHUB_PATH"
-
-### Phase 5. Make CMake Build Directory
+### Phase 4. Make CMake Build Directory
 clear
 echo "Now this will configure PuyoVS via CMake."
+## Relate 
+cd $GitHubPath
+mkdir .\.build
 ## Init CMake
 cmake -B .build
 ## Build PuyoVS
 cmake --build .build --parallel 8 --config RelWithDebInfo
 ## Install Assets
 cmake --install .build --config RelWithDebInfo
+echo "Build finished. Please check file at '$GitHubPath\.build\Client\RelWithDebInfo\PuyoVS.exe'."
 pause
 
 ### Phase 6. Finalizing
 cls
 echo "Build finished. Cleaning up..."
-del C:\qt -Recurse -Force
-del C:\qt.7z
+del "$QtPath\qt" -Recurse -Force
+del "$QtPath\qt.7z"
 pause
