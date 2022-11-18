@@ -28,8 +28,9 @@ if ( [IntPtr]::Size -eq 8 ) {
 }
 
 $GitHubPath = ($MyInvocation.MyCommand).Path
-for ($i = 0; $i -le 3; $i++) {
-	Split-Path $GitHubPath -Parent
+for ($i = 0; $i -le 2; $i++) {
+    $temp = Split-Path $GitHubPath
+    $GitHubPath = $temp
 }
 
 $QtPath = "C:\"
