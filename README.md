@@ -176,8 +176,8 @@ open ./.build/Client/PuyoVS.app
 - Audiolib: An audio file loading, audio output and mixing library. Written by John Chadwick, but contains some vendored libraries.
 - Audiotest: A small test program for Audiolib that plays an audio stream. Written by John Chadwick.
 - Build: Folders where final builds are outputted to.
-- BuildScripts: Build scripts, currently just for macOS. Written by BLueBLue.
 - Client: The Qt-based frontend. Written by John Chadwick.
+- Contrib: Contributions that are included with the source distribution but not strictly part of the actual program right now.
 - ENet: A vendored copy of the [ENet](http://enet.bespin.org/) networking library.
 - Inputlib: An input library. Written by John Chadwick.
 - Inputtest: A small test program for Inputlib that outputs input events to the terminal. Written by John Chadwick.
