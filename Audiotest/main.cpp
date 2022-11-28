@@ -1,10 +1,12 @@
 #include <QCoreApplication>
 #include <QEventLoop>
+#include <QFile>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <alib/audiolib.h>
 #include <alib/buffer.h>
 #include <alib/stream.h>
+#include <stdio.h>
 
 #ifdef WIN32
 #include <Windows.h>
@@ -25,6 +27,12 @@ public:
 		const auto manager = new QNetworkAccessManager(qApp);
 		QNetworkRequest request;
 		request.setUrl(url);
+		// This is a hack.
+		#ifdef _WIN32
+		
+		#else
+		request.setSslConfiguration(QSslConfiguration::defaultConfiguration());
+		#endif
 		m_reply = manager->get(request);
 
 		QEventLoop loop;
@@ -165,21 +173,55 @@ public:
     [[nodiscard]] std::string url() const override { return m_stream->url(); }
 };
 
+void print_help()
+{
+	fprintf(stderr, "Audiotest: attempts to play a (f)ile/HTTP (s)tream using Audiolib.\nArguments:\n -f: local filename\n -s: a valid HTTP URL\n\n");
+}
+
 int main(int argc, char* argv[])
 {
 	QCoreApplication a(argc, argv);
 	alib::Device* device = alib::open();
+	if (argc==3) {
+		if (!strcmp(argv[1],"-f")) {
+			if (!QFile::exists(argv[2])) {
+				print_help();
+				return 2;
+			}
+			device->play(alib::Stream(argv[2]));
+			while (1) {
 
-	// BufferedStream *stream = new BufferedStream(new HttpStream("http://..."));
+				qApp->sendPostedEvents();
+				qApp->processEvents();
 
-	device->play(alib::Stream("loop-test.logg"));
+				yield();
+				}
+			}
+		else if (!strcmp(argv[1], "-s")) {
+			BufferedStream *stream = new BufferedStream(new HttpStream(argv[2]));
+			device->play(stream);
+			while (1) {
+				stream->prebuffer(4096);
 
-	while (1) {
-		// stream->prebuffer(4096);
+				qApp->sendPostedEvents();
+				qApp->processEvents();
 
-		qApp->sendPostedEvents();
-		qApp->processEvents();
+				yield();
+				}
+			}
+		else {
+			print_help();
+			return 1;
+			}
 
-		yield();
+
+
+
 	}
+	else {
+		print_help();
+		return 1;
+	}
+
+
 }
