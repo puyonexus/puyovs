@@ -45,6 +45,8 @@ public:
 	CharacterSelect* m_charSelectMenu = nullptr;
 	Menu* m_mainMenu = nullptr;
 
+	Sprite m_backgroundSprite {};
+	Sprite m_black {};
 
 private:
 	int m_targetVolumeNormal = 100;
@@ -58,11 +60,12 @@ private:
 	FeText* m_statusText = nullptr;
 	std::string m_lastText;
 	void setStatusText(const char* utf8);
-	Sprite m_backgroundSprite {};
 
 	// Timers
 	int m_timerEndMatch = 0;
 	Sprite m_timerSprite[2] {};
+
+
 
 };
 

@@ -29,12 +29,6 @@ Game::Game(GameSettings* gs)
 	activeGame = this;
 	m_choiceTimer = (gs->rankedMatch == true ? 5 : 30) * 60;
 
-	m_black.setImage(nullptr);
-	m_black.setScale(640 * 2, 480);
-	m_black.setColor(0, 0, 0);
-	m_black.setTransparency(0.5f);
-	m_black.setPosition(-640.f / 2.f, -480.f / 4.f);
-
 	m_statusFont = nullptr;
 	m_statusText = nullptr;
 
@@ -55,185 +49,12 @@ Game::~Game()
 	delete m_gameRenderer;
 
 	delete m_currentRuleSet;
-	/*delete m_statusText;
-	delete m_statusFont;
-	delete m_data->front;
-	delete m_data;*/
 }
 
 void Game::close()
 {
 	// Close game
 	m_runGame = false;
-}
-
-void Game::loadGlobal()
-{
-	// Load user settings
-	m_baseAssetDir = m_settings->baseAssetDir;
-	m_data->gUserSettings.backgroundDirPath = m_settings->background;
-	m_data->gUserSettings.puyoDirPath = m_settings->puyo;
-	m_data->gUserSettings.sfxDirPath = m_settings->sfx;
-
-	// Set global images
-	loadImages();
-
-	// Load all sounds
-	loadSounds();
-
-	// Init shaders
-	m_data->glowShader = nullptr;
-	m_data->tunnelShader = nullptr;
-
-	if (useShaders) {
-		// https://stackoverflow.com/a/33172917
-		static auto glowShaderSource =
-#include "glowShader.vs"
-			;
-
-		m_data->glowShader = m_data->front->loadShader(glowShaderSource);
-		if (m_data->glowShader) {
-			m_data->glowShader->setCurrentTexture("tex");
-			m_data->glowShader->setParameter("color", 1.0);
-		}
-
-		static auto tunnelShaderSource =
-#include "tunnelShader.vs"
-			;
-		m_data->tunnelShader = m_data->front->loadShader(tunnelShaderSource);
-		if (m_data->tunnelShader) {
-			m_data->tunnelShader->setCurrentTexture("tex");
-			m_data->tunnelShader->setParameter("time", 1.0);
-			m_data->tunnelShader->setParameter("cl", 0.0, 0.0, 1.0, 1.0);
-		}
-	}
-
-	// Other
-	m_data->globalTimer = 0;
-	m_data->windowFocus = true;
-	m_data->playSounds = m_settings->playSound;
-	m_data->playMusic = m_settings->playMusic;
-
-	m_statusFont = m_data->front->loadFont("Arial", 14);
-	setStatusText("");
-}
-
-void Game::loadSounds() const
-{
-	Sounds& snd = m_data->snd;
-	setBuffer(snd.chain[0], (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain1.ogg"))));
-	setBuffer(snd.chain[1], (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain2.ogg"))));
-	setBuffer(snd.chain[2], (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain3.ogg"))));
-	setBuffer(snd.chain[3], (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain4.ogg"))));
-	setBuffer(snd.chain[4], (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain5.ogg"))));
-	setBuffer(snd.chain[5], (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain6.ogg"))));
-	setBuffer(snd.chain[6], (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain7.ogg"))));
-	setBuffer(snd.allClearDrop, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/allclear.ogg"))));
-	setBuffer(snd.drop, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/drop.ogg"))));
-	setBuffer(snd.fever, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/fever.ogg"))));
-	setBuffer(snd.feverLight, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/feverlight.ogg"))));
-	setBuffer(snd.feverTimeCount, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/fevertimecount.ogg"))));
-	setBuffer(snd.feverTimeEnd, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/fevertimeend.ogg"))));
-	setBuffer(snd.go, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/go.ogg"))));
-	setBuffer(snd.heavy, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/heavy.ogg"))));
-	setBuffer(snd.hit, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/hit.ogg"))));
-	setBuffer(snd.lose, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/lose.ogg"))));
-	setBuffer(snd.move, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/move.ogg"))));
-	setBuffer(snd.nuisanceHitL, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisance_hitL.ogg"))));
-	setBuffer(snd.nuisanceHitM, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisance_hitM.ogg"))));
-	setBuffer(snd.nuisanceHitS, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisance_hitS.ogg"))));
-	setBuffer(snd.nuisanceL, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisanceL.ogg"))));
-	setBuffer(snd.nuisanceS, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisanceS.ogg"))));
-	setBuffer(snd.ready, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/ready.ogg"))));
-	setBuffer(snd.rotate, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/rotate.ogg"))));
-	setBuffer(snd.win, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/win.ogg"))));
-	setBuffer(snd.decide, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/decide.ogg"))));
-	setBuffer(snd.cancel, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/cancel.ogg"))));
-	setBuffer(snd.cursor, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/cursor.ogg"))));
-}
-
-// Load images (user defined)
-void Game::loadImages() const
-{
-	// Load puyo
-	m_data->imgPuyo = m_data->front->loadImage(m_baseAssetDir + kFolderUserPuyo + m_data->gUserSettings.puyoDirPath + std::string(".png"));
-
-	// Check rotation center of quadruplet
-	if (m_data->imgPuyo && !m_data->imgPuyo->error() && m_data->imgPuyo->height() > 10) {
-		for (int i = 0; i < kPuyoX; i++) {
-			if (m_data->imgPuyo->pixel(11 * kPuyoX - i, 14 * kPuyoY).a > 50) {
-				m_data->quadrupletCenter = kPuyoX - i;
-				break;
-			}
-		}
-	}
-	m_data->imgPuyo->setFilter(FilterType::LinearFilter);
-
-	// Lights
-	m_data->imgLight = m_data->front->loadImage(m_baseAssetDir + "Data/Light.png");
-	m_data->imgLightS = m_data->front->loadImage(m_baseAssetDir + "Data/Light_s.png");
-	m_data->imgLightHit = m_data->front->loadImage(m_baseAssetDir + "Data/Light_hit.png");
-	m_data->imgFSparkle = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/fsparkle.png");
-	m_data->imgFLight = m_data->front->loadImage(m_baseAssetDir + "Data/fLight.png");
-	m_data->imgFLightHit = m_data->front->loadImage(m_baseAssetDir + "Data/fLight_hit.png");
-
-	m_data->imgTime = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/time.png"));
-
-	// Menu
-	for (int i = 0; i < 3; ++i) {
-		for (int j = 0; j < 2; ++j) {
-			// Safe (because i/j have defined ranges)
-			char buffer[128];
-			sprintf(buffer, "Data/Menu/menu%i%i.png", i, j);
-			m_data->imgMenu[i][j] = m_data->front->loadImage(m_baseAssetDir + buffer);
-		}
-	}
-
-	// Backgrounds
-	m_data->imgBackground = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/back.png"));
-	m_data->imgFieldFever = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/ffield.png"));
-
-	// Background of next puyo
-	m_data->imgNextPuyoBackgroundR = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/nextR.png"));
-	m_data->imgNextPuyoBackgroundL = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/nextL.png"));
-
-	if (!useShaders) {
-		for (int i = 0; i < 30; ++i) {
-			m_data->imgFeverBack[i] = m_data->front->loadImage(m_baseAssetDir + std::string("Data/Fever/f" + toString(i) + ".png").c_str());
-		}
-	}
-
-	// Load default fields. Custom fields should be loaded per character
-	m_data->imgField1 = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/field1.png"));
-	m_data->imgField2 = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/field2.png"));
-	m_data->imgBorder1 = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/border1.png"));
-	m_data->imgBorder2 = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/border2.png"));
-	m_data->imgPlayerBorder = m_data->front->loadImage(m_baseAssetDir + "Data/border.png");
-	m_data->imgSpice = m_data->front->loadImage(m_baseAssetDir + "Data/spice.png");
-
-	// Other
-	m_data->imgScore = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/score.png"));
-	m_data->imgAllClear = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/allclear.png"));
-	m_data->imgLose = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/lose.png"));
-	m_data->imgWin = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/win.png"));
-	m_data->imgFeverGauge = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/fgauge.png"));
-	m_data->imgSeconds = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/fcounter.png"));
-	m_data->imgCharHolder = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/charHolder.png");
-	m_data->imgNameHolder = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/nameHolder.png");
-	m_data->imgBlack = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/black.png");
-	m_data->imgDropSet = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/dropset.png");
-	m_data->imgChain = m_data->front->loadImage(m_baseAssetDir + std::string("User/Backgrounds/") + m_data->gUserSettings.backgroundDirPath + std::string("/chain.png"));
-	m_data->imgCheckMark = m_data->front->loadImage(m_baseAssetDir + "Data/checkmark.png");
-	m_data->imgPlayerCharSelect = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/charSelect.png");
-
-	for (int i = 0; i < kNumCharacters; ++i) {
-		m_data->imgCharField[i] = m_data->front->loadImage(m_baseAssetDir + kFolderUserCharacter + m_settings->characterSetup[static_cast<PuyoCharacter>(i)] + "/field.png");
-		m_data->imgCharSelect[i] = m_data->front->loadImage(m_baseAssetDir + kFolderUserCharacter + m_settings->characterSetup[static_cast<PuyoCharacter>(i)] + "/select.png");
-		m_data->imgCharName[i] = m_data->front->loadImage(m_baseAssetDir + kFolderUserCharacter + m_settings->characterSetup[static_cast<PuyoCharacter>(i)] + "/name.png");
-		m_data->imgSelect[i] = m_data->front->loadImage(m_baseAssetDir + kFolderUserCharacter + m_settings->characterSetup[static_cast<PuyoCharacter>(i)] + "/select.png");
-	}
-
-	m_data->imgPlayerNumber = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/playernumber.png");
 }
 
 void Game::initPlayers()
@@ -297,25 +118,6 @@ void Game::initGame(Frontend* f)
 		m_menuSelect = static_cast<int>(m_settings->startWithCharacterSelect);
 	}
 	m_timerEndMatch = 0;
-
-	// Initialize readygo animation
-	m_readyGoObj.init(m_data, PosVectorFloat(320, 240), 1, m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + "/Animation/", "ready.xml", 3 * 60);
-	m_backgroundAnimation.init(m_data, PosVectorFloat(320, 240), 1, m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + "/Animation/", "animation.xml", 30 * 60);
-	m_backgroundAnimation.prepareAnimation("background");
-
-	// Other stuff
-	m_charSelectMenu = new CharacterSelect(this);
-	m_charSelectMenu->prepare();
-	m_mainMenu = new Menu(this);
-
-	m_timerSprite[0].setImage(m_data->imgPlayerNumber);
-	m_timerSprite[1].setImage(m_data->imgPlayerNumber);
-	m_timerSprite[0].setSubRect(0 / 10 * 24, 0, 0, 32);
-	m_timerSprite[1].setSubRect(0 / 10 * 24, 0, 0, 32);
-	m_timerSprite[0].setCenterBottom();
-	m_timerSprite[1].setCenterBottom();
-	m_timerSprite[0].setPosition(640 - 24, 32);
-	m_timerSprite[1].setPosition(640 - 24 - 24, 32);
 }
 
 // Set rules from RuleSetInfo.
@@ -529,7 +331,7 @@ void Game::playGame()
 
 	// Ready go
 	if (!m_players.empty()) {
-		m_readyGoObj.playAnimation();
+		m_gameRenderer->m_readyGoObj.playAnimation();
 	}
 	m_backgroundAnimation.playAnimation();
 
@@ -676,8 +478,10 @@ void Game::renderGame()
 	m_gameRenderer->m_gameData->front->clear();
 
 	// Draw background
-	m_spriteBackground.draw(m_gameRenderer->m_gameData->front);
-	m_backgroundAnimation.draw();
+	m_gameRenderer->m_backgroundSprite.draw(m_gameRenderer->m_gameData->front);
+	//m_spriteBackground.draw(m_gameRenderer->m_gameData->front);
+	m_gameRenderer->m_backgroundAnimation.draw();
+	//m_backgroundAnimation.draw();
 
 	// Draw timer
 	if (m_currentGameStatus == GameStatus::IDLE && !m_settings->useCpuPlayers && (countActivePlayers() > 1 || m_settings->rankedMatch)) {
@@ -701,7 +505,7 @@ void Game::renderGame()
 	}
 	if (!m_players.empty()) {
 		// Needs at least 1 player to draw ready-go
-		m_readyGoObj.draw();
+		m_gameRenderer->m_readyGoObj.draw();
 	}
 
 	// Draw menuSelects
@@ -714,7 +518,7 @@ void Game::renderGame()
 
 	// Darken screen
 	if (m_rankedState >= 3) {
-		m_black.draw(m_gameRenderer->m_gameData->front);
+		m_gameRenderer->m_black.draw(m_gameRenderer->m_gameData->front);
 		// Draw status text
 		if (m_statusText) {
 			m_gameRenderer->m_gameData->front->setColor(255, 255, 255, 255);

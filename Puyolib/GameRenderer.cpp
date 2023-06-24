@@ -8,6 +8,13 @@ namespace ppvs {
 GameRenderer::GameRenderer(ppvs::Game* game)
 	: m_game(game)
 {
+	// Blanking cloak sprite
+	m_black.setImage(nullptr);
+	m_black.setScale(640 * 2, 480);
+	m_black.setColor(0, 0, 0);
+	m_black.setTransparency(0.5f);
+	m_black.setPosition(-640.f / 2.f, -480.f / 4.f);
+
 }
 
 GameRenderer::~GameRenderer()

@@ -447,7 +447,7 @@ void CharacterSelect::end()
 				for (size_t i = 0; i < numPlayers; i++) {
 					m_currentGame->m_players[i]->m_currentPhase = Phase::GETREADY;
 				}
-				m_currentGame->m_readyGoObj.prepareAnimation("readygo");
+				m_currentGame->m_gameRenderer->m_readyGoObj.prepareAnimation("readygo");
 				m_data->matchTimer = 0;
 			}
 			m_currentGame->m_menuSelect = 0;
