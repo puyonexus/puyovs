@@ -63,6 +63,29 @@ void GameRenderer::initRenderer(Frontend* f)
 
 	m_statusFont = m_gameData->front->loadFont("Arial", 14);
 	setStatusText("");
+
+	// Game::initGame
+
+	m_backgroundSprite.setImage(m_gameData->imgBackground);
+	m_backgroundSprite.setPosition(0.f,0.f);
+
+	m_readyGoObj.init(m_gameData, PosVectorFloat(320, 240), 1, m_baseAssetDir + kFolderUserBackgrounds + m_gameData->gUserSettings.backgroundDirPath + "/Animation/", "ready.xml", 3 * 60);
+	m_backgroundAnimation.init(m_gameData, PosVectorFloat(320, 240), 1, m_baseAssetDir + kFolderUserBackgrounds + m_gameData->gUserSettings.backgroundDirPath + "/Animation/", "animation.xml", 30 * 60);
+	m_backgroundAnimation.prepareAnimation("background");
+
+	m_charSelectMenu = new CharacterSelect(m_game);
+	m_charSelectMenu->prepare();
+	m_mainMenu = new Menu(m_game);
+
+	m_timerSprite[0].setImage(m_gameData->imgPlayerNumber);
+	m_timerSprite[1].setImage(m_gameData->imgPlayerNumber);
+	m_timerSprite[0].setSubRect(0 / 10 * 24, 0, 0, 32);
+	m_timerSprite[1].setSubRect(0 / 10 * 24, 0, 0, 32);
+	m_timerSprite[0].setCenterBottom();
+	m_timerSprite[1].setCenterBottom();
+	m_timerSprite[0].setPosition(640 - 24, 32);
+	m_timerSprite[1].setPosition(640 - 24 - 24, 32);
+
 }
 
 void GameRenderer::setStatusText(const char* utf8)

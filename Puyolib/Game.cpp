@@ -278,10 +278,7 @@ int Game::getActivePlayers() const
 
 void Game::initGame(Frontend* f)
 {
-	m_data = new GameData;
-	m_data->front = f;
-
-	loadGlobal();
+	m_gameRenderer->initRenderer(f);
 
 	// Set random seed
 	m_randomSeedNextList = getRandom(100000);

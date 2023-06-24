@@ -3,6 +3,7 @@
 
 #pragma once
 #include "Game.h"
+#include "CharacterSelect.h"
 
 namespace ppvs {
 
@@ -39,6 +40,11 @@ public:
 	std::string m_winsString;
 
 
+	// Menus
+	CharacterSelect* m_charSelectMenu = nullptr;
+	Menu* m_mainMenu = nullptr;
+
+
 private:
 	int m_targetVolumeNormal = 100;
 	int m_currentVolumeNormal = 0;
@@ -51,9 +57,11 @@ private:
 	FeText* m_statusText = nullptr;
 	std::string m_lastText;
 	void setStatusText(const char* utf8);
+	Sprite m_backgroundSprite {};
 
-
-
+	// Timers
+	int m_timerEndMatch = 0;
+	Sprite m_timerSprite[2] {};
 
 };
 

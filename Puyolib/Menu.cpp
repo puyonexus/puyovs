@@ -7,7 +7,7 @@ namespace ppvs {
 Menu::Menu(Game* g)
 {
 	m_currentGame = g;
-	m_data = g->m_data;
+	m_data = g->m_gameRenderer->m_gameData;
 	m_background.setImage(nullptr);
 	m_background.setScale(2 * 192, 336);
 	m_background.setColor(0, 0, 0);

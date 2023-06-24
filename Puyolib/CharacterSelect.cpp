@@ -12,7 +12,7 @@ namespace ppvs {
 CharacterSelect::CharacterSelect(Game* g)
 {
 	m_currentGame = g;
-	m_data = g->m_data;
+	m_data = g->m_gameRenderer->m_gameData;
 
 	m_background.setImage(nullptr);
 	m_background.setScale(2.f * 640.f, 480.f);
