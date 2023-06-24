@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: GPLv3
 
 #pragma once
-#include "Game.h"
 #include "CharacterSelect.h"
+#include "Game.h"
 
 namespace ppvs {
 
@@ -32,6 +32,8 @@ public:
 	Game* m_game = nullptr;
 
 	// Public variables
+	Frontend* frontend = nullptr;
+
 	GameData* m_gameData = nullptr;
 	Animation m_readyGoObj {};
 	Animation m_backgroundAnimation {};
@@ -40,10 +42,11 @@ public:
 	std::string m_baseAssetDir;
 	std::string m_winsString;
 
-
 	// Menus
 	CharacterSelect* m_charSelectMenu = nullptr;
 	Menu* m_mainMenu = nullptr;
+
+	void setStatusText(const char* utf8);
 
 	Sprite m_backgroundSprite {};
 	Sprite m_black {};
@@ -59,15 +62,14 @@ private:
 	FeFont* m_statusFont = nullptr;
 	FeText* m_statusText = nullptr;
 	std::string m_lastText;
-	void setStatusText(const char* utf8);
+
 
 	// Timers
 	int m_timerEndMatch = 0;
 	Sprite m_timerSprite[2] {};
 
-
-
+	// Helper functions
+	bool shouldDrawTimer();
 };
 
 } // ppvs
-

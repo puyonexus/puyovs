@@ -469,76 +469,12 @@ void Game::playGame()
 
 void Game::renderGame()
 {
-	// Tunnel shader
-	if (m_gameRenderer->m_gameData->tunnelShader) {
-		m_gameRenderer->m_gameData->tunnelShader->setParameter("time", static_cast<double>(m_gameRenderer->m_gameData->globalTimer) / 60.0);
-	}
-
-	// Clear screen
-	m_gameRenderer->m_gameData->front->clear();
-
-	// Draw background
-	m_gameRenderer->m_backgroundSprite.draw(m_gameRenderer->m_gameData->front);
-	//m_spriteBackground.draw(m_gameRenderer->m_gameData->front);
-	m_gameRenderer->m_backgroundAnimation.draw();
-	//m_backgroundAnimation.draw();
-
-	// Draw timer
-	if (m_currentGameStatus == GameStatus::IDLE && !m_settings->useCpuPlayers && (countActivePlayers() > 1 || m_settings->rankedMatch)) {
-		m_timerSprite[0].draw(m_gameRenderer->m_gameData->front);
-		m_timerSprite[1].draw(m_gameRenderer->m_gameData->front);
-	}
-	if (m_players[0]->getPlayerType() == HUMAN && m_players[0]->m_currentPhase == Phase::PICKCOLORS
-		&& !m_settings->useCpuPlayers && !m_players[0]->m_pickedColor) {
-		m_timerSprite[0].draw(m_gameRenderer->m_gameData->front);
-		m_timerSprite[1].draw(m_gameRenderer->m_gameData->front);
-	}
-
-	// Draw player related objects
-	for (const auto& player : m_players) {
-		// Draw fields
-		player->draw();
-	}
-	for (const auto& player : m_players) {
-		// Draw light effect
-		player->drawEffect();
-	}
-	if (!m_players.empty()) {
-		// Needs at least 1 player to draw ready-go
-		m_gameRenderer->m_readyGoObj.draw();
-	}
-
-	// Draw menuSelects
-	if (m_menuSelect == 1) {
-		m_gameRenderer->m_charSelectMenu->draw();
-	}
-	if (m_menuSelect == 2) {
-		m_gameRenderer->m_mainMenu->draw();
-	}
-
-	// Darken screen
-	if (m_rankedState >= 3) {
-		m_gameRenderer->m_black.draw(m_gameRenderer->m_gameData->front);
-		// Draw status text
-		if (m_statusText) {
-			m_gameRenderer->m_gameData->front->setColor(255, 255, 255, 255);
-			m_statusText->draw(8, 0);
-		}
-	}
-
-	m_gameRenderer->m_gameData->front->swapBuffers();
+	m_gameRenderer->renderGame();
 }
 
 void Game::setStatusText(const char* utf8)
 {
-	if (utf8 == m_lastText)
-		return;
-	if (!m_statusFont)
-		return;
-	delete m_statusText;
-
-	m_statusText = m_statusFont->render(utf8);
-	m_lastText = utf8;
+	m_gameRenderer->setStatusText(utf8);
 }
 
 void Game::setWindowFocus(bool focus) const

@@ -31,6 +31,7 @@ void GameRenderer::initRenderer(Frontend* f)
 {
 	m_gameData = new GameData;
 	m_gameData->front = f;
+	frontend = f;
 
 	// loadGlobal()
 	m_baseAssetDir = m_game->m_settings->baseAssetDir;
@@ -76,13 +77,11 @@ void GameRenderer::initRenderer(Frontend* f)
 	// Game::initGame
 
 	m_backgroundSprite.setImage(m_gameData->imgBackground);
-	m_backgroundSprite.setPosition(0.f,0.f);
+	m_backgroundSprite.setPosition(0.f, 0.f);
 
 	m_readyGoObj.init(m_gameData, PosVectorFloat(320, 240), 1, m_baseAssetDir + kFolderUserBackgrounds + m_gameData->gUserSettings.backgroundDirPath + "/Animation/", "ready.xml", 3 * 60);
 	m_backgroundAnimation.init(m_gameData, PosVectorFloat(320, 240), 1, m_baseAssetDir + kFolderUserBackgrounds + m_gameData->gUserSettings.backgroundDirPath + "/Animation/", "animation.xml", 30 * 60);
 	m_backgroundAnimation.prepareAnimation("background");
-
-
 
 	m_timerSprite[0].setImage(m_gameData->imgPlayerNumber);
 	m_timerSprite[1].setImage(m_gameData->imgPlayerNumber);
@@ -92,7 +91,6 @@ void GameRenderer::initRenderer(Frontend* f)
 	m_timerSprite[1].setCenterBottom();
 	m_timerSprite[0].setPosition(640 - 24, 32);
 	m_timerSprite[1].setPosition(640 - 24 - 24, 32);
-
 }
 void GameRenderer::initMenus()
 {
@@ -109,6 +107,73 @@ void GameRenderer::setStatusText(const char* utf8)
 		m_statusText = m_statusFont->render(utf8);
 		m_lastText = utf8;
 	}
+}
+
+void GameRenderer::renderGame()
+{
+
+	// Set tunnel shader time
+	if (m_gameData->tunnelShader) {
+		m_gameData->tunnelShader->setParameter("time", static_cast<double>(m_gameData->globalTimer) / 60.0);
+	}
+	// TODO: set tunnel shader origin point in Fever
+
+	// Clear framebuffer
+	m_gameData->front->clear();
+
+	// Draw background with animation
+	m_backgroundSprite.draw(frontend);
+	m_backgroundAnimation.draw();
+
+	// Draw countdown timer
+	if (shouldDrawTimer()) {
+		m_timerSprite[0].draw(frontend);
+		m_timerSprite[1].draw(frontend);
+	}
+
+	// Draw player elements
+	for (const auto& player: m_game->m_players) {
+		player->draw();
+	}
+	for (const auto& player: m_game->m_players) {
+		player->drawEffect();
+	}
+
+	// Failsafe to prevent drawing ready-go animation without players
+	if (!(m_game->m_players.empty())) {
+		m_readyGoObj.draw();
+	}
+	if (m_game->m_menuSelect == CHAR_SELECT_MENU) {
+		m_charSelectMenu->draw();
+	} else if (m_game->m_menuSelect == MAIN_MENU) {
+		m_mainMenu->draw();
+	}
+
+	// "Deactivate" screen after a ranked match
+	if (m_game->m_rankedState>=RANKED_DESTROYED_MATCH) {
+		m_black.draw(frontend);
+		if (m_statusText) {
+			frontend->setColor(255,255,255,255);
+			m_statusText->draw(8,0);
+		}
+	}
+
+	// RENDER COMPLETE, BLITTING
+	frontend->swapBuffers();
+}
+
+bool GameRenderer::shouldDrawTimer()
+{
+	if (m_game->m_currentGameStatus == GameStatus::IDLE && !(m_game->m_settings->useCpuPlayers) && (m_game->countActivePlayers() > 1 || m_game->m_settings->rankedMatch)) {
+		// Ranked match timer
+		return true;
+	}
+	if (m_game->m_players[0]->getPlayerType() == HUMAN && m_game->m_players[0]->m_currentPhase == Phase::PICKCOLORS
+		&& !m_game->m_settings->useCpuPlayers && !(m_game->m_players[0]->m_pickedColor)) {
+		// Difficulty pick timer
+		return true;
+	}
+	return false;
 }
 
 void GameRenderer::loadImages() const
@@ -142,7 +207,7 @@ void GameRenderer::loadImages() const
 		for (int j = 0; j < 2; ++j) {
 			// Safe (because i/j have defined ranges) BUT WHY?
 
-			m_gameData->imgMenu[i][j] = m_gameData->front->loadImage(m_baseAssetDir + std::string("Data/Menu/menu"+toString(i)+toString(j)+".png"));
+			m_gameData->imgMenu[i][j] = m_gameData->front->loadImage(m_baseAssetDir + std::string("Data/Menu/menu" + toString(i) + toString(j) + ".png"));
 			/*
 			char buffer[128];
 			sprintf(buffer, "Data/Menu/menu%i%i.png", i, j);
@@ -195,7 +260,6 @@ void GameRenderer::loadImages() const
 	}
 
 	m_gameData->imgPlayerNumber = m_gameData->front->loadImage(m_baseAssetDir + "Data/CharSelect/playernumber.png");
-
 }
 
 void GameRenderer::loadAudio() const
@@ -230,7 +294,6 @@ void GameRenderer::loadAudio() const
 	setBuffer(snd.decide, (m_gameData->front->loadSound(kFolderUserSounds + m_gameData->gUserSettings.sfxDirPath + std::string("/decide.ogg"))));
 	setBuffer(snd.cancel, (m_gameData->front->loadSound(kFolderUserSounds + m_gameData->gUserSettings.sfxDirPath + std::string("/cancel.ogg"))));
 	setBuffer(snd.cursor, (m_gameData->front->loadSound(kFolderUserSounds + m_gameData->gUserSettings.sfxDirPath + std::string("/cursor.ogg"))));
-
 }
 
 } // ppvs
