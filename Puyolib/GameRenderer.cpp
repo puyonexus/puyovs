@@ -16,6 +16,8 @@ GameRenderer::~GameRenderer()
 	delete m_statusFont;
 	delete m_gameData->front;
 	delete m_gameData;
+	delete m_mainMenu;
+	delete m_charSelectMenu;
 }
 
 void GameRenderer::initRenderer(Frontend* f)
@@ -73,9 +75,7 @@ void GameRenderer::initRenderer(Frontend* f)
 	m_backgroundAnimation.init(m_gameData, PosVectorFloat(320, 240), 1, m_baseAssetDir + kFolderUserBackgrounds + m_gameData->gUserSettings.backgroundDirPath + "/Animation/", "animation.xml", 30 * 60);
 	m_backgroundAnimation.prepareAnimation("background");
 
-	m_charSelectMenu = new CharacterSelect(m_game);
-	m_charSelectMenu->prepare();
-	m_mainMenu = new Menu(m_game);
+
 
 	m_timerSprite[0].setImage(m_gameData->imgPlayerNumber);
 	m_timerSprite[1].setImage(m_gameData->imgPlayerNumber);
@@ -86,6 +86,12 @@ void GameRenderer::initRenderer(Frontend* f)
 	m_timerSprite[0].setPosition(640 - 24, 32);
 	m_timerSprite[1].setPosition(640 - 24 - 24, 32);
 
+}
+void GameRenderer::initMenus()
+{
+	m_charSelectMenu = new CharacterSelect(m_game);
+	m_charSelectMenu->prepare();
+	m_mainMenu = new Menu(m_game);
 }
 
 void GameRenderer::setStatusText(const char* utf8)

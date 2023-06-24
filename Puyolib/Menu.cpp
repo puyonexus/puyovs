@@ -12,6 +12,7 @@ Menu::Menu(Game* g)
 	m_background.setScale(2 * 192, 336);
 	m_background.setColor(0, 0, 0);
 	m_background.setTransparency(0.5f);
+	assert(m_currentGame->m_players!=nullptr);
 	const FieldProp p = m_currentGame->m_players[0]->m_activeField->getProperties();
 	m_background.setPosition(p.offsetX - 192.f / 2.f, p.offsetY - 336.f / 4.f);
 	m_select = 0;

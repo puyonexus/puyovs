@@ -54,8 +54,6 @@ Game::~Game()
 
 	delete m_gameRenderer;
 
-	delete m_charSelectMenu;
-	delete m_mainMenu;
 	delete m_currentRuleSet;
 	/*delete m_statusText;
 	delete m_statusFont;
@@ -278,7 +276,7 @@ int Game::getActivePlayers() const
 
 void Game::initGame(Frontend* f)
 {
-	m_gameRenderer->initRenderer(f);
+
 
 	// Set random seed
 	m_randomSeedNextList = getRandom(100000);
@@ -287,9 +285,12 @@ void Game::initGame(Frontend* f)
 	setRules();
 
 	// Set background
-	m_spriteBackground.setImage(m_data->imgBackground);
-	m_spriteBackground.setPosition(0.f, 0.f);
+	//m_spriteBackground.setImage(m_data->imgBackground);
+	//m_spriteBackground.setPosition(0.f, 0.f);
+
+	m_gameRenderer->initRenderer(f);
 	initPlayers();
+	m_gameRenderer->initMenus();
 	m_runGame = true;
 	if (!m_network) // Start with character select menu or not
 	{
@@ -406,8 +407,8 @@ void Game::playGame()
 		if (m_settings->useCpuPlayers && i >= m_settings->numHumans)
 			break;
 
-		FeInput input = m_data->front->inputState(i);
-		m_players[i]->m_controls.setState(input, m_data->matchTimer);
+		FeInput input = m_gameRenderer->m_gameData->front->inputState(i);
+		m_players[i]->m_controls.setState(input, m_gameRenderer->m_gameData->matchTimer);
 	}
 
 	// Active player when NOT playing
@@ -458,7 +459,7 @@ void Game::playGame()
 				m_players[0]->m_controls.m_b = 1;
 			}
 			// Select rematch
-			m_mainMenu->m_select = 0;
+			m_gameRenderer->m_mainMenu->m_select = 0;
 		}
 	}
 	// Color timer menu
@@ -488,9 +489,9 @@ void Game::playGame()
 	// Menus (display them over the main game)
 	// Character select
 	if (m_menuSelect == 1) {
-		m_charSelectMenu->play();
+		m_gameRenderer->m_charSelectMenu->play();
 	} else if (m_menuSelect == 2) {
-		m_mainMenu->play();
+		m_gameRenderer->m_mainMenu->play();
 	}
 
 	// Check if match can start
@@ -534,7 +535,7 @@ void Game::playGame()
 
 	// Replay
 	if (m_settings->recording == RecordState::REPLAYING) {
-		const int t = m_data->matchTimer;
+		const int t = m_gameRenderer->m_gameData->matchTimer;
 		for (const auto& player : m_players) {
 			// Check event by looping through vector
 			// If the time is -1, it's considered as processed
@@ -606,8 +607,8 @@ void Game::playGame()
 
 	changeMusicVolume();
 
-	m_data->globalTimer++;
-	m_data->matchTimer++;
+	m_gameRenderer->m_gameData->globalTimer++;
+	m_gameRenderer->m_gameData->matchTimer++;
 
 	// Access menu during endless mode
 	if (m_settings->ruleSetInfo.numPlayers == 1 && m_menuSelect == 0) {
@@ -621,7 +622,7 @@ void Game::playGame()
 
 	// Replay normal
 	if (m_settings->recording == RecordState::REPLAYING && m_replayState == ReplayState::NORMAL)
-		m_replayBackwardsTimer = m_data->matchTimer;
+		m_replayBackwardsTimer = m_gameRenderer->m_gameData->matchTimer;
 
 	// Replay backwards
 	if (m_settings->recording == RecordState::REPLAYING && m_replayState == ReplayState::REWIND) {
@@ -632,14 +633,14 @@ void Game::playGame()
 		if (!m_settings->oldReplayPlayList.empty()) {
 			const bool soundSettings = m_settings->playSound;
 			m_settings->playSound = false;
-			m_data->playSounds = false;
+			m_gameRenderer->m_gameData->playSounds = false;
 
 			loadReplay(m_settings->oldReplayPlayList.back());
 			// Get ready to play
 			resetPlayers();
-			m_data->matchTimer = 0;
+			m_gameRenderer->m_gameData->matchTimer = 0;
 			// Loop until time is reached
-			while (m_data->matchTimer < m_replayBackwardsTimer) {
+			while (m_gameRenderer->m_gameData->matchTimer < m_replayBackwardsTimer) {
 				m_replayState = ReplayState::NORMAL;
 				m_backwardsOnce = true;
 				playGame();
@@ -647,17 +648,17 @@ void Game::playGame()
 			}
 			m_backwardsOnce = false;
 			m_settings->playSound = soundSettings;
-			m_data->playSounds = soundSettings;
+			m_gameRenderer->m_gameData->playSounds = soundSettings;
 			m_replayState = ReplayState::NORMAL;
 		} else {
-			m_replayBackwardsTimer = m_data->matchTimer;
+			m_replayBackwardsTimer = m_gameRenderer->m_gameData->matchTimer;
 			m_replayState = ReplayState::NORMAL;
 		}
 	}
 	// Replay fastforward
-	if (m_settings->recording == RecordState::REPLAYING && m_replayState == ReplayState::FAST_FORWARD && m_data->matchTimer % 2 == 0) {
+	if (m_settings->recording == RecordState::REPLAYING && m_replayState == ReplayState::FAST_FORWARD && m_gameRenderer->m_gameData->matchTimer % 2 == 0) {
 		playGame();
-	} else if (m_settings->recording == RecordState::REPLAYING && m_replayState == ReplayState::FAST_FORWARD_X4 && m_data->matchTimer % 4 == 0) {
+	} else if (m_settings->recording == RecordState::REPLAYING && m_replayState == ReplayState::FAST_FORWARD_X4 && m_gameRenderer->m_gameData->matchTimer % 4 == 0) {
 		playGame();
 		playGame();
 		playGame();
@@ -667,26 +668,26 @@ void Game::playGame()
 void Game::renderGame()
 {
 	// Tunnel shader
-	if (m_data->tunnelShader) {
-		m_data->tunnelShader->setParameter("time", static_cast<double>(m_data->globalTimer) / 60.0);
+	if (m_gameRenderer->m_gameData->tunnelShader) {
+		m_gameRenderer->m_gameData->tunnelShader->setParameter("time", static_cast<double>(m_gameRenderer->m_gameData->globalTimer) / 60.0);
 	}
 
 	// Clear screen
-	m_data->front->clear();
+	m_gameRenderer->m_gameData->front->clear();
 
 	// Draw background
-	m_spriteBackground.draw(m_data->front);
+	m_spriteBackground.draw(m_gameRenderer->m_gameData->front);
 	m_backgroundAnimation.draw();
 
 	// Draw timer
 	if (m_currentGameStatus == GameStatus::IDLE && !m_settings->useCpuPlayers && (countActivePlayers() > 1 || m_settings->rankedMatch)) {
-		m_timerSprite[0].draw(m_data->front);
-		m_timerSprite[1].draw(m_data->front);
+		m_timerSprite[0].draw(m_gameRenderer->m_gameData->front);
+		m_timerSprite[1].draw(m_gameRenderer->m_gameData->front);
 	}
 	if (m_players[0]->getPlayerType() == HUMAN && m_players[0]->m_currentPhase == Phase::PICKCOLORS
 		&& !m_settings->useCpuPlayers && !m_players[0]->m_pickedColor) {
-		m_timerSprite[0].draw(m_data->front);
-		m_timerSprite[1].draw(m_data->front);
+		m_timerSprite[0].draw(m_gameRenderer->m_gameData->front);
+		m_timerSprite[1].draw(m_gameRenderer->m_gameData->front);
 	}
 
 	// Draw player related objects
@@ -705,23 +706,23 @@ void Game::renderGame()
 
 	// Draw menuSelects
 	if (m_menuSelect == 1) {
-		m_charSelectMenu->draw();
+		m_gameRenderer->m_charSelectMenu->draw();
 	}
 	if (m_menuSelect == 2) {
-		m_mainMenu->draw();
+		m_gameRenderer->m_mainMenu->draw();
 	}
 
 	// Darken screen
 	if (m_rankedState >= 3) {
-		m_black.draw(m_data->front);
+		m_black.draw(m_gameRenderer->m_gameData->front);
 		// Draw status text
 		if (m_statusText) {
-			m_data->front->setColor(255, 255, 255, 255);
+			m_gameRenderer->m_gameData->front->setColor(255, 255, 255, 255);
 			m_statusText->draw(8, 0);
 		}
 	}
 
-	m_data->front->swapBuffers();
+	m_gameRenderer->m_gameData->front->swapBuffers();
 }
 
 void Game::setStatusText(const char* utf8)
@@ -738,16 +739,16 @@ void Game::setStatusText(const char* utf8)
 
 void Game::setWindowFocus(bool focus) const
 {
-	m_data->windowFocus = focus;
+	m_gameRenderer->m_gameData->windowFocus = focus;
 }
 
 // Main loop of the game
 void Game::loop()
 {
-	initGame(m_data->front);
+	initGame(m_gameRenderer->m_gameData->front);
 
 	Sprite debugSprite;
-	debugSprite.setImage(m_data->imgNextPuyoBackgroundL);
+	debugSprite.setImage(m_gameRenderer->m_gameData->imgNextPuyoBackgroundL);
 
 	// Frame limiter variables
 	double t = 0.0;
@@ -797,7 +798,7 @@ void Game::loop()
 				renderGame();
 
 				// Display
-				m_data->front->swapBuffers();
+				m_gameRenderer->m_gameData->front->swapBuffers();
 			}
 		}
 	}
@@ -861,8 +862,8 @@ void Game::checkEnd()
 				return;
 			}
 		}
-		if (m_data->windowFocus) {
-			m_data->front->musicEvent(MusicCanStop);
+		if (m_gameRenderer->m_gameData->windowFocus) {
+			m_gameRenderer->m_gameData->front->musicEvent(MusicCanStop);
 		}
 		m_targetVolumeNormal = 25;
 		m_targetVolumeFever = 25;
@@ -1100,7 +1101,7 @@ void Game::saveReplay() const
 		kReplayVersion,
 		"", // Date
 		"", // Time
-		m_data->matchTimer,
+		m_gameRenderer->m_gameData->matchTimer,
 		static_cast<char>(m_activeAtStart),
 		m_randomSeedNextList
 	};
@@ -1446,30 +1447,30 @@ void Game::rankedMatch()
 
 void Game::changeMusicVolume()
 {
-	if (!m_data->windowFocus) {
+	if (!m_gameRenderer->m_gameData->windowFocus) {
 		return;
 	}
 	if (m_currentVolumeNormal > m_targetVolumeNormal) {
 		m_currentVolumeNormal -= 1;
 		if (m_currentVolumeNormal < 0)
 			m_currentVolumeNormal = 0;
-		m_data->front->musicVolume(static_cast<float>(m_currentVolumeNormal) / 100.0f * m_globalVolume, false);
-	} else if (m_currentVolumeNormal < m_targetVolumeNormal && m_data->globalTimer % 3 == 0) {
+		m_gameRenderer->m_gameData->front->musicVolume(static_cast<float>(m_currentVolumeNormal) / 100.0f * m_globalVolume, false);
+	} else if (m_currentVolumeNormal < m_targetVolumeNormal && m_gameRenderer->m_gameData->globalTimer % 3 == 0) {
 		m_currentVolumeNormal += 1;
 		if (m_currentVolumeNormal > 100)
 			m_currentVolumeNormal = 100;
-		m_data->front->musicVolume(static_cast<float>(m_currentVolumeNormal) / 100.0f * m_globalVolume, false);
+		m_gameRenderer->m_gameData->front->musicVolume(static_cast<float>(m_currentVolumeNormal) / 100.0f * m_globalVolume, false);
 	}
 	if (m_currentVolumeFever > m_targetVolumeFever) {
 		m_currentVolumeFever -= 1;
 		if (m_currentVolumeFever < 0)
 			m_currentVolumeFever = 0;
-		m_data->front->musicVolume(static_cast<float>(m_currentVolumeFever) / 100.0f * m_globalVolume, true);
+		m_gameRenderer->m_gameData->front->musicVolume(static_cast<float>(m_currentVolumeFever) / 100.0f * m_globalVolume, true);
 	} else if (m_currentVolumeFever < m_targetVolumeFever) {
 		m_currentVolumeFever += 1;
 		if (m_currentVolumeFever > 100)
 			m_currentVolumeFever = 100;
-		m_data->front->musicVolume(static_cast<float>(m_currentVolumeFever) / 100.0f * m_globalVolume, true);
+		m_gameRenderer->m_gameData->front->musicVolume(static_cast<float>(m_currentVolumeFever) / 100.0f * m_globalVolume, true);
 	}
 }
 
@@ -1479,7 +1480,7 @@ void Game::loadMusic()
 		return;
 	}
 
-	m_data->front->musicEvent(MusicContinue);
+	m_gameRenderer->m_gameData->front->musicEvent(MusicContinue);
 	m_targetVolumeNormal = 100;
 	m_targetVolumeFever = 100;
 

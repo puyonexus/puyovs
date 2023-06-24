@@ -18,6 +18,7 @@ public:
 	void initRenderer(Frontend* f);
 	void loadImages() const;
 	void loadAudio() const;
+	void initMenus();
 
 	// Video related
 	void renderGame();

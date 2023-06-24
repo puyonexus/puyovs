@@ -10,11 +10,11 @@ using namespace std;
 namespace ppvs {
 
 Player::Player(const PlayerType type, const int playerNum, const int totalPlayers, Game* g)
-	: m_feverGauge(g->m_data)
-	, m_feverLight(g->m_data)
+	: m_feverGauge(g->m_gameRenderer->m_gameData)
+	, m_feverLight(g->m_gameRenderer->m_gameData)
 {
 	m_currentGame = g;
-	m_data = m_currentGame->m_data;
+	m_data = m_currentGame->m_gameRenderer->m_gameData;
 	m_debug = 0;
 	m_debugCounter = 0;
 

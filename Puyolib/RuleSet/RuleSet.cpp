@@ -123,7 +123,7 @@ void RuleSet::setRules(const Rules ruleString)
 void RuleSet::setGame(Game* g)
 {
 	m_currentGame = g;
-	m_data = g->m_data;
+	m_data = g->m_gameRenderer->m_gameData;
 	this->onSetGame();
 }
 
