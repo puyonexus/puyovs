@@ -37,6 +37,8 @@ Game::Game(GameSettings* gs)
 
 	m_statusFont = nullptr;
 	m_statusText = nullptr;
+
+	m_gameRenderer = new GameRenderer(this);
 }
 
 Game::~Game()
@@ -49,13 +51,16 @@ Game::~Game()
 
 	// Delete associated global properties
 	delete m_settings;
+
+	delete m_gameRenderer;
+
 	delete m_charSelectMenu;
 	delete m_mainMenu;
 	delete m_currentRuleSet;
-	delete m_statusText;
+	/*delete m_statusText;
 	delete m_statusFont;
 	delete m_data->front;
-	delete m_data;
+	delete m_data;*/
 }
 
 void Game::close()

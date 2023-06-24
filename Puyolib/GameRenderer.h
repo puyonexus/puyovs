@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: GPLv3
 
 #pragma once
-#include "global.h"
 #include "Game.h"
+
 namespace ppvs {
 
 class GameRenderer {
@@ -26,7 +26,11 @@ public:
 	void changeMusicVolume(int state);
 	void continueMusic();
 
+	// Parent objects
+	Game* m_game = nullptr;
+
 	// Public variables
+	GameData* m_gameData = nullptr;
 	Animation m_readyGoObj {};
 	Animation m_backgroundAnimation {};
 	GameData* m_imageData = nullptr;
@@ -41,6 +45,15 @@ private:
 	int m_targetVolumeFever = 100;
 	int m_currentVolumeFever = 100;
 	float m_globalVolume = 1.f;
+
+	// Status text
+	FeFont* m_statusFont = nullptr;
+	FeText* m_statusText = nullptr;
+	std::string m_lastText;
+	void setStatusText(const char* utf8);
+
+
+
 
 };
 

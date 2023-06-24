@@ -17,6 +17,7 @@ add_library(Puyolib
     global.cpp
     GameSettings.cpp
     Game.cpp
+    GameRenderer.cpp
     Field.cpp
     FeverCounter.cpp
     DropPattern.cpp
@@ -29,8 +30,7 @@ add_library(Puyolib
     RNG/ClassicRng.cpp
     RNG/LegacyPuyoRng.cpp
     RNG/MersenneTwister.cpp
-    RNG/PuyoRng.cpp
-        GameRenderer.cpp GameRenderer.h)
+    RNG/PuyoRng.cpp)
 
 target_compile_features(Puyolib PUBLIC cxx_std_17)
 
