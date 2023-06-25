@@ -1148,8 +1148,8 @@ void Player::chooseColor()
 					continue;
 				player->m_currentPhase = Phase::GETREADY;
 			}
-			m_currentGame->m_readyGoObj.prepareAnimation("readygo");
-			m_currentGame->m_data->matchTimer = 0;
+			m_currentGame->m_gameRenderer->m_readyGoObj.prepareAnimation("readygo");
+			m_currentGame->m_gameRenderer->m_gameData->matchTimer = 0;
 		}
 	}
 	// Fade out with flicker

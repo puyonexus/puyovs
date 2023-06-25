@@ -97,21 +97,19 @@ int Game::getActivePlayers() const
 
 void Game::initGame(Frontend* f)
 {
-
-
 	// Set random seed
 	m_randomSeedNextList = getRandom(100000);
 
 	// Rule settings
 	setRules();
 
-	// Set background
-	//m_spriteBackground.setImage(m_data->imgBackground);
-	//m_spriteBackground.setPosition(0.f, 0.f);
-
 	m_gameRenderer->initRenderer(f);
+
+	// Init player objects + Player renderers
 	initPlayers();
+
 	m_gameRenderer->initMenus();
+
 	m_runGame = true;
 	if (!m_network) // Start with character select menu or not
 	{
@@ -1187,46 +1185,12 @@ void Game::rankedMatch()
 
 void Game::changeMusicVolume()
 {
-	if (!m_gameRenderer->m_gameData->windowFocus) {
-		return;
-	}
-	if (m_currentVolumeNormal > m_targetVolumeNormal) {
-		m_currentVolumeNormal -= 1;
-		if (m_currentVolumeNormal < 0)
-			m_currentVolumeNormal = 0;
-		m_gameRenderer->m_gameData->front->musicVolume(static_cast<float>(m_currentVolumeNormal) / 100.0f * m_globalVolume, false);
-	} else if (m_currentVolumeNormal < m_targetVolumeNormal && m_gameRenderer->m_gameData->globalTimer % 3 == 0) {
-		m_currentVolumeNormal += 1;
-		if (m_currentVolumeNormal > 100)
-			m_currentVolumeNormal = 100;
-		m_gameRenderer->m_gameData->front->musicVolume(static_cast<float>(m_currentVolumeNormal) / 100.0f * m_globalVolume, false);
-	}
-	if (m_currentVolumeFever > m_targetVolumeFever) {
-		m_currentVolumeFever -= 1;
-		if (m_currentVolumeFever < 0)
-			m_currentVolumeFever = 0;
-		m_gameRenderer->m_gameData->front->musicVolume(static_cast<float>(m_currentVolumeFever) / 100.0f * m_globalVolume, true);
-	} else if (m_currentVolumeFever < m_targetVolumeFever) {
-		m_currentVolumeFever += 1;
-		if (m_currentVolumeFever > 100)
-			m_currentVolumeFever = 100;
-		m_gameRenderer->m_gameData->front->musicVolume(static_cast<float>(m_currentVolumeFever) / 100.0f * m_globalVolume, true);
-	}
+	m_gameRenderer->adjustCurrentMusicVolume();
 }
 
 void Game::loadMusic()
 {
-	if (m_settings->recording == RecordState::REPLAYING && m_backwardsOnce == true) {
-		return;
-	}
-
-	m_gameRenderer->m_gameData->front->musicEvent(MusicContinue);
-	m_targetVolumeNormal = 100;
-	m_targetVolumeFever = 100;
-
-	// Force to set volume
-	m_currentVolumeNormal -= 1;
-	m_currentVolumeFever -= 1;
+	m_gameRenderer->continueMusic();
 }
 
 }

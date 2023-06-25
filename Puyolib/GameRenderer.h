@@ -12,7 +12,6 @@ public:
 	explicit GameRenderer(Game* game);
 	~GameRenderer();
 
-	void close();
 
 	// Init functions
 	void initRenderer(Frontend* f);
@@ -25,7 +24,7 @@ public:
 	void setWindowFocus(bool focus) const;
 
 	// Audio related
-	void changeMusicVolume(int state);
+	void adjustCurrentMusicVolume();
 	void continueMusic();
 
 	// Parent objects

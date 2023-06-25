@@ -14,7 +14,6 @@ GameRenderer::GameRenderer(ppvs::Game* game)
 	m_black.setColor(0, 0, 0);
 	m_black.setTransparency(0.5f);
 	m_black.setPosition(-640.f / 2.f, -480.f / 4.f);
-
 }
 
 GameRenderer::~GameRenderer()
@@ -132,10 +131,10 @@ void GameRenderer::renderGame()
 	}
 
 	// Draw player elements
-	for (const auto& player: m_game->m_players) {
+	for (const auto& player : m_game->m_players) {
 		player->draw();
 	}
-	for (const auto& player: m_game->m_players) {
+	for (const auto& player : m_game->m_players) {
 		player->drawEffect();
 	}
 
@@ -150,16 +149,50 @@ void GameRenderer::renderGame()
 	}
 
 	// "Deactivate" screen after a ranked match
-	if (m_game->m_rankedState>=RANKED_DESTROYED_MATCH) {
+	if (m_game->m_rankedState >= RANKED_DESTROYED_MATCH) {
 		m_black.draw(frontend);
 		if (m_statusText) {
-			frontend->setColor(255,255,255,255);
-			m_statusText->draw(8,0);
+			frontend->setColor(255, 255, 255, 255);
+			m_statusText->draw(8, 0);
 		}
 	}
 
 	// RENDER COMPLETE, BLITTING
 	frontend->swapBuffers();
+}
+
+void GameRenderer::setWindowFocus(bool focus) const
+{
+	m_gameData->windowFocus = focus;
+}
+void GameRenderer::adjustCurrentMusicVolume()
+{
+	if (m_gameData->windowFocus) {
+		// If we aren't yet at the target volume, slowly adjust
+		if (m_currentVolumeNormal != m_targetVolumeNormal) {
+			m_currentVolumeNormal += (0 < m_targetVolumeNormal - m_currentVolumeNormal) - (m_targetVolumeNormal - m_currentVolumeNormal < 0); // add the sign (1 or -1) of the difference
+			m_currentVolumeNormal = m_currentVolumeNormal > 100 ? 100 : ((m_currentVolumeNormal < 0) ? 0 : m_currentVolumeNormal); // clamp
+			frontend->musicVolume(static_cast<float>(m_currentVolumeNormal) / 100.0f * m_globalVolume, false);
+		}
+		if (m_currentVolumeFever != m_targetVolumeFever) {
+			m_currentVolumeFever += (0 < m_targetVolumeFever - m_currentVolumeFever) - (m_targetVolumeFever - m_currentVolumeFever < 0); // +sign
+			m_currentVolumeFever = m_currentVolumeFever > 100 ? 100 : ((m_currentVolumeFever < 0) ? 0 : m_currentVolumeFever); // clamp
+			frontend->musicVolume(static_cast<float>(m_currentVolumeFever) / 100.0f * m_globalVolume, true);
+		}
+
+	}
+}
+
+void GameRenderer::continueMusic()
+{
+	if (!(m_game->m_settings->recording == RecordState::REPLAYING && m_game->m_backwardsOnce == true)) {
+		frontend->musicEvent(MusicContinue);
+		m_targetVolumeNormal = 100;
+		m_targetVolumeFever = 100;
+		// FIXME: HACK: apparently we have to move the current volume to make the Frontend register it
+		m_currentVolumeNormal -= 1;
+		m_currentVolumeFever -= 1;
+	}
 }
 
 bool GameRenderer::shouldDrawTimer()
@@ -206,12 +239,11 @@ void GameRenderer::loadImages() const
 	for (int i = 0; i < 3; ++i) {
 		for (int j = 0; j < 2; ++j) {
 			// Safe (because i/j have defined ranges) BUT WHY?
-
-			m_gameData->imgMenu[i][j] = m_gameData->front->loadImage(m_baseAssetDir + std::string("Data/Menu/menu" + toString(i) + toString(j) + ".png"));
-			/*
-			char buffer[128];
+			/*char buffer[128];
 			sprintf(buffer, "Data/Menu/menu%i%i.png", i, j);
 			m_gameData->imgMenu[i][j] = m_gameData->front->loadImage(m_baseAssetDir + buffer);*/
+
+			m_gameData->imgMenu[i][j] = m_gameData->front->loadImage(m_baseAssetDir + std::string("Data/Menu/menu" + toString(i) + toString(j) + ".png"));
 		}
 	}
 
