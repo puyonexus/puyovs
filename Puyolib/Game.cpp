@@ -83,6 +83,10 @@ void Game::initPlayers()
 	}
 }
 
+bool Game::isBigMatch() {
+	return m_players.size() <= 10;
+}
+
 // Count players that haven't lost
 int Game::getActivePlayers() const
 {

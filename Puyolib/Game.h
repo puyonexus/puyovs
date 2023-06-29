@@ -97,6 +97,7 @@ public:
 	int m_choiceTimer = 0;
 	int m_colorTimer = 10 * 60;
 	int m_activeAtStart = 0;
+	bool isBigMatch();
 
 	// Public variables
 

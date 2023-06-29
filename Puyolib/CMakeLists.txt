@@ -30,7 +30,9 @@ add_library(Puyolib
     RNG/ClassicRng.cpp
     RNG/LegacyPuyoRng.cpp
     RNG/MersenneTwister.cpp
-    RNG/PuyoRng.cpp)
+    RNG/PuyoRng.cpp
+    PlayerRenderer.cpp
+    PlayerRenderer.h)
 
 target_compile_features(Puyolib PUBLIC cxx_std_17)
 

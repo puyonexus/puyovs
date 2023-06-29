@@ -45,19 +45,23 @@ Player::Player(const PlayerType type, const int playerNum, const int totalPlayer
 	m_bonusEq = false;
 	m_hasMoved = false;
 
+
+	// Init renderer
+	m_playerRenderer = new PlayerRenderer(this);
+
 	// Default active field: normal field
 	m_activeField = &m_fieldNormal;
 
 	// Controller
-	m_controls.init(m_playerNum, m_type, m_currentGame->m_settings->recording);
+	//m_controls.init(m_playerNum, m_type, m_currentGame->m_settings->recording);
 
 	// Mover
-	m_movePuyo.init(m_data);
+	//m_movePuyo.init(m_data);
 	m_dropSpeed = 2;
 
 	// Tray
-	m_normalTray.init(m_data);
-	m_feverTray.init(m_data);
+	//m_normalTray.init(m_data);
+	//m_feverTray.init(m_data);
 
 	// Initialize player values
 	m_colors = 4;

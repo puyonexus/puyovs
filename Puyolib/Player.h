@@ -8,6 +8,7 @@
 #include "FieldProp.h"
 #include "MovePuyo.h"
 #include "NextPuyo.h"
+#include "PlayerRenderer.h"
 #include "RNG/MersenneTwister.h"
 #include "RNG/PuyoRng.h"
 #include "RuleSet/RuleSet.h"
@@ -27,9 +28,7 @@ struct GarbageCounter {
 	std::vector<Player*> accumulator;
 };
 
-struct Voices {
-	Sound chain[12], damage1, damage2, fever, feverSuccess, feverFail, lose, win, choose;
-};
+
 
 enum AttackState {
 	NO_ATTACK,
@@ -157,6 +156,7 @@ public:
 	void drawColorMenu();
 
 	// Public variables
+	PlayerRenderer* m_playerRenderer = nullptr;
 	GameData* m_data = nullptr;
 	Controller m_controls;
 	Field* m_activeField = nullptr;
@@ -306,6 +306,7 @@ private:
 	std::vector<int> m_nuisanceList;
 	int m_playerNum = 0;
 	float m_globalScale = 0.f; // Global scale for certain objects (for example sprite animations)
+
 
 	PlayerType m_type;
 	ScoreCounter m_scoreCounter;
