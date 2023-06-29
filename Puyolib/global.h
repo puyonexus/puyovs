@@ -74,6 +74,20 @@ enum class RecordState : int {
 	REPLAYING,
 };
 
+enum MenuState : int {
+	NO_MENU = 0,
+	CHAR_SELECT_MENU,
+	MAIN_MENU,
+	INVALID = -1
+};
+
+enum RankedMatchState: int {
+ 	RANKED_WAITING_FOR_MATCH = 0,
+ 	RANKED_UNNATURAL_DISCONNECT,
+ 	RANKED_END_OF_MATCH,
+	RANKED_DESTROYED_MATCH
+};
+
 // Global sounds struct
 struct Sounds {
 	Sound allClearDrop, drop, feverLight, fever, feverTimeCount, feverTimeEnd, go, heavy, hit, lose, move,

@@ -29,14 +29,10 @@ Game::Game(GameSettings* gs)
 	activeGame = this;
 	m_choiceTimer = (gs->rankedMatch == true ? 5 : 30) * 60;
 
-	m_black.setImage(nullptr);
-	m_black.setScale(640 * 2, 480);
-	m_black.setColor(0, 0, 0);
-	m_black.setTransparency(0.5f);
-	m_black.setPosition(-640.f / 2.f, -480.f / 4.f);
-
 	m_statusFont = nullptr;
 	m_statusText = nullptr;
+
+	m_gameRenderer = new GameRenderer(this);
 }
 
 Game::~Game()
@@ -49,205 +45,16 @@ Game::~Game()
 
 	// Delete associated global properties
 	delete m_settings;
-	delete m_charSelectMenu;
-	delete m_mainMenu;
+
+	delete m_gameRenderer;
+
 	delete m_currentRuleSet;
-	delete m_statusText;
-	delete m_statusFont;
-	delete m_data->front;
-	delete m_data;
 }
 
 void Game::close()
 {
 	// Close game
 	m_runGame = false;
-}
-
-void Game::loadGlobal()
-{
-	// Load user settings
-	m_baseAssetDir = m_settings->baseAssetDir;
-	m_data->gUserSettings.backgroundDirPath = m_settings->background;
-	m_data->gUserSettings.puyoDirPath = m_settings->puyo;
-	m_data->gUserSettings.sfxDirPath = m_settings->sfx;
-
-	// Set global images
-	loadImages();
-
-	// Load all sounds
-	loadSounds();
-
-	// Init shaders
-	m_data->glowShader = nullptr;
-	m_data->tunnelShader = nullptr;
-
-	if (useShaders) {
-		static auto glowShaderSource = "uniform sampler2D tex;"
-									   "uniform float color;"
-									   "void main()"
-									   "{"
-									   "   gl_FragColor=texture2D(tex,gl_TexCoord[0].xy)+vec4(color,color,color,0);"
-									   "}";
-
-		m_data->glowShader = m_data->front->loadShader(glowShaderSource);
-		if (m_data->glowShader) {
-			m_data->glowShader->setCurrentTexture("tex");
-			m_data->glowShader->setParameter("color", 1.0);
-		}
-
-		static auto tunnelShaderSource = "uniform vec4 cl;"
-										 "uniform float time;"
-										 "uniform sampler2D tex;"
-										 "void main(void) {"
-										 "   vec2 ccord = gl_TexCoord[0].xy;"
-										 "   vec2 pcord;"
-										 "   vec2 final;"
-										 "   float zoomspeed=0.5;"
-										 "   float rotatespeed=0.25;"
-										 "   ccord.x = step(0.5,ccord.y)*(-1.0+ 2.0*ccord.x)-(1.0-step(0.5,ccord.y))*(-1.0+ 2.0*ccord.x);"
-										 "   ccord.y = step(0.5,ccord.y)*(-1.0+ 2.0*ccord.y)-(1.0-step(0.5,ccord.y))*(-1.0+ 2.0*ccord.y);"
-										 "   pcord.x = 0.1/sqrt(ccord.x*ccord.x+ccord.y*ccord.y);pcord.y = atan(ccord.y,ccord.x)/3.141592;"
-										 "   final.x = step(0.25,pcord.x)*mod(pcord.x+zoomspeed*time,0.5)+(1.0-step(0.25,pcord.x))*mod(pcord.x+zoomspeed*time,0.5);"
-										 "   final.y = step(0.25,pcord.y)*mod(pcord.y+rotatespeed*time,0.5)+(1.0-step(0.25,pcord.y))*mod(pcord.y+rotatespeed*time,0.5);"
-										 "   vec3 col = texture2D(tex,final).xyz;"
-										 "   gl_FragColor = vec4(max(col/((pcord/0.1).x),0.1), 1.0) * cl;"
-										 "}";
-
-		m_data->tunnelShader = m_data->front->loadShader(tunnelShaderSource);
-		if (m_data->tunnelShader) {
-			m_data->tunnelShader->setCurrentTexture("tex");
-			m_data->tunnelShader->setParameter("time", 1.0);
-			m_data->tunnelShader->setParameter("cl", 0.0, 0.0, 1.0, 1.0);
-		}
-	}
-
-	// Other
-	m_data->globalTimer = 0;
-	m_data->windowFocus = true;
-	m_data->playSounds = m_settings->playSound;
-	m_data->playMusic = m_settings->playMusic;
-
-	m_statusFont = m_data->front->loadFont("Arial", 14);
-	setStatusText("");
-}
-
-void Game::loadSounds() const
-{
-	Sounds& snd = m_data->snd;
-	setBuffer(snd.chain[0], (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain1.ogg"))));
-	setBuffer(snd.chain[1], (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain2.ogg"))));
-	setBuffer(snd.chain[2], (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain3.ogg"))));
-	setBuffer(snd.chain[3], (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain4.ogg"))));
-	setBuffer(snd.chain[4], (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain5.ogg"))));
-	setBuffer(snd.chain[5], (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain6.ogg"))));
-	setBuffer(snd.chain[6], (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain7.ogg"))));
-	setBuffer(snd.allClearDrop, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/allclear.ogg"))));
-	setBuffer(snd.drop, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/drop.ogg"))));
-	setBuffer(snd.fever, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/fever.ogg"))));
-	setBuffer(snd.feverLight, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/feverlight.ogg"))));
-	setBuffer(snd.feverTimeCount, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/fevertimecount.ogg"))));
-	setBuffer(snd.feverTimeEnd, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/fevertimeend.ogg"))));
-	setBuffer(snd.go, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/go.ogg"))));
-	setBuffer(snd.heavy, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/heavy.ogg"))));
-	setBuffer(snd.hit, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/hit.ogg"))));
-	setBuffer(snd.lose, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/lose.ogg"))));
-	setBuffer(snd.move, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/move.ogg"))));
-	setBuffer(snd.nuisanceHitL, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisance_hitL.ogg"))));
-	setBuffer(snd.nuisanceHitM, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisance_hitM.ogg"))));
-	setBuffer(snd.nuisanceHitS, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisance_hitS.ogg"))));
-	setBuffer(snd.nuisanceL, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisanceL.ogg"))));
-	setBuffer(snd.nuisanceS, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisanceS.ogg"))));
-	setBuffer(snd.ready, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/ready.ogg"))));
-	setBuffer(snd.rotate, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/rotate.ogg"))));
-	setBuffer(snd.win, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/win.ogg"))));
-	setBuffer(snd.decide, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/decide.ogg"))));
-	setBuffer(snd.cancel, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/cancel.ogg"))));
-	setBuffer(snd.cursor, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/cursor.ogg"))));
-}
-
-// Load images (user defined)
-void Game::loadImages() const
-{
-	// Load puyo
-	m_data->imgPuyo = m_data->front->loadImage(m_baseAssetDir + kFolderUserPuyo + m_data->gUserSettings.puyoDirPath + std::string(".png"));
-
-	// Check rotation center of quadruplet
-	if (m_data->imgPuyo && !m_data->imgPuyo->error() && m_data->imgPuyo->height() > 10) {
-		for (int i = 0; i < kPuyoX; i++) {
-			if (m_data->imgPuyo->pixel(11 * kPuyoX - i, 14 * kPuyoY).a > 50) {
-				m_data->quadrupletCenter = kPuyoX - i;
-				break;
-			}
-		}
-	}
-	m_data->imgPuyo->setFilter(FilterType::LinearFilter);
-
-	// Lights
-	m_data->imgLight = m_data->front->loadImage(m_baseAssetDir + "Data/Light.png");
-	m_data->imgLightS = m_data->front->loadImage(m_baseAssetDir + "Data/Light_s.png");
-	m_data->imgLightHit = m_data->front->loadImage(m_baseAssetDir + "Data/Light_hit.png");
-	m_data->imgFSparkle = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/fsparkle.png");
-	m_data->imgFLight = m_data->front->loadImage(m_baseAssetDir + "Data/fLight.png");
-	m_data->imgFLightHit = m_data->front->loadImage(m_baseAssetDir + "Data/fLight_hit.png");
-
-	m_data->imgTime = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/time.png"));
-
-	// Menu
-	for (int i = 0; i < 3; ++i) {
-		for (int j = 0; j < 2; ++j) {
-			// Safe (because i/j have defined ranges)
-			char buffer[128];
-			sprintf(buffer, "Data/Menu/menu%i%i.png", i, j);
-			m_data->imgMenu[i][j] = m_data->front->loadImage(m_baseAssetDir + buffer);
-		}
-	}
-
-	// Backgrounds
-	m_data->imgBackground = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/back.png"));
-	m_data->imgFieldFever = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/ffield.png"));
-
-	// Background of next puyo
-	m_data->imgNextPuyoBackgroundR = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/nextR.png"));
-	m_data->imgNextPuyoBackgroundL = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/nextL.png"));
-
-	if (!useShaders) {
-		for (int i = 0; i < 30; ++i) {
-			m_data->imgFeverBack[i] = m_data->front->loadImage(m_baseAssetDir + std::string("Data/Fever/f" + toString(i) + ".png").c_str());
-		}
-	}
-
-	// Load default fields. Custom fields should be loaded per character
-	m_data->imgField1 = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/field1.png"));
-	m_data->imgField2 = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/field2.png"));
-	m_data->imgBorder1 = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/border1.png"));
-	m_data->imgBorder2 = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/border2.png"));
-	m_data->imgPlayerBorder = m_data->front->loadImage(m_baseAssetDir + "Data/border.png");
-	m_data->imgSpice = m_data->front->loadImage(m_baseAssetDir + "Data/spice.png");
-
-	// Other
-	m_data->imgScore = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/score.png"));
-	m_data->imgAllClear = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/allclear.png"));
-	m_data->imgLose = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/lose.png"));
-	m_data->imgWin = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/win.png"));
-	m_data->imgFeverGauge = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/fgauge.png"));
-	m_data->imgSeconds = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/fcounter.png"));
-	m_data->imgCharHolder = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/charHolder.png");
-	m_data->imgNameHolder = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/nameHolder.png");
-	m_data->imgBlack = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/black.png");
-	m_data->imgDropSet = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/dropset.png");
-	m_data->imgChain = m_data->front->loadImage(m_baseAssetDir + std::string("User/Backgrounds/") + m_data->gUserSettings.backgroundDirPath + std::string("/chain.png"));
-	m_data->imgCheckMark = m_data->front->loadImage(m_baseAssetDir + "Data/checkmark.png");
-	m_data->imgPlayerCharSelect = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/charSelect.png");
-
-	for (int i = 0; i < kNumCharacters; ++i) {
-		m_data->imgCharField[i] = m_data->front->loadImage(m_baseAssetDir + kFolderUserCharacter + m_settings->characterSetup[static_cast<PuyoCharacter>(i)] + "/field.png");
-		m_data->imgCharSelect[i] = m_data->front->loadImage(m_baseAssetDir + kFolderUserCharacter + m_settings->characterSetup[static_cast<PuyoCharacter>(i)] + "/select.png");
-		m_data->imgCharName[i] = m_data->front->loadImage(m_baseAssetDir + kFolderUserCharacter + m_settings->characterSetup[static_cast<PuyoCharacter>(i)] + "/name.png");
-		m_data->imgSelect[i] = m_data->front->loadImage(m_baseAssetDir + kFolderUserCharacter + m_settings->characterSetup[static_cast<PuyoCharacter>(i)] + "/select.png");
-	}
-
-	m_data->imgPlayerNumber = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/playernumber.png");
 }
 
 void Game::initPlayers()
@@ -276,6 +83,10 @@ void Game::initPlayers()
 	}
 }
 
+bool Game::isBigMatch() {
+	return m_players.size() <= 10;
+}
+
 // Count players that haven't lost
 int Game::getActivePlayers() const
 {
@@ -290,46 +101,25 @@ int Game::getActivePlayers() const
 
 void Game::initGame(Frontend* f)
 {
-	m_data = new GameData;
-	m_data->front = f;
-
-	loadGlobal();
-
 	// Set random seed
 	m_randomSeedNextList = getRandom(100000);
 
 	// Rule settings
 	setRules();
 
-	// Set background
-	m_spriteBackground.setImage(m_data->imgBackground);
-	m_spriteBackground.setPosition(0.f, 0.f);
+	m_gameRenderer->initRenderer(f);
+
+	// Init player objects + Player renderers
 	initPlayers();
+
+	m_gameRenderer->initMenus();
+
 	m_runGame = true;
 	if (!m_network) // Start with character select menu or not
 	{
 		m_menuSelect = static_cast<int>(m_settings->startWithCharacterSelect);
 	}
 	m_timerEndMatch = 0;
-
-	// Initialize readygo animation
-	m_readyGoObj.init(m_data, PosVectorFloat(320, 240), 1, m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + "/Animation/", "ready.xml", 3 * 60);
-	m_backgroundAnimation.init(m_data, PosVectorFloat(320, 240), 1, m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + "/Animation/", "animation.xml", 30 * 60);
-	m_backgroundAnimation.prepareAnimation("background");
-
-	// Other stuff
-	m_charSelectMenu = new CharacterSelect(this);
-	m_charSelectMenu->prepare();
-	m_mainMenu = new Menu(this);
-
-	m_timerSprite[0].setImage(m_data->imgPlayerNumber);
-	m_timerSprite[1].setImage(m_data->imgPlayerNumber);
-	m_timerSprite[0].setSubRect(0 / 10 * 24, 0, 0, 32);
-	m_timerSprite[1].setSubRect(0 / 10 * 24, 0, 0, 32);
-	m_timerSprite[0].setCenterBottom();
-	m_timerSprite[1].setCenterBottom();
-	m_timerSprite[0].setPosition(640 - 24, 32);
-	m_timerSprite[1].setPosition(640 - 24 - 24, 32);
 }
 
 // Set rules from RuleSetInfo.
@@ -421,8 +211,8 @@ void Game::playGame()
 		if (m_settings->useCpuPlayers && i >= m_settings->numHumans)
 			break;
 
-		FeInput input = m_data->front->inputState(i);
-		m_players[i]->m_controls.setState(input, m_data->matchTimer);
+		FeInput input = m_gameRenderer->m_gameData->front->inputState(i);
+		m_players[i]->m_controls.setState(input, m_gameRenderer->m_gameData->matchTimer);
 	}
 
 	// Active player when NOT playing
@@ -473,7 +263,7 @@ void Game::playGame()
 				m_players[0]->m_controls.m_b = 1;
 			}
 			// Select rematch
-			m_mainMenu->m_select = 0;
+			m_gameRenderer->m_mainMenu->m_select = 0;
 		}
 	}
 	// Color timer menu
@@ -503,9 +293,9 @@ void Game::playGame()
 	// Menus (display them over the main game)
 	// Character select
 	if (m_menuSelect == 1) {
-		m_charSelectMenu->play();
+		m_gameRenderer->m_charSelectMenu->play();
 	} else if (m_menuSelect == 2) {
-		m_mainMenu->play();
+		m_gameRenderer->m_mainMenu->play();
 	}
 
 	// Check if match can start
@@ -543,13 +333,13 @@ void Game::playGame()
 
 	// Ready go
 	if (!m_players.empty()) {
-		m_readyGoObj.playAnimation();
+		m_gameRenderer->m_readyGoObj.playAnimation();
 	}
 	m_backgroundAnimation.playAnimation();
 
 	// Replay
 	if (m_settings->recording == RecordState::REPLAYING) {
-		const int t = m_data->matchTimer;
+		const int t = m_gameRenderer->m_gameData->matchTimer;
 		for (const auto& player : m_players) {
 			// Check event by looping through vector
 			// If the time is -1, it's considered as processed
@@ -621,8 +411,8 @@ void Game::playGame()
 
 	changeMusicVolume();
 
-	m_data->globalTimer++;
-	m_data->matchTimer++;
+	m_gameRenderer->m_gameData->globalTimer++;
+	m_gameRenderer->m_gameData->matchTimer++;
 
 	// Access menu during endless mode
 	if (m_settings->ruleSetInfo.numPlayers == 1 && m_menuSelect == 0) {
@@ -636,7 +426,7 @@ void Game::playGame()
 
 	// Replay normal
 	if (m_settings->recording == RecordState::REPLAYING && m_replayState == ReplayState::NORMAL)
-		m_replayBackwardsTimer = m_data->matchTimer;
+		m_replayBackwardsTimer = m_gameRenderer->m_gameData->matchTimer;
 
 	// Replay backwards
 	if (m_settings->recording == RecordState::REPLAYING && m_replayState == ReplayState::REWIND) {
@@ -647,14 +437,14 @@ void Game::playGame()
 		if (!m_settings->oldReplayPlayList.empty()) {
 			const bool soundSettings = m_settings->playSound;
 			m_settings->playSound = false;
-			m_data->playSounds = false;
+			m_gameRenderer->m_gameData->playSounds = false;
 
 			loadReplay(m_settings->oldReplayPlayList.back());
 			// Get ready to play
 			resetPlayers();
-			m_data->matchTimer = 0;
+			m_gameRenderer->m_gameData->matchTimer = 0;
 			// Loop until time is reached
-			while (m_data->matchTimer < m_replayBackwardsTimer) {
+			while (m_gameRenderer->m_gameData->matchTimer < m_replayBackwardsTimer) {
 				m_replayState = ReplayState::NORMAL;
 				m_backwardsOnce = true;
 				playGame();
@@ -662,17 +452,17 @@ void Game::playGame()
 			}
 			m_backwardsOnce = false;
 			m_settings->playSound = soundSettings;
-			m_data->playSounds = soundSettings;
+			m_gameRenderer->m_gameData->playSounds = soundSettings;
 			m_replayState = ReplayState::NORMAL;
 		} else {
-			m_replayBackwardsTimer = m_data->matchTimer;
+			m_replayBackwardsTimer = m_gameRenderer->m_gameData->matchTimer;
 			m_replayState = ReplayState::NORMAL;
 		}
 	}
 	// Replay fastforward
-	if (m_settings->recording == RecordState::REPLAYING && m_replayState == ReplayState::FAST_FORWARD && m_data->matchTimer % 2 == 0) {
+	if (m_settings->recording == RecordState::REPLAYING && m_replayState == ReplayState::FAST_FORWARD && m_gameRenderer->m_gameData->matchTimer % 2 == 0) {
 		playGame();
-	} else if (m_settings->recording == RecordState::REPLAYING && m_replayState == ReplayState::FAST_FORWARD_X4 && m_data->matchTimer % 4 == 0) {
+	} else if (m_settings->recording == RecordState::REPLAYING && m_replayState == ReplayState::FAST_FORWARD_X4 && m_gameRenderer->m_gameData->matchTimer % 4 == 0) {
 		playGame();
 		playGame();
 		playGame();
@@ -681,88 +471,26 @@ void Game::playGame()
 
 void Game::renderGame()
 {
-	// Tunnel shader
-	if (m_data->tunnelShader) {
-		m_data->tunnelShader->setParameter("time", static_cast<double>(m_data->globalTimer) / 60.0);
-	}
-
-	// Clear screen
-	m_data->front->clear();
-
-	// Draw background
-	m_spriteBackground.draw(m_data->front);
-	m_backgroundAnimation.draw();
-
-	// Draw timer
-	if (m_currentGameStatus == GameStatus::IDLE && !m_settings->useCpuPlayers && (countActivePlayers() > 1 || m_settings->rankedMatch)) {
-		m_timerSprite[0].draw(m_data->front);
-		m_timerSprite[1].draw(m_data->front);
-	}
-	if (m_players[0]->getPlayerType() == HUMAN && m_players[0]->m_currentPhase == Phase::PICKCOLORS
-		&& !m_settings->useCpuPlayers && !m_players[0]->m_pickedColor) {
-		m_timerSprite[0].draw(m_data->front);
-		m_timerSprite[1].draw(m_data->front);
-	}
-
-	// Draw player related objects
-	for (const auto& player : m_players) {
-		// Draw fields
-		player->draw();
-	}
-	for (const auto& player : m_players) {
-		// Draw light effect
-		player->drawEffect();
-	}
-	if (!m_players.empty()) {
-		// Needs at least 1 player to draw ready-go
-		m_readyGoObj.draw();
-	}
-
-	// Draw menuSelects
-	if (m_menuSelect == 1) {
-		m_charSelectMenu->draw();
-	}
-	if (m_menuSelect == 2) {
-		m_mainMenu->draw();
-	}
-
-	// Darken screen
-	if (m_rankedState >= 3) {
-		m_black.draw(m_data->front);
-		// Draw status text
-		if (m_statusText) {
-			m_data->front->setColor(255, 255, 255, 255);
-			m_statusText->draw(8, 0);
-		}
-	}
-
-	m_data->front->swapBuffers();
+	m_gameRenderer->renderGame();
 }
 
 void Game::setStatusText(const char* utf8)
 {
-	if (utf8 == m_lastText)
-		return;
-	if (!m_statusFont)
-		return;
-	delete m_statusText;
-
-	m_statusText = m_statusFont->render(utf8);
-	m_lastText = utf8;
+	m_gameRenderer->setStatusText(utf8);
 }
 
 void Game::setWindowFocus(bool focus) const
 {
-	m_data->windowFocus = focus;
+	m_gameRenderer->m_gameData->windowFocus = focus;
 }
 
 // Main loop of the game
 void Game::loop()
 {
-	initGame(m_data->front);
+	initGame(m_gameRenderer->m_gameData->front);
 
 	Sprite debugSprite;
-	debugSprite.setImage(m_data->imgNextPuyoBackgroundL);
+	debugSprite.setImage(m_gameRenderer->m_gameData->imgNextPuyoBackgroundL);
 
 	// Frame limiter variables
 	double t = 0.0;
@@ -812,7 +540,7 @@ void Game::loop()
 				renderGame();
 
 				// Display
-				m_data->front->swapBuffers();
+				m_gameRenderer->m_gameData->front->swapBuffers();
 			}
 		}
 	}
@@ -876,8 +604,8 @@ void Game::checkEnd()
 				return;
 			}
 		}
-		if (m_data->windowFocus) {
-			m_data->front->musicEvent(MusicCanStop);
+		if (m_gameRenderer->m_gameData->windowFocus) {
+			m_gameRenderer->m_gameData->front->musicEvent(MusicCanStop);
 		}
 		m_targetVolumeNormal = 25;
 		m_targetVolumeFever = 25;
@@ -1115,7 +843,7 @@ void Game::saveReplay() const
 		kReplayVersion,
 		"", // Date
 		"", // Time
-		m_data->matchTimer,
+		m_gameRenderer->m_gameData->matchTimer,
 		static_cast<char>(m_activeAtStart),
 		m_randomSeedNextList
 	};
@@ -1461,46 +1189,12 @@ void Game::rankedMatch()
 
 void Game::changeMusicVolume()
 {
-	if (!m_data->windowFocus) {
-		return;
-	}
-	if (m_currentVolumeNormal > m_targetVolumeNormal) {
-		m_currentVolumeNormal -= 1;
-		if (m_currentVolumeNormal < 0)
-			m_currentVolumeNormal = 0;
-		m_data->front->musicVolume(static_cast<float>(m_currentVolumeNormal) / 100.0f * m_globalVolume, false);
-	} else if (m_currentVolumeNormal < m_targetVolumeNormal && m_data->globalTimer % 3 == 0) {
-		m_currentVolumeNormal += 1;
-		if (m_currentVolumeNormal > 100)
-			m_currentVolumeNormal = 100;
-		m_data->front->musicVolume(static_cast<float>(m_currentVolumeNormal) / 100.0f * m_globalVolume, false);
-	}
-	if (m_currentVolumeFever > m_targetVolumeFever) {
-		m_currentVolumeFever -= 1;
-		if (m_currentVolumeFever < 0)
-			m_currentVolumeFever = 0;
-		m_data->front->musicVolume(static_cast<float>(m_currentVolumeFever) / 100.0f * m_globalVolume, true);
-	} else if (m_currentVolumeFever < m_targetVolumeFever) {
-		m_currentVolumeFever += 1;
-		if (m_currentVolumeFever > 100)
-			m_currentVolumeFever = 100;
-		m_data->front->musicVolume(static_cast<float>(m_currentVolumeFever) / 100.0f * m_globalVolume, true);
-	}
+	m_gameRenderer->adjustCurrentMusicVolume();
 }
 
 void Game::loadMusic()
 {
-	if (m_settings->recording == RecordState::REPLAYING && m_backwardsOnce == true) {
-		return;
-	}
-
-	m_data->front->musicEvent(MusicContinue);
-	m_targetVolumeNormal = 100;
-	m_targetVolumeFever = 100;
-
-	// Force to set volume
-	m_currentVolumeNormal -= 1;
-	m_currentVolumeFever -= 1;
+	m_gameRenderer->continueMusic();
 }
 
 }

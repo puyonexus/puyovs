@@ -12,7 +12,7 @@ namespace ppvs {
 CharacterSelect::CharacterSelect(Game* g)
 {
 	m_currentGame = g;
-	m_data = g->m_data;
+	m_data = g->m_gameRenderer->m_gameData;
 
 	m_background.setImage(nullptr);
 	m_background.setScale(2.f * 640.f, 480.f);
@@ -23,12 +23,12 @@ CharacterSelect::CharacterSelect(Game* g)
 	for (int i = 0; i < height; i++) {
 		constexpr int width = 8;
 		for (int j = 0; j < width; j++) {
-			m_holder[i * width + j].setImage(g->m_data->imgCharHolder);
+			m_holder[i * width + j].setImage(m_data->imgCharHolder);
 			m_holder[i * width + j].setCenter(0, 0);
 			m_holder[i * width + j].setPosition(
 				static_cast<float>(64 + j * 66),
 				static_cast<float>(64 + i * 52));
-			m_charSprite[i * width + j].setImage(g->m_data->front->loadImage(m_currentGame->m_baseAssetDir + kFolderUserCharacter + m_currentGame->m_settings->characterSetup[m_order[i * width + j]] + "/icon.png"));
+			m_charSprite[i * width + j].setImage(m_data->front->loadImage(m_currentGame->m_baseAssetDir + kFolderUserCharacter + m_currentGame->m_settings->characterSetup[m_order[i * width + j]] + "/icon.png"));
 			m_charSprite[i * width + j].setCenter(0, 0);
 			m_charSprite[i * width + j].setPosition(
 				static_cast<float>(64 + j * 66 + 1),
@@ -447,7 +447,7 @@ void CharacterSelect::end()
 				for (size_t i = 0; i < numPlayers; i++) {
 					m_currentGame->m_players[i]->m_currentPhase = Phase::GETREADY;
 				}
-				m_currentGame->m_readyGoObj.prepareAnimation("readygo");
+				m_currentGame->m_gameRenderer->m_readyGoObj.prepareAnimation("readygo");
 				m_data->matchTimer = 0;
 			}
 			m_currentGame->m_menuSelect = 0;

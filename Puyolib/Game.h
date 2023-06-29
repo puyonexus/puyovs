@@ -9,6 +9,7 @@
 #include "RuleSet/RuleSet.h"
 #include "Sprite.h"
 #include "global.h"
+#include "GameRenderer.h"
 #include <iostream>
 #include <string>
 
@@ -50,6 +51,7 @@ struct NetworkMessage {
 };
 
 class Frontend;
+class GameRenderer;
 
 class Game {
 public:
@@ -95,8 +97,12 @@ public:
 	int m_choiceTimer = 0;
 	int m_colorTimer = 10 * 60;
 	int m_activeAtStart = 0;
+	bool isBigMatch();
 
 	// Public variables
+
+
+	GameRenderer* m_gameRenderer;
 	int m_menuSelect = 0;
 	Animation m_readyGoObj {};
 	Animation m_backgroundAnimation {};

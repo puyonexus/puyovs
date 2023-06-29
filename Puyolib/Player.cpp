@@ -10,11 +10,11 @@ using namespace std;
 namespace ppvs {
 
 Player::Player(const PlayerType type, const int playerNum, const int totalPlayers, Game* g)
-	: m_feverGauge(g->m_data)
-	, m_feverLight(g->m_data)
+	: m_feverGauge(g->m_gameRenderer->m_gameData)
+	, m_feverLight(g->m_gameRenderer->m_gameData)
 {
 	m_currentGame = g;
-	m_data = m_currentGame->m_data;
+	m_data = m_currentGame->m_gameRenderer->m_gameData;
 	m_debug = 0;
 	m_debugCounter = 0;
 
@@ -45,19 +45,23 @@ Player::Player(const PlayerType type, const int playerNum, const int totalPlayer
 	m_bonusEq = false;
 	m_hasMoved = false;
 
+
+	// Init renderer
+	m_playerRenderer = new PlayerRenderer(this);
+
 	// Default active field: normal field
 	m_activeField = &m_fieldNormal;
 
 	// Controller
-	m_controls.init(m_playerNum, m_type, m_currentGame->m_settings->recording);
+	//m_controls.init(m_playerNum, m_type, m_currentGame->m_settings->recording);
 
 	// Mover
-	m_movePuyo.init(m_data);
+	//m_movePuyo.init(m_data);
 	m_dropSpeed = 2;
 
 	// Tray
-	m_normalTray.init(m_data);
-	m_feverTray.init(m_data);
+	//m_normalTray.init(m_data);
+	//m_feverTray.init(m_data);
 
 	// Initialize player values
 	m_colors = 4;
@@ -1148,8 +1152,8 @@ void Player::chooseColor()
 					continue;
 				player->m_currentPhase = Phase::GETREADY;
 			}
-			m_currentGame->m_readyGoObj.prepareAnimation("readygo");
-			m_currentGame->m_data->matchTimer = 0;
+			m_currentGame->m_gameRenderer->m_readyGoObj.prepareAnimation("readygo");
+			m_currentGame->m_gameRenderer->m_gameData->matchTimer = 0;
 		}
 	}
 	// Fade out with flicker
