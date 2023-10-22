@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Puyolib/GameSettings.h" // ppvs::RuleSetInfo
+#include "../Puyolib/DebugLog.h" // ppvs::DebugLog
 #include "netclient.h"
 #include <QBasicTimer>
 #include <QList>
@@ -22,9 +23,13 @@ public:
 	bool closeAll();
 	void exec();
 
+
+
 public slots:
 	void addGame(GameWidget* game);
 	ppvs::RuleSetInfo createRules();
+
+	ppvs::DebugLog* createDebug();
 	GameWidget* createGame(const QString& rules, const QString& roomName, bool spectating = false);
 	GameWidget* createGame(ppvs::GameSettings* gamesettings, const QString& roomName, bool spectating = false, bool replay = false);
 	GameWidget* findGame(const QString& roomName) const;
@@ -45,10 +50,14 @@ signals:
 	void exiting();
 
 protected:
+	void handleDebugLog(std::string text, ppvs::DebugMessageType);
+
 	void process() const;
 	bool getGame(const QString& channel, ppvs::Game*& game, GameWidget*& widget) const;
 
 	QList<GameWidget*> games;
 	NetClient* network;
 	GameAudio* audio;
+
+	ppvs::DebugLog* dbg;
 };

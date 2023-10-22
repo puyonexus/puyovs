@@ -9,9 +9,18 @@
 #include "netclient.h"
 #include "settings.h"
 #include <QApplication>
+#include <QDebug>
 #include <QMessageBox>
+#include <QObject>
 
 volatile bool loopEnabled;
+
+void GameManager::handleDebugLog(std::basic_string<char> text, ppvs::DebugMessageType severity)
+{
+	if (severity != ppvs::DebugMessageType::NONE) {
+		qDebug().noquote() << "Puyolib:" << QString(text.c_str()) << '\n';
+	}
+}
 
 GameManager::GameManager(NetClient* network, QObject* parent)
 	: QObject(parent)
@@ -41,6 +50,7 @@ GameManager::~GameManager()
 {
 	delete audio;
 	loopEnabled = false;
+	delete dbg;
 	emit exiting();
 }
 
@@ -110,6 +120,13 @@ ppvs::RuleSetInfo GameManager::createRules()
 	return rs;
 }
 
+ppvs::DebugLog* GameManager::createDebug()
+{
+	dbg = new ppvs::DebugLog;
+	dbg->setLogHandler([this](std::basic_string<char> text, ppvs::DebugMessageType sev) { this->handleDebugLog(text, sev); });
+	return dbg;
+}
+
 GameWidget* GameManager::createGame(const QString& rules, const QString& roomName, bool spectating)
 {
 	ppvs::RuleSetInfo rs;
@@ -159,7 +176,8 @@ GameWidget* GameManager::createGame(ppvs::GameSettings* gs, const QString& roomN
 	gs->playMusic = settings.boolean("launcher", "enablemusic", true);
 	gs->playSound = settings.boolean("launcher", "enablesound", true);
 
-	ppvs::Game* game = new ppvs::Game(gs);
+
+	ppvs::Game* game = new ppvs::Game(gs, createDebug());
 
 	game->m_translatableStrings.waitingForPlayer = tr("Waiting for player...", "Messages:GameWaitingForPlayer").toStdString();
 	game->m_translatableStrings.disconnected = tr("Player disconnected.", "Messages:GameDisconnected").toStdString();
