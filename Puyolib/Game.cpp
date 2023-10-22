@@ -21,10 +21,13 @@ void encode(const char* key, char* in, const int length)
 
 Game* activeGame = nullptr;
 
-Game::Game(GameSettings* gs)
-	: m_settings(gs)
+Game::Game(GameSettings* gs, DebugLog *dbg)
+	: m_settings(gs),
+	m_debug(dbg)
 {
 	initGlobal();
+
+
 
 	activeGame = this;
 	m_choiceTimer = (gs->rankedMatch == true ? 5 : 30) * 60;
