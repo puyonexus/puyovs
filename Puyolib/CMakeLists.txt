@@ -30,7 +30,8 @@ add_library(Puyolib
     RNG/LegacyPuyoRng.cpp
     RNG/MersenneTwister.cpp
     RNG/PuyoRng.cpp
-        DebugLog.cpp DebugLog.h)
+    DebugLog.cpp
+    DebugLog.h)
 
 target_compile_features(Puyolib PUBLIC cxx_std_17)
 

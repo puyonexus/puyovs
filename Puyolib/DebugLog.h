@@ -18,6 +18,9 @@ enum class DebugMessageType {
 	DEBUG = 8
 };
 
+/* A more precise debug message class, might be used in exception handling and other scenarios
+ * where we don't want to handle raw strings.
+ * */
 class DebugMessage {
 public:
 	DebugMessage(std::basic_string<char> text, DebugMessageType severity = DebugMessageType::NONE) : m_text(text), m_severity(severity) {};
@@ -27,6 +30,13 @@ public:
 	DebugMessageType m_severity;
 };
 
+
+/* Puyolib debugging. This class allows a developer to send debug messages from Puyolib to the Client.
+ *
+ * A developer seeking to send a debug message to the client shall use the log method (under normal circumstances
+ * a member of ppvs::Game named m_debug) and call the log method with a std::string and
+ * an appropriate Debug Message type.
+ * */
 class DebugLog {
 public:
 	DebugLog() = default;

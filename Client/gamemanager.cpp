@@ -15,10 +15,25 @@
 
 volatile bool loopEnabled;
 
-void GameManager::handleDebugLog(std::basic_string<char> text, ppvs::DebugMessageType severity)
+/* Handles the Puyolib debug information transfer. See Puyolib/DebugLog.h for more info. */
+void GameManager::handleDebugLog(const std::basic_string<char>& text, ppvs::DebugMessageType severity)
 {
-	if (severity != ppvs::DebugMessageType::NONE) {
+	switch (severity) {
+	case ppvs::DebugMessageType::DEBUG:
 		qDebug().noquote() << "Puyolib:" << QString(text.c_str()) << '\n';
+		return;
+	case ppvs::DebugMessageType::INFO:
+		qInfo().noquote() << "Puyolib:" << QString(text.c_str()) << '\n';
+		return;
+	case ppvs::DebugMessageType::WARNING:
+		qWarning().noquote() << "Puyolib:" << QString(text.c_str()) << '\n';
+		return;
+	case ppvs::DebugMessageType::ERROR:
+		qCritical().noquote() << "Puyolib:" << QString(text.c_str()) << '\n';
+		return;
+	case ppvs::DebugMessageType::NONE:
+	default:
+		return;
 	}
 }
 
@@ -119,7 +134,7 @@ ppvs::RuleSetInfo GameManager::createRules()
 
 	return rs;
 }
-
+/* Creates a new instance of DebugLog */
 ppvs::DebugLog* GameManager::createDebug()
 {
 	dbg = new ppvs::DebugLog;
@@ -175,7 +190,6 @@ GameWidget* GameManager::createGame(ppvs::GameSettings* gs, const QString& roomN
 
 	gs->playMusic = settings.boolean("launcher", "enablemusic", true);
 	gs->playSound = settings.boolean("launcher", "enablesound", true);
-
 
 	ppvs::Game* game = new ppvs::Game(gs, createDebug());
 

@@ -50,7 +50,7 @@ signals:
 	void exiting();
 
 protected:
-	void handleDebugLog(std::string text, ppvs::DebugMessageType);
+	static void handleDebugLog(const std::string& text, ppvs::DebugMessageType severity);
 
 	void process() const;
 	bool getGame(const QString& channel, ppvs::Game*& game, GameWidget*& widget) const;
