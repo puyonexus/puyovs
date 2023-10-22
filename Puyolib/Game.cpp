@@ -59,6 +59,8 @@ Game::~Game()
 	delete m_statusFont;
 	delete m_data->front;
 	delete m_data;
+	delete m_debug;
+	m_debug = nullptr;
 }
 
 void Game::close()

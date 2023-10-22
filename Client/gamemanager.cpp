@@ -65,7 +65,7 @@ GameManager::~GameManager()
 {
 	delete audio;
 	loopEnabled = false;
-	delete dbg;
+	
 	emit exiting();
 }
 
