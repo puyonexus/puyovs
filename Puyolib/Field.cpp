@@ -1364,7 +1364,8 @@ void Field::triggerGlow(PosVectorInt shadowPos[4], const int n, int colors[4])
 			// Error
 			shadowPos[i].x = -1;
 			shadowPos[i].y = -1;
-			debugString += "error";
+
+			m_player->m_currentGame->m_debug->log("Invalid shadow Puyo placement request",DebugMessageType::ERROR);
 		}
 	}
 

@@ -584,8 +584,7 @@ void Player::play()
 {
 	// Debugging
 	if (debugMode == 1) {
-		if (m_playerNum == 1)
-			debugString = "";
+		debugString = "";
 		debugString += toString(static_cast<int>(m_currentPhase)) + "\n";
 		debugString += "garbage: " + toString(m_forgiveGarbage) + "\n";
 		if (m_activeGarbage == &m_normalGarbage)

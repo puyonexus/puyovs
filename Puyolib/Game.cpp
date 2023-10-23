@@ -23,13 +23,11 @@ void encode(const char* key, char* in, const int length)
 
 Game* activeGame = nullptr;
 
-Game::Game(GameSettings* gs, DebugLog *dbg)
-	: m_settings(gs),
-	m_debug(dbg)
+Game::Game(GameSettings* gs, DebugLog* dbg)
+	: m_settings(gs)
+	, m_debug(dbg)
 {
 	initGlobal();
-
-
 
 	activeGame = this;
 	m_choiceTimer = (gs->rankedMatch == true ? 5 : 30) * 60;
@@ -135,6 +133,7 @@ void Game::loadGlobal()
 	m_data->playMusic = m_settings->playMusic;
 
 	m_statusFont = m_data->front->loadFont("Arial", 14);
+	m_debugFont = m_data->front->loadFont("Arial", 14);
 	setStatusText("");
 }
 
@@ -742,6 +741,13 @@ void Game::renderGame()
 		}
 	}
 
+	// Render debug text
+	updateDebugText();
+	if (m_debugText) {
+		m_data->front->setColor(255, 255, 255, 255);
+		m_debugText->draw(16, 0);
+	}
+
 	m_data->front->swapBuffers();
 }
 
@@ -755,6 +761,18 @@ void Game::setStatusText(const char* utf8)
 
 	m_statusText = m_statusFont->render(utf8);
 	m_lastText = utf8;
+}
+
+// Uses the status text font to render the current debug string
+void Game::updateDebugText()
+{
+	if (!m_debugFont)
+		return;
+	if (debugString.empty())
+		return;
+	delete m_debugText;
+
+	m_debugText = m_debugFont->render(debugString.c_str());
 }
 
 void Game::setWindowFocus(bool focus) const

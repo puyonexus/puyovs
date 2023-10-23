@@ -167,6 +167,11 @@ private:
 	FeText* m_statusText = nullptr;
 	std::string m_lastText;
 	void setStatusText(const char* utf8);
+	// TODO: add a debug status text manager and move it all out of this class
+	FeFont* m_debugFont = nullptr;
+	FeText* m_debugText = nullptr;
+	void updateDebugText();
+
 
 	bool m_playNext = true; // Helper variable for replays
 };
