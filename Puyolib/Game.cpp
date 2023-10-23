@@ -57,6 +57,7 @@ Game::~Game()
 	delete m_currentRuleSet;
 	delete m_statusText;
 	delete m_statusFont;
+	delete m_debugFont;
 	delete m_data->front;
 	delete m_data;
 	delete m_debug;

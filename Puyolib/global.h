@@ -174,10 +174,11 @@ double interpolate(std::string type, double startVal, double endVal, double t, d
 void splitString(std::string& in, char delimiter, StringList& v);
 void createFolder(std::string folderName);
 
-// Debugging
-extern FeFont* fontArial;
-extern std::string debugString;
+
+/* PUYOLIB DEBUGGING MODE
+ * See Puyolib/global.cpp for more info. */
 extern int debugMode;
+extern std::string debugString;
 
 // Convert int to string
 template <class T>
