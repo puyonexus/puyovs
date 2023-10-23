@@ -22,7 +22,9 @@ void GameManager::handleDebugLog(std::string text, ppvs::DebugMessageType severi
 {
 	switch (severity) {
 	case ppvs::DebugMessageType::DEBUG:
-		qDebug("Puyolib: %s\n",text.c_str());
+		// Do not display debug info if we aren't in Puyolib debug mode
+		if (ppvs::debugMode)
+			qDebug("Puyolib: %s\n",text.c_str());
 		return;
 	case ppvs::DebugMessageType::INFO:
 		qInfo("Puyolib: %s\n",text.c_str());

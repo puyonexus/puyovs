@@ -11,7 +11,7 @@ DebugLog::~DebugLog() {
 	m_log_handler = nullptr;
 }
 
-void DebugLog::setLogHandler(std::function<void(std::string, DebugMessageType)> func)
+void DebugLog::setLogHandler(function<void(std::string, DebugMessageType)> func)
 {
 	m_log_handler = func;
 	log("Debug Log was successfully created", DebugMessageType::INFO);

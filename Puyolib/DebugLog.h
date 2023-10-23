@@ -18,7 +18,7 @@ enum class DebugMessageType {
 	ERROR = 1,
 	WARNING = 2,
 	INFO = 4,
-	DEBUG = 8
+	DEBUG = 8, // Without this exact comma the Visual C++ compiler will freak out...
 };
 
 /* A more precise debug message class, might be used in exception handling and other scenarios
