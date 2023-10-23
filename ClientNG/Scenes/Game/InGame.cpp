@@ -4,7 +4,37 @@
 #include "../../Game.h"
 #include "Frontend.h"
 
+namespace PuyoVS::ClientNG {
+
+using ppvs::DebugMessageType;
+
+// TODO: Move to the right place. Maybe our current handler is too smart but some current clients are just too dumb.
+/* Handles printing debug information to the terminal */
+void handlePuyolibDebugLog(std::string text, DebugMessageType sev)
+{
+	switch (sev) {
+	case DebugMessageType::DEBUG:
+		SDL_LogDebug(0, "Puyolib: %s", text.c_str());
+		return;
+	case DebugMessageType::INFO:
+		SDL_LogInfo(0, "Puyolib: %s", text.c_str());
+		return;
+	case DebugMessageType::WARNING:
+		SDL_LogWarn(0, "Puyolib: %s", text.c_str());
+		return;
+	case DebugMessageType::ERROR:
+		SDL_LogError(0, "Puyolib: %s", text.c_str());
+		return;
+	case DebugMessageType::NONE:
+	default:
+		return;
+	}
+}
+
+}
+
 namespace PuyoVS::ClientNG::Scenes::Game {
+
 
 InGame::InGame(GameWindow& w, std::unique_ptr<ppvs::Game> game)
 	: Scene(w.renderTarget())
@@ -51,5 +81,6 @@ void InGame::draw()
 	}
 	m_target->present();
 }
+
 
 }

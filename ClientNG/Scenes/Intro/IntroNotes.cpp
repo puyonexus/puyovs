@@ -90,7 +90,9 @@ void IntroNotes::finish()
 	auto gs = new ppvs::GameSettings();
 	gs->useCpuPlayers = true;
 	gs->baseAssetDir = std::string(defaultAssetPath) + "/";
-	m_window.setScene(std::make_unique<Game::InGame>(m_window, std::make_unique<ppvs::Game>(gs)));
+	auto dbg = new ppvs::DebugLog();
+	dbg->setLogHandler([this](std::string text, ppvs::DebugMessageType sev) { PuyoVS::ClientNG::handlePuyolibDebugLog(text, sev); });
+	m_window.setScene(std::make_unique<Game::InGame>(m_window, std::make_unique<ppvs::Game>(gs,dbg)));
 }
 
 }
