@@ -12,6 +12,8 @@
 
 namespace ppvs {
 
+using ppvs::DebugMessageType;
+
 void encode(const char* key, char* in, const int length)
 {
 	for (int i = 0; i < length; i++) {
@@ -60,7 +62,6 @@ Game::~Game()
 	delete m_data->front;
 	delete m_data;
 	delete m_debug;
-	m_debug = nullptr;
 }
 
 void Game::close()

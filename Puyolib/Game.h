@@ -112,7 +112,7 @@ public:
 	CharacterSelect* m_charSelectMenu = nullptr;
 	Menu* m_mainMenu = nullptr;
 	unsigned int m_randomSeedNextList = 0; // All players should use the same random seed
-	std::deque<std::string> m_debugMessages;
+	//std::deque<std::string> m_debugMessages;
 	bool m_forceStatusText = false;
 	TranslatableStrings m_translatableStrings {};
 

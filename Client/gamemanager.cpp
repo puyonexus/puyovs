@@ -15,21 +15,23 @@
 
 volatile bool loopEnabled;
 
+
+// TODO: Add support to std::format when we switch to C++20
 /* Handles the Puyolib debug information transfer. See Puyolib/DebugLog.h for more info. */
-void GameManager::handleDebugLog(const std::basic_string<char>& text, ppvs::DebugMessageType severity)
+void GameManager::handleDebugLog(std::string text, ppvs::DebugMessageType severity)
 {
 	switch (severity) {
 	case ppvs::DebugMessageType::DEBUG:
-		qDebug().noquote() << "Puyolib:" << QString(text.c_str()) << '\n';
+		qDebug("Puyolib: %s\n",text.c_str());
 		return;
 	case ppvs::DebugMessageType::INFO:
-		qInfo().noquote() << "Puyolib:" << QString(text.c_str()) << '\n';
+		qInfo("Puyolib: %s\n",text.c_str());
 		return;
 	case ppvs::DebugMessageType::WARNING:
-		qWarning().noquote() << "Puyolib:" << QString(text.c_str()) << '\n';
+		qWarning("Puyolib WARNING: %s\n",text.c_str());
 		return;
 	case ppvs::DebugMessageType::ERROR:
-		qCritical().noquote() << "Puyolib:" << QString(text.c_str()) << '\n';
+		qCritical("Puyolib ERROR: %s\n",text.c_str());
 		return;
 	case ppvs::DebugMessageType::NONE:
 	default:
@@ -65,7 +67,7 @@ GameManager::~GameManager()
 {
 	delete audio;
 	loopEnabled = false;
-	
+
 	emit exiting();
 }
 
@@ -138,7 +140,7 @@ ppvs::RuleSetInfo GameManager::createRules()
 ppvs::DebugLog* GameManager::createDebug()
 {
 	dbg = new ppvs::DebugLog;
-	dbg->setLogHandler([this](std::basic_string<char> text, ppvs::DebugMessageType sev) { this->handleDebugLog(text, sev); });
+	dbg->setLogHandler([this](std::string text, ppvs::DebugMessageType sev) { this->handleDebugLog(text, sev); });
 	return dbg;
 }
 

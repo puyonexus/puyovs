@@ -8,7 +8,10 @@
 #include <iostream>
 #include <functional>
 
+
 namespace ppvs {
+
+using std::function;
 
 enum class DebugMessageType {
 	NONE = 0,
@@ -23,7 +26,7 @@ enum class DebugMessageType {
  * */
 class DebugMessage {
 public:
-	DebugMessage(std::basic_string<char> text, DebugMessageType severity = DebugMessageType::NONE) : m_text(text), m_severity(severity) {};
+	DebugMessage(std::string text, DebugMessageType severity = DebugMessageType::NONE) : m_text(text), m_severity(severity) {};
 	~DebugMessage() = default;
 
 	std::string m_text;
@@ -44,11 +47,13 @@ public:
 
 	void log(DebugMessage *msg);
 	void log(std::string text, DebugMessageType severity);
+	// TODO: add support for logging with std::format strings and variable list once we switch to C++20
 
-	void setLogHandler(std::function<void(std::basic_string<char>,DebugMessageType)> f);
+
+	void setLogHandler(function<void(std::string,DebugMessageType)> f);
 
 private:
-	std::function<void(std::string,DebugMessageType)> m_log_handler;
+	function<void(std::string,DebugMessageType)> m_log_handler;
 
 
 };

@@ -6,6 +6,7 @@
 #include <QBasicTimer>
 #include <QList>
 #include <QObject>
+#include <string>
 
 class GameAudio;
 class GameWidget;
@@ -50,7 +51,7 @@ signals:
 	void exiting();
 
 protected:
-	static void handleDebugLog(const std::string& text, ppvs::DebugMessageType severity);
+	static void handleDebugLog(std::string text, ppvs::DebugMessageType severity);
 
 	void process() const;
 	bool getGame(const QString& channel, ppvs::Game*& game, GameWidget*& widget) const;

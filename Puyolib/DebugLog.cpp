@@ -8,10 +8,10 @@ namespace ppvs {
 DebugLog::~DebugLog() {
 	// Assumes that log handler isn't dead yet
 	log("Debug Log was successfully destroyed", DebugMessageType::INFO);
-	m_log_handler = NULL;
+	m_log_handler = nullptr;
 }
 
-void DebugLog::setLogHandler(std::function<void(std::basic_string<char>, DebugMessageType)> func)
+void DebugLog::setLogHandler(std::function<void(std::string, DebugMessageType)> func)
 {
 	m_log_handler = func;
 	log("Debug Log was successfully created", DebugMessageType::INFO);
