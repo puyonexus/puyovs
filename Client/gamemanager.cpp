@@ -21,21 +21,21 @@ volatile bool loopEnabled;
 void GameManager::handleDebugLog(std::string text, ppvs::DebugMessageType severity)
 {
 	switch (severity) {
-	case ppvs::DebugMessageType::DEBUG:
+	case ppvs::DebugMessageType::Debug:
 		// Do not display debug info if we aren't in Puyolib debug mode
 		if (ppvs::debugMode)
 			qDebug("Puyolib: %s\n",text.c_str());
 		return;
-	case ppvs::DebugMessageType::INFO:
+	case ppvs::DebugMessageType::Info:
 		qInfo("Puyolib: %s\n",text.c_str());
 		return;
-	case ppvs::DebugMessageType::WARNING:
+	case ppvs::DebugMessageType::Warning:
 		qWarning("Puyolib WARNING: %s\n",text.c_str());
 		return;
-	case ppvs::DebugMessageType::ERROR:
+	case ppvs::DebugMessageType::Error:
 		qCritical("Puyolib ERROR: %s\n",text.c_str());
 		return;
-	case ppvs::DebugMessageType::NONE:
+	case ppvs::DebugMessageType::None:
 	default:
 		return;
 	}

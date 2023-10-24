@@ -14,11 +14,11 @@ namespace ppvs {
 using std::function;
 
 enum class DebugMessageType {
-	NONE = 0,
-	ERROR = 1,
-	WARNING = 2,
-	INFO = 4,
-	DEBUG = 8, // Without this exact comma the Visual C++ compiler will freak out...
+	None = 0,
+	Error = 1,
+	Warning = 2,
+	Info = 4,
+	Debug = 8, // Without this exact comma the Visual C++ compiler will freak out...
 };
 
 /* A more precise debug message class, might be used in exception handling and other scenarios
@@ -26,7 +26,7 @@ enum class DebugMessageType {
  * */
 class DebugMessage {
 public:
-	DebugMessage(std::string text, DebugMessageType severity = DebugMessageType::NONE) : m_text(text), m_severity(severity) {};
+	DebugMessage(std::string text, DebugMessageType severity = DebugMessageType::None) : m_text(text), m_severity(severity) {};
 	~DebugMessage() = default;
 
 	std::string m_text;
