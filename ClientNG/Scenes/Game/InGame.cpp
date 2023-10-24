@@ -13,19 +13,19 @@ using ppvs::DebugMessageType;
 void handlePuyolibDebugLog(std::string text, DebugMessageType sev)
 {
 	switch (sev) {
-	case DebugMessageType::DEBUG:
+	case DebugMessageType::Debug:
 		SDL_LogDebug(0, "Puyolib: %s", text.c_str());
 		return;
-	case DebugMessageType::INFO:
+	case DebugMessageType::Info:
 		SDL_LogInfo(0, "Puyolib: %s", text.c_str());
 		return;
-	case DebugMessageType::WARNING:
+	case DebugMessageType::Warning:
 		SDL_LogWarn(0, "Puyolib: %s", text.c_str());
 		return;
-	case DebugMessageType::ERROR:
+	case DebugMessageType::Error:
 		SDL_LogError(0, "Puyolib: %s", text.c_str());
 		return;
-	case DebugMessageType::NONE:
+	case DebugMessageType::None:
 	default:
 		return;
 	}
