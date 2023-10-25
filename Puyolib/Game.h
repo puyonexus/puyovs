@@ -9,6 +9,7 @@
 #include "RuleSet/RuleSet.h"
 #include "Sprite.h"
 #include "global.h"
+#include "DebugLog.h"
 #include <iostream>
 #include <string>
 
@@ -53,7 +54,7 @@ class Frontend;
 
 class Game {
 public:
-    explicit Game(GameSettings* gs);
+	explicit Game(GameSettings* gs, DebugLog *dbg);
 	~Game();
 
 	Game(const Game&) = delete;
@@ -72,13 +73,16 @@ public:
 	void renderGame();
 	void setWindowFocus(bool focus) const;
 	void setRules();
-    [[nodiscard]] bool isFever() const;
+	[[nodiscard]] bool isFever() const;
 
 	// Other
 	void checkEnd();
 	void addPlayer(PlayerType type, int playerNum, int numPlayers);
 	void resetPlayers();
-    [[nodiscard]] int getActivePlayers() const;
+	[[nodiscard]] int getActivePlayers() const;
+
+	// Debugging
+	DebugLog *m_debug = nullptr;
 
 	// Online
 	PVS_Client* m_network = nullptr;
@@ -86,12 +90,12 @@ public:
 	bool m_connected = false;
 	std::deque<NetworkMessage> m_messageCenter;
 	GameStatus m_currentGameStatus = GameStatus::WAITING;
-    [[nodiscard]] int countActivePlayers() const; // Do not confuse with "getActivePlayers()"
-    [[nodiscard]] int countBoundPlayers() const;
+	[[nodiscard]] int countActivePlayers() const; // Do not confuse with "getActivePlayers()"
+	[[nodiscard]] int countBoundPlayers() const;
 	bool m_stopChaining = false; // Set true to stop all players from chaining
-    [[nodiscard]] bool checkLowestId() const;
+	[[nodiscard]] bool checkLowestId() const;
 	void sendDescription() const;
-    [[nodiscard]] std::string sendUpdate() const; // Send the state of player 1 to update spectators
+	[[nodiscard]] std::string sendUpdate() const; // Send the state of player 1 to update spectators
 	int m_choiceTimer = 0;
 	int m_colorTimer = 10 * 60;
 	int m_activeAtStart = 0;
@@ -108,7 +112,7 @@ public:
 	CharacterSelect* m_charSelectMenu = nullptr;
 	Menu* m_mainMenu = nullptr;
 	unsigned int m_randomSeedNextList = 0; // All players should use the same random seed
-	std::deque<std::string> m_debugMessages;
+	//std::deque<std::string> m_debugMessages;
 	bool m_forceStatusText = false;
 	TranslatableStrings m_translatableStrings {};
 
@@ -163,6 +167,11 @@ private:
 	FeText* m_statusText = nullptr;
 	std::string m_lastText;
 	void setStatusText(const char* utf8);
+	// TODO: add a debug status text manager and move it all out of this class
+	FeFont* m_debugFont = nullptr;
+	FeText* m_debugText = nullptr;
+	void updateDebugText();
+
 
 	bool m_playNext = true; // Helper variable for replays
 };

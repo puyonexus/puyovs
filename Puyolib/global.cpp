@@ -13,6 +13,18 @@
 namespace ppvs
 {
 
+// TODO: Define more granular debugging modes
+/* PUYOLIB DEBUGGING
+ * Define this compile flag to enable Puyolib debugging. This flag will display debug logging,
+ * debug status text and debug sprites. This might be augmented in the future.
+ * Alternatively, just set this variable to 1.
+ * */
+#ifdef PUYOLIB_DEBUG
+int debugMode = 1;
+#else
+int debugMode = 0;
+#endif
+
 // Strings
 const std::string kFolderUserSounds = "User/Sounds/";
 const std::string kFolderUserMusic = "User/Music/";
@@ -195,6 +207,5 @@ void initGlobal()
 }
 
 std::string debugString;
-int debugMode = 0;
 
 }

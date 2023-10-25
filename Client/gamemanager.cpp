@@ -9,9 +9,37 @@
 #include "netclient.h"
 #include "settings.h"
 #include <QApplication>
+#include <QDebug>
 #include <QMessageBox>
+#include <QObject>
 
 volatile bool loopEnabled;
+
+
+// TODO: Add support to std::format when we switch to C++20
+/* Handles the Puyolib debug information transfer. See Puyolib/DebugLog.h for more info. */
+void GameManager::handleDebugLog(std::string text, ppvs::DebugMessageType severity)
+{
+	switch (severity) {
+	case ppvs::DebugMessageType::Debug:
+		// Do not display debug info if we aren't in Puyolib debug mode
+		if (ppvs::debugMode)
+			qDebug("Puyolib: %s\n",text.c_str());
+		return;
+	case ppvs::DebugMessageType::Info:
+		qInfo("Puyolib: %s\n",text.c_str());
+		return;
+	case ppvs::DebugMessageType::Warning:
+		qWarning("Puyolib WARNING: %s\n",text.c_str());
+		return;
+	case ppvs::DebugMessageType::Error:
+		qCritical("Puyolib ERROR: %s\n",text.c_str());
+		return;
+	case ppvs::DebugMessageType::None:
+	default:
+		return;
+	}
+}
 
 GameManager::GameManager(NetClient* network, QObject* parent)
 	: QObject(parent)
@@ -41,6 +69,7 @@ GameManager::~GameManager()
 {
 	delete audio;
 	loopEnabled = false;
+
 	emit exiting();
 }
 
@@ -109,6 +138,13 @@ ppvs::RuleSetInfo GameManager::createRules()
 
 	return rs;
 }
+/* Creates a new instance of DebugLog */
+ppvs::DebugLog* GameManager::createDebug()
+{
+	dbg = new ppvs::DebugLog;
+	dbg->setLogHandler([this](std::string text, ppvs::DebugMessageType sev) { this->handleDebugLog(text, sev); });
+	return dbg;
+}
 
 GameWidget* GameManager::createGame(const QString& rules, const QString& roomName, bool spectating)
 {
@@ -159,7 +195,7 @@ GameWidget* GameManager::createGame(ppvs::GameSettings* gs, const QString& roomN
 	gs->playMusic = settings.boolean("launcher", "enablemusic", true);
 	gs->playSound = settings.boolean("launcher", "enablesound", true);
 
-	ppvs::Game* game = new ppvs::Game(gs);
+	ppvs::Game* game = new ppvs::Game(gs, createDebug());
 
 	game->m_translatableStrings.waitingForPlayer = tr("Waiting for player...", "Messages:GameWaitingForPlayer").toStdString();
 	game->m_translatableStrings.disconnected = tr("Player disconnected.", "Messages:GameDisconnected").toStdString();
