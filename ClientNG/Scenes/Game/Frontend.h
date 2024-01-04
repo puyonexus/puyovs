@@ -1,4 +1,8 @@
 #pragma once
+// TODO: Fix these imports, CMake is complaining when using system imports for ALib
+#include "../../../Audiolib/include/alib/audiolib.h"
+#include "../../../Audiolib/include/alib/buffer.h"
+#include "../../../Audiolib/include/alib/stream.h"
 #include "../../../Puyolib/Frontend.h"
 #include "../../Renderers/Renderer.h"
 
@@ -46,7 +50,9 @@ public:
 
 	void setInputState(ppvs::FeInput inputState);
 
+
 private:
+	alib::Device* m_device;
     Renderers::RenderTarget* m_target;
 	std::stack<glm::mat4> m_matrixStack;
 	std::unique_ptr<Renderers::PolyBuffer> m_quadBuffer;
@@ -108,8 +114,14 @@ public:
 
 class GameSound final : public ppvs::FeSound {
 public:
+	GameSound(alib::Device* audio_device, const char* nameu8);
+	~GameSound();
 	void play() override;
 	void stop() override;
+
+private:
+	alib::Device* m_device;
+	alib::Stream m_stream;
 };
 
 }

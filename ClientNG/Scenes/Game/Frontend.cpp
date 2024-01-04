@@ -27,6 +27,8 @@ GameFrontend::GameFrontend(Renderers::RenderTarget* target)
 	m_quadBuffer->uploadVertices(m_quadVertices, std::size(m_quadVertices));
 
 	m_matrixStack.push(glm::ortho(0.f, 640.f, 480.f, 0.f, -1.f, 1.f));
+
+	m_device = alib::open();
 }
 
 GameFrontend::~GameFrontend() = default;
@@ -68,7 +70,7 @@ ppvs::FeFont* GameFrontend::loadFont(const char* nameu8, double fontSize)
 
 ppvs::FeSound* GameFrontend::loadSound(const char* nameu8)
 {
-	return new GameSound();
+	return new GameSound(m_device, nameu8);
 }
 
 ppvs::FeSound* GameFrontend::loadSound(const std::string& nameu8)
@@ -299,8 +301,19 @@ void GameText::draw(float x, float y)
 {
 }
 
+GameSound::GameSound(alib::Device* audio_device, const char* nameu8)
+{
+	m_device = audio_device;
+	m_stream = alib::Stream(nameu8);
+}
+
+GameSound::~GameSound()
+{
+}
+
 void GameSound::play()
 {
+	m_device->play(m_stream);
 }
 
 void GameSound::stop()

@@ -28,6 +28,7 @@ add_executable(vs2 WIN32
 target_compile_features(vs2 PUBLIC cxx_std_17)
 
 target_link_libraries(vs2
+	Audiolib
 	JsonCpp
 	Puyolib
 	PVS_ENet
