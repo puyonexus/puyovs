@@ -2478,7 +2478,7 @@ void Player::waitLose()
 	// Discard any message
 	m_messages.pop_front();
 }
-// WARNING: You can lose a lot of time debugging this function, especially RNG mismatches
+
 void Player::getUpdate(std::string str)
 {
 	char fieldstring[500] = {};
