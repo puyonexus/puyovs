@@ -418,7 +418,7 @@ FeSound* Player::loadVoice(const std::string& folder, const char* sound)
 void Player::initVoices()
 {
 	const std::string currentCharacter = m_currentGame->m_settings->characterSetup[getCharacter()];
-	const std::string folder = kFolderUserCharacter + currentCharacter + std::string("/Voice/");
+	const std::string folder = m_currentGame->m_settings->baseAssetDir + kFolderUserCharacter + currentCharacter + std::string("/Voice/");
 	m_characterVoices.chain[0].setBuffer(loadVoice(folder, "chain1.wav"));
 	m_characterVoices.chain[1].setBuffer(loadVoice(folder, "chain2.wav"));
 	m_characterVoices.chain[2].setBuffer(loadVoice(folder, "chain3.wav"));

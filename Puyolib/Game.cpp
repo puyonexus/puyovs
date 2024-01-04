@@ -141,35 +141,35 @@ void Game::loadGlobal()
 void Game::loadSounds() const
 {
 	Sounds& snd = m_data->snd;
-	setBuffer(snd.chain[0], (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain1.ogg"))));
-	setBuffer(snd.chain[1], (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain2.ogg"))));
-	setBuffer(snd.chain[2], (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain3.ogg"))));
-	setBuffer(snd.chain[3], (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain4.ogg"))));
-	setBuffer(snd.chain[4], (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain5.ogg"))));
-	setBuffer(snd.chain[5], (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain6.ogg"))));
-	setBuffer(snd.chain[6], (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain7.ogg"))));
-	setBuffer(snd.allClearDrop, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/allclear.ogg"))));
-	setBuffer(snd.drop, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/drop.ogg"))));
-	setBuffer(snd.fever, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/fever.ogg"))));
-	setBuffer(snd.feverLight, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/feverlight.ogg"))));
-	setBuffer(snd.feverTimeCount, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/fevertimecount.ogg"))));
-	setBuffer(snd.feverTimeEnd, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/fevertimeend.ogg"))));
-	setBuffer(snd.go, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/go.ogg"))));
-	setBuffer(snd.heavy, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/heavy.ogg"))));
-	setBuffer(snd.hit, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/hit.ogg"))));
-	setBuffer(snd.lose, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/lose.ogg"))));
-	setBuffer(snd.move, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/move.ogg"))));
-	setBuffer(snd.nuisanceHitL, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisance_hitL.ogg"))));
-	setBuffer(snd.nuisanceHitM, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisance_hitM.ogg"))));
-	setBuffer(snd.nuisanceHitS, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisance_hitS.ogg"))));
-	setBuffer(snd.nuisanceL, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisanceL.ogg"))));
-	setBuffer(snd.nuisanceS, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisanceS.ogg"))));
-	setBuffer(snd.ready, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/ready.ogg"))));
-	setBuffer(snd.rotate, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/rotate.ogg"))));
-	setBuffer(snd.win, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/win.ogg"))));
-	setBuffer(snd.decide, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/decide.ogg"))));
-	setBuffer(snd.cancel, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/cancel.ogg"))));
-	setBuffer(snd.cursor, (m_data->front->loadSound(kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/cursor.ogg"))));
+	setBuffer(snd.chain[0], (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain1.ogg"))));
+	setBuffer(snd.chain[1], (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain2.ogg"))));
+	setBuffer(snd.chain[2], (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain3.ogg"))));
+	setBuffer(snd.chain[3], (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain4.ogg"))));
+	setBuffer(snd.chain[4], (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain5.ogg"))));
+	setBuffer(snd.chain[5], (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain6.ogg"))));
+	setBuffer(snd.chain[6], (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain7.ogg"))));
+	setBuffer(snd.allClearDrop, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/allclear.ogg"))));
+	setBuffer(snd.drop, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/drop.ogg"))));
+	setBuffer(snd.fever, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/fever.ogg"))));
+	setBuffer(snd.feverLight, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/feverlight.ogg"))));
+	setBuffer(snd.feverTimeCount, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/fevertimecount.ogg"))));
+	setBuffer(snd.feverTimeEnd, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/fevertimeend.ogg"))));
+	setBuffer(snd.go, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/go.ogg"))));
+	setBuffer(snd.heavy, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/heavy.ogg"))));
+	setBuffer(snd.hit, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/hit.ogg"))));
+	setBuffer(snd.lose, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/lose.ogg"))));
+	setBuffer(snd.move, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/move.ogg"))));
+	setBuffer(snd.nuisanceHitL, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisance_hitL.ogg"))));
+	setBuffer(snd.nuisanceHitM, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisance_hitM.ogg"))));
+	setBuffer(snd.nuisanceHitS, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisance_hitS.ogg"))));
+	setBuffer(snd.nuisanceL, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisanceL.ogg"))));
+	setBuffer(snd.nuisanceS, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisanceS.ogg"))));
+	setBuffer(snd.ready, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/ready.ogg"))));
+	setBuffer(snd.rotate, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/rotate.ogg"))));
+	setBuffer(snd.win, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/win.ogg"))));
+	setBuffer(snd.decide, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/decide.ogg"))));
+	setBuffer(snd.cancel, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/cancel.ogg"))));
+	setBuffer(snd.cursor, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/cursor.ogg"))));
 }
 
 // Load images (user defined)
