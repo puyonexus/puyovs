@@ -2,6 +2,7 @@
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
+#include <iostream>
 
 namespace PuyoVS::ClientNG::Scenes::Game {
 
@@ -28,10 +29,19 @@ GameFrontend::GameFrontend(Renderers::RenderTarget* target)
 
 	m_matrixStack.push(glm::ortho(0.f, 640.f, 480.f, 0.f, -1.f, 1.f));
 
-	m_device = alib::open();
+	m_audioDevice = alib::open();
 }
 
-GameFrontend::~GameFrontend() = default;
+GameFrontend::~GameFrontend()
+{
+	// Wipe audio cache
+	for (const auto& sound : m_audioCache) {
+		delete sound.second; // delete GameSound associated
+		delete sound.first; // delete indexing string
+	}
+
+	delete m_audioDevice;
+}
 
 ppvs::FeImage* GameFrontend::loadImage(const char* nameu8)
 {
@@ -70,7 +80,17 @@ ppvs::FeFont* GameFrontend::loadFont(const char* nameu8, double fontSize)
 
 ppvs::FeSound* GameFrontend::loadSound(const char* nameu8)
 {
-	return new GameSound(m_device, nameu8);
+	// Check for cache first, return cached sound
+	auto search = m_audioCache.find(nameu8);
+	if (search != m_audioCache.end()) {
+		return m_audioCache[search->first];
+	}
+	// load new sound, insert into the cache
+	GameSound* newSound = new GameSound(m_audioDevice, nameu8);
+	// We are copying C strings, thus we have to be rather unsafe
+	char* name_copy = strdup(nameu8);
+	m_audioCache.insert({ name_copy, newSound });
+	return newSound;
 }
 
 ppvs::FeSound* GameFrontend::loadSound(const std::string& nameu8)
@@ -313,7 +333,8 @@ GameSound::~GameSound()
 
 void GameSound::play()
 {
-	m_device->play(m_stream);
+	if (!m_stream.error())
+		m_device->play(m_stream);
 }
 
 void GameSound::stop()

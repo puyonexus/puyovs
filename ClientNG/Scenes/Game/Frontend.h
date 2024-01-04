@@ -7,8 +7,11 @@
 #include "../../Renderers/Renderer.h"
 
 #include <stack>
+#include <map>
 
 namespace PuyoVS::ClientNG::Scenes::Game {
+
+class GameSound;
 
 class GameFrontend final : public ppvs::Frontend {
 public:
