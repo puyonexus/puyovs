@@ -3,6 +3,7 @@
 #include "../../../Audiolib/include/alib/audiolib.h"
 #include "../../../Audiolib/include/alib/buffer.h"
 #include "../../../Audiolib/include/alib/stream.h"
+#include "MusicPlayer.h"
 #include "../../../Puyolib/Frontend.h"
 #include "../../Renderers/Renderer.h"
 

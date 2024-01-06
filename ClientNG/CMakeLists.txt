@@ -23,6 +23,8 @@ add_executable(vs2 WIN32
 	"Paths.cpp"
 	"Renderers/Software/Software.cpp"
 	"Renderers/Software/Software.h"
+	"Scenes/Game/MusicPlayer.cpp"
+	"Scenes/Game/MusicPlayer.h"
 )
 
 target_compile_features(vs2 PUBLIC cxx_std_17)
