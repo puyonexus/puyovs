@@ -55,7 +55,8 @@ public:
 
 
 private:
-	alib::Device* m_device;
+	alib::Device* m_audioDevice;
+	std::map<const char*,ppvs::FeSound*> m_audioCache;
     Renderers::RenderTarget* m_target;
 	std::stack<glm::mat4> m_matrixStack;
 	std::unique_ptr<Renderers::PolyBuffer> m_quadBuffer;
