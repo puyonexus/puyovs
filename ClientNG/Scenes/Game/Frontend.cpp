@@ -290,10 +290,21 @@ bool GameImage::error()
 	return false;
 }
 
-void GameImage::setFilter(ppvs::FilterType)
+inline PuyoVS::Renderers::FilterType ppvsFilterToRendererFilter(ppvs::FilterType type)
 {
-	// Not implemented yet.
-	return;
+	switch (type) {
+	case ppvs::FilterType::LinearFilter:
+		return PuyoVS::Renderers::FilterType::LinearFilter;
+	case ppvs::FilterType::NearestFilter:
+		return PuyoVS::Renderers::FilterType::NearestFilter;
+	default:
+		return PuyoVS::Renderers::FilterType::NearestFilter;
+	}
+}
+
+void GameImage::setFilter(ppvs::FilterType type)
+{
+	m_texture->setFilter(ppvsFilterToRendererFilter(type));
 }
 
 GameFont::GameFont()
