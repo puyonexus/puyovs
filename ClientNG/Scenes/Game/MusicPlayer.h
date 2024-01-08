@@ -5,6 +5,7 @@
 
 #include <list>
 #include <string>
+#include <vector>
 
 namespace alib {
 class Stream;

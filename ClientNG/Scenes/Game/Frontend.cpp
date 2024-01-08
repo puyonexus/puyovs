@@ -60,7 +60,9 @@ ppvs::FeImage* GameFrontend::loadImage(const std::string& nameu8)
 	const size_t size = ftell(f);
 	fseek(f, 0, SEEK_SET);
 	const auto data = std::unique_ptr<char[]>(new char[size]);
-	fread(data.get(), 1, size, f);
+	if (fread(data.get(), 1, size, f)<size) {
+		SDL_Log("Error reading image %s",nameu8.c_str());
+	}
 	fclose(f);
 
 	auto texture = m_target->makeTexture();
