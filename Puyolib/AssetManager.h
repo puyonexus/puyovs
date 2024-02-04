@@ -37,6 +37,12 @@ public:
 	int initAnimations(Animation* anim, std::string token);
 	int initCharAnimations(Animation* anim, PuyoCharacter character);
 
+	// Listeners for menus
+	std::vector<std::string> listPuyoSkins();
+	std::vector<std::string> listBackgrounds();
+	std::vector<std::string> listSfx();
+	std::vector<std::string> listCharacterSkins();
+
 private:
 	std::list<AssetBundle*> bundleList;
 };
