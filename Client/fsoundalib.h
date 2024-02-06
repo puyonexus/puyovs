@@ -13,8 +13,10 @@ public:
 	void play() override;
 	void stop() override;
 
+	bool error() override;
+
 private:
 	QString fn;
 	GameAudio* audio;
-	bool error;
+	bool m_error;
 };

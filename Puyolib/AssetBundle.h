@@ -89,13 +89,14 @@ public:
 	virtual int loadCharSound(FeSound* target, std::string token, PuyoCharacter character);
 	virtual int loadCharAnimations(Animation* target, std::string token, PuyoCharacter character);
 
-	virtual std::vector<std::string> listPuyoSkins();
-	virtual std::vector<std::string> listBackgrounds();
-	virtual std::vector<std::string> listSfx();
-	virtual std::vector<std::string> listCharacterSkins();
+	virtual std::list<std::string> listPuyoSkins();
+	virtual std::list<std::string> listBackgrounds();
+	virtual std::list<std::string> listSfx();
+	virtual std::list<std::string> listCharacterSkins();
 
 	virtual void reload();
 
+	bool active = false;
 protected:
 	Frontend* m_frontend = nullptr;
 };
@@ -105,18 +106,18 @@ public:
 	FolderAssetBundle(Frontend* fe, GameAssetSettings* folderLocations);
 	~FolderAssetBundle() = default;
 
-	int loadImage(FeImage* target, std::string token);
-	int loadSound(FeSound* target, std::string token);
+	int loadImage(FeImage* target, std::string token) override;
+	int loadSound(FeSound* target, const std::string& token);
 	int loadAnimations(Animation* target, std::string token);
 
 	int loadCharImage(FeImage* target, std::string token, PuyoCharacter character);
 	int loadCharSound(FeSound* target, std::string token, PuyoCharacter character);
 	int loadCharAnimations(Animation* target, std::string token, PuyoCharacter character);
 
-	std::vector<std::string> listPuyoSkins();
-	std::vector<std::string> listBackgrounds();
-	std::vector<std::string> listSfx();
-	std::vector<std::string> listCharacterSkins();
+	std::list<std::string> listPuyoSkins();
+	std::list<std::string> listBackgrounds();
+	std::list<std::string> listSfx();
+	std::list<std::string> listCharacterSkins();
 
 	void reload();
 
