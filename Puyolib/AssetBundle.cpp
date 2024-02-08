@@ -56,8 +56,7 @@ int FolderAssetBundle::loadImage(FeImage* target, std::string token)
 // Loads the sound, returns whether the load was successful (for files, whether the file exists and loads)
 int FolderAssetBundle::loadSound(FeSound* target, const std::string& token)
 {
-	std::string name = m_translator->token2fn(token);
-	target = m_frontend->loadSound(name);
+	target = m_frontend->loadSound(m_translator->token2fn(token));
 	return target->error();
 }
 
@@ -66,11 +65,11 @@ void FolderAssetBundle::reload()
 	m_translator->reload();
 }
 
-#define pvs_ITERATE_DATA_FOLDER(FOLDER)                                                                                              \
-	std::list<std::string> new_list;                                                                                                 \
+#define pvs_ITERATE_DATA_FOLDER(FOLDER)                                                                                                \
+	std::list<std::string> new_list;                                                                                                   \
 	for (std::filesystem::directory_entry folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%") + (FOLDER))) { \
-		new_list.push_back(folder.path().string());                                                                                  \
-	}                                                                                                                                \
+		new_list.push_back(folder.path().string());                                                                                    \
+	}                                                                                                                                  \
 	return new_list;
 
 std::list<std::string> FolderAssetBundle::listPuyoSkins()

@@ -78,8 +78,9 @@ private:
 
 class AssetBundle {
 public:
-	AssetBundle(Frontend* fe): m_frontend(fe) {};
-	~AssetBundle();
+	AssetBundle(Frontend* fe)
+		: m_frontend(fe) {};
+	~AssetBundle() = default;
 
 	virtual int loadImage(FeImage* target, std::string token);
 	virtual int loadSound(FeImage* target, std::string token);
@@ -97,6 +98,7 @@ public:
 	virtual void reload();
 
 	bool active = false;
+
 protected:
 	Frontend* m_frontend = nullptr;
 };
