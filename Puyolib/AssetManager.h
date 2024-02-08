@@ -24,6 +24,7 @@ public:
 	int loadBundle(AssetBundle* bundle, int priority = 0); // adds Bundle, assigns Frontend
 	int deleteBundle(AssetBundle* bundle); // This function frees bundle
 
+	// Drop-in replacements for ppvs::Game functions
 	int loadGameSounds(Sounds* soundObject);
 	int loadGameImages(GameData* gD);
 

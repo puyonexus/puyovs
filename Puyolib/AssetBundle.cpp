@@ -46,22 +46,17 @@ FolderAssetBundle::FolderAssetBundle(Frontend* fe, ppvs::GameAssetSettings* fold
 	m_translator = new TokenFnTranslator(folderLocations);
 }
 
+// Loads the texture, returns whether the load was successful (for files, whether the file exists and loads)
 int FolderAssetBundle::loadImage(FeImage* target, std::string token)
 {
 	target = m_frontend->loadImage(m_translator->token2fn(token));
 	return target->error();
 }
 
+// Loads the sound, returns whether the load was successful (for files, whether the file exists and loads)
 int FolderAssetBundle::loadSound(FeSound* target, const std::string& token)
 {
 	std::string name = m_translator->token2fn(token);
-	FILE* test_file = ::fopen(name.c_str(), "rb");
-	if (test_file == nullptr) {
-		::fclose(test_file);
-		return 1;
-	}
-	::fclose(test_file);
-	// Our file exists
 	target = m_frontend->loadSound(name);
 	return target->error();
 }
@@ -73,7 +68,7 @@ void FolderAssetBundle::reload()
 
 #define pvs_ITERATE_DATA_FOLDER(FOLDER)                                                                                              \
 	std::list<std::string> new_list;                                                                                                 \
-	for (std::filesystem::directory_entry folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%") + FOLDER)) { \
+	for (std::filesystem::directory_entry folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%") + (FOLDER))) { \
 		new_list.push_back(folder.path().string());                                                                                  \
 	}                                                                                                                                \
 	return new_list;

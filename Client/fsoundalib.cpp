@@ -5,8 +5,9 @@ FSoundAlib::FSoundAlib(const QString& fn, GameAudio* audio, QObject* parent)
 	: QObject(parent)
 	, fn(fn)
 	, audio(audio)
-	, m_error(false)
+	, m_error(audio->test(fn))
 {
+
 }
 
 FSoundAlib::~FSoundAlib()
@@ -26,5 +27,5 @@ void FSoundAlib::stop()
 }
 
 bool FSoundAlib::error() {
-	return m_error;
+	return audio->test(fn);
 }
