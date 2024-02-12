@@ -260,7 +260,13 @@ void GameWidgetGL::initialize()
 {
 	d->gl->makeCurrent();
 	auto frontend = new FrontendGL(d->gl, d->audio, d->inputState, d->ext, this);
-	mGame->initGame(frontend);
+	auto* manager = new ppvs::AssetManager(frontend, mGame->m_debug);
+	// TODO: add bundles automatically
+
+	auto* defaultBundle = new ppvs::FolderAssetBundle(frontend, new ppvs::GameAssetSettings(mGame->m_settings));
+	manager->loadBundle(defaultBundle);
+
+	mGame->initGame(frontend, manager);
 	connect(frontend, &FrontendGL::musicStateChanged, this, &GameWidgetGL::setupMusic);
 	connect(frontend, &FrontendGL::musicVolumeChanged, this, &GameWidgetGL::changeMusicVolume);
 	glEnable(GL_TEXTURE_2D);
