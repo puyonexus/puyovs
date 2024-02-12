@@ -10,12 +10,6 @@
 #include <string>
 namespace ppvs {
 
-#define GO_THROUGH_BUNDLES(call) for(auto const& i : bundleList { \
-    if(!i.call) {                                           \
-        break;                                                \
-		}                                                           \
-	};
-
 class AssetManager {
 public:
 	AssetManager();
