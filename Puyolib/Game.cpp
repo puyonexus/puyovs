@@ -294,10 +294,14 @@ int Game::getActivePlayers() const
 	return pl;
 }
 
-void Game::initGame(Frontend* f)
+void Game::initGame(Frontend* f, AssetManager* as_mgr)
 {
 	m_data = new GameData;
 	m_data->front = f;
+
+	m_assetManger = as_mgr;
+	m_assetManger->init(f,m_debug);
+
 
 	loadGlobal();
 
@@ -784,7 +788,8 @@ void Game::setWindowFocus(bool focus) const
 // Main loop of the game
 void Game::loop()
 {
-	initGame(m_data->front);
+	assert(m_assetManger!= nullptr);
+	initGame(m_data->front, m_assetManger);
 
 	Sprite debugSprite;
 	debugSprite.setImage(m_data->imgNextPuyoBackgroundL);

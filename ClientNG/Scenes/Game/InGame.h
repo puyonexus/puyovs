@@ -1,6 +1,8 @@
 #pragma once
-#include "../Scene.h"
+#include "../../../Puyolib/AssetBundle.h"
+#include "../../../Puyolib/AssetManager.h"
 #include "../../../Puyolib/Game.h"
+#include "../Scene.h"
 #include <memory>
 
 namespace ppvs {
@@ -28,11 +30,12 @@ public:
 	void update(double t) override;
 	void draw() override;
 
-
+	ppvs::AssetManager* generateAM();
 
 private:
 	GameWindow& m_window;
 	std::unique_ptr<ppvs::DebugLog> m_debug;
+	std::unique_ptr<ppvs::AssetManager> m_assetManager;
 	std::unique_ptr<ppvs::Game> m_game;
 	GameFrontend* m_frontend;
 	double m_fadeVal = 1.0;

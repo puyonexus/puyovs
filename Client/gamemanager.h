@@ -2,6 +2,7 @@
 
 #include "../Puyolib/GameSettings.h" // ppvs::RuleSetInfo
 #include "../Puyolib/DebugLog.h" // ppvs::DebugLog
+#include "../Puyolib/AssetManager.h" //ppvs::AssetManager
 #include "netclient.h"
 #include <QBasicTimer>
 #include <QList>
@@ -60,5 +61,6 @@ protected:
 	NetClient* network;
 	GameAudio* audio;
 
+	ppvs::AssetManager* assetManager;
 	ppvs::DebugLog* dbg;
 };

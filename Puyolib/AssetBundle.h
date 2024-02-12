@@ -3,6 +3,8 @@
 
 #pragma once
 #include "Animation.h"
+#include "DebugLog.h"
+#include "GameSettings.h"
 #include "RuleSet/RuleSet.h"
 #include <iostream>
 #include <map>
@@ -11,9 +13,9 @@
 namespace ppvs {
 
 class GameAssetSettings {
-	GameAssetSettings() = default;
-
 public:
+	GameAssetSettings() {};
+	GameAssetSettings(GameSettings* gs);
 	std::string baseAssetDir;
 	std::string language;
 	std::string background;
@@ -24,12 +26,14 @@ public:
 
 class TokenFnTranslator {
 public:
-	TokenFnTranslator(GameAssetSettings* aS);
+	explicit TokenFnTranslator(GameAssetSettings* aS);
 	~TokenFnTranslator();
 
 	void reload();
 
-	std::string token2fn(std::string token);
+	std::string token2fn(const std::string& token);
+
+	DebugLog* m_debug = nullptr;
 
 private:
 	const std::string baseSpecifier = "%base%";
@@ -43,7 +47,7 @@ private:
 
 	GameAssetSettings* gameSettings;
 	std::map<const char*, std::string> specialTokens;
-	std::map<const char*, std::string> tokenToPseudoFn = {
+	std::map<std::string, std::string> tokenToPseudoFn = {
 		{ "chain[0]", "%base%/%usersounds%/%sfx%/chain1.ogg" },
 		{ "chain[1]", "%base%/%usersounds%/%sfx%/chain2.ogg" },
 		{ "chain[2]", "%base%/%usersounds%/%sfx%/chain3.ogg" },
@@ -78,26 +82,31 @@ private:
 
 class AssetBundle {
 public:
-	AssetBundle(Frontend* fe)
+	AssetBundle() = default;
+	explicit AssetBundle(Frontend* fe)
 		: m_frontend(fe) {};
 	~AssetBundle() = default;
 
-	virtual int loadImage(FeImage* target, std::string token);
-	virtual int loadSound(FeImage* target, std::string token);
-	virtual int loadAnimations(Animation* target, std::string token);
+	virtual int init(Frontend* fe) { return 1; };
 
-	virtual int loadCharImage(FeImage* target, std::string token, PuyoCharacter character);
-	virtual int loadCharSound(FeSound* target, std::string token, PuyoCharacter character);
-	virtual int loadCharAnimations(Animation* target, std::string token, PuyoCharacter character);
+	virtual FeImage* loadImage(const std::string token) = 0;
+	virtual FeSound* loadSound(const std::string token) = 0;
+	virtual int loadAnimations(Animation* target, const std::string token) = 0;
 
-	virtual std::list<std::string> listPuyoSkins();
-	virtual std::list<std::string> listBackgrounds();
-	virtual std::list<std::string> listSfx();
-	virtual std::list<std::string> listCharacterSkins();
+	virtual int loadCharImage(FeImage* target, std::string token, PuyoCharacter character) = 0;
+	virtual int loadCharSound(FeSound* target, std::string token, PuyoCharacter character) = 0;
+	virtual int loadCharAnimations(Animation* target, std::string token, PuyoCharacter character) = 0;
 
-	virtual void reload();
+	virtual std::list<std::string> listPuyoSkins() = 0;
+	virtual std::list<std::string> listBackgrounds() = 0;
+	virtual std::list<std::string> listSfx() = 0;
+	virtual std::list<std::string> listCharacterSkins() = 0;
+
+	virtual void reload() = 0;
+	virtual void reload(Frontend* fe) = 0;
 
 	bool active = false;
+	DebugLog* m_debug = nullptr;
 
 protected:
 	Frontend* m_frontend = nullptr;
@@ -108,9 +117,13 @@ public:
 	FolderAssetBundle(Frontend* fe, GameAssetSettings* folderLocations);
 	~FolderAssetBundle() = default;
 
-	int loadImage(FeImage* target, std::string token) override;
-	int loadSound(FeSound* target, const std::string& token);
-	int loadAnimations(Animation* target, std::string token);
+	int init(Frontend* fe);
+
+	FeImage* loadImage(std::string token) override;
+	FeSound* loadSound(std::string token) override;
+
+	// TODO: All of them
+	int loadAnimations(Animation* target, const std::string token) override;
 
 	int loadCharImage(FeImage* target, std::string token, PuyoCharacter character);
 	int loadCharSound(FeSound* target, std::string token, PuyoCharacter character);
@@ -121,10 +134,10 @@ public:
 	std::list<std::string> listSfx();
 	std::list<std::string> listCharacterSkins();
 
-	void reload();
+	void reload() override;
+	void reload(Frontend* fe) override;
 
 private:
-	bool fnameExists(std::string fname);
 	TokenFnTranslator* m_translator;
 };
 
