@@ -141,42 +141,43 @@ void Game::loadGlobal()
 void Game::loadSounds() const
 {
 	Sounds& snd = m_data->snd;
-	setBuffer(snd.chain[0], (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain1.ogg"))));
-	setBuffer(snd.chain[1], (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain2.ogg"))));
-	setBuffer(snd.chain[2], (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain3.ogg"))));
-	setBuffer(snd.chain[3], (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain4.ogg"))));
-	setBuffer(snd.chain[4], (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain5.ogg"))));
-	setBuffer(snd.chain[5], (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain6.ogg"))));
-	setBuffer(snd.chain[6], (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/chain7.ogg"))));
-	setBuffer(snd.allClearDrop, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/allclear.ogg"))));
-	setBuffer(snd.drop, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/drop.ogg"))));
-	setBuffer(snd.fever, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/fever.ogg"))));
-	setBuffer(snd.feverLight, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/feverlight.ogg"))));
-	setBuffer(snd.feverTimeCount, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/fevertimecount.ogg"))));
-	setBuffer(snd.feverTimeEnd, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/fevertimeend.ogg"))));
-	setBuffer(snd.go, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/go.ogg"))));
-	setBuffer(snd.heavy, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/heavy.ogg"))));
-	setBuffer(snd.hit, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/hit.ogg"))));
-	setBuffer(snd.lose, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/lose.ogg"))));
-	setBuffer(snd.move, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/move.ogg"))));
-	setBuffer(snd.nuisanceHitL, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisance_hitL.ogg"))));
-	setBuffer(snd.nuisanceHitM, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisance_hitM.ogg"))));
-	setBuffer(snd.nuisanceHitS, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisance_hitS.ogg"))));
-	setBuffer(snd.nuisanceL, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisanceL.ogg"))));
-	setBuffer(snd.nuisanceS, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/nuisanceS.ogg"))));
-	setBuffer(snd.ready, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/ready.ogg"))));
-	setBuffer(snd.rotate, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/rotate.ogg"))));
-	setBuffer(snd.win, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/win.ogg"))));
-	setBuffer(snd.decide, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/decide.ogg"))));
-	setBuffer(snd.cancel, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/cancel.ogg"))));
-	setBuffer(snd.cursor, (m_data->front->loadSound(m_baseAssetDir + kFolderUserSounds + m_data->gUserSettings.sfxDirPath + std::string("/cursor.ogg"))));
+	m_debug->log("Loading the sound", DebugMessageType::Debug);
+	setBuffer(snd.chain[0], m_assetManager->loadSound("chain1"));
+	setBuffer(snd.chain[1], m_assetManager->loadSound("chain2"));
+	setBuffer(snd.chain[2], m_assetManager->loadSound("chain3"));
+	setBuffer(snd.chain[3], m_assetManager->loadSound("chain4"));
+	setBuffer(snd.chain[4], m_assetManager->loadSound("chain5"));
+	setBuffer(snd.chain[5], m_assetManager->loadSound("chain6"));
+	setBuffer(snd.chain[6], m_assetManager->loadSound("chain7"));
+	setBuffer(snd.allClearDrop, m_assetManager->loadSound("allClearDrop"));
+	setBuffer(snd.drop, m_assetManager->loadSound("drop"));
+	setBuffer(snd.fever, m_assetManager->loadSound("fever"));
+	setBuffer(snd.feverLight, m_assetManager->loadSound("feverLight"));
+	setBuffer(snd.feverTimeCount, m_assetManager->loadSound("feverTimeCount"));
+	setBuffer(snd.feverTimeEnd, m_assetManager->loadSound("feverTimeEnd"));
+	setBuffer(snd.go, m_assetManager->loadSound("go"));
+	setBuffer(snd.heavy, m_assetManager->loadSound("heavy"));
+	setBuffer(snd.hit, m_assetManager->loadSound("hit"));
+	setBuffer(snd.lose, m_assetManager->loadSound("lose"));
+	setBuffer(snd.move, m_assetManager->loadSound("move"));
+	setBuffer(snd.nuisanceHitL, m_assetManager->loadSound("nuisanceHitL"));
+	setBuffer(snd.nuisanceHitM, m_assetManager->loadSound("nuisanceHitM"));
+	setBuffer(snd.nuisanceHitS, m_assetManager->loadSound("nuisanceHitS"));
+	setBuffer(snd.nuisanceL, m_assetManager->loadSound("nuisanceL"));
+	setBuffer(snd.nuisanceS, m_assetManager->loadSound("nuisanceS"));
+	setBuffer(snd.ready, m_assetManager->loadSound("ready"));
+	setBuffer(snd.rotate, m_assetManager->loadSound("rotate"));
+	setBuffer(snd.win, m_assetManager->loadSound("win"));
+	setBuffer(snd.decide, m_assetManager->loadSound("decide"));
+	setBuffer(snd.cancel, m_assetManager->loadSound("cancel"));
+	setBuffer(snd.cursor, m_assetManager->loadSound("cursor"));
 }
 
 // Load images (user defined)
 void Game::loadImages() const
 {
 	// Load puyo
-	m_data->imgPuyo = m_data->front->loadImage(m_baseAssetDir + kFolderUserPuyo + m_data->gUserSettings.puyoDirPath + std::string(".png"));
+	m_data->imgPuyo = m_assetManager->loadImage("puyo");
 
 	// Check rotation center of quadruplet
 	if (m_data->imgPuyo && !m_data->imgPuyo->error() && m_data->imgPuyo->height() > 10) {
@@ -190,14 +191,14 @@ void Game::loadImages() const
 	m_data->imgPuyo->setFilter(FilterType::LinearFilter);
 
 	// Lights
-	m_data->imgLight = m_data->front->loadImage(m_baseAssetDir + "Data/Light.png");
-	m_data->imgLightS = m_data->front->loadImage(m_baseAssetDir + "Data/Light_s.png");
-	m_data->imgLightHit = m_data->front->loadImage(m_baseAssetDir + "Data/Light_hit.png");
-	m_data->imgFSparkle = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/fsparkle.png");
-	m_data->imgFLight = m_data->front->loadImage(m_baseAssetDir + "Data/fLight.png");
-	m_data->imgFLightHit = m_data->front->loadImage(m_baseAssetDir + "Data/fLight_hit.png");
+	m_data->imgLight = m_assetManager->loadImage("imgLight");
+	m_data->imgLightS = m_assetManager->loadImage("imgLightS");
+	m_data->imgLightHit = m_assetManager->loadImage("imgLightHit");
+	m_data->imgFSparkle = m_assetManager->loadImage("imgFSparkle");
+	m_data->imgFLight = m_assetManager->loadImage("imgFLight");
+	m_data->imgFLightHit = m_assetManager->loadImage("imgFLightHit");
 
-	m_data->imgTime = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/time.png"));
+	m_data->imgTime = m_assetManager->loadImage("imgTime");
 
 	// Menu
 	for (int i = 0; i < 3; ++i) {
@@ -210,12 +211,11 @@ void Game::loadImages() const
 	}
 
 	// Backgrounds
-	m_data->imgBackground = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/back.png"));
-	m_data->imgFieldFever = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/ffield.png"));
-
+	m_data->imgBackground = m_assetManager->loadImage("imgBackground");
+	m_data->imgFieldFever = m_assetManager->loadImage("imgFieldFever");
 	// Background of next puyo
-	m_data->imgNextPuyoBackgroundR = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/nextR.png"));
-	m_data->imgNextPuyoBackgroundL = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/nextL.png"));
+	m_data->imgNextPuyoBackgroundR = m_assetManager->loadImage("imgNextPuyoBackgroundR");
+	m_data->imgNextPuyoBackgroundL = m_assetManager->loadImage("imgNextPuyoBackgroundL");
 
 	if (!useShaders) {
 		for (int i = 0; i < 30; ++i) {
@@ -224,36 +224,36 @@ void Game::loadImages() const
 	}
 
 	// Load default fields. Custom fields should be loaded per character
-	m_data->imgField1 = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/field1.png"));
-	m_data->imgField2 = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/field2.png"));
-	m_data->imgBorder1 = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/border1.png"));
-	m_data->imgBorder2 = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/border2.png"));
-	m_data->imgPlayerBorder = m_data->front->loadImage(m_baseAssetDir + "Data/border.png");
-	m_data->imgSpice = m_data->front->loadImage(m_baseAssetDir + "Data/spice.png");
+	m_data->imgField1 = m_assetManager->loadImage("imgField1");
+	m_data->imgField2 = m_assetManager->loadImage("imgField2");
+	m_data->imgBorder1 = m_assetManager->loadImage("imgBorder1");
+	m_data->imgBorder2 = m_assetManager->loadImage("imgBorder2");
+	m_data->imgPlayerBorder = m_assetManager->loadImage("imgPlayerBorder");
+	m_data->imgSpice = m_assetManager->loadImage("imgSpice");
 
 	// Other
-	m_data->imgScore = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/score.png"));
-	m_data->imgAllClear = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/allclear.png"));
-	m_data->imgLose = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/lose.png"));
-	m_data->imgWin = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/win.png"));
-	m_data->imgFeverGauge = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/fgauge.png"));
-	m_data->imgSeconds = m_data->front->loadImage(m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + std::string("/fcounter.png"));
-	m_data->imgCharHolder = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/charHolder.png");
-	m_data->imgNameHolder = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/nameHolder.png");
-	m_data->imgBlack = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/black.png");
-	m_data->imgDropSet = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/dropset.png");
-	m_data->imgChain = m_data->front->loadImage(m_baseAssetDir + std::string("User/Backgrounds/") + m_data->gUserSettings.backgroundDirPath + std::string("/chain.png"));
-	m_data->imgCheckMark = m_data->front->loadImage(m_baseAssetDir + "Data/checkmark.png");
-	m_data->imgPlayerCharSelect = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/charSelect.png");
+	m_data->imgScore = m_assetManager->loadImage("imgScore");
+	m_data->imgAllClear = m_assetManager->loadImage("imgAllClear");
+	m_data->imgLose = m_assetManager->loadImage("imgLose");
+	m_data->imgWin = m_assetManager->loadImage("imgWin");
+	m_data->imgFeverGauge = m_assetManager->loadImage("imgFeverGauge");
+	m_data->imgSeconds = m_assetManager->loadImage("imgSeconds");
+	m_data->imgCharHolder = m_assetManager->loadImage("imgCharHolder");
+	m_data->imgNameHolder = m_assetManager->loadImage("imgNameHolder");
+	m_data->imgBlack = m_assetManager->loadImage("imgBlack");
+	m_data->imgDropSet = m_assetManager->loadImage("imgDropSet");
+	m_data->imgChain = m_assetManager->loadImage("imgChain");
+	m_data->imgCheckMark = m_assetManager->loadImage("imgCheckMark");
+	m_data->imgPlayerCharSelect = m_assetManager->loadImage("imgPlayerCharSelect");
 
 	for (int i = 0; i < kNumCharacters; ++i) {
-		m_data->imgCharField[i] = m_data->front->loadImage(m_baseAssetDir + kFolderUserCharacter + m_settings->characterSetup[static_cast<PuyoCharacter>(i)] + "/field.png");
-		m_data->imgCharSelect[i] = m_data->front->loadImage(m_baseAssetDir + kFolderUserCharacter + m_settings->characterSetup[static_cast<PuyoCharacter>(i)] + "/select.png");
-		m_data->imgCharName[i] = m_data->front->loadImage(m_baseAssetDir + kFolderUserCharacter + m_settings->characterSetup[static_cast<PuyoCharacter>(i)] + "/name.png");
-		m_data->imgSelect[i] = m_data->front->loadImage(m_baseAssetDir + kFolderUserCharacter + m_settings->characterSetup[static_cast<PuyoCharacter>(i)] + "/select.png");
+		m_data->imgCharField[i] = m_assetManager->loadCharImage("imgCharField", static_cast<PuyoCharacter>(i));
+		m_data->imgCharSelect[i] = m_assetManager->loadCharImage("imgCharSelect", static_cast<PuyoCharacter>(i));
+		m_data->imgCharName[i] = m_assetManager->loadCharImage("imgCharName", static_cast<PuyoCharacter>(i));
+		m_data->imgSelect[i] = m_assetManager->loadCharImage("imgSelect", static_cast<PuyoCharacter>(i));
 	}
 
-	m_data->imgPlayerNumber = m_data->front->loadImage(m_baseAssetDir + "Data/CharSelect/playernumber.png");
+	m_data->imgPlayerNumber = m_assetManager->loadImage("imgPlayerNumber");
 }
 
 void Game::initPlayers()
@@ -299,9 +299,8 @@ void Game::initGame(Frontend* f, AssetManager* as_mgr)
 	m_data = new GameData;
 	m_data->front = f;
 
-	m_assetManger = as_mgr;
-	m_assetManger->init(f,m_debug);
-
+	m_assetManager = as_mgr;
+	m_assetManager->init(f, m_debug);
 
 	loadGlobal();
 
@@ -788,8 +787,8 @@ void Game::setWindowFocus(bool focus) const
 // Main loop of the game
 void Game::loop()
 {
-	assert(m_assetManger!= nullptr);
-	initGame(m_data->front, m_assetManger);
+	assert(m_assetManager != nullptr);
+	initGame(m_data->front, m_assetManager);
 
 	Sprite debugSprite;
 	debugSprite.setImage(m_data->imgNextPuyoBackgroundL);

@@ -102,7 +102,7 @@ public:
 	int m_activeAtStart = 0;
 
 	// Public variables
-	AssetManager* m_assetManger = nullptr;
+	AssetManager* m_assetManager = nullptr;
 	int m_menuSelect = 0;
 	Animation m_readyGoObj {};
 	Animation m_backgroundAnimation {};
