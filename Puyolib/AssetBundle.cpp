@@ -44,13 +44,17 @@ void TokenFnTranslator::reload()
 		{ "%background%", kFolderUserBackgrounds + gameSettings->background },
 		{ "%puyo%", kFolderUserPuyo + gameSettings->puyo },
 		{ "%sfx%", gameSettings->sfx },
-		{ "%usersounds%", kFolderUserSounds + "." }
+		{ "%usersounds%", kFolderUserSounds + "." },
+		{ "%charsetup%", kFolderUserCharacter + "." }
 	};
 }
 
 std::string TokenFnTranslator::token2fn(const std::string& token)
 {
-	std::string result = tokenToPseudoFn[token]; // Matches with table
+	std::string result = sndTokenToPseudoFn[token]; // Matches with table
+	if (result == std::string("") || result == token) {
+		result = imgTokenToPseudoFn[token];
+	}
 	for (const auto& entry : specialTokens) {
 		size_t pos = result.find(entry.first); // First occurence
 		while (pos != std::string::npos) {
@@ -58,6 +62,19 @@ std::string TokenFnTranslator::token2fn(const std::string& token)
 			pos = result.find(entry.first, pos + entry.second.length()); // Next (if any) occurence
 		}
 	}
+	return result;
+}
+// FIXME: duplicated code
+std::string TokenFnTranslator::token2fn(const std::string& token, PuyoCharacter character)
+{
+	std::string result = token2fn(token);
+	// Character-specific
+	size_t pos = result.find("%char%"); // First occurence
+	while (pos != std::string::npos) {
+		result.replace(pos, strlen("%char%"), gameSettings->characterSetup[character]);
+		pos = result.find("%char%", pos + gameSettings->characterSetup[character].length()); // Next (if any) occurence
+	}
+
 	return result;
 }
 
@@ -80,6 +97,7 @@ int FolderAssetBundle::init(ppvs::Frontend* fe)
 // Loads the texture, returns whether the load was successful (for files, whether the file exists and loads)
 FeImage* FolderAssetBundle::loadImage(std::string token)
 {
+	m_translator->m_debug = m_debug;
 	return m_frontend->loadImage(m_translator->token2fn(token));
 }
 
@@ -88,6 +106,16 @@ FeSound* FolderAssetBundle::loadSound(std::string token)
 {
 
 	return m_frontend->loadSound(m_translator->token2fn(token));
+}
+
+FeImage* FolderAssetBundle::loadCharImage(std::string token, PuyoCharacter character)
+{
+	return m_frontend->loadImage(m_translator->token2fn(token, character));
+}
+
+FeSound* FolderAssetBundle::loadCharSound(std::string token, PuyoCharacter character)
+{
+	return m_frontend->loadSound(m_translator->token2fn(token, character));
 }
 
 void FolderAssetBundle::reload(Frontend* fe)
@@ -125,14 +153,6 @@ std::list<std::string> FolderAssetBundle::listCharacterSkins()
 
 // TODO
 int FolderAssetBundle::loadAnimations(Animation* target, const std::string token)
-{
-	return 0;
-}
-int FolderAssetBundle::loadCharImage(FeImage* target, std::string token, PuyoCharacter character)
-{
-	return 0;
-}
-int FolderAssetBundle::loadCharSound(FeSound* target, std::string token, PuyoCharacter character)
 {
 	return 0;
 }

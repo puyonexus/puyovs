@@ -32,11 +32,12 @@ public:
 	void reload();
 
 	std::string token2fn(const std::string& token);
+	std::string token2fn(const std::string& token, PuyoCharacter character);
 
 	DebugLog* m_debug = nullptr;
 
 private:
-	const std::string baseSpecifier = "%base%";
+	/*const std::string baseSpecifier = "%base%";
 	const std::string language = "%lang";
 	const std::string background = "%background%";
 	const std::string puyo = "%puyo%";
@@ -44,17 +45,17 @@ private:
 	const std::string characterSetup = "%charfolder%";
 
 	const std::string userSounds = "%usersounds%";
-
+*/
 	GameAssetSettings* gameSettings;
 	std::map<const char*, std::string> specialTokens;
-	std::map<std::string, std::string> tokenToPseudoFn = {
-		{ "chain[0]", "%base%/%usersounds%/%sfx%/chain1.ogg" },
-		{ "chain[1]", "%base%/%usersounds%/%sfx%/chain2.ogg" },
-		{ "chain[2]", "%base%/%usersounds%/%sfx%/chain3.ogg" },
-		{ "chain[3]", "%base%/%usersounds%/%sfx%/chain4.ogg" },
-		{ "chain[4]", "%base%/%usersounds%/%sfx%/chain5.ogg" },
-		{ "chain[5]", "%base%/%usersounds%/%sfx%/chain6.ogg" },
-		{ "chain[6]", "%base%/%usersounds%/%sfx%/chain7.ogg" },
+	std::map<std::string, std::string> sndTokenToPseudoFn = {
+		{ "chain1", "%base%/%usersounds%/%sfx%/chain1.ogg" },
+		{ "chain2", "%base%/%usersounds%/%sfx%/chain2.ogg" },
+		{ "chain3", "%base%/%usersounds%/%sfx%/chain3.ogg" },
+		{ "chain4", "%base%/%usersounds%/%sfx%/chain4.ogg" },
+		{ "chain5", "%base%/%usersounds%/%sfx%/chain5.ogg" },
+		{ "chain6", "%base%/%usersounds%/%sfx%/chain6.ogg" },
+		{ "chain7", "%base%/%usersounds%/%sfx%/chain7.ogg" },
 		{ "allClearDrop", "%base%/%usersounds%/%sfx%/allclear.ogg" },
 		{ "drop", "%base%/%usersounds%/%sfx%/drop.ogg" },
 		{ "fever", "%base%/%usersounds%/%sfx%/fever.ogg" },
@@ -78,6 +79,45 @@ private:
 		{ "cancel", "%base%/%usersounds%/%sfx%/cancel.ogg" },
 		{ "cursor", "%base%/%usersounds%/%sfx%/cursor.ogg" },
 	};
+	std::map<std::string, std::string> imgTokenToPseudoFn = {
+		{"puyo","%base%/%puyo%.png"},
+		{"imgLight", "%base%/Data/Light.png"},
+		{"imgLightS", "%base%/Data/Light_s.png"},
+		{"imgLightHit", "%base%/Data/Light_hit.png"},
+		{"imgFSparkle", "%base%/Data/CharSelect/fsparkle.png"},
+		{"imgFLight", "%base%/Data/fLight.png"},
+		{"imgFLightHit", "%base%/Data/fLight_hit.png"},
+		{"imgTime", "%base%/%background%/time.png"},
+		{"imgBackground", "%base%/%background%/back.png"},
+		{"imgFieldFever", "%base%/%background%/ffield.png"},
+		{"imgNextPuyoBackgroundR", "%base%/%background%/nextR.png"},
+		{"imgNextPuyoBackgroundL", "%base%/%background%/nextL.png"},
+		{"imgField1", "%base%/%background%/field1.png"},
+		{"imgField2", "%base%/%background%/field2.png"},
+		{"imgBorder1", "%base%/%background%/border1.png"},
+		{"imgBorder2", "%base%/%background%/border2.png"},
+		{"imgPlayerBorder", "%base%/Data/border.png"},
+		{"imgSpice", "%base%/Data/spice.png"},
+		{"imgScore", "%base%/%background%/score.png"},
+		{"imgAllClear", "%base%/%background%/allclear.png"},
+		{"imgLose", "%base%/%background%/lose.png"},
+		{"imgWin", "%base%/%background%/win.png"},
+		{"imgFeverGauge", "%base%/%background%/fgauge.png"},
+		{"imgSeconds", "%base%/%background%/fcounter.png"},
+		{"imgCharHolder", "%base%/Data/CharSelect/charHolder.png"},
+		{"imgNameHolder", "%base%/Data/CharSelect/nameHolder.png"},
+		{"imgBlack", "%base%/Data/CharSelect/black.png"},
+		{"imgDropSet", "%base%/Data/CharSelect/dropset.png"},
+		{"imgChain", "%base%/%background%/chain.png"},
+		{"imgCheckMark", "%base%/Data/checkmark.png"},
+		{"imgPlayerCharSelect", "%base%/Data/CharSelect/charSelect.png"},
+		{"imgPlayerNumber", "%base%/Data/CharSelect/playernumber.png"},
+		{"imgCharField", "%base%/%charsetup%/%char%/field.png"},
+		{"imgCharSelect", "%base%/%charsetup%/%char%/select.png"},
+		{"imgCharName", "%base%/%charsetup%/%char%/name.png"},
+		{"imgSelect", "%base%/%charsetup%/%char%/select.png"}
+
+	};
 };
 
 class AssetBundle {
@@ -89,13 +129,14 @@ public:
 
 	virtual int init(Frontend* fe) { return 1; };
 
-	virtual FeImage* loadImage(const std::string token) = 0;
-	virtual FeSound* loadSound(const std::string token) = 0;
-	virtual int loadAnimations(Animation* target, const std::string token) = 0;
+	virtual FeImage* loadImage(std::string token) = 0;
+	virtual FeSound* loadSound(std::string token) = 0;
+	virtual int loadAnimations(Animation* target, std::string token) = 0;
 
-	virtual int loadCharImage(FeImage* target, std::string token, PuyoCharacter character) = 0;
-	virtual int loadCharSound(FeSound* target, std::string token, PuyoCharacter character) = 0;
+	virtual FeImage* loadCharImage(std::string token, PuyoCharacter character) = 0;
+	virtual FeSound* loadCharSound(std::string token, PuyoCharacter character) = 0;
 	virtual int loadCharAnimations(Animation* target, std::string token, PuyoCharacter character) = 0;
+
 
 	virtual std::list<std::string> listPuyoSkins() = 0;
 	virtual std::list<std::string> listBackgrounds() = 0;
@@ -123,10 +164,10 @@ public:
 	FeSound* loadSound(std::string token) override;
 
 	// TODO: All of them
-	int loadAnimations(Animation* target, const std::string token) override;
+	int loadAnimations(Animation* target, std::string token) override;
 
-	int loadCharImage(FeImage* target, std::string token, PuyoCharacter character);
-	int loadCharSound(FeSound* target, std::string token, PuyoCharacter character);
+	FeImage* loadCharImage(std::string token, PuyoCharacter character) override;
+	FeSound* loadCharSound(std::string token, PuyoCharacter character) override;
 	int loadCharAnimations(Animation* target, std::string token, PuyoCharacter character);
 
 	std::list<std::string> listPuyoSkins();

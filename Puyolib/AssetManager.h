@@ -36,8 +36,8 @@ public:
 	FeImage* loadImage(const std::string& token);
 	FeSound* loadSound(const std::string& token);
 
-	FeImage* loadCharImage(std::string token, PuyoCharacter character);
-	FeSound* loadCharSound(std::string token, PuyoCharacter character);
+	FeImage* loadCharImage(const std::string& token, PuyoCharacter character);
+	FeSound* loadCharSound(const std::string& token, PuyoCharacter character);
 
 	int initAnimations(Animation* anim, std::string token);
 	int initCharAnimations(Animation* anim, PuyoCharacter character);
