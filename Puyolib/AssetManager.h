@@ -7,6 +7,7 @@
 #include "DebugLog.h"
 #include "Frontend.h"
 #include "GameSettings.h"
+#include <set>
 #include <string>
 namespace ppvs {
 
@@ -39,10 +40,10 @@ public:
 	int reloadBundles();
 
 	// Listeners for menus
-	std::vector<std::string> listPuyoSkins();
-	std::vector<std::string> listBackgrounds();
-	std::vector<std::string> listSfx();
-	std::vector<std::string> listCharacterSkins();
+	std::set<std::string> listPuyoSkins();
+	std::set<std::string> listBackgrounds();
+	std::set<std::string> listSfx();
+	std::set<std::string> listCharacterSkins();
 
 	DebugLog* m_debug = nullptr;
 

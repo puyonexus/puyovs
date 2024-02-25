@@ -92,9 +92,9 @@ private:
 		{ "charSpell5", "%base%/%charsetup%/%char%/Voice/spell5.wav" },
 		{ "charCounter", "%base%/%charsetup%/%char%/Voice/counter.wav" },
 		{ "charCounterSpell", "%base%/%charsetup%/%char%/Voice/counterspell.wav" },
-		{"charDamage1","%base%/%charsetup%/%char%/Voice/damage1.wav"},
-		{"charDamage2","%base%/%charsetup%/%char%/Voice/damage2.wav"},
-		{"charChoose","%base%/%charsetup%/%char%/Voice/choose.wav"},
+		{ "charDamage1", "%base%/%charsetup%/%char%/Voice/damage1.wav" },
+		{ "charDamage2", "%base%/%charsetup%/%char%/Voice/damage2.wav" },
+		{ "charChoose", "%base%/%charsetup%/%char%/Voice/choose.wav" },
 		{ "charFeverSuccess", "%base%/%charsetup%/%char%/Voice/feversuccess.wav" },
 		{ "charFeverFail", "%base%/%charsetup%/%char%/Voice/feverfail.wav" },
 		{ "charFever", "%base%/%charsetup%/%char%/Voice/fever.wav" },
@@ -159,8 +159,7 @@ public:
 
 	virtual FeImage* loadCharImage(std::string token, PuyoCharacter character) = 0;
 	virtual FeSound* loadCharSound(std::string token, PuyoCharacter character) = 0;
-	virtual int loadCharAnimations(Animation* target, std::string token, PuyoCharacter character) = 0;
-
+	virtual std::string getCharAnimationsFolder(std::string token, PuyoCharacter character) = 0;
 
 	virtual std::list<std::string> listPuyoSkins() = 0;
 	virtual std::list<std::string> listBackgrounds() = 0;
@@ -192,7 +191,7 @@ public:
 
 	FeImage* loadCharImage(std::string token, PuyoCharacter character) override;
 	FeSound* loadCharSound(std::string token, PuyoCharacter character) override;
-	int loadCharAnimations(Animation* target, std::string token, PuyoCharacter character);
+	std::string getCharAnimationsFolder(std::string token, PuyoCharacter character);
 
 	std::list<std::string> listPuyoSkins();
 	std::list<std::string> listBackgrounds();

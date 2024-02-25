@@ -109,12 +109,48 @@ FeSound* AssetManager::loadCharSound(const std::string& token, PuyoCharacter cha
 	return target;
 }
 
+std::set<std::string> AssetManager::listPuyoSkins() {
+	std::set<std::string> result = {};
+	for (auto bundle: m_bundleList) {
+		for (auto value : bundle->listPuyoSkins()) {
+			result.insert(value);
+		}
+	}
+	return result;
+}
 
-
-std::vector<std::string> AssetManager::listBackgrounds()
+std::set<std::string> AssetManager::listBackgrounds()
 {
-	return {};
-};
+	std::set<std::string> result = {};
+	for (auto bundle: m_bundleList) {
+		for (auto value : bundle->listBackgrounds()) {
+			result.insert(value);
+		}
+	}
+	return result;
+}
+
+std::set<std::string> AssetManager::listCharacterSkins()
+{
+	std::set<std::string> result = {};
+	for (auto bundle: m_bundleList) {
+		for (auto value : bundle->listCharacterSkins()) {
+			result.insert(value);
+		}
+	}
+	return result;
+}
+
+std::set<std::string> AssetManager::listSfx()
+{
+	std::set<std::string> result = {};
+	for (auto bundle: m_bundleList) {
+		for (auto value : bundle->listSfx()) {
+			result.insert(value);
+		}
+	}
+	return result;
+}
 
 int AssetManager::reloadBundles()
 {

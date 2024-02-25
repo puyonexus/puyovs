@@ -32,7 +32,9 @@ TokenFnTranslator::~TokenFnTranslator() = default;
 #define pvs_ITERATE_DATA_FOLDER(FOLDER)                                                                                                \
 	std::list<std::string> new_list;                                                                                                   \
 	for (std::filesystem::directory_entry folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%") + (FOLDER))) { \
-		new_list.push_back(folder.path().string());                                                                                    \
+		if (folder.is_directory()) {                                                                                                   \
+			new_list.push_back(folder.path().stem());                                                                                \
+		}                                                                                                                              \
 	}                                                                                                                                  \
 	return new_list;
 
@@ -133,7 +135,11 @@ void FolderAssetBundle::reload()
 
 std::list<std::string> FolderAssetBundle::listPuyoSkins()
 {
-	pvs_ITERATE_DATA_FOLDER(kFolderUserPuyo);
+	std::list<std::string> new_list;
+	for (std::filesystem::directory_entry folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%") + (kFolderUserPuyo))) {
+		new_list.push_back(folder.path().stem());
+	}
+	return new_list;
 }
 
 std::list<std::string> FolderAssetBundle::listBackgrounds()
@@ -156,7 +162,7 @@ int FolderAssetBundle::loadAnimations(Animation* target, const std::string token
 {
 	return 0;
 }
-int FolderAssetBundle::loadCharAnimations(Animation* target, std::string token, PuyoCharacter character)
+std::string FolderAssetBundle::getCharAnimationsFolder(std::string token, PuyoCharacter character)
 {
 	return 0;
 }
