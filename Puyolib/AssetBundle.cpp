@@ -87,8 +87,15 @@ std::string TokenFnTranslator::token2fn(const std::string& token, PuyoCharacter 
 
 FolderAssetBundle::FolderAssetBundle(Frontend* fe, ppvs::GameAssetSettings* folderLocations)
 	: AssetBundle(fe)
+	, m_settings(folderLocations)
 {
 	m_translator = new TokenFnTranslator(folderLocations);
+}
+
+AssetBundle* FolderAssetBundle::clone()
+{
+	AssetBundle* new_bundle = new FolderAssetBundle(m_frontend, m_settings);
+	return new_bundle;
 }
 
 int FolderAssetBundle::init(ppvs::Frontend* fe)
@@ -104,14 +111,12 @@ int FolderAssetBundle::init(ppvs::Frontend* fe)
 // Loads the texture, returns whether the load was successful (for files, whether the file exists and loads)
 FeImage* FolderAssetBundle::loadImage(std::string token)
 {
-	m_translator->m_debug = m_debug;
 	return m_frontend->loadImage(m_translator->token2fn(token));
 }
 
 // Loads the sound, returns whether the load was successful (for files, whether the file exists and loads)
 FeSound* FolderAssetBundle::loadSound(std::string token)
 {
-
 	return m_frontend->loadSound(m_translator->token2fn(token));
 }
 
@@ -125,7 +130,7 @@ FeSound* FolderAssetBundle::loadCharSound(std::string token, PuyoCharacter chara
 	return m_frontend->loadSound(m_translator->token2fn(token, character));
 }
 
-bool isPossiblyAnimation(std::string fname,std::string script_name)
+bool isPossiblyAnimation(std::string fname, std::string script_name)
 {
 	std::filesystem::path folder(fname);
 	std::filesystem::path file(fname + script_name);
@@ -140,13 +145,13 @@ FeImage* FolderAssetBundle::loadCharAnimationSprite(std::string filename, PuyoCh
 std::string FolderAssetBundle::getCharAnimationsFolder(ppvs::PuyoCharacter character)
 {
 	std::string dir = m_translator->token2fn("animationCharFolder", character);
-	return isPossiblyAnimation(dir,"animation.xml") ? dir : "";
+	return isPossiblyAnimation(dir, "animation.xml") ? dir : "";
 }
 
 std::string FolderAssetBundle::getAnimationFolder(std::string token, std::string script_name)
 {
 	std::string dir = m_translator->token2fn(token);
-	return isPossiblyAnimation(dir,script_name) ? dir : "";
+	return isPossiblyAnimation(dir, script_name) ? dir : "";
 }
 
 void FolderAssetBundle::reload(Frontend* fe)

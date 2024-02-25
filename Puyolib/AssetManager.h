@@ -17,6 +17,7 @@ public:
 	AssetManager(Frontend* fe, DebugLog* dbg);
 	~AssetManager();
 
+	AssetManager* clone();
 	void init(Frontend* fe, DebugLog* dbg);
 
 	// Bundle management
@@ -34,7 +35,6 @@ public:
 	FeImage* loadCharImage(const std::string& token, PuyoCharacter character);
 	FeSound* loadCharSound(const std::string& token, PuyoCharacter character);
 
-
 	FeImage* loadCharAnimationSprite(std::string filename, PuyoCharacter character);
 	std::string getCharAnimationsFolder(ppvs::PuyoCharacter character);
 	std::string getAnimationFolder(std::string token, const std::string& script_name = "animation.xml");
@@ -43,6 +43,8 @@ public:
 	int initCharAnimations(Animation* anim, PuyoCharacter character);
 
 	int reloadBundles();
+	int reload(Frontend* frontend);
+	;
 
 	// Listeners for menus
 	std::set<std::string> listPuyoSkins();
@@ -52,13 +54,11 @@ public:
 
 	DebugLog* m_debug = nullptr;
 
-
-
 protected:
 	std::list<AssetBundle*> m_bundleList;
 	Frontend* m_front = nullptr;
 	DebugLog* dbg = nullptr;
-
+	bool activated = 0;
 };
 
 } // ppvs

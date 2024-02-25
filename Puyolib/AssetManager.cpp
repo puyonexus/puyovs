@@ -5,6 +5,16 @@
 
 namespace ppvs {
 
+AssetManager* AssetManager::clone()
+{
+	AssetManager* current = new AssetManager;
+	for (auto bundle : m_bundleList) {
+		current->loadBundle(bundle->clone());
+	}
+	current->init(m_front, m_debug);
+	return current;
+}
+
 AssetManager::AssetManager(ppvs::Frontend* fe, DebugLog* dbg)
 	: m_front(fe)
 	, m_debug(dbg)
@@ -25,6 +35,7 @@ void AssetManager::init(ppvs::Frontend* fe, ppvs::DebugLog* debug)
 	m_front = fe;
 	m_debug = debug;
 	reloadBundles();
+	activated = true;
 }
 
 int AssetManager::loadBundle(ppvs::AssetBundle* bundle, int priority)
@@ -152,7 +163,7 @@ std::string AssetManager::getAnimationFolder(std::string token, const std::strin
 		}
 	}
 	if (target.empty()) {
-		m_debug->log("Error loading animation script token "+token, DebugMessageType::Error);
+		m_debug->log("Error loading animation script token " + token, DebugMessageType::Error);
 	}
 	return target;
 }

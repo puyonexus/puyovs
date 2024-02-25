@@ -141,10 +141,10 @@ private:
 		{ "imgCharSelect", "%base%/%charsetup%/%char%/select.png" },
 		{ "imgCharIcon", "%base%/%charsetup%/%char%/icon.png" },
 
-		{ "animationCharFolder","%base%/%charsetup%/%char%/Animation/" }
+		{ "animationCharFolder", "%base%/%charsetup%/%char%/Animation/" }
 	};
 	std::map<std::string, std::string> animTokenToPseudoFn = {
-		{"bg", "%base%/%background%/Animation/"}
+		{ "bg", "%base%/%background%/Animation/" }
 	};
 };
 
@@ -154,6 +154,7 @@ public:
 	explicit AssetBundle(Frontend* fe)
 		: m_frontend(fe) {};
 	~AssetBundle() = default;
+	virtual AssetBundle* clone() = 0;
 
 	virtual int init(Frontend* fe) { return 1; };
 
@@ -187,31 +188,32 @@ public:
 	FolderAssetBundle(Frontend* fe, GameAssetSettings* folderLocations);
 	~FolderAssetBundle() = default;
 
-	int init(Frontend* fe);
+	AssetBundle* clone() override;
+	int init(Frontend* fe) override;
 
 	FeImage* loadImage(std::string token) override;
 	FeSound* loadSound(std::string token) override;
 
-	// TODO: All of them
 	int loadAnimations(Animation* target, std::string token) override;
 
 	FeImage* loadCharImage(std::string token, PuyoCharacter character) override;
 	FeSound* loadCharSound(std::string token, PuyoCharacter character) override;
-	FeImage* loadCharAnimationSprite(std::string filename, PuyoCharacter character);
+	FeImage* loadCharAnimationSprite(std::string filename, PuyoCharacter character) override;
 
-	std::string getCharAnimationsFolder(PuyoCharacter character);
-	std::string getAnimationFolder(std::string token, std::string script_name);
+	std::string getCharAnimationsFolder(PuyoCharacter character) override;
+	std::string getAnimationFolder(std::string token, std::string script_name) override;
 
-	std::list<std::string> listPuyoSkins();
-	std::list<std::string> listBackgrounds();
-	std::list<std::string> listSfx();
-	std::list<std::string> listCharacterSkins();
+	std::list<std::string> listPuyoSkins() override;
+	std::list<std::string> listBackgrounds() override;
+	std::list<std::string> listSfx() override;
+	std::list<std::string> listCharacterSkins() override;
 
 	void reload() override;
 	void reload(Frontend* fe) override;
 
 private:
 	TokenFnTranslator* m_translator;
+	GameAssetSettings* m_settings;
 };
 
 } // ppvs
