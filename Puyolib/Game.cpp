@@ -322,8 +322,8 @@ void Game::initGame(Frontend* f, AssetManager* as_mgr)
 	m_timerEndMatch = 0;
 
 	// Initialize readygo animation
-	m_readyGoObj.init(m_data, PosVectorFloat(320, 240), 1, m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + "/Animation/", "ready.xml", 3 * 60);
-	m_backgroundAnimation.init(m_data, PosVectorFloat(320, 240), 1, m_baseAssetDir + kFolderUserBackgrounds + m_data->gUserSettings.backgroundDirPath + "/Animation/", "animation.xml", 30 * 60);
+	m_readyGoObj.init(m_data, PosVectorFloat(320, 240), 1, m_assetManager->getAnimationFolder("bg", "ready.xml"), "ready.xml", 3 * 60);
+	m_backgroundAnimation.init(m_data, PosVectorFloat(320, 240), 1,m_assetManager->getAnimationFolder("bg"), "animation.xml", 30 * 60);
 	m_backgroundAnimation.prepareAnimation("background");
 
 	// Other stuff

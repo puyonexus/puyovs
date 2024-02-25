@@ -34,6 +34,11 @@ public:
 	FeImage* loadCharImage(const std::string& token, PuyoCharacter character);
 	FeSound* loadCharSound(const std::string& token, PuyoCharacter character);
 
+
+	FeImage* loadCharAnimationSprite(std::string filename, PuyoCharacter character);
+	std::string getCharAnimationsFolder(ppvs::PuyoCharacter character);
+	std::string getAnimationFolder(std::string token, const std::string& script_name = "animation.xml");
+
 	int initAnimations(Animation* anim, std::string token);
 	int initCharAnimations(Animation* anim, PuyoCharacter character);
 

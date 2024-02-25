@@ -60,7 +60,8 @@ FeImage* AssetManager::loadImage(const std::string& token)
 }
 
 // TODO: duplicated code
-FeImage* AssetManager::loadCharImage(const std::string& token, PuyoCharacter character){
+FeImage* AssetManager::loadCharImage(const std::string& token, PuyoCharacter character)
+{
 	FeImage* target = nullptr;
 	for (auto* bundle : m_bundleList) {
 		target = bundle->loadCharImage(std::string(token), character);
@@ -92,10 +93,11 @@ FeSound* AssetManager::loadSound(const std::string& token)
 	return target;
 }
 
-FeSound* AssetManager::loadCharSound(const std::string& token, PuyoCharacter character) {
+FeSound* AssetManager::loadCharSound(const std::string& token, PuyoCharacter character)
+{
 	FeSound* target = nullptr;
 	for (auto* bundle : m_bundleList) {
-		target = bundle->loadCharSound(token,character);
+		target = bundle->loadCharSound(token, character);
 		if (!target->error()) {
 			// target->play();
 			break;
@@ -108,10 +110,57 @@ FeSound* AssetManager::loadCharSound(const std::string& token, PuyoCharacter cha
 	}
 	return target;
 }
+FeImage* AssetManager::loadCharAnimationSprite(std::string filename, PuyoCharacter character)
+{
+	FeImage* target = nullptr;
+	for (auto bundle : m_bundleList) {
+		target = bundle->loadCharAnimationSprite(filename, character);
+		if (target != nullptr && !target->error()) {
+			break;
+		} else {
+			target = nullptr;
+		}
+	}
+	if (target == nullptr || target->error()) {
+		m_debug->log("Error loading animation file " + filename + " character " + std::to_string(static_cast<int>(character)), DebugMessageType::Error);
+	}
+	return target;
+}
 
-std::set<std::string> AssetManager::listPuyoSkins() {
+std::string AssetManager::getCharAnimationsFolder(ppvs::PuyoCharacter character)
+{
+	std::string target;
+	for (auto bundle : m_bundleList) {
+		target = bundle->getCharAnimationsFolder(character);
+		if (!target.empty()) {
+			break;
+		}
+	}
+	if (target.empty()) {
+		m_debug->log("Error loading animation script character " + std::to_string(static_cast<int>(character)), DebugMessageType::Error);
+	}
+	return target;
+}
+
+std::string AssetManager::getAnimationFolder(std::string token, const std::string& script_name)
+{
+	std::string target;
+	for (auto bundle : m_bundleList) {
+		target = bundle->getAnimationFolder(token, script_name);
+		if (!target.empty()) {
+			break;
+		}
+	}
+	if (target.empty()) {
+		m_debug->log("Error loading animation script token "+token, DebugMessageType::Error);
+	}
+	return target;
+}
+
+std::set<std::string> AssetManager::listPuyoSkins()
+{
 	std::set<std::string> result = {};
-	for (auto bundle: m_bundleList) {
+	for (auto bundle : m_bundleList) {
 		for (auto value : bundle->listPuyoSkins()) {
 			result.insert(value);
 		}
@@ -122,7 +171,7 @@ std::set<std::string> AssetManager::listPuyoSkins() {
 std::set<std::string> AssetManager::listBackgrounds()
 {
 	std::set<std::string> result = {};
-	for (auto bundle: m_bundleList) {
+	for (auto bundle : m_bundleList) {
 		for (auto value : bundle->listBackgrounds()) {
 			result.insert(value);
 		}
@@ -133,7 +182,7 @@ std::set<std::string> AssetManager::listBackgrounds()
 std::set<std::string> AssetManager::listCharacterSkins()
 {
 	std::set<std::string> result = {};
-	for (auto bundle: m_bundleList) {
+	for (auto bundle : m_bundleList) {
 		for (auto value : bundle->listCharacterSkins()) {
 			result.insert(value);
 		}
@@ -144,7 +193,7 @@ std::set<std::string> AssetManager::listCharacterSkins()
 std::set<std::string> AssetManager::listSfx()
 {
 	std::set<std::string> result = {};
-	for (auto bundle: m_bundleList) {
+	for (auto bundle : m_bundleList) {
 		for (auto value : bundle->listSfx()) {
 			result.insert(value);
 		}

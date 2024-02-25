@@ -33,7 +33,7 @@ TokenFnTranslator::~TokenFnTranslator() = default;
 	std::list<std::string> new_list;                                                                                                   \
 	for (std::filesystem::directory_entry folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%") + (FOLDER))) { \
 		if (folder.is_directory()) {                                                                                                   \
-			new_list.push_back(folder.path().stem());                                                                                \
+			new_list.push_back(folder.path().stem());                                                                                  \
 		}                                                                                                                              \
 	}                                                                                                                                  \
 	return new_list;
@@ -57,7 +57,11 @@ std::string TokenFnTranslator::token2fn(const std::string& token)
 	if (result == std::string("") || result == token) {
 		result = imgTokenToPseudoFn[token];
 	}
-	for (const auto& entry : specialTokens) {
+	if (result == std::string("") || result == token) {
+		result = animTokenToPseudoFn[token];
+	}
+
+		for (const auto& entry : specialTokens) {
 		size_t pos = result.find(entry.first); // First occurence
 		while (pos != std::string::npos) {
 			result.replace(pos, strlen(entry.first), entry.second);
@@ -69,6 +73,7 @@ std::string TokenFnTranslator::token2fn(const std::string& token)
 // FIXME: duplicated code
 std::string TokenFnTranslator::token2fn(const std::string& token, PuyoCharacter character)
 {
+
 	std::string result = token2fn(token);
 	// Character-specific
 	size_t pos = result.find("%char%"); // First occurence
@@ -120,6 +125,30 @@ FeSound* FolderAssetBundle::loadCharSound(std::string token, PuyoCharacter chara
 	return m_frontend->loadSound(m_translator->token2fn(token, character));
 }
 
+bool isPossiblyAnimation(std::string fname,std::string script_name)
+{
+	std::filesystem::path folder(fname);
+	std::filesystem::path file(fname + script_name);
+	return exists(folder) && is_directory(folder) && exists(file);
+}
+
+FeImage* FolderAssetBundle::loadCharAnimationSprite(std::string filename, PuyoCharacter character)
+{
+	return m_frontend->loadImage(getCharAnimationsFolder(character) + filename);
+}
+
+std::string FolderAssetBundle::getCharAnimationsFolder(ppvs::PuyoCharacter character)
+{
+	std::string dir = m_translator->token2fn("animationCharFolder", character);
+	return isPossiblyAnimation(dir,"animation.xml") ? dir : "";
+}
+
+std::string FolderAssetBundle::getAnimationFolder(std::string token, std::string script_name)
+{
+	std::string dir = m_translator->token2fn(token);
+	return isPossiblyAnimation(dir,script_name) ? dir : "";
+}
+
 void FolderAssetBundle::reload(Frontend* fe)
 {
 	if (fe) {
@@ -159,10 +188,6 @@ std::list<std::string> FolderAssetBundle::listCharacterSkins()
 
 // TODO
 int FolderAssetBundle::loadAnimations(Animation* target, const std::string token)
-{
-	return 0;
-}
-std::string FolderAssetBundle::getCharAnimationsFolder(std::string token, PuyoCharacter character)
 {
 	return 0;
 }

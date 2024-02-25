@@ -543,7 +543,7 @@ void Player::setCharacter(PuyoCharacter character, bool show)
 		m_activeField->getProperties().centerY / 2.0f * 1);
 	const std::string currentCharacter = m_currentGame->m_settings->characterSetup[character];
 	if (m_currentGame->m_players.size() <= 10)
-		m_characterAnimation.init(m_data, offset, 1, m_currentGame->m_baseAssetDir + kFolderUserCharacter + currentCharacter + std::string("/Animation/"));
+		m_characterAnimation.init(m_data, offset, 1, m_currentGame->m_assetManager->getCharAnimationsFolder(character));
 	else
 		m_characterAnimation.init(m_data, offset, 1, "");
 	if (m_currentGame->m_settings->useCharacterField)

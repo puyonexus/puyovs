@@ -139,8 +139,12 @@ private:
 		{ "imgCharSelect", "%base%/%charsetup%/%char%/select.png" },
 		{ "imgCharName", "%base%/%charsetup%/%char%/name.png" },
 		{ "imgCharSelect", "%base%/%charsetup%/%char%/select.png" },
-		{ "imgCharIcon", "%base%/%charsetup%/%char%/icon.png" }
+		{ "imgCharIcon", "%base%/%charsetup%/%char%/icon.png" },
 
+		{ "animationCharFolder","%base%/%charsetup%/%char%/Animation/" }
+	};
+	std::map<std::string, std::string> animTokenToPseudoFn = {
+		{"bg", "%base%/%background%/Animation/"}
 	};
 };
 
@@ -159,7 +163,9 @@ public:
 
 	virtual FeImage* loadCharImage(std::string token, PuyoCharacter character) = 0;
 	virtual FeSound* loadCharSound(std::string token, PuyoCharacter character) = 0;
-	virtual std::string getCharAnimationsFolder(std::string token, PuyoCharacter character) = 0;
+	virtual FeImage* loadCharAnimationSprite(std::string filename, PuyoCharacter character) = 0;
+	virtual std::string getCharAnimationsFolder(PuyoCharacter character) = 0;
+	virtual std::string getAnimationFolder(std::string token, std::string script_name) = 0;
 
 	virtual std::list<std::string> listPuyoSkins() = 0;
 	virtual std::list<std::string> listBackgrounds() = 0;
@@ -191,7 +197,10 @@ public:
 
 	FeImage* loadCharImage(std::string token, PuyoCharacter character) override;
 	FeSound* loadCharSound(std::string token, PuyoCharacter character) override;
-	std::string getCharAnimationsFolder(std::string token, PuyoCharacter character);
+	FeImage* loadCharAnimationSprite(std::string filename, PuyoCharacter character);
+
+	std::string getCharAnimationsFolder(PuyoCharacter character);
+	std::string getAnimationFolder(std::string token, std::string script_name);
 
 	std::list<std::string> listPuyoSkins();
 	std::list<std::string> listBackgrounds();
