@@ -250,7 +250,7 @@ void Game::loadImages() const
 		m_data->imgCharField[i] = m_assetManager->loadCharImage("imgCharField", static_cast<PuyoCharacter>(i));
 		m_data->imgCharSelect[i] = m_assetManager->loadCharImage("imgCharSelect", static_cast<PuyoCharacter>(i));
 		m_data->imgCharName[i] = m_assetManager->loadCharImage("imgCharName", static_cast<PuyoCharacter>(i));
-		m_data->imgSelect[i] = m_assetManager->loadCharImage("imgSelect", static_cast<PuyoCharacter>(i));
+		m_data->imgSelect[i] = m_assetManager->loadCharImage("imgCharSelect", static_cast<PuyoCharacter>(i));
 	}
 
 	m_data->imgPlayerNumber = m_assetManager->loadImage("imgPlayerNumber");

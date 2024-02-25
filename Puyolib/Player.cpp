@@ -410,35 +410,34 @@ void Player::checkAllClearStart()
 	checkAllClearStart();
 }
 
-FeSound* Player::loadVoice(const std::string& folder, const char* sound)
+
+FeSound* Player::loadVoice(const std::string& token)
 {
-	return m_data->front->loadSound((folder + sound).c_str());
+	return m_currentGame->m_assetManager->loadCharSound(token,getCharacter());
 }
 
 void Player::initVoices()
 {
-	const std::string currentCharacter = m_currentGame->m_settings->characterSetup[getCharacter()];
-	const std::string folder = m_currentGame->m_settings->baseAssetDir + kFolderUserCharacter + currentCharacter + std::string("/Voice/");
-	m_characterVoices.chain[0].setBuffer(loadVoice(folder, "chain1.wav"));
-	m_characterVoices.chain[1].setBuffer(loadVoice(folder, "chain2.wav"));
-	m_characterVoices.chain[2].setBuffer(loadVoice(folder, "chain3.wav"));
-	m_characterVoices.chain[3].setBuffer(loadVoice(folder, "chain4.wav"));
-	m_characterVoices.chain[4].setBuffer(loadVoice(folder, "chain5.wav"));
-	m_characterVoices.chain[5].setBuffer(loadVoice(folder, "spell1.wav"));
-	m_characterVoices.chain[6].setBuffer(loadVoice(folder, "spell2.wav"));
-	m_characterVoices.chain[7].setBuffer(loadVoice(folder, "spell3.wav"));
-	m_characterVoices.chain[8].setBuffer(loadVoice(folder, "spell4.wav"));
-	m_characterVoices.chain[9].setBuffer(loadVoice(folder, "spell5.wav"));
-	m_characterVoices.chain[10].setBuffer(loadVoice(folder, "counter.wav"));
-	m_characterVoices.chain[11].setBuffer(loadVoice(folder, "counterspell.wav"));
-	m_characterVoices.damage1.setBuffer(loadVoice(folder, "damage1.wav"));
-	m_characterVoices.damage2.setBuffer(loadVoice(folder, "damage2.wav"));
-	m_characterVoices.choose.setBuffer(loadVoice(folder, "choose.wav"));
-	m_characterVoices.fever.setBuffer(loadVoice(folder, "fever.wav"));
-	m_characterVoices.feverSuccess.setBuffer(loadVoice(folder, "feversuccess.wav"));
-	m_characterVoices.feverFail.setBuffer(loadVoice(folder, "feverfail.wav"));
-	m_characterVoices.lose.setBuffer(loadVoice(folder, "lose.wav"));
-	m_characterVoices.win.setBuffer(loadVoice(folder, "win.wav"));
+	m_characterVoices.chain[0].setBuffer(loadVoice("charChain1"));
+	m_characterVoices.chain[1].setBuffer(loadVoice("charChain2"));
+	m_characterVoices.chain[2].setBuffer(loadVoice("charChain3"));
+	m_characterVoices.chain[3].setBuffer(loadVoice("charChain4"));
+	m_characterVoices.chain[4].setBuffer(loadVoice("charChain5"));
+	m_characterVoices.chain[5].setBuffer(loadVoice("charSpell1"));
+	m_characterVoices.chain[6].setBuffer(loadVoice("charSpell2"));
+	m_characterVoices.chain[7].setBuffer(loadVoice("charSpell3"));
+	m_characterVoices.chain[8].setBuffer(loadVoice("charSpell4"));
+	m_characterVoices.chain[9].setBuffer(loadVoice("charSpell5"));
+	m_characterVoices.chain[10].setBuffer(loadVoice("charCounter"));
+	m_characterVoices.chain[11].setBuffer(loadVoice("charCounterSpell"));
+	m_characterVoices.damage1.setBuffer(loadVoice("charDamage1"));
+	m_characterVoices.damage2.setBuffer(loadVoice("charDamage2"));
+	m_characterVoices.choose.setBuffer(loadVoice("charChoose"));
+	m_characterVoices.fever.setBuffer(loadVoice("charFever"));
+	m_characterVoices.feverSuccess.setBuffer(loadVoice("charFeverSuccess"));
+	m_characterVoices.feverFail.setBuffer(loadVoice("charFeverFail"));
+	m_characterVoices.lose.setBuffer(loadVoice("charLose"));
+	m_characterVoices.win.setBuffer(loadVoice("charWin"));
 }
 
 void Player::playerSetup(FieldProp& properties, const int playerNum, const int playerTotal)
@@ -546,14 +545,14 @@ void Player::setCharacter(PuyoCharacter character, bool show)
 	if (m_currentGame->m_players.size() <= 10)
 		m_characterAnimation.init(m_data, offset, 1, m_currentGame->m_baseAssetDir + kFolderUserCharacter + currentCharacter + std::string("/Animation/"));
 	else
-        m_characterAnimation.init(m_data, offset, 1, "");
+		m_characterAnimation.init(m_data, offset, 1, "");
 	if (m_currentGame->m_settings->useCharacterField)
 		setFieldImage(character);
 
 	if (!show)
 		return;
 
-	m_currentCharacterSprite.setImage(m_data->front->loadImage((m_currentGame->m_baseAssetDir + kFolderUserCharacter + m_currentGame->m_settings->characterSetup[character] + "/icon.png").c_str()));
+	m_currentCharacterSprite.setImage(m_currentGame->m_assetManager->loadCharImage("imgCharIcon", character));
 	m_currentCharacterSprite.setCenter();
 	m_currentCharacterSprite.setPosition(m_charHolderSprite.getPosition() + PosVectorFloat(1, 1) - PosVectorFloat(2, 4)); // Correct for shadow
 	m_currentCharacterSprite.setVisible(true);
@@ -561,7 +560,7 @@ void Player::setCharacter(PuyoCharacter character, bool show)
 	m_charHolderSprite.setVisible(true);
 	m_showCharacterTimer = 5 * 60;
 	for (auto& i : m_dropSet) {
-		i.setImage(m_data->front->loadImage("Data/CharSelect/dropset.png"));
+		i.setImage(m_currentGame->m_assetManager->loadImage("imgDropSet"));
 	}
 	setDropSetSprite(static_cast<int>(m_currentCharacterSprite.getX()), static_cast<int>(m_currentCharacterSprite.getY() + 60.f * m_globalScale), m_character);
 }
@@ -1056,21 +1055,21 @@ void Player::chooseColor()
 		}
 
 		// Make choice
-        if ((m_controls.m_a == 1 && m_currentGame->m_settings->swapABConfirm == false && m_colorMenuTimer > 25) || ((m_controls.m_b == 1 && m_currentGame->m_settings->swapABConfirm == true && m_colorMenuTimer > 25))) {
+		if ((m_controls.m_a == 1 && m_currentGame->m_settings->swapABConfirm == false && m_colorMenuTimer > 25) || ((m_controls.m_b == 1 && m_currentGame->m_settings->swapABConfirm == true && m_colorMenuTimer > 25))) {
 			m_normalGarbage.gq += m_normalGarbage.cq;
 			m_normalGarbage.cq = 0;
 			m_data->snd.decide.play(m_data);
 			if (m_currentGame->m_settings->swapABConfirm == false) {
 				m_controls.m_a++;
 			} else {
-                m_controls.m_b++;
+				m_controls.m_b++;
 			}
 			if (m_takeover) {
-                if (m_currentGame->m_settings->swapABConfirm == false) {
-                    m_currentGame->m_players[0]->m_controls.m_a++;
-                } else {
-                    m_currentGame->m_players[0]->m_controls.m_b++;
-                }
+				if (m_currentGame->m_settings->swapABConfirm == false) {
+					m_currentGame->m_players[0]->m_controls.m_a++;
+				} else {
+					m_currentGame->m_players[0]->m_controls.m_b++;
+				}
 			}
 			m_currentGame->m_colorTimer = 0;
 			m_colorMenuTimer = -50;
