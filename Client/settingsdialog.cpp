@@ -1,4 +1,5 @@
 #include "settingsdialog.h"
+#include "../Puyolib/AssetManager.h"
 #include "language.h"
 #include "playlist.h"
 #include "pvsapplication.h"
@@ -9,9 +10,10 @@
 #include <QFileDialog>
 #include <alib/audiolib.h>
 
-SettingsDialog::SettingsDialog(LanguageManager* lm, QWidget* parent)
+SettingsDialog::SettingsDialog(LanguageManager* lm, ppvs::AssetManager* am, QWidget* parent)
 	: QDialog(parent)
 	, ui(new Ui::SettingsDialog)
+	, am_template(am)
 {
 	ui->setupUi(this);
 	connect(ui->SettingsButtonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
@@ -277,31 +279,37 @@ void SettingsDialog::characterSlotIndexChanged(const QString&) const
 	// TODO: something supposed to go here...?
 }
 
+//
+QStringList convertToQStringList(const std::set<std::string>& inputSet)
+{
+	QStringList outputList;
+	outputList.reserve(inputSet.size());
+
+	for (const auto& str : inputSet) {
+		outputList.append(QString::fromStdString(str));
+	}
+
+	return outputList;
+}
+
 void SettingsDialog::fetchFileLists()
 {
+	assert(am_template != nullptr);
+
 	// Backgrounds
-	QDir dirB(QString("User/Backgrounds/"), "*", QDir::Name, QDir::AllDirs | QDir::Readable | QDir::NoDotAndDotDot);
-	backgroundsList = dirB.entryList();
-	ui->BackgroundComboBox->addItems(backgroundsList);
+	ui->BackgroundComboBox->addItems(convertToQStringList(am_template->listBackgrounds()));
 
 	// Puyo
-	QDir dirP(QString("User/Puyo/"), "*.png", QDir::Name, QDir::Files | QDir::Readable);
-	QFileInfoList flist = dirP.entryInfoList();
-	foreach (QFileInfo fi, flist)
-		ui->PuyoComboBox->addItem(fi.baseName());
+	ui->PuyoComboBox->addItems(convertToQStringList(am_template->listPuyoSkins()));
 
 	// Characters
-	QDir dirC(QString("User/Characters/"), "*", QDir::Name, QDir::AllDirs | QDir::Readable | QDir::NoDotAndDotDot);
-	charactersList = dirC.entryList();
 	foreach (QComboBox* combobox, characterComboBoxList) {
 		combobox->addItem("");
-		combobox->addItems(charactersList);
+		combobox->addItems(convertToQStringList(am_template->listCharacterSkins()));
 	}
 
 	// Sound
-	QDir dirS(QString("User/Sounds/"), "*", QDir::Name, QDir::AllDirs | QDir::Readable | QDir::NoDotAndDotDot);
-	soundsList = dirS.entryList();
-	ui->SoundComboBox->addItems(soundsList);
+	ui->SoundComboBox->addItems(convertToQStringList(am_template->listSfx()));
 }
 
 void SettingsDialog::setDefaultRuleSettings() const

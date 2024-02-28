@@ -11,6 +11,7 @@
 #include "../PVS_ENet/PVS_Client.h"
 #include "../Puyolib/Frontend.h"
 #include "../Puyolib/Game.h"
+
 #include "../Puyolib/global.h"
 
 #include "chatwindow.h"

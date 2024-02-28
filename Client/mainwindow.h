@@ -17,6 +17,8 @@ class MainWindow;
 }
 
 namespace ppvs {
+class AssetManager;
+class AssetBundle;
 class Game;
 struct GameSettings;
 struct GameAssetSettings;
@@ -53,6 +55,11 @@ public:
 	QNetworkReply* serverListReply = nullptr;
 	QNetworkAccessManager* netMan = nullptr;
 
+	// ppvs::AssetManger related
+	static ppvs::AssetBundle* generateDefaultBundle(const QString& base_path);
+	void initAssetManagerTemplate();
+
+
 protected:
 	void closeEvent(QCloseEvent*) override;
 	void addMatchRoom(NetChannel channel);
@@ -76,6 +83,8 @@ public slots:
 	void on_SearchDialog_Finished(int result);
 	void on_OfflineDialog_Finished(int result);
 	void on_CreateChatroomDialog_Finished(CreateChatroomDialog*) const;
+
+	int reloadAssetManagerTemplate();
 
 private slots:
 	void getServerList() const;
@@ -135,5 +144,6 @@ private:
 	bool showSettingsDlg = false;
 	bool showSearchDlg = false;
 	SearchDialog* searchDlg = nullptr;
+	ppvs::AssetManager* mAssetManager = nullptr;
 	ppvs::GameSettings* mGameSettings = nullptr;
 };

@@ -11,7 +11,7 @@ AssetManager* AssetManager::clone()
 	for (auto bundle : m_bundleList) {
 		current->loadBundle(bundle->clone());
 	}
-	current->init(m_front, m_debug);
+	current->activate(m_front, m_debug);
 	return current;
 }
 
@@ -19,21 +19,25 @@ AssetManager::AssetManager(ppvs::Frontend* fe, DebugLog* dbg)
 	: m_front(fe)
 	, m_debug(dbg)
 {
-	m_debug->log("Asset manager loaded", DebugMessageType::Debug);
-};
+	if (m_debug != nullptr) {
+		m_debug->log("Asset manager loaded", DebugMessageType::Debug);
+	}
+}
 
 AssetManager::AssetManager()
 	= default;
 
 AssetManager::~AssetManager()
 {
-	m_debug->log("Asset manager destroyed", DebugMessageType::Debug);
+	if (m_debug != nullptr) {
+		m_debug->log("Asset manager destroyed", DebugMessageType::Debug);
+	}
 }
 
-void AssetManager::init(ppvs::Frontend* fe, ppvs::DebugLog* debug)
+void AssetManager::activate(ppvs::Frontend* fe, ppvs::DebugLog* dbg)
 {
 	m_front = fe;
-	m_debug = debug;
+	m_debug = dbg;
 	reloadBundles();
 	activated = true;
 }
@@ -55,7 +59,23 @@ int AssetManager::deleteBundle(ppvs::AssetBundle* bundle)
 	return false;
 }
 
-FeImage* AssetManager::loadImage(const std::string& token,const std::string& custom)
+int AssetManager::unloadAll()
+{
+	if (m_bundleList.empty()) {
+		return 1;
+	}
+	auto i = m_bundleList.begin();
+	while (i != m_bundleList.end()) {
+		if (!(*i)->active) {
+			m_bundleList.erase(i++);
+		} else {
+			i++;
+		}
+	}
+	return 0;
+}
+
+FeImage* AssetManager::loadImage(const std::string& token, const std::string& custom)
 {
 	FeImage* target = nullptr;
 	for (auto* bundle : m_bundleList) {
@@ -65,7 +85,7 @@ FeImage* AssetManager::loadImage(const std::string& token,const std::string& cus
 		}
 	}
 	if (target == nullptr || target->error()) {
-		m_debug->log("Error loading image token " + token+" custom "+custom, DebugMessageType::Error);
+		m_debug->log("Error loading image token " + token + " custom " + custom, DebugMessageType::Error);
 	}
 	return target;
 }
@@ -86,7 +106,7 @@ FeImage* AssetManager::loadCharImage(const std::string& token, PuyoCharacter cha
 	return target;
 }
 
-FeSound* AssetManager::loadSound(const std::string& token,const std::string& custom)
+FeSound* AssetManager::loadSound(const std::string& token, const std::string& custom)
 {
 	FeSound* target = nullptr;
 	for (auto* bundle : m_bundleList) {
@@ -99,7 +119,7 @@ FeSound* AssetManager::loadSound(const std::string& token,const std::string& cus
 		}
 	}
 	if (target == nullptr || target->error()) {
-		m_debug->log("Error loading sound token " + token+" custom "+custom, DebugMessageType::Error);
+		m_debug->log("Error loading sound token " + token + " custom " + custom, DebugMessageType::Error);
 	}
 	return target;
 }

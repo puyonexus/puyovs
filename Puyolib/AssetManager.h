@@ -19,16 +19,16 @@ public:
 
 	// Creates an unactivated clone of the current manager
 	AssetManager* clone();
-	void init(Frontend* fe, DebugLog* dbg);
+	void activate(Frontend* fe, DebugLog* dbg);
 
 	// Activation means that it's being used in a particular game
-	void activate() {activated=true;};
 	void deactivate() {activated=false;};
 	bool is_activated() {return activated;};
 
 	// Bundle management
 	int loadBundle(AssetBundle* bundle, int priority = 0); // adds Bundle, assigns Frontend
 	int deleteBundle(AssetBundle* bundle); // This function frees bundle
+	int unloadAll();
 
 	// Attempts to load the image with the token (see FolderAssetBundle in AssetBundle.h)
 	// parameter `custom` will replace %custom% tag in pseudo-filename
@@ -67,6 +67,7 @@ protected:
 	Frontend* m_front = nullptr;
 	DebugLog* dbg = nullptr;
 	bool activated = false;
+	bool initialized = false;
 };
 
 } // ppvs

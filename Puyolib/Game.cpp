@@ -297,7 +297,7 @@ void Game::initGame(Frontend* f, AssetManager* as_mgr)
 	m_data->front = f;
 
 	m_assetManager = as_mgr;
-	m_assetManager->init(f, m_debug);
+	m_assetManager->activate(f, m_debug);
 
 	loadGlobal();
 

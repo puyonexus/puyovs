@@ -33,7 +33,7 @@ TokenFnTranslator::~TokenFnTranslator() = default;
 	std::list<std::string> new_list;                                                                                                   \
 	for (std::filesystem::directory_entry folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%") + (FOLDER))) { \
 		if (folder.is_directory()) {                                                                                                   \
-			new_list.push_back(folder.path().stem());                                                                                  \
+			new_list.push_back(folder.path().filename());                                                                                  \
 		}                                                                                                                              \
 	}                                                                                                                                  \
 	return new_list;
