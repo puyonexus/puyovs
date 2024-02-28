@@ -64,9 +64,10 @@ int AssetManager::unloadAll()
 	if (m_bundleList.empty()) {
 		return 1;
 	}
+	// This approach is required to remove instances from the list we are iterating over
 	auto i = m_bundleList.begin();
 	while (i != m_bundleList.end()) {
-		if (!(*i)->active) {
+		if (!(*i)->active) { // Check for tombstones
 			m_bundleList.erase(i++);
 		} else {
 			i++;
@@ -91,7 +92,7 @@ FeImage* AssetManager::loadImage(const std::string& token, const std::string& cu
 }
 
 // TODO: duplicated code
-FeImage* AssetManager::loadCharImage(const std::string& token, PuyoCharacter character)
+FeImage* AssetManager::loadImage(const std::string& token, PuyoCharacter character)
 {
 	FeImage* target = nullptr;
 	for (auto* bundle : m_bundleList) {
@@ -124,13 +125,12 @@ FeSound* AssetManager::loadSound(const std::string& token, const std::string& cu
 	return target;
 }
 
-FeSound* AssetManager::loadCharSound(const std::string& token, PuyoCharacter character)
+FeSound* AssetManager::loadSound(const std::string& token, PuyoCharacter character)
 {
 	FeSound* target = nullptr;
 	for (auto* bundle : m_bundleList) {
 		target = bundle->loadCharSound(token, character);
 		if (!target->error()) {
-			// target->play();
 			break;
 		} else {
 			target = nullptr;
@@ -142,7 +142,7 @@ FeSound* AssetManager::loadCharSound(const std::string& token, PuyoCharacter cha
 	return target;
 }
 
-std::string AssetManager::getCharAnimationsFolder(ppvs::PuyoCharacter character)
+std::string AssetManager::getAnimationFolder(ppvs::PuyoCharacter character)
 {
 	std::string target;
 	for (auto bundle : m_bundleList) {
@@ -172,48 +172,32 @@ std::string AssetManager::getAnimationFolder(std::string token, const std::strin
 	return target;
 }
 
+#define pvs_ITERATE_BUNDLES_AM(FUNC) 	std::set<std::string> result = {}; \
+	for (auto bundle : m_bundleList) {                                      \
+		for (auto value : bundle->FUNC) {                           \
+			result.insert(value);                                                 \
+		}                                                                      \
+	}                                                                       \
+	return result;
+
 std::set<std::string> AssetManager::listPuyoSkins()
 {
-	std::set<std::string> result = {};
-	for (auto bundle : m_bundleList) {
-		for (auto value : bundle->listPuyoSkins()) {
-			result.insert(value);
-		}
-	}
-	return result;
+		pvs_ITERATE_BUNDLES_AM(listPuyoSkins());
 }
 
 std::set<std::string> AssetManager::listBackgrounds()
 {
-	std::set<std::string> result = {};
-	for (auto bundle : m_bundleList) {
-		for (auto value : bundle->listBackgrounds()) {
-			result.insert(value);
-		}
-	}
-	return result;
+		pvs_ITERATE_BUNDLES_AM(listBackgrounds());
 }
 
 std::set<std::string> AssetManager::listCharacterSkins()
 {
-	std::set<std::string> result = {};
-	for (auto bundle : m_bundleList) {
-		for (auto value : bundle->listCharacterSkins()) {
-			result.insert(value);
-		}
-	}
-	return result;
+		pvs_ITERATE_BUNDLES_AM(listCharacterSkins());
 }
 
 std::set<std::string> AssetManager::listSfx()
 {
-	std::set<std::string> result = {};
-	for (auto bundle : m_bundleList) {
-		for (auto value : bundle->listSfx()) {
-			result.insert(value);
-		}
-	}
-	return result;
+	pvs_ITERATE_BUNDLES_AM(listSfx());
 }
 
 int AssetManager::reloadBundles()

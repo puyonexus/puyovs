@@ -173,7 +173,7 @@ void FolderAssetBundle::reload()
 std::list<std::string> FolderAssetBundle::listPuyoSkins()
 {
 	std::list<std::string> new_list;
-	for (std::filesystem::directory_entry folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%", "") + (kFolderUserPuyo))) {
+	for (const std::filesystem::directory_entry& folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%", "") + (kFolderUserPuyo))) {
 		new_list.push_back(folder.path().stem());
 	}
 	return new_list;

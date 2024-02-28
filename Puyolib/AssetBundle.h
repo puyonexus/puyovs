@@ -159,7 +159,7 @@ public:
 	AssetBundle() = default;
 	explicit AssetBundle(Frontend* fe)
 		: m_frontend(fe) {};
-	~AssetBundle() = default;
+	virtual ~AssetBundle() = default;
 	virtual AssetBundle* clone() = 0;
 
 	// Gives this bundle a Frontend, usually binding it to a particular game
@@ -192,7 +192,7 @@ protected:
 class FolderAssetBundle : public AssetBundle {
 public:
 	FolderAssetBundle(Frontend* fe, GameAssetSettings* folderLocations);
-	~FolderAssetBundle() = default;
+	~FolderAssetBundle() override = default;
 
 	AssetBundle* clone() override;
 	int init(Frontend* fe) override;

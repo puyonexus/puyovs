@@ -413,7 +413,7 @@ void Player::checkAllClearStart()
 
 FeSound* Player::loadVoice(const std::string& token)
 {
-	return m_currentGame->m_assetManager->loadCharSound(token,getCharacter());
+	return m_currentGame->m_assetManager->loadSound(token, getCharacter());
 }
 
 void Player::initVoices()
@@ -543,7 +543,7 @@ void Player::setCharacter(PuyoCharacter character, bool show)
 		m_activeField->getProperties().centerY / 2.0f * 1);
 	const std::string currentCharacter = m_currentGame->m_settings->characterSetup[character];
 	if (m_currentGame->m_players.size() <= 10)
-		m_characterAnimation.init(m_data, offset, 1, m_currentGame->m_assetManager->getCharAnimationsFolder(character));
+		m_characterAnimation.init(m_data, offset, 1, m_currentGame->m_assetManager->getAnimationFolder(character));
 	else
 		m_characterAnimation.init(m_data, offset, 1, "");
 	if (m_currentGame->m_settings->useCharacterField)
@@ -552,7 +552,7 @@ void Player::setCharacter(PuyoCharacter character, bool show)
 	if (!show)
 		return;
 
-	m_currentCharacterSprite.setImage(m_currentGame->m_assetManager->loadCharImage("imgCharIcon", character));
+	m_currentCharacterSprite.setImage(m_currentGame->m_assetManager->loadImage("imgCharIcon", character));
 	m_currentCharacterSprite.setCenter();
 	m_currentCharacterSprite.setPosition(m_charHolderSprite.getPosition() + PosVectorFloat(1, 1) - PosVectorFloat(2, 4)); // Correct for shadow
 	m_currentCharacterSprite.setVisible(true);

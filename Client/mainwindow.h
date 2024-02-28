@@ -56,7 +56,9 @@ public:
 	QNetworkAccessManager* netMan = nullptr;
 
 	// ppvs::AssetManger related
-	static ppvs::AssetBundle* generateDefaultBundle(const QString& base_path);
+	static ppvs::AssetBundle* generateFolderBundle(const QString& base_path);
+	// Generates bundle with only default assets
+	static ppvs::AssetBundle* generateDefaultBundle();
 	void initAssetManagerTemplate();
 
 
@@ -144,6 +146,7 @@ private:
 	bool showSettingsDlg = false;
 	bool showSearchDlg = false;
 	SearchDialog* searchDlg = nullptr;
-	ppvs::AssetManager* mAssetManager = nullptr;
+	// This object gets imprinted into all Puyolib::Game instances
+	ppvs::AssetManager* assetManagerTemplate = nullptr;
 	ppvs::GameSettings* mGameSettings = nullptr;
 };

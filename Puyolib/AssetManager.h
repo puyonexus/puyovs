@@ -19,16 +19,22 @@ public:
 
 	// Creates an unactivated clone of the current manager
 	AssetManager* clone();
-	void activate(Frontend* fe, DebugLog* dbg);
+
+	// Initialized means that all bundles are loaded and is safe to refer to
+	// Here mostly for thread safety of Client
+	void init() {initialized=true;};
+	void deinit() {initialized=false;};
+	bool is_initialized() {return initialized;};
 
 	// Activation means that it's being used in a particular game
+	void activate(Frontend* fe, DebugLog* dbg);
 	void deactivate() {activated=false;};
 	bool is_activated() {return activated;};
 
 	// Bundle management
 	int loadBundle(AssetBundle* bundle, int priority = 0); // adds Bundle, assigns Frontend
 	int deleteBundle(AssetBundle* bundle); // This function frees bundle
-	int unloadAll();
+	int unloadAll(); // Removes all bundles from the AssetManager
 
 	// Attempts to load the image with the token (see FolderAssetBundle in AssetBundle.h)
 	// parameter `custom` will replace %custom% tag in pseudo-filename
@@ -39,16 +45,16 @@ public:
 	FeSound* loadSound(const std::string& token,const std::string& custom = "");
 
 	// Attempts to load the character-based image with the token (see FolderAssetBundle in AssetBundle.h)
-	FeImage* loadCharImage(const std::string& token, PuyoCharacter character);
+	FeImage* loadImage(const std::string& token, PuyoCharacter character);
 	// Attempts to load the character-based sound with the token (see FolderAssetBundle in AssetBundle.h)
-	FeSound* loadCharSound(const std::string& token, PuyoCharacter character);
+	FeSound* loadSound(const std::string& token, PuyoCharacter character);
 
 	// Attempts to locate a viable folder for animation files
 	// Takes a token and filename of script
 	std::string getAnimationFolder(std::string token, const std::string& script_name = "animation.xml");
 	// Attempts to locate a viable folder for animation files
 	// Takes a character, setup is assumed
-	std::string getCharAnimationsFolder(ppvs::PuyoCharacter character);
+	std::string getAnimationFolder(ppvs::PuyoCharacter character);
 
 	// Reloads the setup of all available bundles
 	// Assumes that you still have access to the setup data objects of each bundle
