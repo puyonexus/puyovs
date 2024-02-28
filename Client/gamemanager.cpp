@@ -160,7 +160,7 @@ GameWidget* GameManager::createGame(ppvs::GameSettings* gs, const QString& roomN
 	Settings& settings = pvsApp->settings();
 	NetChannelProxy* proxy = nullptr;
 
-	reloadAMT();
+	refreshAssetManagerTemplate();
 
 	gs->useCharacterField = settings.boolean("custom", "characterfield", true);
 

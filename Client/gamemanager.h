@@ -29,12 +29,6 @@ public:
 	bool closeAll();
 	void exec();
 
-	/*
-	// ppvs::AssetManger related
-	static ppvs::AssetBundle* generateDefaultBundle(std::string base_path);
-	void initAssetManagerTemplate();
-	int reloadAssetManagerTemplate();*/
-
 public slots:
 	void addGame(GameWidget* game);
 	ppvs::RuleSetInfo createRules();
@@ -58,7 +52,7 @@ private slots:
 	void rankedMatchmessageReceived(QString message);
 signals:
 	void exiting();
-	void reloadAMT();
+	void refreshAssetManagerTemplate();
 
 protected:
 	static void handleDebugLog(std::string text, ppvs::DebugMessageType severity);
@@ -70,6 +64,6 @@ protected:
 	NetClient* network;
 	GameAudio* audio;
 
-	ppvs::AssetManager* assetManagerTemplate = nullptr;
+	ppvs::AssetManager* assetManagerTemplate{};
 	ppvs::DebugLog* dbg;
 };

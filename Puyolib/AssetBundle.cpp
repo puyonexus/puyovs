@@ -29,25 +29,17 @@ TokenFnTranslator::TokenFnTranslator(ppvs::GameAssetSettings* aS)
 
 TokenFnTranslator::~TokenFnTranslator() = default;
 
-#define pvs_ITERATE_DATA_FOLDER(FOLDER)                                                                                                \
-	std::list<std::string> new_list;                                                                                                   \
-	for (std::filesystem::directory_entry folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%") + (FOLDER))) { \
-		if (folder.is_directory()) {                                                                                                   \
-			new_list.push_back((folder.path().filename()).string());                                                                                  \
-		}                                                                                                                              \
-	}                                                                                                                                  \
-	return new_list;
 
 void TokenFnTranslator::reload()
 {
 	specialTokens = {
 		{ "%base%", gameSettings->baseAssetDir + "." }, // HACK: fix importing from GameSetttings
 		{ "%lang", gameSettings->language },
-		{ "%background%", kFolderUserBackgrounds + gameSettings->background },
-		{ "%puyo%", kFolderUserPuyo + gameSettings->puyo },
+		{ "%background%", kFolderUserBackgrounds + "/" + gameSettings->background },
+		{ "%puyo%", kFolderUserPuyo + "/" + gameSettings->puyo },
 		{ "%sfx%", gameSettings->sfx },
-		{ "%usersounds%", kFolderUserSounds + "." },
-		{ "%charsetup%", kFolderUserCharacter + "." }
+		{ "%usersounds%", kFolderUserSounds},
+		{ "%charsetup%", kFolderUserCharacter  }
 		// { "%custom%", custom_value } // Specifier for menus, animations
 	};
 }
@@ -173,7 +165,7 @@ void FolderAssetBundle::reload()
 std::list<std::string> FolderAssetBundle::listPuyoSkins()
 {
 	std::list<std::string> new_list;
-	for (const std::filesystem::directory_entry& folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%", "") + (kFolderUserPuyo))) {
+	for (auto folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%") + kFolderUserPuyo)) {
 		new_list.push_back((folder.path().stem()).string());
 	}
 	return new_list;
@@ -181,17 +173,35 @@ std::list<std::string> FolderAssetBundle::listPuyoSkins()
 
 std::list<std::string> FolderAssetBundle::listBackgrounds()
 {
-	pvs_ITERATE_DATA_FOLDER(kFolderUserBackgrounds);
+	std::list<std::string> new_list;
+	for (auto folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%") + kFolderUserBackgrounds)) {
+		if (folder.is_directory()) {
+			new_list.push_back((folder.path().filename()).string());
+		}
+	}
+	return new_list;
 }
 
 std::list<std::string> FolderAssetBundle::listSfx()
 {
-	pvs_ITERATE_DATA_FOLDER(kFolderUserSounds);
+	std::list<std::string> new_list;
+	for (auto folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%") + kFolderUserSounds)) {
+		if (folder.is_directory()) {
+			new_list.push_back((folder.path().filename()).string());
+		}
+	}
+	return new_list;
 }
 
 std::list<std::string> FolderAssetBundle::listCharacterSkins()
 {
-	pvs_ITERATE_DATA_FOLDER(kFolderUserCharacter);
+	std::list<std::string> new_list;
+	for (auto folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%") + kFolderUserCharacter)) {
+		if (folder.is_directory()) {
+			new_list.push_back((folder.path().filename()).string());
+		}
+	}
+	return new_list;
 }
 
 } // ppvs

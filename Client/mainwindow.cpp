@@ -129,7 +129,7 @@ MainWindow::MainWindow(QWidget* parent)
 
 	// Install game timer
 	gameManager = new GameManager(client, assetManagerTemplate, this);
-	connect(gameManager, &GameManager::reloadAMT, this, &MainWindow::reloadAssetManagerTemplate);
+	connect(gameManager, &GameManager::refreshAssetManagerTemplate, this, &MainWindow::refreshAssetManagerTemplate);
 
 	// Fix friendly match columns.
 	// I really wish the UI editor had something for this.
@@ -1033,9 +1033,9 @@ void MainWindow::initAssetManagerTemplate()
 	assetManagerTemplate->init(); // Allow others interact with the object
 }
 
-int MainWindow::reloadAssetManagerTemplate()
+int MainWindow::refreshAssetManagerTemplate()
 {
-	assetManagerTemplate->deinit(); // Prevent others from reading AM
+	assetManagerTemplate->deInit(); // Prevent others from reading AM
 	if (assetManagerTemplate != nullptr) {
 		assetManagerTemplate->unloadAll();
 		initAssetManagerTemplate();

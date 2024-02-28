@@ -23,7 +23,7 @@ public:
 	// Initialized means that all bundles are loaded and is safe to refer to
 	// Here mostly for thread safety of Client
 	void init() {initialized=true;};
-	void deinit() {initialized=false;};
+	void deInit() {initialized=false;};
 	bool is_initialized() {return initialized;};
 
 	// Activation means that it's being used in a particular game
@@ -66,12 +66,12 @@ public:
 	std::set<std::string> listSfx();
 	std::set<std::string> listCharacterSkins();
 
-	DebugLog* m_debug = nullptr;
+	DebugLog* m_debug{};
 
 protected:
 	std::list<AssetBundle*> m_bundleList;
-	Frontend* m_front = nullptr;
-	DebugLog* dbg = nullptr;
+	Frontend* m_front{};
+	DebugLog* dbg{};
 	bool activated = false;
 	bool initialized = false;
 };

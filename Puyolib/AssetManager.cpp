@@ -39,7 +39,12 @@ void AssetManager::activate(ppvs::Frontend* fe, ppvs::DebugLog* dbg)
 	m_front = fe;
 	m_debug = dbg;
 	reloadBundles();
-	activated = true;
+	// Do not activate unless we know we won't call nullptr
+	if (m_front != nullptr && m_debug != nullptr) {
+		activated = true;
+	} else {
+		activated = false;
+	}
 }
 
 int AssetManager::loadBundle(ppvs::AssetBundle* bundle, int priority)
@@ -91,7 +96,6 @@ FeImage* AssetManager::loadImage(const std::string& token, const std::string& cu
 	return target;
 }
 
-// TODO: duplicated code
 FeImage* AssetManager::loadImage(const std::string& token, PuyoCharacter character)
 {
 	FeImage* target = nullptr;
@@ -172,32 +176,48 @@ std::string AssetManager::getAnimationFolder(std::string token, const std::strin
 	return target;
 }
 
-#define pvs_ITERATE_BUNDLES_AM(FUNC) 	std::set<std::string> result = {}; \
-	for (auto bundle : m_bundleList) {                                      \
-		for (auto value : bundle->FUNC) {                           \
-			result.insert(value);                                                 \
-		}                                                                      \
-	}                                                                       \
-	return result;
-
 std::set<std::string> AssetManager::listPuyoSkins()
 {
-		pvs_ITERATE_BUNDLES_AM(listPuyoSkins());
+	std::set<std::string> result = {};
+	for (auto bundle : m_bundleList) {
+		for (auto value : bundle->listPuyoSkins()) {
+			result.insert(value);
+		}
+	}
+	return result;
 }
 
 std::set<std::string> AssetManager::listBackgrounds()
 {
-		pvs_ITERATE_BUNDLES_AM(listBackgrounds());
+	std::set<std::string> result = {};
+	for (auto bundle : m_bundleList) {
+		for (auto value : bundle->listBackgrounds()) {
+			result.insert(value);
+		}
+	}
+	return result;
 }
 
 std::set<std::string> AssetManager::listCharacterSkins()
 {
-		pvs_ITERATE_BUNDLES_AM(listCharacterSkins());
+	std::set<std::string> result = {};
+	for (auto bundle : m_bundleList) {
+		for (auto value : bundle->listCharacterSkins()) {
+			result.insert(value);
+		}
+	}
+	return result;
 }
 
 std::set<std::string> AssetManager::listSfx()
 {
-	pvs_ITERATE_BUNDLES_AM(listSfx());
+	std::set<std::string> result = {};
+	for (auto bundle : m_bundleList) {
+		for (auto value : bundle->listSfx()) {
+			result.insert(value);
+		}
+	}
+	return result;
 }
 
 int AssetManager::reloadBundles()

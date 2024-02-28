@@ -86,7 +86,7 @@ public slots:
 	void on_OfflineDialog_Finished(int result);
 	void on_CreateChatroomDialog_Finished(CreateChatroomDialog*) const;
 
-	int reloadAssetManagerTemplate();
+	int refreshAssetManagerTemplate();
 
 private slots:
 	void getServerList() const;

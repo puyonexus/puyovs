@@ -25,7 +25,7 @@ public:
 	std::map<PuyoCharacter, std::string> characterSetup;
 };
 
-// The Token-filename translator converts universal tokens and transforms them into legacy filenames
+// The Token-filename translator converts tokens and transforms them into legacy filenames
 // This is not to be used unless legacy parity is required
 class TokenFnTranslator {
 public:
@@ -42,17 +42,39 @@ public:
 	DebugLog* m_debug = nullptr;
 
 private:
-	/*const std::string baseSpecifier = "%base%";
-	const std::string language = "%lang";
-	const std::string background = "%background%";
-	const std::string puyo = "%puyo%";
-	const std::string sfx = "%sfx%";
-	const std::string characterSetup = "%charfolder%";
-
-	const std::string userSounds = "%usersounds%";
-*/
 	GameAssetSettings* gameSettings;
+
+	/*
+	 * Special tokens
+	 * The Legacy Folder Structure convertor uses special tokens starting and ending with the percentage symbol (%)
+	 * to denote specific folder locations. Tokens get converted into specific locations corresponding to the original Puyolib code.
+	 * Presented are also generic values for each special token for achieving maximal compatibility.
+	 * Read TokenFnTranslator::reload() for an example usage.
+	 *
+	 * %base%
+	 * - base of the asset folder structure, ideally a user-controlled folder containing the entire bundle
+	 * - generic value: "./."
+	 * %background%
+	 * - location of the sub folder containing the chosen background theme
+	 * - generic value: "User/Puyo/Forest"
+	 * %puyo%
+	 * - location of the sub folder containing the chosen puyo theme
+	 * - generic value: "User/Backgrounds/Default"
+	 * %sfx%
+	 * - location of the sub folder containing the chosen sound effect theme
+	 * - generic value: "User/Sounds/Default"
+	 * %charfolder%
+	 * - location of the sub folder containing character-specific assets
+	 * - generic value: "User/Characters"
+	 * %char%
+	 * - name of the preferred theme for a given character
+	 * - generic value: ""
+	 * %custom%
+	 * - custom string to be input by the user, used primarily for repeated numbered instances of objects
+	 * - generic value: "0"
+	 */
 	std::map<const char*, std::string> specialTokens;
+
 	std::map<std::string, std::string> sndTokenToPseudoFn = {
 		{ "chain1", "%base%/%usersounds%/%sfx%/chain1.ogg" },
 		{ "chain2", "%base%/%usersounds%/%sfx%/chain2.ogg" },
@@ -183,10 +205,10 @@ public:
 	virtual void reload(Frontend* fe) = 0;
 
 	bool active = false;
-	DebugLog* m_debug = nullptr;
+	DebugLog* m_debug{};
 
 protected:
-	Frontend* m_frontend = nullptr;
+	Frontend* m_frontend{};
 };
 
 class FolderAssetBundle : public AssetBundle {
