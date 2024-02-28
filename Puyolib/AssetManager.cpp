@@ -83,7 +83,7 @@ int AssetManager::unloadAll()
 
 FeImage* AssetManager::loadImage(const std::string& token, const std::string& custom)
 {
-	FeImage* target = nullptr;
+	FeImage* target {};
 	for (auto* bundle : m_bundleList) {
 		target = bundle->loadImage(std::string(token), custom);
 		if (target != nullptr && !target->error()) {
@@ -98,7 +98,7 @@ FeImage* AssetManager::loadImage(const std::string& token, const std::string& cu
 
 FeImage* AssetManager::loadImage(const std::string& token, PuyoCharacter character)
 {
-	FeImage* target = nullptr;
+	FeImage* target {};
 	for (auto* bundle : m_bundleList) {
 		target = bundle->loadCharImage(std::string(token), character);
 		if (target != nullptr && !target->error()) {
@@ -113,7 +113,7 @@ FeImage* AssetManager::loadImage(const std::string& token, PuyoCharacter charact
 
 FeSound* AssetManager::loadSound(const std::string& token, const std::string& custom)
 {
-	FeSound* target = nullptr;
+	FeSound* target = {};
 	for (auto* bundle : m_bundleList) {
 		target = bundle->loadSound(token, custom);
 		if (!target->error()) {
@@ -131,7 +131,7 @@ FeSound* AssetManager::loadSound(const std::string& token, const std::string& cu
 
 FeSound* AssetManager::loadSound(const std::string& token, PuyoCharacter character)
 {
-	FeSound* target = nullptr;
+	FeSound* target = {};
 	for (auto* bundle : m_bundleList) {
 		target = bundle->loadCharSound(token, character);
 		if (!target->error()) {
@@ -178,7 +178,7 @@ std::string AssetManager::getAnimationFolder(std::string token, const std::strin
 
 std::set<std::string> AssetManager::listPuyoSkins()
 {
-	std::set<std::string> result = {};
+	std::set<std::string> result {};
 	for (auto bundle : m_bundleList) {
 		for (auto value : bundle->listPuyoSkins()) {
 			result.insert(value);
@@ -189,7 +189,7 @@ std::set<std::string> AssetManager::listPuyoSkins()
 
 std::set<std::string> AssetManager::listBackgrounds()
 {
-	std::set<std::string> result = {};
+	std::set<std::string> result {};
 	for (auto bundle : m_bundleList) {
 		for (auto value : bundle->listBackgrounds()) {
 			result.insert(value);
@@ -200,7 +200,7 @@ std::set<std::string> AssetManager::listBackgrounds()
 
 std::set<std::string> AssetManager::listCharacterSkins()
 {
-	std::set<std::string> result = {};
+	std::set<std::string> result {};
 	for (auto bundle : m_bundleList) {
 		for (auto value : bundle->listCharacterSkins()) {
 			result.insert(value);
@@ -211,7 +211,7 @@ std::set<std::string> AssetManager::listCharacterSkins()
 
 std::set<std::string> AssetManager::listSfx()
 {
-	std::set<std::string> result = {};
+	std::set<std::string> result {};
 	for (auto bundle : m_bundleList) {
 		for (auto value : bundle->listSfx()) {
 			result.insert(value);

@@ -39,7 +39,7 @@ public:
 	// For character-specific tokens
 	std::string token2fn(const std::string& token, PuyoCharacter character);
 
-	DebugLog* m_debug = nullptr;
+	DebugLog* m_debug {};
 
 private:
 	GameAssetSettings* gameSettings;
@@ -185,7 +185,7 @@ public:
 	virtual AssetBundle* clone() = 0;
 
 	// Gives this bundle a Frontend, usually binding it to a particular game
-	virtual int init(Frontend* fe) { m_frontend = fe;return 0;};
+	virtual int init(Frontend* fe) = 0;
 
 	virtual FeImage* loadImage(std::string token, std::string custom) = 0;
 	virtual FeSound* loadSound(std::string token, std::string custom) = 0;
@@ -205,10 +205,10 @@ public:
 	virtual void reload(Frontend* fe) = 0;
 
 	bool active = false;
-	DebugLog* m_debug{};
+	DebugLog* m_debug {};
 
 protected:
-	Frontend* m_frontend{};
+	Frontend* m_frontend {};
 };
 
 class FolderAssetBundle : public AssetBundle {
@@ -239,8 +239,8 @@ public:
 	void reload(Frontend* fe) override;
 
 private:
-	TokenFnTranslator* m_translator;
-	GameAssetSettings* m_settings;
+	TokenFnTranslator* m_translator {};
+	GameAssetSettings* m_settings {};
 };
 
 } // ppvs
