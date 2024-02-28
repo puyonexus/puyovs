@@ -30,7 +30,7 @@ public:
 	void update(double t) override;
 	void draw() override;
 
-	ppvs::AssetManager* generateAM();
+	ppvs::AssetManager* createAssetManager();
 
 private:
 	GameWindow& m_window;

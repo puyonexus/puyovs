@@ -40,7 +40,7 @@ InGame::InGame(GameWindow& w, std::unique_ptr<ppvs::Game> game)
 	, m_game(std::move(game))
 	, m_frontend(new GameFrontend(m_target))
 {
-	m_game->initGame(m_frontend, generateAM());
+	m_game->initGame(m_frontend, createAssetManager());
 }
 
 InGame::~InGame() = default;
@@ -80,7 +80,7 @@ void InGame::draw()
 	m_target->present();
 }
 
-ppvs::AssetManager* InGame::generateAM()
+ppvs::AssetManager* InGame::createAssetManager()
 {
 	auto* manager = new ppvs::AssetManager(m_frontend, m_game->m_debug);
 	// TODO: add bundles automatically
