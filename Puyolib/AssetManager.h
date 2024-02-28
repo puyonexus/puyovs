@@ -24,6 +24,7 @@ public:
 	// Activation means that it's being used in a particular game
 	void activate() {activated=true;};
 	void deactivate() {activated=false;};
+	bool is_activated() {return activated;};
 
 	// Bundle management
 	int loadBundle(AssetBundle* bundle, int priority = 0); // adds Bundle, assigns Frontend

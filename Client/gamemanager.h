@@ -14,6 +14,10 @@ class GameWidget;
 class NetClient;
 class Settings;
 
+namespace ppvs {
+class GameAssetSettings;
+}
+
 // WARNING: There may only be one of this class due to a current implementation detail...
 
 class GameManager : public QObject {
@@ -25,7 +29,10 @@ public:
 	bool closeAll();
 	void exec();
 
-
+	// ppvs::AssetManger related
+	static ppvs::AssetBundle* generateDefaultBundle(std::string base_path);
+	void initAssetManagerTemplate();
+	int reloadAssetManagerTemplate();
 
 public slots:
 	void addGame(GameWidget* game);
@@ -61,6 +68,6 @@ protected:
 	NetClient* network;
 	GameAudio* audio;
 
-	ppvs::AssetManager* assetManager;
+	ppvs::AssetManager* assetManagerTemplate = nullptr;
 	ppvs::DebugLog* dbg;
 };

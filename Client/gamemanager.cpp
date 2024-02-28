@@ -1,11 +1,13 @@
 #include "gamemanager.h"
 #include "../PVS_ENet/PVS_Client.h"
+#include "../Puyolib/AssetBundle.h"
 #include "../Puyolib/Game.h"
 #include "../Puyolib/global.h"
 #include "chatwindow.h"
 #include "common.h"
 #include "gameaudio.h"
 #include "gamewidgetgl.h"
+#include "main.h"
 #include "netclient.h"
 #include "settings.h"
 #include <QApplication>
@@ -64,13 +66,14 @@ GameManager::GameManager(NetClient* network, QObject* parent)
 
 	audio = new GameAudio;
 
-	assetManager = new ppvs::AssetManager;
+	initAssetManagerTemplate();
 }
 
 GameManager::~GameManager()
 {
 	delete audio;
 	loopEnabled = false;
+	delete assetManagerTemplate;
 
 	emit exiting();
 }
@@ -94,6 +97,44 @@ void GameManager::addGame(GameWidget* game)
 
 	connect(game, &GameWidget::exiting, this, &GameManager::gameDestroyed);
 	connect(this, &GameManager::exiting, game, &GameWidget::close);
+}
+
+ppvs::AssetBundle* GameManager::generateDefaultBundle(std::string base_path)
+{
+	Settings& settings = pvsApp->settings();
+	ppvs::GameAssetSettings* assetSettings = new ppvs::GameAssetSettings();
+	assetSettings->baseAssetDir = base_path;
+	assetSettings->background = settings.string("custom", "background", "Forest").toUtf8().data();
+	assetSettings->puyo = settings.string("custom", "puyo", "Default").toUtf8().data();
+	assetSettings->sfx = settings.string("custom", "sound", "Default").toUtf8().data();
+	QStringList characters(settings.charMap());
+	for (int i = 0; i < characters.count(); i++) {
+		ppvs::PuyoCharacter ch = ppvs::PuyoCharacter(i);
+		assetSettings->characterSetup[ch] = characters.at(i).toStdString();
+	}
+	return new ppvs::FolderAssetBundle(nullptr, assetSettings);
+}
+
+void GameManager::initAssetManagerTemplate()
+{
+	assetManagerTemplate = new ppvs::AssetManager(nullptr, createDebug());
+	assert(!assetManagerTemplate->is_activated());
+
+	auto* default_bundle = generateDefaultBundle("");
+	assetManagerTemplate->loadBundle(default_bundle);
+	// TODO: solve the "/./" in file paths problems
+	auto* system_bundle = generateDefaultBundle(std::string(defaultAssetPath)+"/");
+	assetManagerTemplate->loadBundle(system_bundle);
+}
+
+int GameManager::reloadAssetManagerTemplate()
+{
+	if (assetManagerTemplate != nullptr) {
+		delete assetManagerTemplate;
+		assetManagerTemplate = nullptr;
+		initAssetManagerTemplate();
+		return assetManagerTemplate->reloadBundles();
+	}
 }
 
 ppvs::RuleSetInfo GameManager::createRules()
@@ -160,6 +201,8 @@ GameWidget* GameManager::createGame(ppvs::GameSettings* gs, const QString& roomN
 {
 	Settings& settings = pvsApp->settings();
 	NetChannelProxy* proxy = nullptr;
+
+	reloadAssetManagerTemplate();
 
 	gs->background = settings.string("custom", "background", "Forest").toUtf8().data();
 	gs->puyo = settings.string("custom", "puyo", "Default").toUtf8().data();
@@ -230,7 +273,7 @@ GameWidget* GameManager::createGame(ppvs::GameSettings* gs, const QString& roomN
 			QString("new|") + QString("%1|").arg(PVSVERSION) + QString(gs->ruleSetInfo.ruleSetType == ppvs::Rules::TSU_ONLINE ? "0" : "1"));
 	}
 
-	GameWidget* widget = new GameWidgetGL(game, proxy, audio, static_cast<QWidget*>(parent()));
+	GameWidget* widget = new GameWidgetGL(game, proxy, audio, assetManagerTemplate->clone(), static_cast<QWidget*>(parent()));
 	addGame(widget);
 
 	return widget;

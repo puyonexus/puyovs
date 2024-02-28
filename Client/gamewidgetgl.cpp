@@ -100,19 +100,21 @@ struct GameWidgetGLPriv {
 	GLWidget* gl;
 	GLExtensions ext;
 	GameAudio* audio;
+	ppvs::AssetManager* am;
 	ilib::Driver* inputDriver;
 	ppvs::FeInput inputState;
 	quint64 nextFrame;
 	bool ready;
 };
 
-GameWidgetGL::GameWidgetGL(ppvs::Game* game, NetChannelProxy* proxy, GameAudio* audio, QWidget* parent)
+GameWidgetGL::GameWidgetGL(ppvs::Game* game, NetChannelProxy* proxy, GameAudio* audio, ppvs::AssetManager* am, QWidget* parent)
 	: GameWidget(game, proxy, parent)
 	, d(new GameWidgetGLPriv)
 {
 	setAttribute(Qt::WA_DeleteOnClose);
 	d->ready = false;
 	d->audio = audio;
+	d->am = am;
 	d->inputDriver = ilib::getDriver();
 	d->inputDriver->enableEvents();
 	GlobalGLInit();
@@ -154,6 +156,7 @@ GameWidgetGL::~GameWidgetGL()
 	d->inputDriver->disableEvents();
 
 	delete d->gl;
+	delete d->am;
 	delete d;
 
 	delete mGame;
@@ -260,13 +263,8 @@ void GameWidgetGL::initialize()
 {
 	d->gl->makeCurrent();
 	auto frontend = new FrontendGL(d->gl, d->audio, d->inputState, d->ext, this);
-	auto* manager = new ppvs::AssetManager(frontend, mGame->m_debug);
-	// TODO: add bundles automatically
 
-	auto* defaultBundle = new ppvs::FolderAssetBundle(frontend, new ppvs::GameAssetSettings(mGame->m_settings));
-	manager->loadBundle(defaultBundle);
-
-	mGame->initGame(frontend, manager);
+	mGame->initGame(frontend, d->am);
 	connect(frontend, &FrontendGL::musicStateChanged, this, &GameWidgetGL::setupMusic);
 	connect(frontend, &FrontendGL::musicVolumeChanged, this, &GameWidgetGL::changeMusicVolume);
 	glEnable(GL_TEXTURE_2D);

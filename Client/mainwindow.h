@@ -19,6 +19,7 @@ class MainWindow;
 namespace ppvs {
 class Game;
 struct GameSettings;
+struct GameAssetSettings;
 struct RuleSetInfo;
 }
 

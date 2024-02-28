@@ -15,7 +15,7 @@ namespace ppvs {
 // A subset of ppvs::GameSettings for only file-related matters, is to be stored Client-wide
 class GameAssetSettings {
 public:
-	GameAssetSettings() = default;;
+	GameAssetSettings() = default;
 	explicit GameAssetSettings(GameSettings* gs);
 	std::string baseAssetDir;
 	std::string language;
@@ -147,11 +147,10 @@ private:
 		{ "imgCharName", "%base%/%charsetup%/%char%/name.png" },
 		{ "imgCharSelect", "%base%/%charsetup%/%char%/select.png" },
 		{ "imgCharIcon", "%base%/%charsetup%/%char%/icon.png" },
-
-		{ "animationCharFolder", "%base%/%charsetup%/%char%/Animation/" }
 	};
 	std::map<std::string, std::string> animTokenToPseudoFn = {
-		{ "bg", "%base%/%background%/Animation/" }
+		{ "bg", "%base%/%background%/Animation/" },
+		{ "animationCharFolder", "%base%/%charsetup%/%char%/Animation/" }
 	};
 };
 
@@ -164,7 +163,7 @@ public:
 	virtual AssetBundle* clone() = 0;
 
 	// Gives this bundle a Frontend, usually binding it to a particular game
-	virtual int init(Frontend* fe) { return 1; };
+	virtual int init(Frontend* fe) { m_frontend = fe;return 0;};
 
 	virtual FeImage* loadImage(std::string token, std::string custom) = 0;
 	virtual FeSound* loadSound(std::string token, std::string custom) = 0;
