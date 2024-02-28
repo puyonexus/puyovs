@@ -81,37 +81,37 @@ int AssetManager::unloadAll()
 	return 0;
 }
 
-FeImage* AssetManager::loadImage(const std::string& token, const std::string& custom)
+FeImage* AssetManager::loadImage(const ImageToken token, const std::string& custom)
 {
 	FeImage* target {};
 	for (auto* bundle : m_bundleList) {
-		target = bundle->loadImage(std::string(token), custom);
+		target = bundle->loadImage(token, custom);
 		if (target != nullptr && !target->error()) {
 			break;
 		}
 	}
 	if (target == nullptr || target->error()) {
-		m_debug->log("Error loading image token " + token + " custom " + custom, DebugMessageType::Error);
+		m_debug->log("Error loading image token " + toString(static_cast<int>(token)) + " custom " + custom, DebugMessageType::Error);
 	}
 	return target;
 }
 
-FeImage* AssetManager::loadImage(const std::string& token, PuyoCharacter character)
+FeImage* AssetManager::loadImage(const ImageToken token, PuyoCharacter character)
 {
 	FeImage* target {};
 	for (auto* bundle : m_bundleList) {
-		target = bundle->loadCharImage(std::string(token), character);
+		target = bundle->loadCharImage(token, character);
 		if (target != nullptr && !target->error()) {
 			break;
 		}
 	}
 	if (target == nullptr || target->error()) {
-		m_debug->log("Error loading image token " + token + " character " + std::to_string(static_cast<int>(character)), DebugMessageType::Error);
+		m_debug->log("Error loading image token " + toString(static_cast<int>(token)) + " character " + std::to_string(static_cast<int>(character)), DebugMessageType::Error);
 	}
 	return target;
 }
 
-FeSound* AssetManager::loadSound(const std::string& token, const std::string& custom)
+FeSound* AssetManager::loadSound(const SoundEffectToken token, const std::string& custom)
 {
 	FeSound* target = {};
 	for (auto* bundle : m_bundleList) {
@@ -124,12 +124,12 @@ FeSound* AssetManager::loadSound(const std::string& token, const std::string& cu
 		}
 	}
 	if (target == nullptr || target->error()) {
-		m_debug->log("Error loading sound token " + token + " custom " + custom, DebugMessageType::Error);
+		m_debug->log("Error loading sound token " + toString(static_cast<int>(token)) + " custom " + custom, DebugMessageType::Error);
 	}
 	return target;
 }
 
-FeSound* AssetManager::loadSound(const std::string& token, PuyoCharacter character)
+FeSound* AssetManager::loadSound(const SoundEffectToken token, PuyoCharacter character)
 {
 	FeSound* target = {};
 	for (auto* bundle : m_bundleList) {
@@ -141,7 +141,7 @@ FeSound* AssetManager::loadSound(const std::string& token, PuyoCharacter charact
 		}
 	}
 	if (target == nullptr || target->error()) {
-		m_debug->log("Error loading sound token " + token + " character " + std::to_string(static_cast<int>(character)), DebugMessageType::Error);
+		m_debug->log("Error loading sound token " + toString(static_cast<int>(token)) + " character " + std::to_string(static_cast<int>(character)), DebugMessageType::Error);
 	}
 	return target;
 }
@@ -161,7 +161,7 @@ std::string AssetManager::getAnimationFolder(ppvs::PuyoCharacter character)
 	return target;
 }
 
-std::string AssetManager::getAnimationFolder(std::string token, const std::string& script_name)
+std::string AssetManager::getAnimationFolder(AnimationToken token, const std::string& script_name)
 {
 	std::string target;
 	for (auto bundle : m_bundleList) {
@@ -171,7 +171,7 @@ std::string AssetManager::getAnimationFolder(std::string token, const std::strin
 		}
 	}
 	if (target.empty()) {
-		m_debug->log("Error loading animation script token " + token, DebugMessageType::Error);
+		m_debug->log("Error loading animation script token " + toString(static_cast<int>(token)), DebugMessageType::Error);
 	}
 	return target;
 }

@@ -9,6 +9,7 @@ using namespace std;
 
 namespace ppvs {
 
+
 Player::Player(const PlayerType type, const int playerNum, const int totalPlayers, Game* g)
 	: m_feverGauge(g->m_data)
 	, m_feverLight(g->m_data)
@@ -411,33 +412,33 @@ void Player::checkAllClearStart()
 }
 
 
-FeSound* Player::loadVoice(const std::string& token)
+FeSound* Player::loadVoice(const SoundEffectToken token)
 {
 	return m_currentGame->m_assetManager->loadSound(token, getCharacter());
 }
 
 void Player::initVoices()
 {
-	m_characterVoices.chain[0].setBuffer(loadVoice("charChain1"));
-	m_characterVoices.chain[1].setBuffer(loadVoice("charChain2"));
-	m_characterVoices.chain[2].setBuffer(loadVoice("charChain3"));
-	m_characterVoices.chain[3].setBuffer(loadVoice("charChain4"));
-	m_characterVoices.chain[4].setBuffer(loadVoice("charChain5"));
-	m_characterVoices.chain[5].setBuffer(loadVoice("charSpell1"));
-	m_characterVoices.chain[6].setBuffer(loadVoice("charSpell2"));
-	m_characterVoices.chain[7].setBuffer(loadVoice("charSpell3"));
-	m_characterVoices.chain[8].setBuffer(loadVoice("charSpell4"));
-	m_characterVoices.chain[9].setBuffer(loadVoice("charSpell5"));
-	m_characterVoices.chain[10].setBuffer(loadVoice("charCounter"));
-	m_characterVoices.chain[11].setBuffer(loadVoice("charCounterSpell"));
-	m_characterVoices.damage1.setBuffer(loadVoice("charDamage1"));
-	m_characterVoices.damage2.setBuffer(loadVoice("charDamage2"));
-	m_characterVoices.choose.setBuffer(loadVoice("charChoose"));
-	m_characterVoices.fever.setBuffer(loadVoice("charFever"));
-	m_characterVoices.feverSuccess.setBuffer(loadVoice("charFeverSuccess"));
-	m_characterVoices.feverFail.setBuffer(loadVoice("charFeverFail"));
-	m_characterVoices.lose.setBuffer(loadVoice("charLose"));
-	m_characterVoices.win.setBuffer(loadVoice("charWin"));
+	m_characterVoices.chain[0].setBuffer(loadVoice(SoundEffectToken::charChain1));
+	m_characterVoices.chain[1].setBuffer(loadVoice(SoundEffectToken::charChain2));
+	m_characterVoices.chain[2].setBuffer(loadVoice(SoundEffectToken::charChain3));
+	m_characterVoices.chain[3].setBuffer(loadVoice(SoundEffectToken::charChain4));
+	m_characterVoices.chain[4].setBuffer(loadVoice(SoundEffectToken::charChain5));
+	m_characterVoices.chain[5].setBuffer(loadVoice(SoundEffectToken::charSpell1));
+	m_characterVoices.chain[6].setBuffer(loadVoice(SoundEffectToken::charSpell2));
+	m_characterVoices.chain[7].setBuffer(loadVoice(SoundEffectToken::charSpell3));
+	m_characterVoices.chain[8].setBuffer(loadVoice(SoundEffectToken::charSpell4));
+	m_characterVoices.chain[9].setBuffer(loadVoice(SoundEffectToken::charSpell5));
+	m_characterVoices.chain[10].setBuffer(loadVoice(SoundEffectToken::charCounter));
+	m_characterVoices.chain[11].setBuffer(loadVoice(SoundEffectToken::charCounterSpell));
+	m_characterVoices.damage1.setBuffer(loadVoice(SoundEffectToken::charDamage1));
+	m_characterVoices.damage2.setBuffer(loadVoice(SoundEffectToken::charDamage2));
+	m_characterVoices.choose.setBuffer(loadVoice(SoundEffectToken::charChoose));
+	m_characterVoices.fever.setBuffer(loadVoice(SoundEffectToken::charFever));
+	m_characterVoices.feverSuccess.setBuffer(loadVoice(SoundEffectToken::charFeverSuccess));
+	m_characterVoices.feverFail.setBuffer(loadVoice(SoundEffectToken::charFeverFail));
+	m_characterVoices.lose.setBuffer(loadVoice(SoundEffectToken::charLose));
+	m_characterVoices.win.setBuffer(loadVoice(SoundEffectToken::charWin));
 }
 
 void Player::playerSetup(FieldProp& properties, const int playerNum, const int playerTotal)
@@ -552,7 +553,7 @@ void Player::setCharacter(PuyoCharacter character, bool show)
 	if (!show)
 		return;
 
-	m_currentCharacterSprite.setImage(m_currentGame->m_assetManager->loadImage("imgCharIcon", character));
+	m_currentCharacterSprite.setImage(m_currentGame->m_assetManager->loadImage(ImageToken::imgCharIcon, character));
 	m_currentCharacterSprite.setCenter();
 	m_currentCharacterSprite.setPosition(m_charHolderSprite.getPosition() + PosVectorFloat(1, 1) - PosVectorFloat(2, 4)); // Correct for shadow
 	m_currentCharacterSprite.setVisible(true);
@@ -560,7 +561,7 @@ void Player::setCharacter(PuyoCharacter character, bool show)
 	m_charHolderSprite.setVisible(true);
 	m_showCharacterTimer = 5 * 60;
 	for (auto& i : m_dropSet) {
-		i.setImage(m_currentGame->m_assetManager->loadImage("imgDropSet"));
+		i.setImage(m_currentGame->m_assetManager->loadImage(ImageToken::imgDropSet));
 	}
 	setDropSetSprite(static_cast<int>(m_currentCharacterSprite.getX()), static_cast<int>(m_currentCharacterSprite.getY() + 60.f * m_globalScale), m_character);
 }

@@ -38,20 +38,20 @@ public:
 
 	// Attempts to load the image with the token (see FolderAssetBundle in AssetBundle.h)
 	// parameter `custom` will replace %custom% tag in pseudo-filename
-	FeImage* loadImage(const std::string& token,const std::string& custom = "");
+	FeImage* loadImage(const ImageToken token,const std::string& custom = "");
 
 	// Attempts to load the sound with the token (see FolderAssetBundle in AssetBundle.h)
 	// parameter `custom` will replace %custom% tag in pseudo-filename
-	FeSound* loadSound(const std::string& token,const std::string& custom = "");
+	FeSound* loadSound(const SoundEffectToken token,const std::string& custom = "");
 
 	// Attempts to load the character-based image with the token (see FolderAssetBundle in AssetBundle.h)
-	FeImage* loadImage(const std::string& token, PuyoCharacter character);
+	FeImage* loadImage(const ImageToken token, PuyoCharacter character);
 	// Attempts to load the character-based sound with the token (see FolderAssetBundle in AssetBundle.h)
-	FeSound* loadSound(const std::string& token, PuyoCharacter character);
+	FeSound* loadSound(const SoundEffectToken token, PuyoCharacter character);
 
 	// Attempts to locate a viable folder for animation files
 	// Takes a token and filename of script
-	std::string getAnimationFolder(std::string token, const std::string& script_name = "animation.xml");
+	std::string getAnimationFolder(AnimationToken token, const std::string& script_name = "animation.xml");
 	// Attempts to locate a viable folder for animation files
 	// Takes a character, setup is assumed
 	std::string getAnimationFolder(ppvs::PuyoCharacter character);

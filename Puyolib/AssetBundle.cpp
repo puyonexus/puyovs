@@ -43,16 +43,19 @@ void TokenFnTranslator::reload()
 		// { "%custom%", custom_value } // Specifier for menus, animations
 	};
 }
+std::string TokenFnTranslator::token2fn(const SoundEffectToken token, const std::string& custom) {
+	return token2fn(sndTokenToPseudoFn[token],custom);
+}
+std::string TokenFnTranslator::token2fn(const ImageToken token, const std::string& custom) {
+	return token2fn(imgTokenToPseudoFn[token],custom);
+}
+std::string TokenFnTranslator::token2fn(const AnimationToken token, const std::string& custom) {
+	return token2fn(animTokenToPseudoFn[token],custom);
+}
 
 std::string TokenFnTranslator::token2fn(const std::string& token, const std::string& custom)
 {
-	std::string result = sndTokenToPseudoFn[token]; // Matches with table
-	if (result == std::string("") || result == token) {
-		result = imgTokenToPseudoFn[token];
-	}
-	if (result == std::string("") || result == token) {
-		result = animTokenToPseudoFn[token];
-	}
+	std::string result = token;
 
 	for (const auto& entry : specialTokens) {
 		size_t pos = result.find(entry.first); // First occurence
@@ -71,6 +74,16 @@ std::string TokenFnTranslator::token2fn(const std::string& token, const std::str
 	return result;
 }
 // FIXME: duplicated code
+std::string TokenFnTranslator::token2fn(const SoundEffectToken token, const  PuyoCharacter character) {
+	return token2fn(sndTokenToPseudoFn[token],character);
+}
+std::string TokenFnTranslator::token2fn(const ImageToken token, const  PuyoCharacter character) {
+	return token2fn(imgTokenToPseudoFn[token],character);
+}
+std::string TokenFnTranslator::token2fn(const AnimationToken token, const  PuyoCharacter character) {
+	return token2fn(animTokenToPseudoFn[token],character);
+}
+
 std::string TokenFnTranslator::token2fn(const std::string& token, PuyoCharacter character)
 {
 
@@ -109,23 +122,23 @@ int FolderAssetBundle::init(ppvs::Frontend* fe)
 }
 
 // Loads the texture, returns whether the load was successful (for files, whether the file exists and loads)
-FeImage* FolderAssetBundle::loadImage(std::string token, std::string custom = "")
+FeImage* FolderAssetBundle::loadImage(ImageToken token, std::string custom = "")
 {
 	return m_frontend->loadImage(m_translator->token2fn(token, custom));
 }
 
 // Loads the sound, returns whether the load was successful (for files, whether the file exists and loads)
-FeSound* FolderAssetBundle::loadSound(std::string token, std::string custom)
+FeSound* FolderAssetBundle::loadSound(SoundEffectToken token, std::string custom)
 {
 	return m_frontend->loadSound(m_translator->token2fn(token, custom));
 }
 
-FeImage* FolderAssetBundle::loadCharImage(std::string token, PuyoCharacter character)
+FeImage* FolderAssetBundle::loadCharImage(ImageToken token, PuyoCharacter character)
 {
 	return m_frontend->loadImage(m_translator->token2fn(token, character));
 }
 
-FeSound* FolderAssetBundle::loadCharSound(std::string token, PuyoCharacter character)
+FeSound* FolderAssetBundle::loadCharSound(SoundEffectToken token, PuyoCharacter character)
 {
 	return m_frontend->loadSound(m_translator->token2fn(token, character));
 }
@@ -139,11 +152,11 @@ bool isPossiblyAnimation(std::string fname, std::string script_name)
 
 std::string FolderAssetBundle::getCharAnimationsFolder(ppvs::PuyoCharacter character)
 {
-	std::string dir = m_translator->token2fn("animationCharFolder", character);
+	std::string dir = m_translator->token2fn(AnimationToken::characterPack, character);
 	return isPossiblyAnimation(dir, "animation.xml") ? dir : "";
 }
 
-std::string FolderAssetBundle::getAnimationFolder(std::string token, std::string script_name)
+std::string FolderAssetBundle::getAnimationFolder(AnimationToken token, std::string script_name)
 {
 	std::string dir = m_translator->token2fn(token);
 	return isPossiblyAnimation(dir, script_name) ? dir : "";
@@ -165,7 +178,7 @@ void FolderAssetBundle::reload()
 std::list<std::string> FolderAssetBundle::listPuyoSkins()
 {
 	std::list<std::string> new_list;
-	for (auto folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%") + kFolderUserPuyo)) {
+	for (auto folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%/") + kFolderUserPuyo)) {
 		new_list.push_back((folder.path().stem()).string());
 	}
 	return new_list;
@@ -174,7 +187,7 @@ std::list<std::string> FolderAssetBundle::listPuyoSkins()
 std::list<std::string> FolderAssetBundle::listBackgrounds()
 {
 	std::list<std::string> new_list;
-	for (auto folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%") + kFolderUserBackgrounds)) {
+	for (auto folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%/") + kFolderUserBackgrounds)) {
 		if (folder.is_directory()) {
 			new_list.push_back((folder.path().filename()).string());
 		}
@@ -185,7 +198,7 @@ std::list<std::string> FolderAssetBundle::listBackgrounds()
 std::list<std::string> FolderAssetBundle::listSfx()
 {
 	std::list<std::string> new_list;
-	for (auto folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%") + kFolderUserSounds)) {
+	for (auto folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%/") + kFolderUserSounds)) {
 		if (folder.is_directory()) {
 			new_list.push_back((folder.path().filename()).string());
 		}
@@ -196,7 +209,7 @@ std::list<std::string> FolderAssetBundle::listSfx()
 std::list<std::string> FolderAssetBundle::listCharacterSkins()
 {
 	std::list<std::string> new_list;
-	for (auto folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%") + kFolderUserCharacter)) {
+	for (auto folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%/") + kFolderUserCharacter)) {
 		if (folder.is_directory()) {
 			new_list.push_back((folder.path().filename()).string());
 		}

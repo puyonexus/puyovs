@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "../PVS_ENet/PVS_Channel.h"
 #include "../PVS_ENet/PVS_Client.h"
+#include "AssetBundle.h"
 #include <cstdio>
 #include <ctime>
 #include <fstream>
@@ -142,42 +143,42 @@ void Game::loadSounds() const
 {
 	Sounds& snd = m_data->snd;
 	m_debug->log("Loading the sound", DebugMessageType::Debug);
-	setBuffer(snd.chain[0], m_assetManager->loadSound("chain1"));
-	setBuffer(snd.chain[1], m_assetManager->loadSound("chain2"));
-	setBuffer(snd.chain[2], m_assetManager->loadSound("chain3"));
-	setBuffer(snd.chain[3], m_assetManager->loadSound("chain4"));
-	setBuffer(snd.chain[4], m_assetManager->loadSound("chain5"));
-	setBuffer(snd.chain[5], m_assetManager->loadSound("chain6"));
-	setBuffer(snd.chain[6], m_assetManager->loadSound("chain7"));
-	setBuffer(snd.allClearDrop, m_assetManager->loadSound("allClearDrop"));
-	setBuffer(snd.drop, m_assetManager->loadSound("drop"));
-	setBuffer(snd.fever, m_assetManager->loadSound("fever"));
-	setBuffer(snd.feverLight, m_assetManager->loadSound("feverLight"));
-	setBuffer(snd.feverTimeCount, m_assetManager->loadSound("feverTimeCount"));
-	setBuffer(snd.feverTimeEnd, m_assetManager->loadSound("feverTimeEnd"));
-	setBuffer(snd.go, m_assetManager->loadSound("go"));
-	setBuffer(snd.heavy, m_assetManager->loadSound("heavy"));
-	setBuffer(snd.hit, m_assetManager->loadSound("hit"));
-	setBuffer(snd.lose, m_assetManager->loadSound("lose"));
-	setBuffer(snd.move, m_assetManager->loadSound("move"));
-	setBuffer(snd.nuisanceHitL, m_assetManager->loadSound("nuisanceHitL"));
-	setBuffer(snd.nuisanceHitM, m_assetManager->loadSound("nuisanceHitM"));
-	setBuffer(snd.nuisanceHitS, m_assetManager->loadSound("nuisanceHitS"));
-	setBuffer(snd.nuisanceL, m_assetManager->loadSound("nuisanceL"));
-	setBuffer(snd.nuisanceS, m_assetManager->loadSound("nuisanceS"));
-	setBuffer(snd.ready, m_assetManager->loadSound("ready"));
-	setBuffer(snd.rotate, m_assetManager->loadSound("rotate"));
-	setBuffer(snd.win, m_assetManager->loadSound("win"));
-	setBuffer(snd.decide, m_assetManager->loadSound("decide"));
-	setBuffer(snd.cancel, m_assetManager->loadSound("cancel"));
-	setBuffer(snd.cursor, m_assetManager->loadSound("cursor"));
+	setBuffer(snd.chain[0], m_assetManager->loadSound(SoundEffectToken::chain1));
+	setBuffer(snd.chain[1], m_assetManager->loadSound(SoundEffectToken::chain2));
+	setBuffer(snd.chain[2], m_assetManager->loadSound(SoundEffectToken::chain3));
+	setBuffer(snd.chain[3], m_assetManager->loadSound(SoundEffectToken::chain4));
+	setBuffer(snd.chain[4], m_assetManager->loadSound(SoundEffectToken::chain5));
+	setBuffer(snd.chain[5], m_assetManager->loadSound(SoundEffectToken::chain6));
+	setBuffer(snd.chain[6], m_assetManager->loadSound(SoundEffectToken::chain7));
+	setBuffer(snd.allClearDrop, m_assetManager->loadSound(SoundEffectToken::allClearDrop));
+	setBuffer(snd.drop, m_assetManager->loadSound(SoundEffectToken::drop));
+	setBuffer(snd.fever, m_assetManager->loadSound(SoundEffectToken::fever));
+	setBuffer(snd.feverLight, m_assetManager->loadSound(SoundEffectToken::feverLight));
+	setBuffer(snd.feverTimeCount, m_assetManager->loadSound(SoundEffectToken::feverTimeCount));
+	setBuffer(snd.feverTimeEnd, m_assetManager->loadSound(SoundEffectToken::feverTimeEnd));
+	setBuffer(snd.go, m_assetManager->loadSound(SoundEffectToken::go));
+	setBuffer(snd.heavy, m_assetManager->loadSound(SoundEffectToken::heavy));
+	setBuffer(snd.hit, m_assetManager->loadSound(SoundEffectToken::hit));
+	setBuffer(snd.lose, m_assetManager->loadSound(SoundEffectToken::lose));
+	setBuffer(snd.move, m_assetManager->loadSound(SoundEffectToken::move));
+	setBuffer(snd.nuisanceHitL, m_assetManager->loadSound(SoundEffectToken::nuisanceHitL));
+	setBuffer(snd.nuisanceHitM, m_assetManager->loadSound(SoundEffectToken::nuisanceHitM));
+	setBuffer(snd.nuisanceHitS, m_assetManager->loadSound(SoundEffectToken::nuisanceHitS));
+	setBuffer(snd.nuisanceL, m_assetManager->loadSound(SoundEffectToken::nuisanceL));
+	setBuffer(snd.nuisanceS, m_assetManager->loadSound(SoundEffectToken::nuisanceS));
+	setBuffer(snd.ready, m_assetManager->loadSound(SoundEffectToken::ready));
+	setBuffer(snd.rotate, m_assetManager->loadSound(SoundEffectToken::rotate));
+	setBuffer(snd.win, m_assetManager->loadSound(SoundEffectToken::win));
+	setBuffer(snd.decide, m_assetManager->loadSound(SoundEffectToken::decide));
+	setBuffer(snd.cancel, m_assetManager->loadSound(SoundEffectToken::cancel));
+	setBuffer(snd.cursor, m_assetManager->loadSound(SoundEffectToken::cursor));
 }
 
 // Load images (user defined)
 void Game::loadImages() const
 {
 	// Load puyo
-	m_data->imgPuyo = m_assetManager->loadImage("puyo");
+	m_data->imgPuyo = m_assetManager->loadImage(ImageToken::puyo);
 
 	// Check rotation center of quadruplet
 	if (m_data->imgPuyo && !m_data->imgPuyo->error() && m_data->imgPuyo->height() > 10) {
@@ -191,66 +192,66 @@ void Game::loadImages() const
 	m_data->imgPuyo->setFilter(FilterType::LinearFilter);
 
 	// Lights
-	m_data->imgLight = m_assetManager->loadImage("imgLight");
-	m_data->imgLightS = m_assetManager->loadImage("imgLightS");
-	m_data->imgLightHit = m_assetManager->loadImage("imgLightHit");
-	m_data->imgFSparkle = m_assetManager->loadImage("imgFSparkle");
-	m_data->imgFLight = m_assetManager->loadImage("imgFLight");
-	m_data->imgFLightHit = m_assetManager->loadImage("imgFLightHit");
+	m_data->imgLight = m_assetManager->loadImage(ImageToken::imgLight);
+	m_data->imgLightS = m_assetManager->loadImage(ImageToken::imgLightS);
+	m_data->imgLightHit = m_assetManager->loadImage(ImageToken::imgLightHit);
+	m_data->imgFSparkle = m_assetManager->loadImage(ImageToken::imgFSparkle);
+	m_data->imgFLight = m_assetManager->loadImage(ImageToken::imgFLight);
+	m_data->imgFLightHit = m_assetManager->loadImage(ImageToken::imgFLightHit);
 
-	m_data->imgTime = m_assetManager->loadImage("imgTime");
+	m_data->imgTime = m_assetManager->loadImage(ImageToken::imgTime);
 
 	// Menu
 	for (int i = 0; i < 3; ++i) {
 		for (int j = 0; j < 2; ++j) {
-			m_data->imgMenu[i][j] = m_assetManager->loadImage("imgMenu", toString(i)+ toString(j));
+			m_data->imgMenu[i][j] = m_assetManager->loadImage(ImageToken::imgMenu, toString(i) + toString(j));
 		}
 	}
 
 	// Backgrounds
-	m_data->imgBackground = m_assetManager->loadImage("imgBackground");
-	m_data->imgFieldFever = m_assetManager->loadImage("imgFieldFever");
+	m_data->imgBackground = m_assetManager->loadImage(ImageToken::imgBackground);
+	m_data->imgFieldFever = m_assetManager->loadImage(ImageToken::imgFieldFever);
 	// Background of next puyo
-	m_data->imgNextPuyoBackgroundR = m_assetManager->loadImage("imgNextPuyoBackgroundR");
-	m_data->imgNextPuyoBackgroundL = m_assetManager->loadImage("imgNextPuyoBackgroundL");
+	m_data->imgNextPuyoBackgroundR = m_assetManager->loadImage(ImageToken::imgNextPuyoBackgroundR);
+	m_data->imgNextPuyoBackgroundL = m_assetManager->loadImage(ImageToken::imgNextPuyoBackgroundL);
 
 	if (!useShaders) {
 		for (int i = 0; i < 30; ++i) {
-			m_data->imgFeverBack[i] = m_assetManager->loadImage("imgFeverBack", toString(i));
+			m_data->imgFeverBack[i] = m_assetManager->loadImage(ImageToken::imgFeverBack, toString(i));
 		}
 	}
 
 	// Load default fields. Custom fields should be loaded per character
-	m_data->imgField1 = m_assetManager->loadImage("imgField1");
-	m_data->imgField2 = m_assetManager->loadImage("imgField2");
-	m_data->imgBorder1 = m_assetManager->loadImage("imgBorder1");
-	m_data->imgBorder2 = m_assetManager->loadImage("imgBorder2");
-	m_data->imgPlayerBorder = m_assetManager->loadImage("imgPlayerBorder");
-	m_data->imgSpice = m_assetManager->loadImage("imgSpice");
+	m_data->imgField1 = m_assetManager->loadImage(ImageToken::imgField1);
+	m_data->imgField2 = m_assetManager->loadImage(ImageToken::imgField2);
+	m_data->imgBorder1 = m_assetManager->loadImage(ImageToken::imgBorder1);
+	m_data->imgBorder2 = m_assetManager->loadImage(ImageToken::imgBorder2);
+	m_data->imgPlayerBorder = m_assetManager->loadImage(ImageToken::imgPlayerBorder);
+	m_data->imgSpice = m_assetManager->loadImage(ImageToken::imgSpice);
 
 	// Other
-	m_data->imgScore = m_assetManager->loadImage("imgScore");
-	m_data->imgAllClear = m_assetManager->loadImage("imgAllClear");
-	m_data->imgLose = m_assetManager->loadImage("imgLose");
-	m_data->imgWin = m_assetManager->loadImage("imgWin");
-	m_data->imgFeverGauge = m_assetManager->loadImage("imgFeverGauge");
-	m_data->imgSeconds = m_assetManager->loadImage("imgSeconds");
-	m_data->imgCharHolder = m_assetManager->loadImage("imgCharHolder");
-	m_data->imgNameHolder = m_assetManager->loadImage("imgNameHolder");
-	m_data->imgBlack = m_assetManager->loadImage("imgBlack");
-	m_data->imgDropSet = m_assetManager->loadImage("imgDropSet");
-	m_data->imgChain = m_assetManager->loadImage("imgChain");
-	m_data->imgCheckMark = m_assetManager->loadImage("imgCheckMark");
-	m_data->imgPlayerCharSelect = m_assetManager->loadImage("imgPlayerCharSelect");
+	m_data->imgScore = m_assetManager->loadImage(ImageToken::imgScore);
+	m_data->imgAllClear = m_assetManager->loadImage(ImageToken::imgAllClear);
+	m_data->imgLose = m_assetManager->loadImage(ImageToken::imgLose);
+	m_data->imgWin = m_assetManager->loadImage(ImageToken::imgWin);
+	m_data->imgFeverGauge = m_assetManager->loadImage(ImageToken::imgFeverGauge);
+	m_data->imgSeconds = m_assetManager->loadImage(ImageToken::imgSeconds);
+	m_data->imgCharHolder = m_assetManager->loadImage(ImageToken::imgCharHolder);
+	m_data->imgNameHolder = m_assetManager->loadImage(ImageToken::imgNameHolder);
+	m_data->imgBlack = m_assetManager->loadImage(ImageToken::imgBlack);
+	m_data->imgDropSet = m_assetManager->loadImage(ImageToken::imgDropSet);
+	m_data->imgChain = m_assetManager->loadImage(ImageToken::imgChain);
+	m_data->imgCheckMark = m_assetManager->loadImage(ImageToken::imgCheckMark);
+	m_data->imgPlayerCharSelect = m_assetManager->loadImage(ImageToken::imgPlayerCharSelect);
 
 	for (int i = 0; i < kNumCharacters; ++i) {
-		m_data->imgCharField[i] = m_assetManager->loadImage("imgCharField", static_cast<PuyoCharacter>(i));
-		m_data->imgCharSelect[i] = m_assetManager->loadImage("imgCharSelect", static_cast<PuyoCharacter>(i));
-		m_data->imgCharName[i] = m_assetManager->loadImage("imgCharName", static_cast<PuyoCharacter>(i));
-		m_data->imgSelect[i] = m_assetManager->loadImage("imgCharSelect", static_cast<PuyoCharacter>(i));
+		m_data->imgCharField[i] = m_assetManager->loadImage(ImageToken::imgCharField, static_cast<PuyoCharacter>(i));
+		m_data->imgCharSelect[i] = m_assetManager->loadImage(ImageToken::imgCharSelect, static_cast<PuyoCharacter>(i));
+		m_data->imgCharName[i] = m_assetManager->loadImage(ImageToken::imgCharName, static_cast<PuyoCharacter>(i));
+		m_data->imgSelect[i] = m_assetManager->loadImage(ImageToken::imgCharSelect, static_cast<PuyoCharacter>(i));
 	}
 
-	m_data->imgPlayerNumber = m_assetManager->loadImage("imgPlayerNumber");
+	m_data->imgPlayerNumber = m_assetManager->loadImage(ImageToken::imgPlayerNumber);
 }
 
 void Game::initPlayers()
@@ -319,8 +320,8 @@ void Game::initGame(Frontend* f, AssetManager* as_mgr)
 	m_timerEndMatch = 0;
 
 	// Initialize readygo animation
-	m_readyGoObj.init(m_data, PosVectorFloat(320, 240), 1, m_assetManager->getAnimationFolder("bg", "ready.xml"), "ready.xml", 3 * 60);
-	m_backgroundAnimation.init(m_data, PosVectorFloat(320, 240), 1,m_assetManager->getAnimationFolder("bg"), "animation.xml", 30 * 60);
+	m_readyGoObj.init(m_data, PosVectorFloat(320, 240), 1, m_assetManager->getAnimationFolder(AnimationToken::bg, "ready.xml"), "ready.xml", 3 * 60);
+	m_backgroundAnimation.init(m_data, PosVectorFloat(320, 240), 1, m_assetManager->getAnimationFolder(AnimationToken::bg), "animation.xml", 30 * 60);
 	m_backgroundAnimation.prepareAnimation("background");
 
 	// Other stuff
