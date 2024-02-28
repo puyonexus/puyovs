@@ -115,6 +115,7 @@ GameWidgetGL::GameWidgetGL(ppvs::Game* game, NetChannelProxy* proxy, GameAudio* 
 	setAttribute(Qt::WA_DeleteOnClose);
 	d->ready = false;
 	d->audio = audio;
+    // TODO: possibly should use a smart pointer with a move here instead
 	d->am = am;
 	d->inputDriver = ilib::getDriver();
 	d->inputDriver->enableEvents();
