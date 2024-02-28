@@ -31,7 +31,11 @@ add_library(Puyolib
     RNG/MersenneTwister.cpp
     RNG/PuyoRng.cpp
     DebugLog.cpp
-    DebugLog.h AssetManager.cpp AssetManager.h AssetBundle.cpp AssetBundle.h)
+    DebugLog.h
+    AssetManager.cpp
+    AssetManager.h
+    AssetBundle.cpp
+    AssetBundle.h)
 
 target_compile_features(Puyolib PUBLIC cxx_std_17)
 
