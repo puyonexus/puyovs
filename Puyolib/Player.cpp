@@ -1851,7 +1851,7 @@ void Player::checkWinner()
 void Player::setLose()
 {
 	m_currentGame->m_currentRuleSet->onLose(this);
-	m_characterAnimation.prepareAnimation("lose");
+	//m_characterAnimation.prepareAnimation("lose"); // moved to Phase 60
 
 	// Play lose sound sound
 	int activeplayers = 0;
@@ -1889,6 +1889,7 @@ void Player::loseGame()
 
 	if (m_loseWinTimer == 60) {
 		m_characterVoices.lose.play(m_data);
+		m_characterAnimation.prepareAnimation("lose");
 	}
 
 	// Online: wait for confirm message from everyone
