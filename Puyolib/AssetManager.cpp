@@ -55,17 +55,17 @@ int AssetManager::deleteBundle(ppvs::AssetBundle* bundle)
 	return false;
 }
 
-FeImage* AssetManager::loadImage(const std::string& token)
+FeImage* AssetManager::loadImage(const std::string& token,const std::string& custom)
 {
 	FeImage* target = nullptr;
 	for (auto* bundle : m_bundleList) {
-		target = bundle->loadImage(std::string(token));
+		target = bundle->loadImage(std::string(token), custom);
 		if (target != nullptr && !target->error()) {
 			break;
 		}
 	}
 	if (target == nullptr || target->error()) {
-		m_debug->log("Error loading image token " + token, DebugMessageType::Error);
+		m_debug->log("Error loading image token " + token+" custom "+custom, DebugMessageType::Error);
 	}
 	return target;
 }
@@ -86,11 +86,11 @@ FeImage* AssetManager::loadCharImage(const std::string& token, PuyoCharacter cha
 	return target;
 }
 
-FeSound* AssetManager::loadSound(const std::string& token)
+FeSound* AssetManager::loadSound(const std::string& token,const std::string& custom)
 {
 	FeSound* target = nullptr;
 	for (auto* bundle : m_bundleList) {
-		target = bundle->loadSound(token);
+		target = bundle->loadSound(token, custom);
 		if (!target->error()) {
 			// target->play();
 			break;
@@ -99,7 +99,7 @@ FeSound* AssetManager::loadSound(const std::string& token)
 		}
 	}
 	if (target == nullptr || target->error()) {
-		m_debug->log("Error loading sound token " + token, DebugMessageType::Error);
+		m_debug->log("Error loading sound token " + token+" custom "+custom, DebugMessageType::Error);
 	}
 	return target;
 }
@@ -118,22 +118,6 @@ FeSound* AssetManager::loadCharSound(const std::string& token, PuyoCharacter cha
 	}
 	if (target == nullptr || target->error()) {
 		m_debug->log("Error loading sound token " + token + " character " + std::to_string(static_cast<int>(character)), DebugMessageType::Error);
-	}
-	return target;
-}
-FeImage* AssetManager::loadCharAnimationSprite(std::string filename, PuyoCharacter character)
-{
-	FeImage* target = nullptr;
-	for (auto bundle : m_bundleList) {
-		target = bundle->loadCharAnimationSprite(filename, character);
-		if (target != nullptr && !target->error()) {
-			break;
-		} else {
-			target = nullptr;
-		}
-	}
-	if (target == nullptr || target->error()) {
-		m_debug->log("Error loading animation file " + filename + " character " + std::to_string(static_cast<int>(character)), DebugMessageType::Error);
 	}
 	return target;
 }

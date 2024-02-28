@@ -12,10 +12,11 @@
 
 namespace ppvs {
 
+// A subset of ppvs::GameSettings for only file-related matters, is to be stored Client-wide
 class GameAssetSettings {
 public:
-	GameAssetSettings() {};
-	GameAssetSettings(GameSettings* gs);
+	GameAssetSettings() = default;;
+	explicit GameAssetSettings(GameSettings* gs);
 	std::string baseAssetDir;
 	std::string language;
 	std::string background;
@@ -24,6 +25,8 @@ public:
 	std::map<PuyoCharacter, std::string> characterSetup;
 };
 
+// The Token-filename translator converts universal tokens and transforms them into legacy filenames
+// This is not to be used unless legacy parity is required
 class TokenFnTranslator {
 public:
 	explicit TokenFnTranslator(GameAssetSettings* aS);
@@ -31,7 +34,9 @@ public:
 
 	void reload();
 
-	std::string token2fn(const std::string& token);
+	// For regular (global) tokens
+	std::string token2fn(const std::string& token, const std::string& custom = "");
+	// For character-specific tokens
 	std::string token2fn(const std::string& token, PuyoCharacter character);
 
 	DebugLog* m_debug = nullptr;
@@ -104,10 +109,11 @@ private:
 
 	std::map<std::string, std::string> imgTokenToPseudoFn = {
 		{ "puyo", "%base%/%puyo%.png" },
+		{ "imgMenu", "%base%/Data/Menu/menu%custom%.png" },
 		{ "imgLight", "%base%/Data/Light.png" },
 		{ "imgLightS", "%base%/Data/Light_s.png" },
 		{ "imgLightHit", "%base%/Data/Light_hit.png" },
-		{ "imgFSparkle", "%base%/Data/CharSelect/fsparkle.png" },
+		{ "imgFSparkle", "%base%/Data/fsparkle.png" },
 		{ "imgFLight", "%base%/Data/fLight.png" },
 		{ "imgFLightHit", "%base%/Data/fLight_hit.png" },
 		{ "imgTime", "%base%/%background%/time.png" },
@@ -115,6 +121,7 @@ private:
 		{ "imgFieldFever", "%base%/%background%/ffield.png" },
 		{ "imgNextPuyoBackgroundR", "%base%/%background%/nextR.png" },
 		{ "imgNextPuyoBackgroundL", "%base%/%background%/nextL.png" },
+		{ "imgFeverBack", "%base%/Data/Fever/f%custom%.png" },
 		{ "imgField1", "%base%/%background%/field1.png" },
 		{ "imgField2", "%base%/%background%/field2.png" },
 		{ "imgBorder1", "%base%/%background%/border1.png" },
@@ -156,15 +163,14 @@ public:
 	~AssetBundle() = default;
 	virtual AssetBundle* clone() = 0;
 
+	// Gives this bundle a Frontend, usually binding it to a particular game
 	virtual int init(Frontend* fe) { return 1; };
 
-	virtual FeImage* loadImage(std::string token) = 0;
-	virtual FeSound* loadSound(std::string token) = 0;
-	virtual int loadAnimations(Animation* target, std::string token) = 0;
+	virtual FeImage* loadImage(std::string token, std::string custom) = 0;
+	virtual FeSound* loadSound(std::string token, std::string custom) = 0;
 
 	virtual FeImage* loadCharImage(std::string token, PuyoCharacter character) = 0;
 	virtual FeSound* loadCharSound(std::string token, PuyoCharacter character) = 0;
-	virtual FeImage* loadCharAnimationSprite(std::string filename, PuyoCharacter character) = 0;
 	virtual std::string getCharAnimationsFolder(PuyoCharacter character) = 0;
 	virtual std::string getAnimationFolder(std::string token, std::string script_name) = 0;
 
@@ -174,6 +180,7 @@ public:
 	virtual std::list<std::string> listCharacterSkins() = 0;
 
 	virtual void reload() = 0;
+	// Reloads this bundle and gives it a Frontend, usually binding it to a particular game
 	virtual void reload(Frontend* fe) = 0;
 
 	bool active = false;
@@ -191,16 +198,15 @@ public:
 	AssetBundle* clone() override;
 	int init(Frontend* fe) override;
 
-	FeImage* loadImage(std::string token) override;
-	FeSound* loadSound(std::string token) override;
-
-	int loadAnimations(Animation* target, std::string token) override;
+	FeImage* loadImage(std::string token, std::string custom) override;
+	FeSound* loadSound(std::string token, std::string custom) override;
 
 	FeImage* loadCharImage(std::string token, PuyoCharacter character) override;
 	FeSound* loadCharSound(std::string token, PuyoCharacter character) override;
-	FeImage* loadCharAnimationSprite(std::string filename, PuyoCharacter character) override;
 
+	// Returns "" if invalid, otherwise a possible candidate for animation
 	std::string getCharAnimationsFolder(PuyoCharacter character) override;
+	// Returns "" if invalid, otherwise a possible candidate for animation
 	std::string getAnimationFolder(std::string token, std::string script_name) override;
 
 	std::list<std::string> listPuyoSkins() override;

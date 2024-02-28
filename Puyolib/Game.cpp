@@ -203,10 +203,7 @@ void Game::loadImages() const
 	// Menu
 	for (int i = 0; i < 3; ++i) {
 		for (int j = 0; j < 2; ++j) {
-			// Safe (because i/j have defined ranges)
-			char buffer[128];
-			sprintf(buffer, "Data/Menu/menu%i%i.png", i, j);
-			m_data->imgMenu[i][j] = m_data->front->loadImage(m_baseAssetDir + buffer);
+			m_data->imgMenu[i][j] = m_assetManager->loadImage("imgMenu", toString(i)+ toString(j));
 		}
 	}
 
@@ -219,7 +216,7 @@ void Game::loadImages() const
 
 	if (!useShaders) {
 		for (int i = 0; i < 30; ++i) {
-			m_data->imgFeverBack[i] = m_data->front->loadImage(m_baseAssetDir + std::string("Data/Fever/f" + toString(i) + ".png").c_str());
+			m_data->imgFeverBack[i] = m_assetManager->loadImage("imgFeverBack", toString(i));
 		}
 	}
 

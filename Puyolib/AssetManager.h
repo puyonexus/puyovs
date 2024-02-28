@@ -17,36 +17,43 @@ public:
 	AssetManager(Frontend* fe, DebugLog* dbg);
 	~AssetManager();
 
+	// Creates an unactivated clone of the current manager
 	AssetManager* clone();
 	void init(Frontend* fe, DebugLog* dbg);
+
+	// Activation means that it's being used in a particular game
+	void activate() {activated=true;};
+	void deactivate() {activated=false;};
 
 	// Bundle management
 	int loadBundle(AssetBundle* bundle, int priority = 0); // adds Bundle, assigns Frontend
 	int deleteBundle(AssetBundle* bundle); // This function frees bundle
 
-	// Drop-in replacements for ppvs::Game functions
-	int loadGameSounds(Sounds* soundObject);
-	int loadGameImages(GameData* gD);
+	// Attempts to load the image with the token (see FolderAssetBundle in AssetBundle.h)
+	// parameter `custom` will replace %custom% tag in pseudo-filename
+	FeImage* loadImage(const std::string& token,const std::string& custom = "");
 
-	// Token-based loaders, useful for single loads
-	FeImage* loadImage(const std::string& token);
-	FeSound* loadSound(const std::string& token);
+	// Attempts to load the sound with the token (see FolderAssetBundle in AssetBundle.h)
+	// parameter `custom` will replace %custom% tag in pseudo-filename
+	FeSound* loadSound(const std::string& token,const std::string& custom = "");
 
+	// Attempts to load the character-based image with the token (see FolderAssetBundle in AssetBundle.h)
 	FeImage* loadCharImage(const std::string& token, PuyoCharacter character);
+	// Attempts to load the character-based sound with the token (see FolderAssetBundle in AssetBundle.h)
 	FeSound* loadCharSound(const std::string& token, PuyoCharacter character);
 
-	FeImage* loadCharAnimationSprite(std::string filename, PuyoCharacter character);
-	std::string getCharAnimationsFolder(ppvs::PuyoCharacter character);
+	// Attempts to locate a viable folder for animation files
+	// Takes a token and filename of script
 	std::string getAnimationFolder(std::string token, const std::string& script_name = "animation.xml");
+	// Attempts to locate a viable folder for animation files
+	// Takes a character, setup is assumed
+	std::string getCharAnimationsFolder(ppvs::PuyoCharacter character);
 
-	int initAnimations(Animation* anim, std::string token);
-	int initCharAnimations(Animation* anim, PuyoCharacter character);
-
+	// Reloads the setup of all available bundles
+	// Assumes that you still have access to the setup data objects of each bundle
 	int reloadBundles();
-	int reload(Frontend* frontend);
-	;
 
-	// Listeners for menus
+	// Iterators for menus
 	std::set<std::string> listPuyoSkins();
 	std::set<std::string> listBackgrounds();
 	std::set<std::string> listSfx();
@@ -58,7 +65,7 @@ protected:
 	std::list<AssetBundle*> m_bundleList;
 	Frontend* m_front = nullptr;
 	DebugLog* dbg = nullptr;
-	bool activated = 0;
+	bool activated = false;
 };
 
 } // ppvs

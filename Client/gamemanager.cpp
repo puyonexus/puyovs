@@ -63,6 +63,8 @@ GameManager::GameManager(NetClient* network, QObject* parent)
 		this, &GameManager::updateAllControls);
 
 	audio = new GameAudio;
+
+	assetManager = new ppvs::AssetManager;
 }
 
 GameManager::~GameManager()
