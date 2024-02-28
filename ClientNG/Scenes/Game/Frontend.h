@@ -54,7 +54,6 @@ public:
 
 	void setInputState(ppvs::FeInput inputState);
 
-
 private:
 	alib::Device* m_audioDevice;
 	std::map<const char*,ppvs::FeSound*> m_audioCache;
