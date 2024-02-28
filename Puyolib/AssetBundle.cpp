@@ -33,7 +33,7 @@ TokenFnTranslator::~TokenFnTranslator() = default;
 	std::list<std::string> new_list;                                                                                                   \
 	for (std::filesystem::directory_entry folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%") + (FOLDER))) { \
 		if (folder.is_directory()) {                                                                                                   \
-			new_list.push_back(folder.path().filename());                                                                                  \
+			new_list.push_back((folder.path().filename()).string());                                                                                  \
 		}                                                                                                                              \
 	}                                                                                                                                  \
 	return new_list;
@@ -174,7 +174,7 @@ std::list<std::string> FolderAssetBundle::listPuyoSkins()
 {
 	std::list<std::string> new_list;
 	for (const std::filesystem::directory_entry& folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%", "") + (kFolderUserPuyo))) {
-		new_list.push_back(folder.path().stem());
+		new_list.push_back((folder.path().stem()).string());
 	}
 	return new_list;
 }
