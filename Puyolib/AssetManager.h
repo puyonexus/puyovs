@@ -24,30 +24,30 @@ public:
 	// Here mostly for thread safety of Client
 	void init() {initialized=true;};
 	void deInit() {initialized=false;};
-	bool is_initialized() {return initialized;};
+	bool is_initialized() const {return initialized;};
 
 	// Activation means that it's being used in a particular game
 	void activate(Frontend* fe, DebugLog* dbg);
 	void deactivate() {activated=false;};
-	bool is_activated() {return activated;};
+	bool is_activated() const {return activated;};
 
 	// Bundle management
-	int loadBundle(AssetBundle* bundle, int priority = 0); // adds Bundle, assigns Frontend
-	int deleteBundle(AssetBundle* bundle); // This function frees bundle
-	int unloadAll(); // Removes all bundles from the AssetManager
+	bool loadBundle(AssetBundle* bundle, int priority = 0); // adds Bundle, assigns Frontend
+	bool deleteBundle(AssetBundle* bundle); // This function frees bundle
+	bool unloadAll(); // Removes all bundles from the AssetManager
 
 	// Attempts to load the image with the token (see FolderAssetBundle in AssetBundle.h)
 	// parameter `custom` will replace %custom% tag in pseudo-filename
-	FeImage* loadImage(const ImageToken token,const std::string& custom = "");
+	FeImage* loadImage(ImageToken token,const std::string& custom = "");
 
 	// Attempts to load the sound with the token (see FolderAssetBundle in AssetBundle.h)
 	// parameter `custom` will replace %custom% tag in pseudo-filename
-	FeSound* loadSound(const SoundEffectToken token,const std::string& custom = "");
+	FeSound* loadSound(SoundEffectToken token,const std::string& custom = "");
 
 	// Attempts to load the character-based image with the token (see FolderAssetBundle in AssetBundle.h)
-	FeImage* loadImage(const ImageToken token, PuyoCharacter character);
+	FeImage* loadImage(ImageToken token, PuyoCharacter character);
 	// Attempts to load the character-based sound with the token (see FolderAssetBundle in AssetBundle.h)
-	FeSound* loadSound(const SoundEffectToken token, PuyoCharacter character);
+	FeSound* loadSound(SoundEffectToken token, PuyoCharacter character);
 
 	// Attempts to locate a viable folder for animation files
 	// Takes a token and filename of script
@@ -58,7 +58,7 @@ public:
 
 	// Reloads the setup of all available bundles
 	// Assumes that you still have access to the setup data objects of each bundle
-	int reloadBundles();
+	bool reloadBundles();
 
 	// Iterators for menus
 	std::set<std::string> listPuyoSkins();
@@ -66,12 +66,11 @@ public:
 	std::set<std::string> listSfx();
 	std::set<std::string> listCharacterSkins();
 
-	DebugLog* m_debug{};
 
 protected:
 	std::list<AssetBundle*> m_bundleList;
 	Frontend* m_front{};
-	DebugLog* dbg{};
+	DebugLog* m_debug{};
 	bool activated = false;
 	bool initialized = false;
 };

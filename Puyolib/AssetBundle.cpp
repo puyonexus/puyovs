@@ -111,14 +111,14 @@ AssetBundle* FolderAssetBundle::clone()
 	return new_bundle;
 }
 
-int FolderAssetBundle::init(ppvs::Frontend* fe)
+bool FolderAssetBundle::init(ppvs::Frontend* fe)
 {
 
 	if (!m_frontend) {
 		m_frontend = fe;
-		return 0;
+		return false;
 	}
-	return 1; // invalid call
+	return true; // invalid call
 }
 
 // Loads the texture, returns whether the load was successful (for files, whether the file exists and loads)

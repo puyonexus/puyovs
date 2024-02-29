@@ -136,14 +136,14 @@ public:
 
 	// For regular (global) tokens
 	std::string token2fn(const std::string& token, const std::string& custom = "");
-	std::string token2fn(const SoundEffectToken token, const std::string& custom = "");
-	std::string token2fn(const ImageToken token, const std::string& custom = "");
-	std::string token2fn(const AnimationToken token, const std::string& custom = "");
+	std::string token2fn(SoundEffectToken token, const std::string& custom = "");
+	std::string token2fn(ImageToken token, const std::string& custom = "");
+	std::string token2fn(AnimationToken token, const std::string& custom = "");
 	// For character-specific tokens
 	std::string token2fn(const std::string& token,  PuyoCharacter character);
-	std::string token2fn(const SoundEffectToken token, PuyoCharacter character);
-	std::string token2fn(const ImageToken token, PuyoCharacter character);
-	std::string token2fn(const AnimationToken token, PuyoCharacter character);
+	std::string token2fn(SoundEffectToken token, PuyoCharacter character);
+	std::string token2fn(ImageToken token, PuyoCharacter character);
+	std::string token2fn(AnimationToken token, PuyoCharacter character);
 
 
 	DebugLog* m_debug {};
@@ -291,7 +291,7 @@ public:
 	virtual AssetBundle* clone() = 0;
 
 	// Gives this bundle a Frontend, usually binding it to a particular game
-	virtual int init(Frontend* fe) = 0;
+	virtual bool init(Frontend* fe) = 0;
 
 	virtual FeImage* loadImage(ImageToken token, std::string custom) = 0;
 	virtual FeSound* loadSound(SoundEffectToken token, std::string custom) = 0;
@@ -323,7 +323,7 @@ public:
 	~FolderAssetBundle() override = default;
 
 	AssetBundle* clone() override;
-	int init(Frontend* fe) override;
+	bool init(Frontend* fe) override;
 
 	FeImage* loadImage(ImageToken token, std::string custom) override;
 	FeSound* loadSound(SoundEffectToken token, std::string custom) override;
@@ -333,7 +333,6 @@ public:
 
 	// Returns "" if invalid, otherwise a possible candidate for animation
 	std::string getCharAnimationsFolder(PuyoCharacter character) override;
-	// Returns "" if invalid, otherwise a possible candidate for animation
 	std::string getAnimationFolder(AnimationToken token, std::string script_name) override;
 
 	std::list<std::string> listPuyoSkins() override;

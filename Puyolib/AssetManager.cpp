@@ -7,7 +7,7 @@ namespace ppvs {
 
 AssetManager* AssetManager::clone()
 {
-	AssetManager* current = new AssetManager;
+	auto* current = new AssetManager;
 	for (auto bundle : m_bundleList) {
 		current->loadBundle(bundle->clone());
 	}
@@ -34,10 +34,10 @@ AssetManager::~AssetManager()
 	}
 }
 
-void AssetManager::activate(ppvs::Frontend* fe, ppvs::DebugLog* dbg)
+void AssetManager::activate(ppvs::Frontend* fe, ppvs::DebugLog* debug)
 {
 	m_front = fe;
-	m_debug = dbg;
+	m_debug = debug;
 	reloadBundles();
 	// Do not activate unless we know we won't call nullptr
 	if (m_front != nullptr && m_debug != nullptr) {
@@ -47,27 +47,27 @@ void AssetManager::activate(ppvs::Frontend* fe, ppvs::DebugLog* dbg)
 	}
 }
 
-int AssetManager::loadBundle(ppvs::AssetBundle* bundle, int priority)
+bool AssetManager::loadBundle(AssetBundle* bundle, int priority)
 {
 	bundle->init(m_front);
 	bundle->reload();
 	bundle->m_debug = m_debug;
 	// TODO: implement priority
 	m_bundleList.push_back(bundle);
-	return 0;
+	return false;
 }
 
-int AssetManager::deleteBundle(ppvs::AssetBundle* bundle)
+bool AssetManager::deleteBundle(AssetBundle* bundle)
 {
 	m_bundleList.remove(bundle);
 	delete bundle;
 	return false;
 }
 
-int AssetManager::unloadAll()
+bool AssetManager::unloadAll()
 {
 	if (m_bundleList.empty()) {
-		return 1;
+		return true;
 	}
 	// This approach is required to remove instances from the list we are iterating over
 	auto i = m_bundleList.begin();
@@ -78,7 +78,7 @@ int AssetManager::unloadAll()
 			i++;
 		}
 	}
-	return 0;
+	return false;
 }
 
 FeImage* AssetManager::loadImage(const ImageToken token, const std::string& custom)
@@ -180,7 +180,7 @@ std::set<std::string> AssetManager::listPuyoSkins()
 {
 	std::set<std::string> result {};
 	for (auto bundle : m_bundleList) {
-		for (auto value : bundle->listPuyoSkins()) {
+		for (const auto& value : bundle->listPuyoSkins()) {
 			result.insert(value);
 		}
 	}
@@ -191,7 +191,7 @@ std::set<std::string> AssetManager::listBackgrounds()
 {
 	std::set<std::string> result {};
 	for (auto bundle : m_bundleList) {
-		for (auto value : bundle->listBackgrounds()) {
+		for (const auto& value : bundle->listBackgrounds()) {
 			result.insert(value);
 		}
 	}
@@ -202,7 +202,7 @@ std::set<std::string> AssetManager::listCharacterSkins()
 {
 	std::set<std::string> result {};
 	for (auto bundle : m_bundleList) {
-		for (auto value : bundle->listCharacterSkins()) {
+		for (const auto& value : bundle->listCharacterSkins()) {
 			result.insert(value);
 		}
 	}
@@ -213,14 +213,14 @@ std::set<std::string> AssetManager::listSfx()
 {
 	std::set<std::string> result {};
 	for (auto bundle : m_bundleList) {
-		for (auto value : bundle->listSfx()) {
+		for (const auto& value : bundle->listSfx()) {
 			result.insert(value);
 		}
 	}
 	return result;
 }
 
-int AssetManager::reloadBundles()
+bool AssetManager::reloadBundles()
 {
 	int number_of_loaded = 0;
 	for (auto bundle : m_bundleList) {
