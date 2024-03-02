@@ -14,13 +14,13 @@ struct PVSApplication::Priv {
 	MusicPlayer normalPlayer, feverPlayer;
 
 	Priv()
-		: normalPlaylist("User/Music/Normal.m3u")
-		, feverPlaylist("User/Music/Fever.m3u")
+		: normalPlaylist(getDataLocation()+"/User/Music/Normal.m3u")
+		, feverPlaylist(getDataLocation()+"/User/Music/Fever.m3u")
 		, normalPlayer(normalPlaylist)
 		, feverPlayer(feverPlaylist)
 	{
-		normalPlaylist.discover("User/Music/Normal");
-		feverPlaylist.discover("User/Music/Fever");
+		normalPlaylist.discover(getDataLocation()+"/User/Music/Normal");
+		feverPlaylist.discover(getDataLocation()+"/User/Music/Fever");
 	}
 };
 
@@ -28,20 +28,18 @@ PVSApplication::PVSApplication(int& argc, char** argv)
 	: QApplication(argc, argv)
 	, p(new Priv)
 {
+	// We do not need to check the existence of the folder, that's done automatically
 	// Copy settings.json if necessary
-	if (!QDir(getDataLocation()).exists()) {
-		QDir().mkpath(getDataLocation());
-	}
-	if (QFile("Settings.json").exists() && !QFile(getDataLocation() + "/Settings.json").exists()) {
-		QFile("Settings.json").copy(getDataLocation() + "/Settings.json");
+	if (QFile("Settings.json").exists() && !QFile(getSettingsLocation() + "/Settings.json").exists()) {
+		QFile("Settings.json").copy(getSettingsLocation() + "/Settings.json");
 	}
 
 	p->settings = new Settings(this);
 
 	// Make sure these exist.
-	QDir().mkdir("User/Music");
-	QDir().mkdir("User/Music/Fever");
-	QDir().mkdir("User/Music/Normal");
+	QDir().mkdir(getDataLocation()+"/User/Music");
+	QDir().mkdir(getDataLocation()+"/User/Music/Fever");
+	QDir().mkdir(getDataLocation()+"/User/Music/Normal");
 
 	pvsApp = this;
 

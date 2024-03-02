@@ -2,6 +2,7 @@
 #include "../Puyolib/Game.h"
 #include <QCryptographicHash>
 #include <QDesktopServices>
+#include <QDir>
 #include <QKeyEvent>
 #include <QMessageBox>
 #include <QObject>
@@ -47,14 +48,46 @@ QString getCryptographicHash(QString str)
 	return QString(QCryptographicHash::hash(s.toUtf8(), QCryptographicHash::Md5).toHex());
 }
 
-QString getDataLocation()
+QString verifyFolderExistence(QString fn)
+{
+	// Create the folder if it doesn't already
+	if (!QDir(fn).exists())
+	{
+		QDir().mkpath(fn);
+	}
+	return fn;
+}
+
+QString getCacheLocation()
 {
 #if QT_VERSION >= 0x050000
+	//Qt 5
+	return verifyFolderExistence(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
+#else
+	return verifyFolderExistence(QDesktopServices::storageLocation(QDesktopServices::CacheLocation));
+#endif
+}
+
+QString getDataLocation()
+{
+
+#if QT_VERSION >= 0x050000
 	// Qt5: QStandardPaths::StandardLocation
-	return QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+	return verifyFolderExistence(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
 #else
 	// Qt4
-	return QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+	return verifyFolderExistence(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
+#endif
+}
+
+QString getSettingsLocation()
+{
+#if QT_VERSION >= 0x050000
+	// Qt5
+	return verifyFolderExistence(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation));
+#else
+	// Qt4: revert to Data location
+	return verifyFolderExistence(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
 #endif
 }
 
