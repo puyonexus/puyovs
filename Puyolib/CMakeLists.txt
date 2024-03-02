@@ -1,4 +1,3 @@
-include_directories(../Zlib)
 add_library(Puyolib
     tinyxmlparser.cpp
     tinyxmlerror.cpp
@@ -39,4 +38,6 @@ add_library(Puyolib
 
 target_compile_features(Puyolib PUBLIC cxx_std_17)
 
-target_link_libraries(Puyolib ZLIB::ZLIB)
+target_link_libraries(Puyolib PRIVATE ZLIB::ZLIB)
+
+add_library(Puyolib::Puyolib ALIAS Puyolib)

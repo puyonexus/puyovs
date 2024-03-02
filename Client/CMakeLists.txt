@@ -127,11 +127,11 @@ set_target_properties(PuyoVS PROPERTIES
 
 target_link_libraries(PuyoVS
     PVS_ENet
-    JsonCpp
-    Puyolib
-    Audiolib
-    Inputlib
-    SDL2-static
+    JsonCpp::JsonCpp
+    Puyolib::Puyolib
+	Audiolib::Audiolib
+	Inputlib::Inputlib
+    $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
     ZLIB::ZLIB
     Qt5::Widgets
     Qt5::OpenGL

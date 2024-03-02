@@ -3,6 +3,9 @@ Build/Release/
 Build/**/
 PuyoVS.pro.*
 .flatpak-builder/
+/.direnv
+result
+result-*
 
 # Visual Studio
 .vs/

@@ -17,5 +17,7 @@ endif()
 
 include_directories(. include/ilib)
 target_include_directories(Inputlib PUBLIC include)
-target_link_libraries(Inputlib PUBLIC SDL2-static)
+target_link_libraries(Inputlib PUBLIC $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>)
 target_compile_features(Inputlib PUBLIC cxx_std_17)
+
+add_library(Inputlib::Inputlib ALIAS Inputlib)
