@@ -8,6 +8,7 @@
 using namespace std;
 
 namespace ppvs {
+enum class ImageToken;
 
 CharacterSelect::CharacterSelect(Game* g)
 {
@@ -28,7 +29,7 @@ CharacterSelect::CharacterSelect(Game* g)
 			m_holder[i * width + j].setPosition(
 				static_cast<float>(64 + j * 66),
 				static_cast<float>(64 + i * 52));
-			m_charSprite[i * width + j].setImage(g->m_data->front->loadImage(m_currentGame->m_baseAssetDir + kFolderUserCharacter + m_currentGame->m_settings->characterSetup[m_order[i * width + j]] + "/icon.png"));
+			m_charSprite[i * width + j].setImage(g->m_assetManager->loadImage(ImageToken::imgCharIcon, m_order[i * width + j]));
 			m_charSprite[i * width + j].setCenter(0, 0);
 			m_charSprite[i * width + j].setPosition(
 				static_cast<float>(64 + j * 66 + 1),
@@ -705,7 +706,7 @@ void CharacterSelect::setCharacter(const int playerNum, const int selection, con
 
 			m_selectSprite[i].setPosition(static_cast<float>(64 + jj * 66), static_cast<float>(64 + ii * 52));
 
-			m_selectedCharacter[i].setImage(m_data->front->loadImage(m_currentGame->m_baseAssetDir + kFolderUserCharacter + m_currentGame->m_settings->characterSetup[m_order[m_sel[i]]] + "/select.png"));
+			m_selectedCharacter[i].setImage(m_currentGame->m_assetManager->loadImage(ImageToken::imgCharSelect, m_order[m_sel[i]]));
 			m_selectedCharacter[i].setSubRect(0, 0, 256, 256);
 			m_selectedCharacter[i].setCenterBottom();
 			m_selectedCharacter[i].setPosition(posX, posY - 38 * m_scale);
