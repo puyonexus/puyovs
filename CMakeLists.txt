@@ -78,7 +78,7 @@ if(NOT ZLIB_FOUND)
   add_library(ZLIB::ZLIB ALIAS zlib)
   set(ZLIB_INCLUDE_DIR ${zlib-ng_SOURCE_DIR} CACHE STRING "Path to zlib include directory" FORCE)
   set(ZLIB_LIBRARY ZLIB::ZLIB CACHE STRING "Path to zlib library" FORCE)
-  set(ZLIB_FOUND)
+  set(ZLIB_FOUND YES)
 endif()
 
 # glm
