@@ -5,13 +5,52 @@ sdk: org.kde.Sdk
 command: PuyoVS
 finish-args:
   - --share=ipc
-  - --socket=x11
+  - --share=network
+  - --socket=fallback-x11
   - --socket=wayland
+  - --socket=pulseaudio
   - --filesystem=host
   - --device=dri
 modules:
+  - name: glm
+    buildsystem: cmake-ninja
+    builddir: true
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+    sources:
+      - type: git
+        url: https://github.com/g-truc/glm.git
+        commit: cc98465e3508535ba8c7f6208df934c156a018dc
+  - name: jsoncpp
+    buildsystem: cmake-ninja
+    builddir: true
+    sources:
+      - type: git
+        url: https://github.com/open-source-parsers/jsoncpp.git
+        commit: 5defb4ed1a4293b8e2bf641e16b156fb9de498cc
+  - name: SDL2
+    buildsystem: cmake-ninja
+    builddir: true
+    sources:
+      - type: git
+        url: https://github.com/libsdl-org/SDL.git
+        commit: 8c9beb0c873f6ca5efbd88f1ad2648bfc793b2ac
+  - name: SDL2_ttf
+    buildsystem: cmake-ninja
+    builddir: true
+    sources:
+      - type: git
+        url: https://github.com/libsdl-org/SDL_ttf.git
+        commit: 4a318f8dfaa1bb6f10e0c5e54052e25d3c7f3440
+  - name: spng
+    buildsystem: cmake-ninja
+    builddir: true
+    sources:
+      - type: git
+        url: https://github.com/randy408/libspng.git
+        commit: adc94393dbeddf9e027d1b2dfff7c1bab975224e
   - name: PuyoVS
-    buildsystem: cmake
+    buildsystem: cmake-ninja
     builddir: true
     config-opts:
       - "-DENABLE_UPDATER=Off"
