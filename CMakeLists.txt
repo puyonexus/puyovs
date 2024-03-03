@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 project(puyovs)
 
+cmake_policy(SET CMP0074 NEW)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake/" ${CMAKE_MODULE_PATH})
 
 # Improves IDE support.
