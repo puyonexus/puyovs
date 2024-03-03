@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 project(puyovs)
 
-cmake_policy(SET CMP0074 NEW)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMake/" ${CMAKE_MODULE_PATH})
 
 # Improves IDE support.
@@ -77,9 +76,8 @@ if(NOT ZLIB_FOUND)
   set(SKIP_INSTALL_ALL ON)
   FetchContent_MakeAvailable(zlib-ng)
   add_library(ZLIB::ZLIB ALIAS zlib)
-  set(ZLIB_ROOT ${zlib-ng_SOURCE_DIR})
-  set(ZLIB_INCLUDE_DIR ${zlib-ng_SOURCE_DIR} CACHE STRING "Path to zlib include directory")
-  set(ZLIB_LIBRARY ZLIB::ZLIB CACHE STRING "Path to zlib library")
+  set(ZLIB_INCLUDE_DIR ${zlib-ng_SOURCE_DIR} CACHE STRING "Path to zlib include directory" FORCE)
+  set(ZLIB_LIBRARY ZLIB::ZLIB CACHE STRING "Path to zlib library" FORCE)
   set(ZLIB_FOUND)
 endif()
 
