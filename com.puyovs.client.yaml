@@ -17,6 +17,7 @@ modules:
     builddir: true
     config-opts:
       - "-DENABLE_UPDATER=Off"
+      - "-DCMAKE_DISABLE_FIND_PACKAGE_SDL2=On"
     sources:
       - type: dir
         path: .
