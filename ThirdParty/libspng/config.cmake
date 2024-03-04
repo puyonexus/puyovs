@@ -1,6 +1,4 @@
 find_package(spng)
 if(NOT spng_FOUND)
-  option(SPNG_SHARED "" OFF)
-  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/libspng/libspng EXCLUDE_FROM_ALL)
-  add_library(spng::spng ALIAS spng_static)
+  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/libspng)
 endif()
