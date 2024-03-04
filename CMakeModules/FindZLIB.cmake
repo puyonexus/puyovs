@@ -1,5 +1,7 @@
+message(STATUS "FindZLIB1. ZLIB_LIBRARY: ${ZLIB_LIBRARY}")
 if(NOT ZLIB_FOUND)
   message(STATUS "Executing FindZLIB, since ZLIB_FOUND is not set. ZLIB_LIBRARY: ${ZLIB_LIBRARY}")
   include(${CMAKE_ROOT}/Modules/FindZLIB.cmake)
   message(STATUS "After FindZLIB; ZLIB_LIBRARY: ${ZLIB_LIBRARY}")
 endif()
+message(STATUS "FindZLIB2. ZLIB_LIBRARY: ${ZLIB_LIBRARY}")
