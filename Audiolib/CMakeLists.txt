@@ -49,6 +49,12 @@ add_library(Audiolib
     include/alib/common.h
 )
 
-target_link_libraries(Audiolib SDL2-static VgmStream)
+target_link_libraries(Audiolib
+    $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
+    VgmStream
+)
 target_include_directories(Audiolib PUBLIC include)
 target_compile_features(Audiolib PUBLIC cxx_std_17)
+
+add_library(Audiolib::Audiolib ALIAS Audiolib)
+

@@ -160,7 +160,7 @@ qint64 Settings::integer(const QString& section, const QString& key, qint64 defV
 
 void Settings::setInteger(const QString& section, const QString& key, qint64 value)
 {
-	setValue(section, key, Json::Value(value));
+	setValue(section, key, Json::Value(Json::Int64(value)));
 }
 
 qreal Settings::real(const QString& section, const QString& key, qreal defValue)

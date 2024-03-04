@@ -5,13 +5,15 @@ sdk: org.kde.Sdk
 command: PuyoVS
 finish-args:
   - --share=ipc
-  - --socket=x11
+  - --share=network
+  - --socket=fallback-x11
   - --socket=wayland
+  - --socket=pulseaudio
   - --filesystem=host
   - --device=dri
 modules:
   - name: PuyoVS
-    buildsystem: cmake
+    buildsystem: cmake-ninja
     builddir: true
     config-opts:
       - "-DENABLE_UPDATER=Off"
