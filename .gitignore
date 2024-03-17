@@ -10,3 +10,4 @@ result-*
 # Visual Studio
 .vs/
 .build/
+*.aps
