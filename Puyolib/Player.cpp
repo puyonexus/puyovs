@@ -2749,6 +2749,7 @@ void Player::drawAllClear(const PosVectorFloat pos, const float scaleX, const fl
 		} else if (m_allClearTimer > 1 && m_allClearTimer < 60) {
 			// Show normally
 			m_allClearSprite.setVisible(true);
+			m_allClearSprite.setTransparency(1);
 		}
 
 		m_allClearSprite.draw(m_data->front);
