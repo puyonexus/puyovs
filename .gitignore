@@ -6,6 +6,8 @@ PuyoVS.pro.*
 /.direnv
 result
 result-*
+/compile_commands.json
+/.cache
 
 # Visual Studio
 .vs/
