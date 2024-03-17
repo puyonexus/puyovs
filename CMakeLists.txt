@@ -6,6 +6,17 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules/" ${CMAKE_MODULE_PATH}
 # Improves IDE support.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+# Automatically set up compile_commands.json
+option(SETUP_COMPILE_COMMANDS "Automatically set up compile_commands.json" ON)
+if(SETUP_COMPILE_COMMANDS)
+  set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E create_symlink
+      ${CMAKE_BINARY_DIR}/compile_commands.json
+      ${CMAKE_CURRENT_SOURCE_DIR}/compile_commands.json
+  )
+endif()
+
 # Path setup.
 if(WIN32)
   if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
