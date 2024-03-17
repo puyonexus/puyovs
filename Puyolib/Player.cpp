@@ -9,6 +9,7 @@ using namespace std;
 
 namespace ppvs {
 
+
 Player::Player(const PlayerType type, const int playerNum, const int totalPlayers, Game* g)
 	: m_feverGauge(g->m_data)
 	, m_feverLight(g->m_data)
@@ -410,35 +411,34 @@ void Player::checkAllClearStart()
 	checkAllClearStart();
 }
 
-FeSound* Player::loadVoice(const std::string& folder, const char* sound)
+
+FeSound* Player::loadVoice(const SoundEffectToken token)
 {
-	return m_data->front->loadSound((folder + sound).c_str());
+	return m_currentGame->m_assetManager->loadSound(token, getCharacter());
 }
 
 void Player::initVoices()
 {
-	const std::string currentCharacter = m_currentGame->m_settings->characterSetup[getCharacter()];
-	const std::string folder = kFolderUserCharacter + currentCharacter + std::string("/Voice/");
-	m_characterVoices.chain[0].setBuffer(loadVoice(folder, "chain1.wav"));
-	m_characterVoices.chain[1].setBuffer(loadVoice(folder, "chain2.wav"));
-	m_characterVoices.chain[2].setBuffer(loadVoice(folder, "chain3.wav"));
-	m_characterVoices.chain[3].setBuffer(loadVoice(folder, "chain4.wav"));
-	m_characterVoices.chain[4].setBuffer(loadVoice(folder, "chain5.wav"));
-	m_characterVoices.chain[5].setBuffer(loadVoice(folder, "spell1.wav"));
-	m_characterVoices.chain[6].setBuffer(loadVoice(folder, "spell2.wav"));
-	m_characterVoices.chain[7].setBuffer(loadVoice(folder, "spell3.wav"));
-	m_characterVoices.chain[8].setBuffer(loadVoice(folder, "spell4.wav"));
-	m_characterVoices.chain[9].setBuffer(loadVoice(folder, "spell5.wav"));
-	m_characterVoices.chain[10].setBuffer(loadVoice(folder, "counter.wav"));
-	m_characterVoices.chain[11].setBuffer(loadVoice(folder, "counterspell.wav"));
-	m_characterVoices.damage1.setBuffer(loadVoice(folder, "damage1.wav"));
-	m_characterVoices.damage2.setBuffer(loadVoice(folder, "damage2.wav"));
-	m_characterVoices.choose.setBuffer(loadVoice(folder, "choose.wav"));
-	m_characterVoices.fever.setBuffer(loadVoice(folder, "fever.wav"));
-	m_characterVoices.feverSuccess.setBuffer(loadVoice(folder, "feversuccess.wav"));
-	m_characterVoices.feverFail.setBuffer(loadVoice(folder, "feverfail.wav"));
-	m_characterVoices.lose.setBuffer(loadVoice(folder, "lose.wav"));
-	m_characterVoices.win.setBuffer(loadVoice(folder, "win.wav"));
+	m_characterVoices.chain[0].setBuffer(loadVoice(SoundEffectToken::charChain1));
+	m_characterVoices.chain[1].setBuffer(loadVoice(SoundEffectToken::charChain2));
+	m_characterVoices.chain[2].setBuffer(loadVoice(SoundEffectToken::charChain3));
+	m_characterVoices.chain[3].setBuffer(loadVoice(SoundEffectToken::charChain4));
+	m_characterVoices.chain[4].setBuffer(loadVoice(SoundEffectToken::charChain5));
+	m_characterVoices.chain[5].setBuffer(loadVoice(SoundEffectToken::charSpell1));
+	m_characterVoices.chain[6].setBuffer(loadVoice(SoundEffectToken::charSpell2));
+	m_characterVoices.chain[7].setBuffer(loadVoice(SoundEffectToken::charSpell3));
+	m_characterVoices.chain[8].setBuffer(loadVoice(SoundEffectToken::charSpell4));
+	m_characterVoices.chain[9].setBuffer(loadVoice(SoundEffectToken::charSpell5));
+	m_characterVoices.chain[10].setBuffer(loadVoice(SoundEffectToken::charCounter));
+	m_characterVoices.chain[11].setBuffer(loadVoice(SoundEffectToken::charCounterSpell));
+	m_characterVoices.damage1.setBuffer(loadVoice(SoundEffectToken::charDamage1));
+	m_characterVoices.damage2.setBuffer(loadVoice(SoundEffectToken::charDamage2));
+	m_characterVoices.choose.setBuffer(loadVoice(SoundEffectToken::charChoose));
+	m_characterVoices.fever.setBuffer(loadVoice(SoundEffectToken::charFever));
+	m_characterVoices.feverSuccess.setBuffer(loadVoice(SoundEffectToken::charFeverSuccess));
+	m_characterVoices.feverFail.setBuffer(loadVoice(SoundEffectToken::charFeverFail));
+	m_characterVoices.lose.setBuffer(loadVoice(SoundEffectToken::charLose));
+	m_characterVoices.win.setBuffer(loadVoice(SoundEffectToken::charWin));
 }
 
 void Player::playerSetup(FieldProp& properties, const int playerNum, const int playerTotal)
@@ -544,16 +544,16 @@ void Player::setCharacter(PuyoCharacter character, bool show)
 		m_activeField->getProperties().centerY / 2.0f * 1);
 	const std::string currentCharacter = m_currentGame->m_settings->characterSetup[character];
 	if (m_currentGame->m_players.size() <= 10)
-		m_characterAnimation.init(m_data, offset, 1, m_currentGame->m_baseAssetDir + kFolderUserCharacter + currentCharacter + std::string("/Animation/"));
+		m_characterAnimation.init(m_data, offset, 1, m_currentGame->m_assetManager->getAnimationFolder(character));
 	else
-        m_characterAnimation.init(m_data, offset, 1, "");
+		m_characterAnimation.init(m_data, offset, 1, "");
 	if (m_currentGame->m_settings->useCharacterField)
 		setFieldImage(character);
 
 	if (!show)
 		return;
 
-	m_currentCharacterSprite.setImage(m_data->front->loadImage((m_currentGame->m_baseAssetDir + kFolderUserCharacter + m_currentGame->m_settings->characterSetup[character] + "/icon.png").c_str()));
+	m_currentCharacterSprite.setImage(m_currentGame->m_assetManager->loadImage(ImageToken::imgCharIcon, character));
 	m_currentCharacterSprite.setCenter();
 	m_currentCharacterSprite.setPosition(m_charHolderSprite.getPosition() + PosVectorFloat(1, 1) - PosVectorFloat(2, 4)); // Correct for shadow
 	m_currentCharacterSprite.setVisible(true);
@@ -561,7 +561,7 @@ void Player::setCharacter(PuyoCharacter character, bool show)
 	m_charHolderSprite.setVisible(true);
 	m_showCharacterTimer = 5 * 60;
 	for (auto& i : m_dropSet) {
-		i.setImage(m_data->front->loadImage("Data/CharSelect/dropset.png"));
+		i.setImage(m_currentGame->m_assetManager->loadImage(ImageToken::imgDropSet));
 	}
 	setDropSetSprite(static_cast<int>(m_currentCharacterSprite.getX()), static_cast<int>(m_currentCharacterSprite.getY() + 60.f * m_globalScale), m_character);
 }
@@ -1056,21 +1056,21 @@ void Player::chooseColor()
 		}
 
 		// Make choice
-        if ((m_controls.m_a == 1 && m_currentGame->m_settings->swapABConfirm == false && m_colorMenuTimer > 25) || ((m_controls.m_b == 1 && m_currentGame->m_settings->swapABConfirm == true && m_colorMenuTimer > 25))) {
+		if ((m_controls.m_a == 1 && m_currentGame->m_settings->swapABConfirm == false && m_colorMenuTimer > 25) || ((m_controls.m_b == 1 && m_currentGame->m_settings->swapABConfirm == true && m_colorMenuTimer > 25))) {
 			m_normalGarbage.gq += m_normalGarbage.cq;
 			m_normalGarbage.cq = 0;
 			m_data->snd.decide.play(m_data);
 			if (m_currentGame->m_settings->swapABConfirm == false) {
 				m_controls.m_a++;
 			} else {
-                m_controls.m_b++;
+				m_controls.m_b++;
 			}
 			if (m_takeover) {
-                if (m_currentGame->m_settings->swapABConfirm == false) {
-                    m_currentGame->m_players[0]->m_controls.m_a++;
-                } else {
-                    m_currentGame->m_players[0]->m_controls.m_b++;
-                }
+				if (m_currentGame->m_settings->swapABConfirm == false) {
+					m_currentGame->m_players[0]->m_controls.m_a++;
+				} else {
+					m_currentGame->m_players[0]->m_controls.m_b++;
+				}
 			}
 			m_currentGame->m_colorTimer = 0;
 			m_colorMenuTimer = -50;
@@ -1851,7 +1851,6 @@ void Player::checkWinner()
 void Player::setLose()
 {
 	m_currentGame->m_currentRuleSet->onLose(this);
-	m_characterAnimation.prepareAnimation("lose");
 
 	// Play lose sound sound
 	int activeplayers = 0;
@@ -1889,6 +1888,7 @@ void Player::loseGame()
 
 	if (m_loseWinTimer == 60) {
 		m_characterVoices.lose.play(m_data);
+		m_characterAnimation.prepareAnimation("lose");
 	}
 
 	// Online: wait for confirm message from everyone

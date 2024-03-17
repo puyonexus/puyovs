@@ -1,11 +1,12 @@
 #include "gamemanager.h"
 #include "../PVS_ENet/PVS_Client.h"
 #include "../Puyolib/Game.h"
-#include "../Puyolib/global.h"
 #include "chatwindow.h"
 #include "common.h"
 #include "gameaudio.h"
 #include "gamewidgetgl.h"
+#include "main.h"
+#include "mainwindow.h"
 #include "netclient.h"
 #include "settings.h"
 #include <QApplication>
@@ -15,7 +16,6 @@
 
 volatile bool loopEnabled;
 
-
 // TODO: Add support to std::format when we switch to C++20
 /* Handles the Puyolib debug information transfer. See Puyolib/DebugLog.h for more info. */
 void GameManager::handleDebugLog(std::string text, ppvs::DebugMessageType severity)
@@ -24,16 +24,16 @@ void GameManager::handleDebugLog(std::string text, ppvs::DebugMessageType severi
 	case ppvs::DebugMessageType::Debug:
 		// Do not display debug info if we aren't in Puyolib debug mode
 		if (ppvs::debugMode)
-			qDebug("Puyolib: %s\n",text.c_str());
+			qDebug("Puyolib: %s\n", text.c_str());
 		return;
 	case ppvs::DebugMessageType::Info:
-		qInfo("Puyolib: %s\n",text.c_str());
+		qInfo("Puyolib: %s\n", text.c_str());
 		return;
 	case ppvs::DebugMessageType::Warning:
-		qWarning("Puyolib WARNING: %s\n",text.c_str());
+		qWarning("Puyolib WARNING: %s\n", text.c_str());
 		return;
 	case ppvs::DebugMessageType::Error:
-		qCritical("Puyolib ERROR: %s\n",text.c_str());
+		qCritical("Puyolib ERROR: %s\n", text.c_str());
 		return;
 	case ppvs::DebugMessageType::None:
 	default:
@@ -41,9 +41,10 @@ void GameManager::handleDebugLog(std::string text, ppvs::DebugMessageType severi
 	}
 }
 
-GameManager::GameManager(NetClient* network, QObject* parent)
+GameManager::GameManager(NetClient* network, ppvs::AssetManager* am, QObject* parent)
 	: QObject(parent)
 	, network(network)
+	, assetManagerTemplate(am)
 {
 	connect(network, &NetClient::channelJoined,
 		this, &GameManager::channelJoined);
@@ -159,9 +160,8 @@ GameWidget* GameManager::createGame(ppvs::GameSettings* gs, const QString& roomN
 	Settings& settings = pvsApp->settings();
 	NetChannelProxy* proxy = nullptr;
 
-	gs->background = settings.string("custom", "background", "Forest").toUtf8().data();
-	gs->puyo = settings.string("custom", "puyo", "Default").toUtf8().data();
-	gs->sfx = settings.string("custom", "sound", "Default").toUtf8().data();
+	refreshAssetManagerTemplate();
+
 	gs->useCharacterField = settings.boolean("custom", "characterfield", true);
 
 	gs->numPlayers = gs->ruleSetInfo.numPlayers;
@@ -172,11 +172,6 @@ GameWidget* GameManager::createGame(ppvs::GameSettings* gs, const QString& roomN
 		gs->recording = ppvs::RecordState::REPLAYING;
 		gs->pickColors = false;
 		gs->showNames = settings.integer("launcher", "hidenames", 0);
-	}
-	QStringList characters(settings.charMap());
-	for (int i = 0; i < characters.count(); i++) {
-		ppvs::PuyoCharacter ch = ppvs::PuyoCharacter(i);
-		gs->characterSetup[ch] = characters.at(i).toStdString();
 	}
 
 	// Set default character
@@ -228,7 +223,7 @@ GameWidget* GameManager::createGame(ppvs::GameSettings* gs, const QString& roomN
 			QString("new|") + QString("%1|").arg(PVSVERSION) + QString(gs->ruleSetInfo.ruleSetType == ppvs::Rules::TSU_ONLINE ? "0" : "1"));
 	}
 
-	GameWidget* widget = new GameWidgetGL(game, proxy, audio, static_cast<QWidget*>(parent()));
+	GameWidget* widget = new GameWidgetGL(game, proxy, audio, assetManagerTemplate->clone(), static_cast<QWidget*>(parent()));
 	addGame(widget);
 
 	return widget;

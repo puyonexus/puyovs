@@ -3,7 +3,13 @@ Build/Release/
 Build/**/
 PuyoVS.pro.*
 .flatpak-builder/
+/.direnv
+result
+result-*
+/compile_commands.json
+/.cache
 
 # Visual Studio
 .vs/
 .build/
+*.aps

@@ -1,0 +1,12 @@
+find_package(ZLIB)
+if(NOT ZLIB_FOUND)
+  set(ZLIB_ENABLE_TESTS OFF)
+  set(ZLIB_COMPAT ON)
+  option(BUILD_SHARED_LIBS "Build shared library" OFF)
+  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/zlib-ng/zlib-ng EXCLUDE_FROM_ALL)
+  # Needed so that other projects will use this version
+  add_library(ZLIB::ZLIB ALIAS zlib)
+  set(ZLIB_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/zlib-ng)
+  set(ZLIB_LIBRARIES ZLIB::ZLIB)
+  set(ZLIB_FOUND 1 CACHE INTERNAL "" FORCE)
+endif()

@@ -13,3 +13,6 @@
 [submodule "ThirdParty/sdl/sdl"]
 	path = ThirdParty/sdl/sdl
 	url = https://github.com/libsdl-org/SDL.git
+[submodule "ThirdParty/jsoncpp/jsoncpp"]
+	path = ThirdParty/jsoncpp/jsoncpp
+	url = https://github.com/open-source-parsers/jsoncpp.git

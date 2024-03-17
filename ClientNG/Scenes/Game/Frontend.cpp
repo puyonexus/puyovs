@@ -2,6 +2,7 @@
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
+#include <iostream>
 
 namespace PuyoVS::ClientNG::Scenes::Game {
 
@@ -27,9 +28,20 @@ GameFrontend::GameFrontend(Renderers::RenderTarget* target)
 	m_quadBuffer->uploadVertices(m_quadVertices, std::size(m_quadVertices));
 
 	m_matrixStack.push(glm::ortho(0.f, 640.f, 480.f, 0.f, -1.f, 1.f));
+
+	m_audioDevice = alib::open();
 }
 
-GameFrontend::~GameFrontend() = default;
+GameFrontend::~GameFrontend()
+{
+	// Wipe audio cache
+	for (const auto& sound : m_audioCache) {
+		delete sound.second; // delete GameSound associated
+		delete sound.first; // delete indexing string
+	}
+
+	delete m_audioDevice;
+}
 
 ppvs::FeImage* GameFrontend::loadImage(const char* nameu8)
 {
@@ -48,7 +60,9 @@ ppvs::FeImage* GameFrontend::loadImage(const std::string& nameu8)
 	const size_t size = ftell(f);
 	fseek(f, 0, SEEK_SET);
 	const auto data = std::unique_ptr<char[]>(new char[size]);
-	fread(data.get(), 1, size, f);
+	if (fread(data.get(), 1, size, f)<size) {
+		SDL_Log("Error reading image %s",nameu8.c_str());
+	}
 	fclose(f);
 
 	auto texture = m_target->makeTexture();
@@ -68,7 +82,17 @@ ppvs::FeFont* GameFrontend::loadFont(const char* nameu8, double fontSize)
 
 ppvs::FeSound* GameFrontend::loadSound(const char* nameu8)
 {
-	return new GameSound();
+	// Check for cache first, return cached sound
+	auto search = m_audioCache.find(nameu8);
+	if (search != m_audioCache.end()) {
+		return m_audioCache[search->first];
+	}
+	// load new sound, insert into the cache
+	GameSound* newSound = new GameSound(m_audioDevice, nameu8);
+	// We are copying C strings, thus we have to be rather unsafe
+	char* name_copy = strdup(nameu8);
+	m_audioCache.insert({ name_copy, newSound });
+	return newSound;
 }
 
 ppvs::FeSound* GameFrontend::loadSound(const std::string& nameu8)
@@ -268,10 +292,21 @@ bool GameImage::error()
 	return false;
 }
 
-void GameImage::setFilter(ppvs::FilterType)
+inline PuyoVS::Renderers::FilterType ppvsFilterToRendererFilter(ppvs::FilterType type)
 {
-	// Not implemented yet.
-	return;
+	switch (type) {
+	case ppvs::FilterType::LinearFilter:
+		return PuyoVS::Renderers::FilterType::LinearFilter;
+	case ppvs::FilterType::NearestFilter:
+		return PuyoVS::Renderers::FilterType::NearestFilter;
+	default:
+		return PuyoVS::Renderers::FilterType::NearestFilter;
+	}
+}
+
+void GameImage::setFilter(ppvs::FilterType type)
+{
+	m_texture->setFilter(ppvsFilterToRendererFilter(type));
 }
 
 GameFont::GameFont()
@@ -299,8 +334,20 @@ void GameText::draw(float x, float y)
 {
 }
 
+GameSound::GameSound(alib::Device* audio_device, const char* nameu8)
+{
+	m_device = audio_device;
+	m_stream = alib::Stream(nameu8);
+}
+
+GameSound::~GameSound()
+{
+}
+
 void GameSound::play()
 {
+	if (!m_stream.error())
+		m_device->play(m_stream);
 }
 
 void GameSound::stop()

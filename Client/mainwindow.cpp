@@ -20,6 +20,7 @@
 #include "gamewidget.h"
 #include "glmanager.h"
 #include "language.h"
+#include "main.h"
 #include "offlinedialog.h"
 #include "passworddialog.h"
 #include "pvsapplication.h"
@@ -123,8 +124,12 @@ MainWindow::MainWindow(QWidget* parent)
 	// Update server list
 	updateServerList();
 
+	assetManagerTemplate = new ppvs::AssetManager(nullptr, nullptr);
+	initAssetManagerTemplate();
+
 	// Install game timer
-	gameManager = new GameManager(client, this);
+	gameManager = new GameManager(client, assetManagerTemplate, this);
+	connect(gameManager, &GameManager::refreshAssetManagerTemplate, this, &MainWindow::refreshAssetManagerTemplate);
 
 	// Fix friendly match columns.
 	// I really wish the UI editor had something for this.
@@ -137,6 +142,7 @@ MainWindow::MainWindow(QWidget* parent)
 MainWindow::~MainWindow()
 {
 	delete gameManager;
+	delete assetManagerTemplate;
 	delete netMan;
 
 	GlobalGLDeInit();
@@ -456,7 +462,7 @@ void MainWindow::updateJoinButton() const
 void MainWindow::showSettings()
 {
 	if (!showSettingsDlg) {
-		SettingsDialog* settingsDlg = new SettingsDialog(languageManager);
+		SettingsDialog* settingsDlg = new SettingsDialog(languageManager, assetManagerTemplate);
 		connect(settingsDlg, &QDialog::finished, this, &MainWindow::on_SettingsDialog_Finished);
 		settingsDlg->show();
 		showSettingsDlg = true;
@@ -983,6 +989,59 @@ void MainWindow::updateServerList()
 	request.setRawHeader("User-Agent", PUYOVS_USER_AGENT);
 	serverListReply = netMan->get(request);
 	connect(serverListReply, &QNetworkReply::finished, this, &MainWindow::getServerList);
+}
+
+ppvs::AssetBundle* MainWindow::generateFolderBundle(const QString& base_path)
+{
+	Settings& settings = pvsApp->settings(); // We need this to access settings
+	auto* assetSettings = new ppvs::GameAssetSettings();
+
+	assetSettings->baseAssetDir = base_path.toStdString();
+	assetSettings->background = settings.string("custom", "background", "Forest").toUtf8().data();
+	assetSettings->puyo = settings.string("custom", "puyo", "Default").toUtf8().data();
+	assetSettings->sfx = settings.string("custom", "sound", "Default").toUtf8().data();
+	QStringList characters(settings.charMap());
+	for (int i = 0; i < characters.count(); i++) {
+		auto ch = ppvs::PuyoCharacter(i);
+		assetSettings->characterSetup[ch] = characters.at(i).toStdString();
+	}
+
+	return new ppvs::FolderAssetBundle(nullptr, assetSettings);
+}
+
+ppvs::AssetBundle* MainWindow::generateDefaultBundle()
+{
+	Settings& settings = pvsApp->settings();
+	auto* assetSettings = new ppvs::GameAssetSettings();
+	assetSettings->baseAssetDir = std::string(defaultAssetPath) + "/";
+	assetSettings->background = "Forest";
+	assetSettings->puyo = "Default";
+	assetSettings->sfx = "Default";
+	QStringList characters(settings.charMap());
+	for (int i = 0; i < characters.count(); i++) {
+		auto ch = ppvs::PuyoCharacter(i);
+		assetSettings->characterSetup[ch] = "";
+	}
+	return new ppvs::FolderAssetBundle(nullptr, assetSettings);
+}
+
+void MainWindow::initAssetManagerTemplate()
+{
+	// TODO: solve the "/./" in file paths problems
+	assetManagerTemplate->loadBundle(generateFolderBundle("")); // Standard
+	assetManagerTemplate->loadBundle(generateDefaultBundle()); // Emergency in case of a broken installation
+	assetManagerTemplate->init(); // Allow others interact with the object
+}
+
+int MainWindow::refreshAssetManagerTemplate()
+{
+	assetManagerTemplate->deInit(); // Prevent others from reading AM
+	if (assetManagerTemplate != nullptr) {
+		assetManagerTemplate->unloadAll();
+		initAssetManagerTemplate();
+		return assetManagerTemplate->reloadBundles();
+	}
+	return 1;
 }
 
 void MainWindow::on_PasswordLineEdit_textEdited(const QString& arg1)

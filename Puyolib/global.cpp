@@ -26,11 +26,11 @@ int debugMode = 0;
 #endif
 
 // Strings
-const std::string kFolderUserSounds = "User/Sounds/";
-const std::string kFolderUserMusic = "User/Music/";
-const std::string kFolderUserBackgrounds = "User/Backgrounds/";
-const std::string kFolderUserPuyo = "User/Puyo/";
-const std::string kFolderUserCharacter = "User/Characters/";
+const std::string kFolderUserSounds = "User/Sounds";
+const std::string kFolderUserMusic = "User/Music";
+const std::string kFolderUserBackgrounds = "User/Backgrounds";
+const std::string kFolderUserPuyo = "User/Puyo";
+const std::string kFolderUserCharacter = "User/Characters";
 
 // Sound
 std::vector<std::string> voicePattern;
