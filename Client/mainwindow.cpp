@@ -1005,8 +1005,7 @@ ppvs::AssetBundle* MainWindow::generateFolderBundle(const QString& base_path)
 		auto ch = ppvs::PuyoCharacter(i);
 		assetSettings->characterSetup[ch] = characters.at(i).toStdString();
 	}
-
-	return new ppvs::FolderAssetBundle(assetSettings);
+	return new ppvs::FolderAssetBundle(assetSettings, true);
 }
 
 ppvs::AssetBundle* MainWindow::generateDefaultBundle()
@@ -1022,7 +1021,7 @@ ppvs::AssetBundle* MainWindow::generateDefaultBundle()
 		auto ch = ppvs::PuyoCharacter(i);
 		assetSettings->characterSetup[ch] = "";
 	}
-	return new ppvs::FolderAssetBundle(assetSettings);
+	return new ppvs::FolderAssetBundle(assetSettings, false);
 }
 
 void MainWindow::initAssetManagerTemplate()
@@ -1036,7 +1035,17 @@ void MainWindow::initAssetManagerTemplate()
 int MainWindow::refreshAssetManagerTemplate()
 {
 	if (assetManagerTemplate != nullptr) {
-		return assetManagerTemplate->reloadBundles();
+		Settings& settings = pvsApp->settings();
+		auto* assetSettings = new ppvs::GameAssetSettings();
+		assetSettings->background = settings.string("custom", "background", "Forest").toUtf8().data();
+		assetSettings->puyo = settings.string("custom", "puyo", "Default").toUtf8().data();
+		assetSettings->sfx = settings.string("custom", "sound", "Default").toUtf8().data();
+		QStringList characters(settings.charMap());
+		for (int i = 0; i < characters.count(); i++) {
+			auto ch = ppvs::PuyoCharacter(i);
+			assetSettings->characterSetup[ch] = characters.at(i).toStdString();
+		}
+		return assetManagerTemplate->reloadBundles(assetSettings);
 	}
 	return 1;
 }

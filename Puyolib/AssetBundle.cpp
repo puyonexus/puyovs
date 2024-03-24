@@ -29,7 +29,6 @@ TokenFnTranslator::TokenFnTranslator(ppvs::GameAssetSettings* aS)
 
 TokenFnTranslator::~TokenFnTranslator() = default;
 
-
 void TokenFnTranslator::reload()
 {
 	specialTokens = {
@@ -38,19 +37,30 @@ void TokenFnTranslator::reload()
 		{ "%background%", kFolderUserBackgrounds + "/" + gameSettings->background },
 		{ "%puyo%", kFolderUserPuyo + "/" + gameSettings->puyo },
 		{ "%sfx%", gameSettings->sfx },
-		{ "%usersounds%", kFolderUserSounds},
-		{ "%charsetup%", kFolderUserCharacter  }
+		{ "%usersounds%", kFolderUserSounds },
+		{ "%charsetup%", kFolderUserCharacter }
 		// { "%custom%", custom_value } // Specifier for menus, animations
 	};
 }
-std::string TokenFnTranslator::token2fn(const SoundEffectToken token, const std::string& custom) {
-	return token2fn(sndTokenToPseudoFn[token],custom);
+
+void TokenFnTranslator::reload(GameAssetSettings* settings)
+{
+	settings->baseAssetDir = gameSettings->baseAssetDir; // Keep current folder location
+	gameSettings = settings;
+	reload();
 }
-std::string TokenFnTranslator::token2fn(const ImageToken token, const std::string& custom) {
-	return token2fn(imgTokenToPseudoFn[token],custom);
+
+std::string TokenFnTranslator::token2fn(const SoundEffectToken token, const std::string& custom)
+{
+	return token2fn(sndTokenToPseudoFn[token], custom);
 }
-std::string TokenFnTranslator::token2fn(const AnimationToken token, const std::string& custom) {
-	return token2fn(animTokenToPseudoFn[token],custom);
+std::string TokenFnTranslator::token2fn(const ImageToken token, const std::string& custom)
+{
+	return token2fn(imgTokenToPseudoFn[token], custom);
+}
+std::string TokenFnTranslator::token2fn(const AnimationToken token, const std::string& custom)
+{
+	return token2fn(animTokenToPseudoFn[token], custom);
 }
 
 std::string TokenFnTranslator::token2fn(const std::string& token, const std::string& custom)
@@ -74,14 +84,17 @@ std::string TokenFnTranslator::token2fn(const std::string& token, const std::str
 	return result;
 }
 // FIXME: duplicated code
-std::string TokenFnTranslator::token2fn(const SoundEffectToken token, const  PuyoCharacter character) {
-	return token2fn(sndTokenToPseudoFn[token],character);
+std::string TokenFnTranslator::token2fn(const SoundEffectToken token, const PuyoCharacter character)
+{
+	return token2fn(sndTokenToPseudoFn[token], character);
 }
-std::string TokenFnTranslator::token2fn(const ImageToken token, const  PuyoCharacter character) {
-	return token2fn(imgTokenToPseudoFn[token],character);
+std::string TokenFnTranslator::token2fn(const ImageToken token, const PuyoCharacter character)
+{
+	return token2fn(imgTokenToPseudoFn[token], character);
 }
-std::string TokenFnTranslator::token2fn(const AnimationToken token, const  PuyoCharacter character) {
-	return token2fn(animTokenToPseudoFn[token],character);
+std::string TokenFnTranslator::token2fn(const AnimationToken token, const PuyoCharacter character)
+{
+	return token2fn(animTokenToPseudoFn[token], character);
 }
 
 std::string TokenFnTranslator::token2fn(const std::string& token, PuyoCharacter character)
@@ -98,17 +111,23 @@ std::string TokenFnTranslator::token2fn(const std::string& token, PuyoCharacter 
 	return result;
 }
 
-FolderAssetBundle::FolderAssetBundle(ppvs::GameAssetSettings* folderLocations)
+FolderAssetBundle::FolderAssetBundle(ppvs::GameAssetSettings* folderLocations, bool is_user_defined)
 	: AssetBundle()
 	, m_settings(folderLocations)
 {
 	m_translator = new TokenFnTranslator(folderLocations);
+	user_defined = is_user_defined;
 }
 
 AssetBundle* FolderAssetBundle::clone()
 {
 	AssetBundle* new_bundle = new FolderAssetBundle(m_settings);
 	return new_bundle;
+}
+
+bool FolderAssetBundle::affectedByUser()
+{
+	return user_defined;
 }
 
 // Loads the texture, returns whether the load was successful (for files, whether the file exists and loads)
@@ -152,12 +171,10 @@ std::string FolderAssetBundle::getAnimationFolder(AnimationToken token, std::str
 	return isPossiblyAnimation(dir, script_name) ? dir : "";
 }
 
-void FolderAssetBundle::reload(Frontend* fe)
+void FolderAssetBundle::reload(GameAssetSettings* settings)
 {
-	if (fe) {
-		m_frontend = fe;
-	}
-	m_translator->reload();
+	assert(user_defined);
+	m_translator->reload(settings);
 }
 
 void FolderAssetBundle::reload()

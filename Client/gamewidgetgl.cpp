@@ -158,7 +158,6 @@ GameWidgetGL::~GameWidgetGL()
 	d->inputDriver->disableEvents();
 
 	delete d->gl;
-	delete d->am;
 	delete d;
 
 	delete mGame;

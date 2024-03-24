@@ -57,6 +57,10 @@ public:
 	// Assumes that you still have access to the setup data objects of each bundle
 	bool reloadBundles();
 
+	// Reloads the setup of all available bundles while overwriting user settings for all bundles
+	// TODO: allow special bundles not to be affected
+	bool reloadBundles(GameAssetSettings* settings);
+
 	// Iterators for menus
 	std::set<std::string> listPuyoSkins();
 	std::set<std::string> listBackgrounds();

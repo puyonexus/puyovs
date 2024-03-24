@@ -41,7 +41,6 @@ AssetManager::~AssetManager()
 
 bool AssetManager::loadBundle(AssetBundle* bundle, int priority)
 {
-	// bundle->init(m_front);
 	bundle->reload();
 	bundle->m_debug = m_debug;
 	// TODO: implement priority
@@ -198,11 +197,25 @@ bool AssetManager::reloadBundles()
 {
 	int number_of_loaded = 0;
 	for (auto bundle : m_bundleList) {
+		assert(bundle!= nullptr);
 		bundle->reload();
 		number_of_loaded++;
 	}
 	return number_of_loaded;
 }
+bool AssetManager::reloadBundles(GameAssetSettings* settings) {
+	int number_of_loaded = 0;
+	for (auto bundle: m_bundleList) {
+		assert(bundle!= nullptr);
+		if (bundle->affectedByUser()) {
+			bundle->reload(settings);
+			number_of_loaded++;
+		}
+	}
+	assert(number_of_loaded);
+	return number_of_loaded;
+}
+
 AssetManagerPriv::AssetManagerPriv(AssetManager* parent, Frontend* frontend, DebugLog* dbg)
 	: own_parent(parent)
 	, m_frontend(frontend)

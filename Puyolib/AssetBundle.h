@@ -133,6 +133,7 @@ public:
 	~TokenFnTranslator();
 
 	void reload();
+	void reload(GameAssetSettings* settings);
 
 	// For regular (global) tokens
 	std::string token2fn(const std::string& token, const std::string& custom = "");
@@ -140,11 +141,10 @@ public:
 	std::string token2fn(ImageToken token, const std::string& custom = "");
 	std::string token2fn(AnimationToken token, const std::string& custom = "");
 	// For character-specific tokens
-	std::string token2fn(const std::string& token,  PuyoCharacter character);
+	std::string token2fn(const std::string& token, PuyoCharacter character);
 	std::string token2fn(SoundEffectToken token, PuyoCharacter character);
 	std::string token2fn(ImageToken token, PuyoCharacter character);
 	std::string token2fn(AnimationToken token, PuyoCharacter character);
-
 
 	DebugLog* m_debug {};
 
@@ -288,7 +288,6 @@ public:
 	virtual ~AssetBundle() = default;
 	virtual AssetBundle* clone() = 0;
 
-
 	virtual FeImage* loadImage(ImageToken token, std::string custom, Frontend* frontend) = 0;
 	virtual FeSound* loadSound(SoundEffectToken token, std::string custom, Frontend* frontend) = 0;
 
@@ -303,19 +302,23 @@ public:
 	virtual std::list<std::string> listCharacterSkins() = 0;
 
 	virtual void reload() = 0;
-	// Reloads this bundle and gives it a Frontend, usually binding it to a particular game
-	virtual void reload(Frontend* fe) = 0;
+	// Reloads this bundle and feed it GameAssetSettings, usually forcing user settings
+	virtual void reload(GameAssetSettings* settings) = 0;
+
+	virtual bool affectedByUser() = 0;
 
 	bool active = false;
+
 	DebugLog* m_debug {};
 
 protected:
 	Frontend* m_frontend {};
+	bool user_defined = true;
 };
 
 class FolderAssetBundle : public AssetBundle {
 public:
-	FolderAssetBundle(ppvs::GameAssetSettings* folderLocations);
+	FolderAssetBundle(ppvs::GameAssetSettings* folderLocations, bool is_user_defined = true);
 	~FolderAssetBundle() override = default;
 
 	AssetBundle* clone() override;
@@ -336,9 +339,12 @@ public:
 	std::list<std::string> listCharacterSkins() override;
 
 	void reload() override;
-	void reload(Frontend* fe) override;
+	void reload(GameAssetSettings* settings) override;
 
-private:
+	bool affectedByUser() override;
+
+protected:
+	bool user_defined;
 	TokenFnTranslator* m_translator {};
 	GameAssetSettings* m_settings {};
 };

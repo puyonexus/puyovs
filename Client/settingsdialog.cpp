@@ -298,6 +298,7 @@ void SettingsDialog::fetchFileLists()
 
 	// HACK: possible infinite loop, this will wait until the template AM is set to be initialized
 	// This is to prevent race conditions if a different thread manipulates the same object
+	assert(am_template->is_initialized());
 	while (!am_template->is_initialized())
 	{}
 
