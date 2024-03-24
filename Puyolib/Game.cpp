@@ -411,11 +411,10 @@ void Game::hotReloadAssets() {
 	loadImages();
 	loadSounds();
 	for (auto* pl : m_players) {
-		pl->initVoices();
-		pl->reloadAllAssets();
-		pl->m_movePuyo.hotReload();
+		pl->hotReload();
 	}
 	m_charSelectMenu->hotRedraw();
+	m_debug->log("Hot reloading complete.",DebugMessageType::Debug);
 }
 
 bool Game::isFever() const
