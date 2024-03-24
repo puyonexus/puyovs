@@ -292,7 +292,7 @@ int Game::getActivePlayers() const
 	return pl;
 }
 
-void Game::initGame(Frontend* f, AssetManager* as_mgr)
+void Game::initGame(Frontend* f, AssetManagerPriv* as_mgr)
 {
 	m_data = new GameData;
 	m_data->front = f;

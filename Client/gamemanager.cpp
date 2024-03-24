@@ -223,7 +223,7 @@ GameWidget* GameManager::createGame(ppvs::GameSettings* gs, const QString& roomN
 			QString("new|") + QString("%1|").arg(PVSVERSION) + QString(gs->ruleSetInfo.ruleSetType == ppvs::Rules::TSU_ONLINE ? "0" : "1"));
 	}
 
-	GameWidget* widget = new GameWidgetGL(game, proxy, audio, assetManagerTemplate->clone(), static_cast<QWidget*>(parent()));
+	GameWidget* widget = new GameWidgetGL(game, proxy, audio, assetManagerTemplate, static_cast<QWidget*>(parent()));
 	addGame(widget);
 
 	return widget;

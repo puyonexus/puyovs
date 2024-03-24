@@ -98,8 +98,8 @@ std::string TokenFnTranslator::token2fn(const std::string& token, PuyoCharacter 
 	return result;
 }
 
-FolderAssetBundle::FolderAssetBundle(Frontend* fe, ppvs::GameAssetSettings* folderLocations)
-	: AssetBundle(fe)
+FolderAssetBundle::FolderAssetBundle(ppvs::GameAssetSettings* folderLocations)
+	: AssetBundle()
 	, m_settings(folderLocations)
 {
 	m_translator = new TokenFnTranslator(folderLocations);
@@ -107,40 +107,30 @@ FolderAssetBundle::FolderAssetBundle(Frontend* fe, ppvs::GameAssetSettings* fold
 
 AssetBundle* FolderAssetBundle::clone()
 {
-	AssetBundle* new_bundle = new FolderAssetBundle(m_frontend, m_settings);
+	AssetBundle* new_bundle = new FolderAssetBundle(m_settings);
 	return new_bundle;
 }
 
-bool FolderAssetBundle::init(ppvs::Frontend* fe)
-{
-
-	if (!m_frontend) {
-		m_frontend = fe;
-		return false;
-	}
-	return true; // invalid call
-}
-
 // Loads the texture, returns whether the load was successful (for files, whether the file exists and loads)
-FeImage* FolderAssetBundle::loadImage(ImageToken token, std::string custom = "")
+FeImage* FolderAssetBundle::loadImage(ImageToken token, std::string custom, Frontend* frontend)
 {
-	return m_frontend->loadImage(m_translator->token2fn(token, custom));
+	return frontend->loadImage(m_translator->token2fn(token, custom));
 }
 
 // Loads the sound, returns whether the load was successful (for files, whether the file exists and loads)
-FeSound* FolderAssetBundle::loadSound(SoundEffectToken token, std::string custom)
+FeSound* FolderAssetBundle::loadSound(SoundEffectToken token, std::string custom, Frontend* frontend)
 {
-	return m_frontend->loadSound(m_translator->token2fn(token, custom));
+	return frontend->loadSound(m_translator->token2fn(token, custom));
 }
 
-FeImage* FolderAssetBundle::loadCharImage(ImageToken token, PuyoCharacter character)
+FeImage* FolderAssetBundle::loadCharImage(ImageToken token, PuyoCharacter character, Frontend* frontend)
 {
-	return m_frontend->loadImage(m_translator->token2fn(token, character));
+	return frontend->loadImage(m_translator->token2fn(token, character));
 }
 
-FeSound* FolderAssetBundle::loadCharSound(SoundEffectToken token, PuyoCharacter character)
+FeSound* FolderAssetBundle::loadCharSound(SoundEffectToken token, PuyoCharacter character, Frontend* frontend)
 {
-	return m_frontend->loadSound(m_translator->token2fn(token, character));
+	return frontend->loadSound(m_translator->token2fn(token, character));
 }
 
 bool isPossiblyAnimation(std::string fname, std::string script_name)

@@ -80,15 +80,17 @@ void InGame::draw()
 	m_target->present();
 }
 
-ppvs::AssetManager* InGame::createAssetManager()
+ppvs::AssetManagerPriv* InGame::createAssetManager()
 {
-	auto* manager = new ppvs::AssetManager(m_frontend, m_game->m_debug);
+	ppvs::AssetManager* manager = new ppvs::AssetManager(m_game->m_debug);
 	// TODO: add bundles automatically
 
-	auto* defaultBundle = new ppvs::FolderAssetBundle(m_frontend, new ppvs::GameAssetSettings(m_game->m_settings));
+	auto* defaultBundle = new ppvs::FolderAssetBundle(new ppvs::GameAssetSettings(m_game->m_settings));
 	manager->loadBundle(defaultBundle);
 
-	return manager;
+	auto* priv = manager->generate_priv(m_frontend);
+	priv->activate(m_frontend,nullptr);
+	return priv;
 }
 
 }

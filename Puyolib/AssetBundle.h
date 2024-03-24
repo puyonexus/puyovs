@@ -285,19 +285,15 @@ private:
 class AssetBundle {
 public:
 	AssetBundle() = default;
-	explicit AssetBundle(Frontend* fe)
-		: m_frontend(fe) {};
 	virtual ~AssetBundle() = default;
 	virtual AssetBundle* clone() = 0;
 
-	// Gives this bundle a Frontend, usually binding it to a particular game
-	virtual bool init(Frontend* fe) = 0;
 
-	virtual FeImage* loadImage(ImageToken token, std::string custom) = 0;
-	virtual FeSound* loadSound(SoundEffectToken token, std::string custom) = 0;
+	virtual FeImage* loadImage(ImageToken token, std::string custom, Frontend* frontend) = 0;
+	virtual FeSound* loadSound(SoundEffectToken token, std::string custom, Frontend* frontend) = 0;
 
-	virtual FeImage* loadCharImage(ImageToken token, PuyoCharacter character) = 0;
-	virtual FeSound* loadCharSound(SoundEffectToken token, PuyoCharacter character) = 0;
+	virtual FeImage* loadCharImage(ImageToken token, PuyoCharacter character, Frontend* frontend) = 0;
+	virtual FeSound* loadCharSound(SoundEffectToken token, PuyoCharacter character, Frontend* frontend) = 0;
 	virtual std::string getCharAnimationsFolder(PuyoCharacter character) = 0;
 	virtual std::string getAnimationFolder(AnimationToken token, std::string script_name) = 0;
 
@@ -319,17 +315,16 @@ protected:
 
 class FolderAssetBundle : public AssetBundle {
 public:
-	FolderAssetBundle(Frontend* fe, GameAssetSettings* folderLocations);
+	FolderAssetBundle(ppvs::GameAssetSettings* folderLocations);
 	~FolderAssetBundle() override = default;
 
 	AssetBundle* clone() override;
-	bool init(Frontend* fe) override;
 
-	FeImage* loadImage(ImageToken token, std::string custom) override;
-	FeSound* loadSound(SoundEffectToken token, std::string custom) override;
+	FeImage* loadImage(ImageToken token, std::string custom, Frontend* frontend) override;
+	FeSound* loadSound(SoundEffectToken token, std::string custom, Frontend* frontend) override;
 
-	FeImage* loadCharImage(ImageToken token, PuyoCharacter character) override;
-	FeSound* loadCharSound(SoundEffectToken token, PuyoCharacter character) override;
+	FeImage* loadCharImage(ImageToken token, PuyoCharacter character, Frontend* frontend) override;
+	FeSound* loadCharSound(SoundEffectToken token, PuyoCharacter character, Frontend* frontend) override;
 
 	// Returns "" if invalid, otherwise a possible candidate for animation
 	std::string getCharAnimationsFolder(PuyoCharacter character) override;

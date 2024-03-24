@@ -124,7 +124,7 @@ MainWindow::MainWindow(QWidget* parent)
 	// Update server list
 	updateServerList();
 
-	assetManagerTemplate = new ppvs::AssetManager(nullptr, nullptr);
+	assetManagerTemplate = new ppvs::AssetManager(nullptr);
 	initAssetManagerTemplate();
 
 	// Install game timer
@@ -1006,7 +1006,7 @@ ppvs::AssetBundle* MainWindow::generateFolderBundle(const QString& base_path)
 		assetSettings->characterSetup[ch] = characters.at(i).toStdString();
 	}
 
-	return new ppvs::FolderAssetBundle(nullptr, assetSettings);
+	return new ppvs::FolderAssetBundle(assetSettings);
 }
 
 ppvs::AssetBundle* MainWindow::generateDefaultBundle()
@@ -1022,7 +1022,7 @@ ppvs::AssetBundle* MainWindow::generateDefaultBundle()
 		auto ch = ppvs::PuyoCharacter(i);
 		assetSettings->characterSetup[ch] = "";
 	}
-	return new ppvs::FolderAssetBundle(nullptr, assetSettings);
+	return new ppvs::FolderAssetBundle(assetSettings);
 }
 
 void MainWindow::initAssetManagerTemplate()
@@ -1035,10 +1035,7 @@ void MainWindow::initAssetManagerTemplate()
 
 int MainWindow::refreshAssetManagerTemplate()
 {
-	assetManagerTemplate->deInit(); // Prevent others from reading AM
 	if (assetManagerTemplate != nullptr) {
-		assetManagerTemplate->unloadAll();
-		initAssetManagerTemplate();
 		return assetManagerTemplate->reloadBundles();
 	}
 	return 1;

@@ -115,7 +115,7 @@ GameWidgetGL::GameWidgetGL(ppvs::Game* game, NetChannelProxy* proxy, GameAudio* 
 	setAttribute(Qt::WA_DeleteOnClose);
 	d->ready = false;
 	d->audio = audio;
-    // TODO: possibly should use a smart pointer with a move here instead
+	// TODO: possibly should use a smart pointer with a move here instead
 	d->am = am;
 	d->inputDriver = ilib::getDriver();
 	d->inputDriver->enableEvents();
@@ -266,7 +266,12 @@ void GameWidgetGL::initialize()
 	d->gl->makeCurrent();
 	auto frontend = new FrontendGL(d->gl, d->audio, d->inputState, d->ext, this);
 
-	mGame->initGame(frontend, d->am);
+	// Generates the handler for obtaining assets
+	auto* am_render = d->am->generate_priv(frontend, mGame->m_debug);
+	am_render->activate(frontend, mGame->m_debug);
+	assert(am_render->is_activated());
+
+	mGame->initGame(frontend, am_render);
 	connect(frontend, &FrontendGL::musicStateChanged, this, &GameWidgetGL::setupMusic);
 	connect(frontend, &FrontendGL::musicVolumeChanged, this, &GameWidgetGL::changeMusicVolume);
 	glEnable(GL_TEXTURE_2D);
