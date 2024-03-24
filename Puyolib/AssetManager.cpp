@@ -5,20 +5,9 @@
 
 namespace ppvs {
 
-AssetManagerPriv* AssetManager::generate_priv(Frontend* frontend)
-{
-	/*auto* current = new AssetManager;
-	for (auto bundle : m_bundleList) {
-	    current->loadBundle(bundle->clone());
-	}
-	//current->activate(m_front, m_debug);
-	//return current;*/
-
-	return new AssetManagerPriv(this, frontend, m_debug);
-}
 AssetManagerPriv* AssetManager::generate_priv(Frontend* frontend, DebugLog* dbg)
 {
-	return new AssetManagerPriv(this, frontend, dbg);
+	return new AssetManagerPriv(this, frontend, dbg ? dbg : m_debug);
 }
 
 AssetManager::AssetManager(DebugLog* dbg)

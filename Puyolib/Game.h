@@ -75,6 +75,7 @@ public:
 	void setWindowFocus(bool focus) const;
 	void setRules();
 	[[nodiscard]] bool isFever() const;
+	void hotReloadAssets();
 
 	// Other
 	void checkEnd();

@@ -75,6 +75,9 @@ protected:
 	void removeRankedFeverMatchRoom(NetChannel channel) const;
 	NetChannel selectedRankedFeverMatch() const;
 
+
+	void hotReloadGameAssets();
+
 public slots:
 	void updateActions() const;
 	void updateJoinButton() const;

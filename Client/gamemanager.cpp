@@ -700,6 +700,14 @@ void GameManager::rankedMatchmessageReceived(QString message)
 	}
 }
 
+void GameManager::hotReloadGameAssets()
+{
+	for (auto* widget: games) {
+		auto* game = widget->game();
+		game->hotReloadAssets();
+	}
+}
+
 bool GameManager::getGame(const QString& channel, ppvs::Game*& game, GameWidget*& widget) const
 {
 	if (channel.left(4) != "PVSM" && channel.left(4) != "PVST" && channel.left(4) != "PVSF")

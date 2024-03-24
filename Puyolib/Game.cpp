@@ -406,6 +406,18 @@ void Game::setRules()
 	}
 }
 
+void Game::hotReloadAssets() {
+	m_debug->log("Game is being asked to reload assets live.",DebugMessageType::Info);
+	loadImages();
+	loadSounds();
+	for (auto* pl : m_players) {
+		pl->initVoices();
+		pl->reloadAllAssets();
+		pl->m_movePuyo.hotReload();
+	}
+	m_charSelectMenu->hotRedraw();
+}
+
 bool Game::isFever() const
 {
 	bool fever = false;

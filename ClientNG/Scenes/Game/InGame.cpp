@@ -88,7 +88,7 @@ ppvs::AssetManagerPriv* InGame::createAssetManager()
 	auto* defaultBundle = new ppvs::FolderAssetBundle(new ppvs::GameAssetSettings(m_game->m_settings));
 	manager->loadBundle(defaultBundle);
 
-	auto* priv = manager->generate_priv(m_frontend);
+	auto* priv = manager->generate_priv(m_frontend, nullptr);
 	priv->activate(m_frontend,nullptr);
 	return priv;
 }

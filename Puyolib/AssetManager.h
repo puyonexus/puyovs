@@ -18,8 +18,7 @@ public:
 	AssetManager(DebugLog* dbg);
 	~AssetManager();
 
-	// Creates an unactivated clone of the current manager
-	AssetManagerPriv* generate_priv(Frontend* frontend);
+	// Creates a rendering agent for the Manager
 	AssetManagerPriv* generate_priv(Frontend* frontend, DebugLog* m_dbg);
 
 	// Initialized means that all bundles are loaded and is safe to refer to

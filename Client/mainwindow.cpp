@@ -502,6 +502,12 @@ void MainWindow::on_SettingsDialog_Finished(int result)
 		}
 	}
 	showSettingsDlg = false;
+	refreshAssetManagerTemplate();
+	hotReloadGameAssets();
+}
+
+void MainWindow::hotReloadGameAssets() {
+	gameManager->hotReloadGameAssets();
 }
 
 void MainWindow::on_SearchDialog_Finished(int result)

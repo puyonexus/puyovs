@@ -280,6 +280,7 @@ public:
 
 	// Debugging
 	int m_debug = 0;
+	void reloadAllAssets();
 
 	std::vector<MessageEvent> m_recordMessages;
 
