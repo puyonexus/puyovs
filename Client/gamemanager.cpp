@@ -248,6 +248,7 @@ void GameManager::gameDestroyed(GameWidget* game)
 	games.removeOne(game);
 
 	if (games.isEmpty()) {
+		pvsApp->setMusicMode(PVSApplication::MusicMode::MusicOff); // No Game present, do not play music
 	}
 }
 
