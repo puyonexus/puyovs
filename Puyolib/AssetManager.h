@@ -82,7 +82,7 @@ public:
 	// Activation means that it's being used in a particular game
 	void activate(Frontend* fe, DebugLog* dbg);
 	void deactivate() { activated = false; };
-	bool isAactivated() const { return activated; };
+	bool isActivated() const { return activated; };
 
 	// Attempts to load the image with the token (see FolderAssetBundle in AssetBundle.h)
 	// parameter `custom` will replace %custom% tag in pseudo-filename
