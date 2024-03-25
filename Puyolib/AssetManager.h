@@ -18,14 +18,16 @@ public:
 	AssetManager(DebugLog* dbg);
 	~AssetManager();
 
-	// Creates a rendering agent for the Manager
-	AssetManagerPriv* generate_priv(Frontend* frontend, DebugLog* m_dbg);
+	// Creates a proxy object for a Game instance
+	// This ensures that each ppvs::Game object receives a unique pointer that can be erased without any damage to others
+	// TODO: use smart pointers for this
+	AssetManagerPriv* generateGamePriv(Frontend* frontend, DebugLog* m_dbg);
 
 	// Initialized means that all bundles are loaded and is safe to refer to
 	// Here mostly for thread safety of Client
 	void init() { initialized = true; };
 	void deInit() { initialized = false; };
-	bool is_initialized() const { return initialized; };
+	bool isInitialized() const { return initialized; };
 
 	// Bundle management
 	bool loadBundle(AssetBundle* bundle, int priority = 0); // adds Bundle, assigns Frontend
@@ -80,7 +82,7 @@ public:
 	// Activation means that it's being used in a particular game
 	void activate(Frontend* fe, DebugLog* dbg);
 	void deactivate() { activated = false; };
-	bool is_activated() const { return activated; };
+	bool isAactivated() const { return activated; };
 
 	// Attempts to load the image with the token (see FolderAssetBundle in AssetBundle.h)
 	// parameter `custom` will replace %custom% tag in pseudo-filename

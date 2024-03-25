@@ -5,9 +5,9 @@
 
 namespace ppvs {
 
-AssetManagerPriv* AssetManager::generate_priv(Frontend* frontend, DebugLog* dbg)
+AssetManagerPriv* AssetManager::generateGamePriv(Frontend* frontend, DebugLog* m_dbg)
 {
-	return new AssetManagerPriv(this, frontend, dbg ? dbg : m_debug);
+	return new AssetManagerPriv(this, frontend, m_dbg ? m_dbg : m_debug);
 }
 
 AssetManager::AssetManager(DebugLog* dbg)

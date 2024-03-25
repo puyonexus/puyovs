@@ -266,9 +266,9 @@ void GameWidgetGL::initialize()
 	auto frontend = new FrontendGL(d->gl, d->audio, d->inputState, d->ext, this);
 
 	// Generates the handler for obtaining assets
-	auto* am_render = d->am->generate_priv(frontend, mGame->m_debug);
+	auto* am_render = d->am->generateGamePriv(frontend, mGame->m_debug);
 	am_render->activate(frontend, mGame->m_debug);
-	assert(am_render->is_activated());
+	assert(am_render->isActivated());
 
 	mGame->initGame(frontend, am_render);
 	connect(frontend, &FrontendGL::musicStateChanged, this, &GameWidgetGL::setupMusic);
