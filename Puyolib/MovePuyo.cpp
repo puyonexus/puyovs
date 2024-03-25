@@ -38,6 +38,13 @@ void Shadow::draw(FeRenderTarget* target)
 	m_sprite.draw(target);
 }
 
+void Shadow::hotReload()
+{
+	m_sprite.setImage((m_data->imgPuyo));
+	m_sprite.setSubRect(16 * kPuyoX - kPuyoX / 2 * (m_color / 3 + 1), 7 * kPuyoY + kPuyoY / 2 * (m_color % 3), kPuyoX / 2, kPuyoY / 2);
+	m_sprite.setCenter(kPuyoX / 4, kPuyoY / 4);
+}
+
 MovePuyo::MovePuyo()
 {
 	m_pos[0].x = 0;
@@ -172,6 +179,7 @@ void MovePuyo::setVisible(bool b)
 {
 	m_visible = b;
 }
+
 
 // Get move puyo ready to be dropped
 void MovePuyo::prepare(MovePuyoType type, Player* player, int color1, int color2)
@@ -1444,6 +1452,36 @@ void MovePuyo::drawQuick()
 	m_quick2.setScaleY(scaleY * m_qScale * corr / 1.5f);
 	m_quick1.draw(m_data->front);
 	m_quick2.draw(m_data->front);
+}
+
+void MovePuyo::hotReload()
+{
+	m_sprite1.setImage(m_data->imgPuyo);
+	m_sprite2.setImage(m_data->imgPuyo);
+	m_spriteEye1.setImage(m_data->imgPuyo);
+	m_spriteEye2.setImage(m_data->imgPuyo);
+
+	// Set sprite
+	m_sprite1.setSubRect(0, kPuyoY * m_color1, kPuyoX, kPuyoY);
+	m_sprite2.setSubRect(0, kPuyoY * m_color2, kPuyoX, kPuyoY);
+	m_spriteEye1.setSubRect(kPuyoX + 2 * kPuyoX * (m_color1 % 2), 12 * kPuyoY + kPuyoY * ((m_color1 / 2) % 2), kPuyoX, kPuyoY);
+	m_spriteEye2.setSubRect(kPuyoX + 2 * kPuyoX * (m_color2 % 2), 12 * kPuyoY + kPuyoY * ((m_color2 / 2) % 2), kPuyoX, kPuyoY);
+	m_sprite1.setCenter(kPuyoX / 2, kPuyoY / 2);
+	m_sprite2.setCenter(kPuyoX / 2, kPuyoY / 2);
+	m_spriteEye1.setCenter(kPuyoX / 2, kPuyoY / 2);
+	m_spriteEye2.setCenter(kPuyoX / 2, kPuyoY / 2);
+	m_quick1.setImage(m_data->imgPuyo);
+	m_quick2.setImage(m_data->imgPuyo);
+	m_quick1.setSubRect(4 * kPuyoX, 13 * kPuyoY, kPuyoX, kPuyoY);
+	m_quick2.setSubRect(4 * kPuyoX, 13 * kPuyoY, kPuyoX, kPuyoY);
+	m_quick1.setTransparency(0);
+	m_quick2.setTransparency(0);
+
+	m_shadow1.hotReload();
+	m_shadow2.hotReload();
+	m_shadow3.hotReload();
+	m_shadow4.hotReload();
+
 }
 
 }

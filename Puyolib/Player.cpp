@@ -2580,6 +2580,7 @@ void Player::prepareDisconnect()
 
 #pragma region Rendering
 
+
 // Draw everything from the player
 void Player::draw()
 {
@@ -2870,6 +2871,57 @@ void Player::setDropSetSprite(int x, int y, PuyoCharacter pc)
 			break;
 		}
 	}
+}
+
+void Player::hotReload()
+{
+	initVoices();
+	m_fieldFeverSprite.setImage(m_data->imgFieldFever);
+	m_allClearSprite.setImage(m_data->imgAllClear);
+	m_crossSprite.setImage(m_data->imgPuyo);
+	m_crossSprite.setSubRect(7 * kPuyoX, 12 * kPuyoY, kPuyoX, kPuyoY);
+	m_crossSprite.setCenter(0, 0);
+	m_winSprite.setImage(m_data->imgWin);
+	m_loseSprite.setImage(m_data->imgLose);
+	for (auto & i : m_colorMenuBorder) {
+		i.setImage(m_data->imgPlayerBorder);
+	}
+	for (auto & i : m_spice) {
+		i.setImage(m_data->imgSpice);
+	}
+	m_charHolderSprite.setImage(m_data->imgCharHolder);
+	m_rematchIcon.setImage(m_data->imgCheckMark);
+	if (m_playerNum==1) {
+		m_fieldSprite.setImage(m_data->imgField1);
+		m_borderSprite.setImage(m_data->imgBorder1);
+	}
+	else if (m_playerNum>1) {
+		m_fieldSprite.setImage(m_data->imgField2);
+		m_borderSprite.setImage(m_data->imgBorder2);
+	}
+	m_currentCharacterSprite.setImage(m_currentGame->m_assetManager->loadImage(ImageToken::imgCharIcon, m_character));
+	for (auto& i : m_dropSet) {
+		i.setImage(m_currentGame->m_assetManager->loadImage(ImageToken::imgDropSet));
+	}
+	setFieldImage(m_character);
+	const PosVectorFloat offset(
+		m_activeField->getProperties().centerX * 1,
+		m_activeField->getProperties().centerY / 2.0f * 1);
+	if (m_currentGame->m_players.size() <= 10)
+		m_characterAnimation.init(m_data, offset, 1, m_currentGame->m_assetManager->getAnimationFolder(m_character));
+	else
+		m_characterAnimation.init(m_data, offset, 1, "");
+	for (auto* sec : m_secondsObj) {
+		sec->reload();
+	}
+	if (m_chainWord!=nullptr) {
+		m_chainWord->reload();
+	}
+	m_movePuyo.hotReload();
+	m_scoreCounter.reload();
+	m_nextPuyo.initImage();
+	m_activeField->hotReload();
+
 }
 
 #pragma endregion

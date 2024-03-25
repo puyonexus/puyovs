@@ -23,12 +23,15 @@ public:
 	void play();
     [[nodiscard]] bool shouldDestroy() const;
 
+	void reload();
+
 private:
 	float m_posX, m_posY, m_speedX;
 	float m_gravityTimer;
 	float m_scale;
 	int m_timer;
 	Sprite m_sprite;
+	const GameData* m_data;
 };
 
 // Puyos that are "thrown" out
@@ -46,6 +49,7 @@ public:
 	void draw(FeRenderTarget*);
 	void play();
     [[nodiscard]] bool shouldDestroy() const;
+	void reload();
 
 private:
 	float m_posX = 0.f, m_posY = 0.f, m_speedX = 0.f, m_rotateSpeed = 0.f;
@@ -53,6 +57,7 @@ private:
 	float m_scale = 1.f, m_rotate = 0.;
 	int m_timer = 0;
 	Sprite m_sprite {};
+	const GameData* m_data;
 };
 
 // Object that shows the word XX chain
@@ -71,12 +76,14 @@ public:
 	void draw(FeRenderTarget* rw);
 	void showAt(float x, float y, int n);
 	void move();
+	void reload();
 
 private:
 	float m_posX = 0.f, m_posY = 0.f, m_scale = 1.f;
 	int m_timer = 100, m_number = 0;
 	bool m_visible = false;
 	Sprite m_spriteN1 {}, m_spriteN2 {}, m_spriteChain {};
+	const GameData* m_data;
 };
 
 // Object that shows the word +XX seconds
@@ -95,12 +102,14 @@ public:
 	void draw(FeRenderTarget* rw);
 	void showAt(float x, float y, int n);
 	void move();
+	void reload();
 
 private:
 	float m_posX = 0.f, m_posY = 0.f, m_scale = 1.f;
 	int m_timer = 100, m_number = 0;
 	bool m_visible = false;
 	Sprite m_spriteN1 {}, m_spriteN2 {}, m_spritePlus {};
+	const GameData* m_data;
 };
 
 // Light that represents garbage
@@ -120,6 +129,7 @@ public:
 	void setEnd(const PosVectorFloat& pv) { m_end = pv; }
 	void setMiddle(const PosVectorFloat& pv) { m_middle = pv; }
 	void draw(FeRenderTarget* rw);
+	void reload();
 
 private:
 	bool m_visible = false;
@@ -128,6 +138,7 @@ private:
 	Sprite m_sprite {};
 	Sprite m_tail {};
 	Sprite m_hitLight {};
+	const GameData* m_data;
 };
 
 // Light that represents a count for the fever gauge
@@ -145,6 +156,7 @@ public:
 	void setTimer(float timer);
 	void init(const PosVectorFloat&, const PosVectorFloat&, const PosVectorFloat&);
 	void draw(FeRenderTarget* rw);
+	void reload();
 
 private:
 	bool m_visible = false;
@@ -153,6 +165,7 @@ private:
 	float m_speed = 0.f;
 	Sprite m_sprite {};
 	Sprite m_hitLight {};
+	const GameData* m_data;
 };
 
 // The 6 nuisance puyos above the field
@@ -175,6 +188,7 @@ public:
 	void draw();
 	void setImage(int sprite, int image);
 	void setDarken(const bool d) { m_darken = d; }
+	void reload();
 
 private:
 	float m_timer = 0.f;
@@ -203,6 +217,7 @@ public:
 	void setCounter(int);
 	void setPointBonus(int, int);
 	void draw();
+	void reload();
 
 private:
 	int m_timer = 0;
