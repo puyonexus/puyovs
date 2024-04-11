@@ -2504,6 +2504,7 @@ void Player::getUpdate(std::string str)
 	sscanf(str.c_str(), "spectate|%i|%s |%i|%s |%i|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i|%i|", &ph, fieldstring, &fm, feverstring, &fc, &rngseed, &rngcalled, &trns, &clrs, &mrgntmr, &chn, &crntfvrchn, &nGQ, &fGQ, &prdctchn, &allclr);
 
 	// Initialize
+	m_currentGame->m_randomSeedNextList = rngseed;
 	setRandomSeed(rngseed, &m_rngNextList);
 	m_colors = clrs;
 	initValues(static_cast<int>(rngseed + m_onlineId));
@@ -2518,17 +2519,30 @@ void Player::getUpdate(std::string str)
 	m_feverGarbage.gq = fGQ;
 	updateTray();
 	m_calledRandomFeverChain = rngcalled;
-	for (int i = 0; i < rngcalled; i++) {
+	for (int i = 0; i <= rngcalled; i++) {
 		getRandom(0, m_rngFeverChain);
 		getRandom(0, m_rngFeverColor);
 	}
 	m_turns = trns;
 
+	// FIXME: First 3 pairs for each player after joining do not get updated
+	// Magically everything works fine after those three
+
+	// This emulates the first two pairs always being 3-colored by rules
+	// This might impact pool-based RNG algorithms
+	int rngNextListColorNum[3] = {3,3,m_colors};
 	// Call nextlist random
-	for (int i = 0; i < m_turns; i++) {
-		getRandom(0, m_rngNextList);
-		getRandom(0, m_rngNextList);
+	int turn_tally = 0;
+	while (turn_tally<=max(m_turns,0)) {
+		getRandom(rngNextListColorNum[min(turn_tally,2)], m_rngNextList);
+		getRandom(rngNextListColorNum[min(turn_tally,2)], m_rngNextList);
+		turn_tally++;
 	}
+	/*for (int i = 0; i <= m_turns; i++) {
+		getRandom(0, m_rngNextList);
+		getRandom(0, m_rngNextList);
+	}*/
+
 	m_marginTimer = mrgntmr;
 	m_chain = chn;
 	m_predictedChain = prdctchn;
