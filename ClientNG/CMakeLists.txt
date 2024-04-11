@@ -23,19 +23,22 @@ add_executable(vs2 WIN32
 	"Paths.cpp"
 	"Renderers/Software/Software.cpp"
 	"Renderers/Software/Software.h"
+	"Scenes/Game/MusicPlayer.cpp"
+	"Scenes/Game/MusicPlayer.h"
 )
 
 target_compile_features(vs2 PUBLIC cxx_std_17)
 
 target_link_libraries(vs2
-	JsonCpp
-	Puyolib
-	PVS_ENet
-	SDL2-static
-	SDL2main
-	SDL2_ttf::SDL2_ttf-static
+	Audiolib::Audiolib
+	JsonCpp::JsonCpp
 	ZLIB::ZLIB
-	spng
+	Puyolib::Puyolib
+	PVS_ENet
+	$<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+	$<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
+	$<IF:$<TARGET_EXISTS:SDL2_ttf::SDL2_ttf>,SDL2_ttf::SDL2_ttf,SDL2_ttf::SDL2_ttf-static>
+	spng::spng
 	glm::glm
 	${OPENGL_LIBRARIES}
 )

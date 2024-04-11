@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../Puyolib/GameSettings.h" // ppvs::RuleSetInfo
+#include "../Puyolib/AssetManager.h" //ppvs::AssetManager
 #include "../Puyolib/DebugLog.h" // ppvs::DebugLog
+#include "../Puyolib/GameSettings.h" // ppvs::RuleSetInfo
 #include "netclient.h"
 #include <QBasicTimer>
 #include <QList>
@@ -13,18 +14,20 @@ class GameWidget;
 class NetClient;
 class Settings;
 
+namespace ppvs {
+class GameAssetSettings;
+}
+
 // WARNING: There may only be one of this class due to a current implementation detail...
 
 class GameManager : public QObject {
 	Q_OBJECT
 public:
-	GameManager(NetClient* network, QObject* parent = nullptr);
+	explicit GameManager(NetClient* network, ppvs::AssetManager* am, QObject* parent = nullptr);
 	~GameManager() override;
 
 	bool closeAll();
 	void exec();
-
-
 
 public slots:
 	void addGame(GameWidget* game);
@@ -49,6 +52,7 @@ private slots:
 	void rankedMatchmessageReceived(QString message);
 signals:
 	void exiting();
+	void refreshAssetManagerTemplate();
 
 protected:
 	static void handleDebugLog(std::string text, ppvs::DebugMessageType severity);
@@ -60,5 +64,6 @@ protected:
 	NetClient* network;
 	GameAudio* audio;
 
+	ppvs::AssetManager* assetManagerTemplate{};
 	ppvs::DebugLog* dbg;
 };

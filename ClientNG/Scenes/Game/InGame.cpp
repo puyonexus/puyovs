@@ -1,6 +1,5 @@
 #include "InGame.h"
 
-#include "../../../Puyolib/Game.h"
 #include "../../Game.h"
 #include "Frontend.h"
 
@@ -35,14 +34,13 @@ void handlePuyolibDebugLog(std::string text, DebugMessageType sev)
 
 namespace PuyoVS::ClientNG::Scenes::Game {
 
-
 InGame::InGame(GameWindow& w, std::unique_ptr<ppvs::Game> game)
 	: Scene(w.renderTarget())
 	, m_window(w)
 	, m_game(std::move(game))
 	, m_frontend(new GameFrontend(m_target))
 {
-	m_game->initGame(m_frontend);
+	m_game->initGame(m_frontend, createAssetManager());
 }
 
 InGame::~InGame() = default;
@@ -82,5 +80,15 @@ void InGame::draw()
 	m_target->present();
 }
 
+ppvs::AssetManager* InGame::createAssetManager()
+{
+	auto* manager = new ppvs::AssetManager(m_frontend, m_game->m_debug);
+	// TODO: add bundles automatically
+
+	auto* defaultBundle = new ppvs::FolderAssetBundle(m_frontend, new ppvs::GameAssetSettings(m_game->m_settings));
+	manager->loadBundle(defaultBundle);
+
+	return manager;
+}
 
 }

@@ -7,6 +7,10 @@ namespace Ui {
 class SettingsDialog;
 }
 
+namespace ppvs {
+class AssetManager;
+}
+
 class LanguageManager;
 class PlaylistModel;
 
@@ -21,7 +25,7 @@ public:
 		EndlessFever
 	};
 
-	explicit SettingsDialog(LanguageManager* lm, QWidget* parent = nullptr);
+	explicit SettingsDialog(LanguageManager* lm, ppvs::AssetManager* am = nullptr, QWidget* parent = nullptr);
 	~SettingsDialog() override;
 
 	void load();
@@ -49,6 +53,7 @@ private:
 	void translateDefaultCharacters() const;
 
 	PlaylistModel *normalPlaylistModel, *feverPlaylistModel;
+	ppvs::AssetManager* am_template;
 
 	QStringList backgroundsList;
 	QStringList puyoList;

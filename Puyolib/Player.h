@@ -21,6 +21,8 @@ namespace ppvs {
 
 class Player;
 class Game;
+enum class ImageToken;
+enum class SoundEffectToken;
 
 struct GarbageCounter {
 	int cq = 0, gq = 0;
@@ -74,6 +76,7 @@ public:
 	void reset();
 	void initValues(int randomSeed);
 	FeSound* loadVoice(const std::string& folder, const char* sound);
+	FeSound* loadVoice(SoundEffectToken token);
 	void initVoices();
 	void initNextList();
 	void playerSetup(FieldProp& properties, int playerNum, int playerTotal);

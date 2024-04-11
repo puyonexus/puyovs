@@ -17,8 +17,11 @@ class MainWindow;
 }
 
 namespace ppvs {
+class AssetManager;
+class AssetBundle;
 class Game;
 struct GameSettings;
+struct GameAssetSettings;
 struct RuleSetInfo;
 }
 
@@ -52,6 +55,13 @@ public:
 	QNetworkReply* serverListReply = nullptr;
 	QNetworkAccessManager* netMan = nullptr;
 
+	// ppvs::AssetManger related
+	static ppvs::AssetBundle* generateFolderBundle(const QString& base_path);
+	// Generates bundle with only default assets
+	static ppvs::AssetBundle* generateDefaultBundle();
+	void initAssetManagerTemplate();
+
+
 protected:
 	void closeEvent(QCloseEvent*) override;
 	void addMatchRoom(NetChannel channel);
@@ -75,6 +85,8 @@ public slots:
 	void on_SearchDialog_Finished(int result);
 	void on_OfflineDialog_Finished(int result);
 	void on_CreateChatroomDialog_Finished(CreateChatroomDialog*) const;
+
+	int refreshAssetManagerTemplate();
 
 private slots:
 	void getServerList() const;
@@ -134,5 +146,7 @@ private:
 	bool showSettingsDlg = false;
 	bool showSearchDlg = false;
 	SearchDialog* searchDlg = nullptr;
+	// This object gets imprinted into all Puyolib::Game instances
+	ppvs::AssetManager* assetManagerTemplate = nullptr;
 	ppvs::GameSettings* mGameSettings = nullptr;
 };

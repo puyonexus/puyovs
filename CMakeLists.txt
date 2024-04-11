@@ -1,8 +1,21 @@
 cmake_minimum_required(VERSION 3.13)
 project(puyovs)
 
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules/" ${CMAKE_MODULE_PATH})
+
 # Improves IDE support.
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+# Automatically set up compile_commands.json
+option(SETUP_COMPILE_COMMANDS "Automatically set up compile_commands.json" ON)
+if(SETUP_COMPILE_COMMANDS)
+  set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E create_symlink
+      ${CMAKE_BINARY_DIR}/compile_commands.json
+      ${CMAKE_CURRENT_SOURCE_DIR}/compile_commands.json
+  )
+endif()
 
 # Path setup.
 if(WIN32)
@@ -58,6 +71,15 @@ endif()
 
 set(OPT_DEF_LIBC ON)
 
+include(ThirdParty/zlib-ng/config.cmake)
+include(ThirdParty/glm/config.cmake)
+include(ThirdParty/jsoncpp/config.cmake)
+include(ThirdParty/libspng/config.cmake)
+include(ThirdParty/sdl/config.cmake)
+include(ThirdParty/sdl-ttf/config.cmake)
+include(ThirdParty/vgmstream/config.cmake)
+include(ThirdParty/enet/config.cmake)
+
 # Add sub-projects.
 add_subdirectory(Audiolib)
 add_subdirectory(Audiotest)
@@ -67,15 +89,6 @@ add_subdirectory(Inputlib)
 add_subdirectory(Inputtest)
 add_subdirectory(Puyolib)
 add_subdirectory(PVS_ENet)
-
-add_subdirectory(ThirdParty/zlib-ng)
-add_subdirectory(ThirdParty/glm)
-add_subdirectory(ThirdParty/jsoncpp)
-add_subdirectory(ThirdParty/libspng)
-add_subdirectory(ThirdParty/sdl)
-add_subdirectory(ThirdParty/sdl-ttf)
-add_subdirectory(ThirdParty/vgmstream)
-add_subdirectory(ThirdParty/enet)
 
 # CPack support.
 set(CPACK_SET_DESTDIR                 ON)

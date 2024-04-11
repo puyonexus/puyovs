@@ -17,11 +17,15 @@ public:
 	~GameAudio() override;
 
 	void play(const QString& path);
+	bool test(const QString& path);
+
+	bool error();
 
 private slots:
 	void init();
 
 private:
+	bool m_error;
 	alib::Device* audioDevice;
 	SampleCache sampleCache;
 };

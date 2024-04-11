@@ -2,6 +2,7 @@
 #include "common.h"
 #include "musicplayer.h"
 #include "playlist.h"
+#include "../Puyolib/AssetManager.h"
 #include <QDir>
 #include <alib/audiolib.h>
 

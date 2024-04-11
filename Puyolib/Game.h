@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Animation.h"
+#include "AssetManager.h"
 #include "CharacterSelect.h"
 #include "Frontend.h"
 #include "GameSettings.h"
@@ -68,7 +69,7 @@ public:
 	bool m_runGame = false;
 
 	// Game related
-	void initGame(Frontend* f);
+	void initGame(Frontend* f, AssetManager* as_mgr);
 	void playGame();
 	void renderGame();
 	void setWindowFocus(bool focus) const;
@@ -101,6 +102,7 @@ public:
 	int m_activeAtStart = 0;
 
 	// Public variables
+	AssetManager* m_assetManager{};
 	int m_menuSelect = 0;
 	Animation m_readyGoObj {};
 	Animation m_backgroundAnimation {};
