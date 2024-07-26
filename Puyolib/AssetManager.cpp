@@ -33,8 +33,10 @@ bool AssetManager::loadBundle(AssetBundle* bundle, int priority)
 	bundle->reload();
 	bundle->m_debug = m_debug;
 	// TODO: implement priority
-	m_bundleList.push_back(bundle);
-	return false;
+	if (bundle->valid) {
+		m_bundleList.push_back(bundle);
+	}
+	return bundle->valid;
 }
 
 bool AssetManager::deleteBundle(AssetBundle* bundle)

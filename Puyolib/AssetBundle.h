@@ -6,6 +6,7 @@
 #include "DebugLog.h"
 #include "GameSettings.h"
 #include "RuleSet/RuleSet.h"
+#include <filesystem>
 #include <iostream>
 #include <map>
 #include <string>
@@ -146,6 +147,11 @@ public:
 	std::string token2fn(ImageToken token, PuyoCharacter character);
 	std::string token2fn(AnimationToken token, PuyoCharacter character);
 
+<<<<<<< HEAD
+=======
+	std::filesystem::path getBaseFolder();
+
+>>>>>>> bd86ca3 (Do not crash when a folder is missing in a FolderBundle)
 	DebugLog* m_debug {};
 
 private:
@@ -308,7 +314,11 @@ public:
 	virtual bool affectedByUser() = 0;
 
 	bool active = false;
+<<<<<<< HEAD
 
+=======
+	bool valid = false;
+>>>>>>> bd86ca3 (Do not crash when a folder is missing in a FolderBundle)
 	DebugLog* m_debug {};
 
 protected:

@@ -1025,7 +1025,7 @@ ppvs::AssetBundle* MainWindow::generateDefaultBundle()
 	QStringList characters(settings.charMap());
 	for (int i = 0; i < characters.count(); i++) {
 		auto ch = ppvs::PuyoCharacter(i);
-		assetSettings->characterSetup[ch] = "";
+		assetSettings->characterSetup[ch] = characters.at(i).toStdString();
 	}
 	return new ppvs::FolderAssetBundle(assetSettings, false);
 }
