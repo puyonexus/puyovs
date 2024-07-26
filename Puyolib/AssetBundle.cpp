@@ -42,7 +42,7 @@ void TokenFnTranslator::reload()
 		// { "%custom%", custom_value } // Specifier for menus, animations
 	};
 }
-<<<<<<< HEAD
+
 
 void TokenFnTranslator::reload(GameAssetSettings* settings)
 {
@@ -59,16 +59,6 @@ std::string TokenFnTranslator::token2fn(const ImageToken token, const std::strin
 {
 	return token2fn(imgTokenToPseudoFn[token], custom);
 }
-=======
-std::string TokenFnTranslator::token2fn(const SoundEffectToken token, const std::string& custom)
-{
-	return token2fn(sndTokenToPseudoFn[token], custom);
-}
-std::string TokenFnTranslator::token2fn(const ImageToken token, const std::string& custom)
-{
-	return token2fn(imgTokenToPseudoFn[token], custom);
-}
->>>>>>> bd86ca3 (Do not crash when a folder is missing in a FolderBundle)
 std::string TokenFnTranslator::token2fn(const AnimationToken token, const std::string& custom)
 {
 	return token2fn(animTokenToPseudoFn[token], custom);
@@ -122,30 +112,20 @@ std::string TokenFnTranslator::token2fn(const std::string& token, PuyoCharacter 
 	return result;
 }
 
-<<<<<<< HEAD
+
 FolderAssetBundle::FolderAssetBundle(ppvs::GameAssetSettings* folderLocations, bool is_user_defined)
 	: AssetBundle()
 	, m_settings(folderLocations)
 {
 	m_translator = new TokenFnTranslator(folderLocations);
 	user_defined = is_user_defined;
-=======
+}
+
 std::filesystem::path TokenFnTranslator::getBaseFolder()
 {
 	return gameSettings->baseAssetDir;
 }
 
-FolderAssetBundle::FolderAssetBundle(Frontend* fe, ppvs::GameAssetSettings* folderLocations)
-	: AssetBundle(fe)
-	, m_settings(folderLocations)
-{
-	m_translator = new TokenFnTranslator(folderLocations);
-	// Mark as valid if the folder actually exists on the file system
-	if (std::filesystem::is_directory(folderLocations->baseAssetDir)) {
-		valid = true;
-	}
->>>>>>> bd86ca3 (Do not crash when a folder is missing in a FolderBundle)
-}
 
 AssetBundle* FolderAssetBundle::clone()
 {
