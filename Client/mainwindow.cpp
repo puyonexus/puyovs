@@ -124,7 +124,7 @@ MainWindow::MainWindow(QWidget* parent)
 	// Update server list
 	updateServerList();
 
-	assetManagerTemplate = new ppvs::AssetManager(nullptr, nullptr);
+	assetManagerTemplate = new ppvs::AssetManager(nullptr);
 	initAssetManagerTemplate();
 
 	// Install game timer
@@ -502,6 +502,12 @@ void MainWindow::on_SettingsDialog_Finished(int result)
 		}
 	}
 	showSettingsDlg = false;
+	refreshAssetManagerTemplate();
+	hotReloadGameAssets();
+}
+
+void MainWindow::hotReloadGameAssets() {
+	gameManager->hotReloadGameAssets();
 }
 
 void MainWindow::on_SearchDialog_Finished(int result)
@@ -1005,8 +1011,7 @@ ppvs::AssetBundle* MainWindow::generateFolderBundle(const QString& base_path)
 		auto ch = ppvs::PuyoCharacter(i);
 		assetSettings->characterSetup[ch] = characters.at(i).toStdString();
 	}
-
-	return new ppvs::FolderAssetBundle(nullptr, assetSettings);
+	return new ppvs::FolderAssetBundle(assetSettings, true);
 }
 
 ppvs::AssetBundle* MainWindow::generateDefaultBundle()
@@ -1020,9 +1025,9 @@ ppvs::AssetBundle* MainWindow::generateDefaultBundle()
 	QStringList characters(settings.charMap());
 	for (int i = 0; i < characters.count(); i++) {
 		auto ch = ppvs::PuyoCharacter(i);
-		assetSettings->characterSetup[ch] = "";
+		assetSettings->characterSetup[ch] = characters.at(i).toStdString();
 	}
-	return new ppvs::FolderAssetBundle(nullptr, assetSettings);
+	return new ppvs::FolderAssetBundle(assetSettings, false);
 }
 
 void MainWindow::initAssetManagerTemplate()
@@ -1035,11 +1040,18 @@ void MainWindow::initAssetManagerTemplate()
 
 int MainWindow::refreshAssetManagerTemplate()
 {
-	assetManagerTemplate->deInit(); // Prevent others from reading AM
 	if (assetManagerTemplate != nullptr) {
-		assetManagerTemplate->unloadAll();
-		initAssetManagerTemplate();
-		return assetManagerTemplate->reloadBundles();
+		Settings& settings = pvsApp->settings();
+		auto* assetSettings = new ppvs::GameAssetSettings();
+		assetSettings->background = settings.string("custom", "background", "Forest").toUtf8().data();
+		assetSettings->puyo = settings.string("custom", "puyo", "Default").toUtf8().data();
+		assetSettings->sfx = settings.string("custom", "sound", "Default").toUtf8().data();
+		QStringList characters(settings.charMap());
+		for (int i = 0; i < characters.count(); i++) {
+			auto ch = ppvs::PuyoCharacter(i);
+			assetSettings->characterSetup[ch] = characters.at(i).toStdString();
+		}
+		return assetManagerTemplate->reloadBundles(assetSettings);
 	}
 	return 1;
 }

@@ -292,7 +292,7 @@ int Game::getActivePlayers() const
 	return pl;
 }
 
-void Game::initGame(Frontend* f, AssetManager* as_mgr)
+void Game::initGame(Frontend* f, AssetManagerPriv* as_mgr)
 {
 	m_data = new GameData;
 	m_data->front = f;
@@ -404,6 +404,17 @@ void Game::setRules()
 		for (const auto& player : m_players)
 			player->m_colors = 4;
 	}
+}
+
+void Game::hotReloadAssets() {
+	m_debug->log("Game is being asked to reload assets live.",DebugMessageType::Info);
+	loadImages();
+	loadSounds();
+	for (auto* pl : m_players) {
+		pl->hotReload();
+	}
+	m_charSelectMenu->hotRedraw();
+	m_debug->log("Hot reloading complete.",DebugMessageType::Debug);
 }
 
 bool Game::isFever() const

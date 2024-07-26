@@ -16,6 +16,7 @@ public:
 	CharacterSelect& operator=(const CharacterSelect&) = delete;
 	CharacterSelect(CharacterSelect&&) = delete;
 	CharacterSelect& operator=(CharacterSelect&&) = delete;
+	void hotRedraw();
 
 	void draw();
 	void prepare();

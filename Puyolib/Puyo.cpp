@@ -82,6 +82,10 @@ Puyo* Puyo::clone()
 	return new Puyo(*this);
 }
 
+void Puyo::reloadSprite() {
+	m_sprite.setImage(m_data->imgPuyo);
+}
+
 // Add to acceleration and set position
 void Puyo::addAccelerationY(float val)
 {
