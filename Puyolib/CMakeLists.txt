@@ -1,4 +1,4 @@
-add_library(Puyolib
+add_library(Puyolib STATIC
     tinyxmlparser.cpp
     tinyxmlerror.cpp
     tinyxml.cpp

@@ -1,4 +1,4 @@
-add_library(VgmStream
+add_library(VgmStream STATIC
     src/vgmstream.c
     src/util.c
     src/streamfile.c

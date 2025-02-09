@@ -1,4 +1,4 @@
-add_library(PVS_ENet 
+add_library(PVS_ENet STATIC
     PVS_Channel.cpp
     PVS_Channel.h
     PVS_Client.cpp
