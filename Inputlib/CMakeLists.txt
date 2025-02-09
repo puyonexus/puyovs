@@ -1,6 +1,6 @@
 add_compile_definitions(INPUTLIB)
 
-add_library(Inputlib
+add_library(Inputlib STATIC
     driver.cpp
     drivers/sdldriver.cpp
     drivers/dinputdriver.cpp

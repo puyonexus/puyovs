@@ -1,6 +1,6 @@
 include_directories(include)
 
-add_library(ENet
+add_library(ENet STATIC
     callbacks.c
     compress.c
     host.c

@@ -6,7 +6,7 @@ add_compile_definitions(
     FLOATING_POINT
 )
 
-add_library(Audiolib
+add_library(Audiolib STATIC
     audiolib.cpp
     minimp3.c
     stream.cpp
