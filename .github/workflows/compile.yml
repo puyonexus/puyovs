@@ -13,7 +13,7 @@ jobs:
       matrix:
         arch: [x86, x64]
     name: Build (Windows)
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
     - name: Download Qt SDK
       run: Invoke-WebRequest -Uri "https://github.com/puyonexus/qt-sdk-builder/releases/download/v2/qt-windows-5.15.2-${{ matrix.arch }}-msvc-static-release.7z" -OutFile "C:\qt.7z"
@@ -22,24 +22,14 @@ jobs:
     - name: Add Qt SDK to path
       run: echo "C:\Qt\Qt-5.15.2\bin" | Out-File -FilePath $Env:GITHUB_PATH -Encoding utf8 -Append
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: recursive
-    - name: Make CMake Build Dir
+    - name: Configure and Build PuyoVS
       run: |
-        mkdir .build
-        cd .build
-    - name: Configure PuyoVS (32-bit)
-      if: matrix.arch == 'x86'
-      run: cmake -A Win32 ${{ github.workspace }}
-      working-directory: .build
-    - name: Configure PuyoVS (64-bit)
-      if: matrix.arch == 'x64'
-      run: cmake -A x64 ${{ github.workspace }}
-      working-directory: .build
-    - name: Build PuyoVS
-      run: cmake --build . --config Release
-      working-directory: .build
+        $cmakeArch = if ($("${{ matrix.arch }}") -eq "x86") { "Win32" } else { "x64" }
+        cmake -S . -B .build -A $cmakeArch
+        cmake --build .build --config Release
     - name: Setup Build Folder
       run: |
         mkdir Build
@@ -49,14 +39,15 @@ jobs:
     - name: Package Build Artifact
       run: 7z a puyovs-windows-${{ matrix.arch }}.7z "${{ github.workspace }}\Build\Release\*"
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: puyovs-windows-${{ matrix.arch }}
         path: puyovs-windows-${{ matrix.arch }}.7z
+        retention-days: 5
 
   build-macos:
     name: Build (macOS)
-    runs-on: macos-11
+    runs-on: macos-13
     steps:
     - name: Download Qt SDK
       run: curl -Lo "$HOME/qt.7z" "https://github.com/puyonexus/qt-sdk-builder/releases/download/v2/qt-macos-5.15.2-x86_64-static-release.7z"
@@ -65,55 +56,51 @@ jobs:
     - name: Add Qt SDK to path
       run: echo "$HOME/Qt-5.15.2/bin" >> $GITHUB_PATH
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: recursive
-    - name: Make CMake Build Dir
-      run: mkdir .build
-    - name: Configure PuyoVS
-      run: cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ${{ github.workspace }}
-      working-directory: .build
-    - name: Build PuyoVS
-      run: cmake --build . --parallel 4
-      working-directory: .build
+    - name: Configure and Build PuyoVS
+      run: |
+        cmake -S . -B .build -DCMAKE_BUILD_TYPE=RelWithDebInfo
+        cmake --build .build --parallel $(sysctl -n hw.ncpu)
     - name: Copy Assets To Bundle
       run: cp -r ${{ github.workspace }}/Assets/* "./Client/PuyoVS.app/Contents/MacOS/"
       working-directory: .build
     - name: Package Build Artifact
       run: 7z a puyovs-macos-amd64.7z "./.build/Client/PuyoVS.app"
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: puyovs-macos-amd64
         path: puyovs-macos-amd64.7z
+        retention-days: 5
 
   build-flatpak:
     name: Build (Flatpak)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: recursive
-    - name: Install Flatpak builder
-      run: sudo apt update && sudo apt install -y flatpak-builder
-    - name: Add Flathub repo
-      run: sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-    - name: Install Flatpak SDKs
-      run: sudo flatpak install -y flathub runtime/org.kde.Platform/x86_64/5.15-21.08 runtime/org.kde.Sdk/x86_64/5.15-21.08
-    - name: Make build directory
-      run: mkdir ../build
-    - name: Build
-      run: flatpak-builder --repo ../repo ../build com.puyovs.client.yaml
-    - name: Export
-      run: flatpak build-bundle ../repo puyovs.flatpak com.puyovs.client --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo
+    - name: Install and Configure Flatpak
+      run: |
+        sudo apt update && sudo apt install -y flatpak-builder
+        sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+        sudo flatpak install -y flathub runtime/org.kde.Platform/x86_64/5.15-21.08 runtime/org.kde.Sdk/x86_64/5.15-21.08
+    - name: Build and Export Flatpak
+      run: |
+        mkdir -p ../build
+        flatpak-builder --repo ../repo ../build com.puyovs.client.yaml
+        flatpak build-bundle ../repo puyovs.flatpak com.puyovs.client --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo
     - name: Package Build Artifact
       run: 7z a puyovs-linux-amd64-flatpak.7z "puyovs.flatpak"
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: puyovs-linux-amd64-flatpak
         path: puyovs-linux-amd64-flatpak.7z
+        retention-days: 5
 
   release:
     if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
@@ -123,69 +110,62 @@ jobs:
     - build-windows
     - build-macos
     - build-flatpak
+    permissions: write-all
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
-
-    - name: Delete Stale Nightly
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: actions/checkout@v4
+    - name: Determine Release Tag
+      id: release_tag
       run: |
-        set -eu
-
-        github_rest()
-        {
-          local method="${1}"
-          local url="https://api.github.com${2}"
-          shift 2
-          >&2 echo "${method} ${url}"
-          curl --fail -H "Accept: application/vnd.github.v3+json" \
-            -H "Authorization: token ${GITHUB_TOKEN}" \
-            -X "${method}" "${url}" "$@"
-        }
-
-        github_get_release_id_for_tag()
-        {
-          payload=$(github_rest GET "/repos/${GITHUB_REPOSITORY}/releases/tags/${1}") || return
-          echo "${payload}" | jq .id
-        }
-
-        github_delete_release_by_id()
-        {
-          github_rest DELETE "/repos/${GITHUB_REPOSITORY}/releases/${1}"
-        }
-
-        case ${GITHUB_REF} in
-          refs/heads/master)
-            { release_id=$(github_get_release_id_for_tag nightly); status=$?; } || true
-            case ${status} in
-              0) github_delete_release_by_id "${release_id}" ;;
-              22) >&2 echo "No current nightly release; skipping stale release cleanup." ;;
-              *) >&2 echo "API call failed unexpectedly." && exit 1 ;;
-            esac
-            echo "RELEASE_TAG=nightly" >> $GITHUB_ENV
-            ;;
-          refs/tags/*)
-            echo "RELEASE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-            ;;
-        esac
-
+        if [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
+          echo "release_tag=nightly" >> $GITHUB_OUTPUT
+        else
+          echo "release_tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        fi
+    - name: Delete Stale Nightly
+      if: github.ref == 'refs/heads/master'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const owner = context.repo.owner;
+          const repo = context.repo.repo;
+          try {
+            const { data: release } = await github.rest.repos.getReleaseByTag({
+              owner,
+              repo,
+              tag: 'nightly',
+            });
+            await github.rest.repos.deleteRelease({
+              owner,
+              repo,
+              release_id: release.id,
+            });
+            console.log('Deleted nightly release.');
+          } catch (error) {
+            if (error.status === 404) {
+              console.log('No current nightly release; skipping stale release cleanup.');
+            } else {
+              console.error('API call failed unexpectedly:', error);
+              core.setFailed(error.message);
+            }
+          }
     - if: github.ref == 'refs/heads/master'
       uses: rickstaa/action-create-tag@v1
       with:
         tag: "nightly"
         message: "Latest release"
         force_push_tag: true
-
     - name: Download Artifacts
-      uses: actions/download-artifact@v3
-
+      uses: actions/download-artifact@v4
     - name: Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
-        body: Latest nightly build. **Nightly builds are for testing purposes only. They should not be used for ordinary play. You may experience unexpected behavior.**
-        token: ${{ secrets.GITHUB_TOKEN }}
-        files: puyovs-*/puyovs-*.7z
-        tag_name: ${{ env.RELEASE_TAG }}
+        body: |
+          Latest nightly build.
+          **Nightly builds are for testing purposes only.  They should not be used for ordinary play. You may experience unexpected behavior.**
+        files: |
+          puyovs-*/puyovs-*.7z
+        tag_name: ${{ steps.release_tag.outputs.release_tag }}
         fail_on_unmatched_files: true
-        prerelease: true
+        prerelease: ${{ github.ref == 'refs/heads/master' }}
+        draft: ${{ github.ref != 'refs/heads/master' }}
