@@ -51,6 +51,26 @@ CharacterSelect::~CharacterSelect()
 	delete[] m_madeChoice;
 }
 
+void CharacterSelect::hotRedraw()
+{
+	constexpr int height = 3;
+	for (int i = 0; i < height; i++) {
+		constexpr int width = 8;
+		for (int j = 0; j < width; j++) {
+			m_holder[i * width + j].setImage(m_data->imgCharHolder);
+			m_holder[i * width + j].setCenter(0, 0);
+			m_holder[i * width + j].setPosition(
+				static_cast<float>(64 + j * 66),
+				static_cast<float>(64 + i * 52));
+			m_charSprite[i * width + j].setImage(m_currentGame->m_assetManager->loadImage(ImageToken::imgCharIcon, m_order[i * width + j]));
+			m_charSprite[i * width + j].setCenter(0, 0);
+			m_charSprite[i * width + j].setPosition(
+				static_cast<float>(64 + j * 66 + 1),
+				static_cast<float>(64 + i * 52 + 1));
+		}
+	}
+}
+
 void CharacterSelect::draw()
 {
 	// Set colors

@@ -75,6 +75,9 @@ protected:
 	void removeRankedFeverMatchRoom(NetChannel channel) const;
 	NetChannel selectedRankedFeverMatch() const;
 
+	// Reloads assets in all currently running Games
+	void hotReloadGameAssets();
+
 public slots:
 	void updateActions() const;
 	void updateJoinButton() const;
@@ -86,6 +89,7 @@ public slots:
 	void on_OfflineDialog_Finished(int result);
 	void on_CreateChatroomDialog_Finished(CreateChatroomDialog*) const;
 
+	// Reloads available Asset Bundles and resets user preferences for affected bundles
 	int refreshAssetManagerTemplate();
 
 private slots:

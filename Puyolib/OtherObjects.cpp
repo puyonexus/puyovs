@@ -19,6 +19,7 @@ int getDigits(const int number)
 }
 
 Particle::Particle(const float x, const float y, const int color, const GameData* data)
+	: m_data(data)
 {
 	m_timer = 0;
 	m_scale = 1;
@@ -65,9 +66,15 @@ bool Particle::shouldDestroy() const
 	return m_timer > 60;
 }
 
+void Particle::reload()
+{
+	m_sprite.setImage(m_data->imgPuyo);
+}
+
 //===========================================================================
 
 ParticleThrow::ParticleThrow(const float x, const float y, const int color, const GameData* data)
+	: m_data(data)
 {
 	// Set sprite
 	m_sprite.setImage(data->imgPuyo);
@@ -105,10 +112,10 @@ void ParticleThrow::play()
 	// Scale
 	m_scale = 1.2f + static_cast<float>(m_timer) * 0.03f;
 	if (m_scale < 0.1f) {
-        m_sprite.setVisible(false);
-    }
+		m_sprite.setVisible(false);
+	}
 
-    // Rotate
+	// Rotate
 	m_rotate += m_rotateSpeed;
 	m_gravityTimer += 0.5f;
 	m_posY += m_gravityTimer;
@@ -120,9 +127,15 @@ bool ParticleThrow::shouldDestroy() const
 	return m_timer > 60;
 }
 
+void ParticleThrow::reload()
+{
+	m_sprite.setImage(m_data->imgPuyo);
+}
+
 //===========================================================================
 
 ChainWord::ChainWord(const GameData* data)
+	: m_data(data)
 {
 	// Set sprite
 	m_spriteChain.setImage(data->imgChain);
@@ -137,10 +150,10 @@ ChainWord::~ChainWord() = default;
 void ChainWord::draw(FeRenderTarget* rw)
 {
 	if (m_visible == false) {
-        return;
-    }
+		return;
+	}
 
-    m_spriteN1.setSubRect(20 * (m_number % 10), 0, 20, 42);
+	m_spriteN1.setSubRect(20 * (m_number % 10), 0, 20, 42);
 	m_spriteN1.setCenter(0, 0);
 	m_spriteN2.setSubRect(20 * ((m_number / 10) % 10), 0, 20, 42);
 	m_spriteN2.setCenter(0, 0);
@@ -182,9 +195,19 @@ void ChainWord::move()
 	}
 }
 
+void ChainWord::reload()
+{
+	m_spriteChain.setImage(m_data->imgChain);
+	m_spriteN1.setImage(m_data->imgChain);
+	m_spriteN2.setImage(m_data->imgChain);
+	m_spriteChain.setSubRect(200, 0, 90, 42);
+	m_spriteChain.setCenter(-6, 0);
+}
+
 //===========================================================================
 
 SecondsObject::SecondsObject(const GameData* data)
+	: m_data(data)
 {
 	// Set sprite
 	m_spritePlus.setImage(data->imgTime);
@@ -238,9 +261,17 @@ void SecondsObject::move()
 	}
 }
 
+void SecondsObject::reload()
+{
+	m_spritePlus.setImage(m_data->imgTime);
+	m_spriteN1.setImage(m_data->imgTime);
+	m_spriteN2.setImage(m_data->imgTime);
+}
+
 //========================================================================================
 
 LightEffect::LightEffect(const GameData* data, const PosVectorFloat& startPv, const PosVectorFloat& middlePv, const PosVectorFloat& endPv)
+	: m_data(data)
 {
 	m_start = startPv;
 	m_middle = middlePv;
@@ -307,9 +338,20 @@ void LightEffect::draw(FeRenderTarget* rw)
 	}
 }
 
+void LightEffect::reload()
+{
+	m_sprite.setImage(m_data->imgLight);
+	m_sprite.setCenter();
+	m_tail.setImage(m_data->imgLightS);
+	m_tail.setCenter();
+	m_hitLight.setImage(m_data->imgLightHit);
+	m_hitLight.setCenter();
+}
+
 //==================================================================
 
 FeverLight::FeverLight(const GameData* data)
+	: m_data(data)
 {
 	m_start = { 0, 0 };
 	m_middle = { 0, 0 };
@@ -347,8 +389,8 @@ void FeverLight::draw(FeRenderTarget* rw)
 
 	const float tempTimer = m_timer / 100.f;
 
-    const float x = m_start.x + (m_middle.x - m_start.x) * tempTimer + (m_middle.x + (m_end.x - m_middle.x) * tempTimer - (m_start.x + (m_middle.x - m_start.x) * tempTimer)) * tempTimer;
-    const float y = m_start.y + (m_middle.y - m_start.y) * tempTimer + (m_middle.y + (m_end.y - m_middle.y) * tempTimer - (m_start.y + (m_middle.y - m_start.y) * tempTimer)) * tempTimer;
+	const float x = m_start.x + (m_middle.x - m_start.x) * tempTimer + (m_middle.x + (m_end.x - m_middle.x) * tempTimer - (m_start.x + (m_middle.x - m_start.x) * tempTimer)) * tempTimer;
+	const float y = m_start.y + (m_middle.y - m_start.y) * tempTimer + (m_middle.y + (m_end.y - m_middle.y) * tempTimer - (m_start.y + (m_middle.y - m_start.y) * tempTimer)) * tempTimer;
 	if (m_timer < 100) {
 		m_sprite.setPosition(x, y);
 		m_sprite.draw(rw);
@@ -363,6 +405,14 @@ void FeverLight::draw(FeRenderTarget* rw)
 	if (m_timer > 200.f) {
 		m_visible = false;
 	}
+}
+
+void FeverLight::reload()
+{
+	m_sprite.setImage(m_data->imgFLight);
+	m_sprite.setCenter();
+	m_hitLight.setImage(m_data->imgFLightHit);
+	m_hitLight.setCenter();
 }
 
 //==================================================================
@@ -440,7 +490,7 @@ void NuisanceTray::update(int trayValue)
 void NuisanceTray::play()
 {
 	for (int i = 0; i < 6; i++) {
-		if (m_timer == 0) {  // NOLINT(clang-diagnostic-float-equal)
+		if (m_timer == 0) { // NOLINT(clang-diagnostic-float-equal)
 			m_animationTimer[i] = 0;
 		} else {
 			m_animationTimer[i] = max(m_timer - static_cast<float>(i) * 3, 0.0f);
@@ -500,6 +550,13 @@ void NuisanceTray::setImage(const int sprite, const int image)
 	m_sprite[sprite].setCenter(kPuyoX / 2, kPuyoY / 2);
 }
 
+void NuisanceTray::reload()
+{
+	for (int i = 0; i < 6; i++) {
+		m_sprite[i].setImage(m_data->imgPuyo);
+	}
+}
+
 //======================================================================================
 
 ScoreCounter::ScoreCounter() = default;
@@ -543,8 +600,8 @@ void ScoreCounter::draw()
 		}
 	} else // Show point x bonus
 	{
-        const int widthB = getDigits(m_bonus);
-        const int widthP = getDigits(m_point);
+		const int widthB = getDigits(m_bonus);
+		const int widthP = getDigits(m_point);
 		for (auto& sprite : m_sprite) {
 			sprite.setVisible(false);
 		}
@@ -573,6 +630,13 @@ void ScoreCounter::setImage(const int spr, const int score)
 {
 	m_sprite[spr].setSubRect(20 * score, 0, 20, 34);
 	m_sprite[spr].setVisible(true);
+}
+
+void ScoreCounter::reload()
+{
+	for (int i = 0; i < 9; i++) {
+		m_sprite[i].setImage(m_data->imgScore);
+	}
 }
 
 }

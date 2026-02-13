@@ -223,7 +223,7 @@ GameWidget* GameManager::createGame(ppvs::GameSettings* gs, const QString& roomN
 			QString("new|") + QString("%1|").arg(PVSVERSION) + QString(gs->ruleSetInfo.ruleSetType == ppvs::Rules::TSU_ONLINE ? "0" : "1"));
 	}
 
-	GameWidget* widget = new GameWidgetGL(game, proxy, audio, assetManagerTemplate->clone(), static_cast<QWidget*>(parent()));
+	GameWidget* widget = new GameWidgetGL(game, proxy, audio, assetManagerTemplate, static_cast<QWidget*>(parent()));
 	addGame(widget);
 
 	return widget;
@@ -697,6 +697,14 @@ void GameManager::rankedMatchmessageReceived(QString message)
 		QString ratingDev = tokens[2];
 		int ratingDevInt = ratingDev.toInt();
 		g->chatWindow()->statusMessage(tr("Your new rating:  %1", "Messages:ResultsElo").arg(rating).arg(0));
+	}
+}
+
+void GameManager::hotReloadGameAssets()
+{
+	for (auto* widget: games) {
+		auto* game = widget->game();
+		game->hotReloadAssets();
 	}
 }
 

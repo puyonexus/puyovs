@@ -22,6 +22,7 @@ class GameAssetSettings;
 
 class GameManager : public QObject {
 	Q_OBJECT
+
 public:
 	explicit GameManager(NetClient* network, ppvs::AssetManager* am, QObject* parent = nullptr);
 	~GameManager() override;
@@ -39,6 +40,7 @@ public slots:
 	GameWidget* findGame(const QString& roomName) const;
 	void gameDestroyed(GameWidget* game);
 	bool rankedMatch() const;
+	void hotReloadGameAssets();
 
 private slots:
 	void channelJoined(QString channel, NetPeerList peers) const;

@@ -649,6 +649,32 @@ void Field::draw() const
 	drawField();
 }
 
+void Field::hotReload() {
+	for (int i = 0; i < m_properties.gridX; i++) {
+		for (int j = 0; j < m_properties.gridY; j++) {
+			if (isPuyo(i, j)) {
+				m_fieldPuyoArray[i][j]->reloadSprite();
+			}
+		}
+	}
+
+	// Draw deleting puyo
+	for (const auto puyo : m_deletedPuyo) {
+		puyo->reloadSprite();
+	}
+
+	// Draw particles on the field
+	for (const auto particle : m_particles) {
+		particle->reload();
+	}
+
+	// Draw throwPuyo on the field
+	for (const auto particleThrow : m_particlesThrow) {
+		particleThrow->reload();
+	}
+
+}
+
 //============================
 // Game-play related functions
 //============================

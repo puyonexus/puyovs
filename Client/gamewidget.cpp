@@ -48,6 +48,8 @@ GameWidget::GameWidget(ppvs::Game* game, NetChannelProxy* proxy, QWidget* parent
 	connect(mToggleChat, &QAction::toggled, this, &GameWidget::chatToggled);
 	connect(mFullScreen, &QAction::toggled, this, &GameWidget::fullScreenToggled);
 
+
+
 	setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(this, &QWidget::customContextMenuRequested, this, &GameWidget::contextMenu);
 	if (mGame->m_settings->recording == ppvs::RecordState::REPLAYING) {
