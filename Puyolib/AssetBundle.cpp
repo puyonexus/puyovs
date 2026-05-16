@@ -178,8 +178,14 @@ void FolderAssetBundle::reload()
 std::list<std::string> FolderAssetBundle::listPuyoSkins()
 {
 	std::list<std::string> new_list;
-	for (auto folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%/") + kFolderUserPuyo)) {
-		new_list.push_back((folder.path().stem()).string());
+	try {
+		for (auto folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%/") + kFolderUserPuyo)) {
+			new_list.push_back((folder.path().stem()).string());
+		}
+	}
+	catch (std::filesystem::filesystem_error& e) {
+		// Illegal path, fail silent
+		std::cerr << "Failed to locate bundles in " << m_translator->token2fn("%base%/") + kFolderUserPuyo<<std::endl;
 	}
 	return new_list;
 }
@@ -187,10 +193,16 @@ std::list<std::string> FolderAssetBundle::listPuyoSkins()
 std::list<std::string> FolderAssetBundle::listBackgrounds()
 {
 	std::list<std::string> new_list;
-	for (auto folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%/") + kFolderUserBackgrounds)) {
-		if (folder.is_directory()) {
-			new_list.push_back((folder.path().filename()).string());
+	try {
+		for (auto folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%/") + kFolderUserBackgrounds)) {
+			if (folder.is_directory()) {
+				new_list.push_back((folder.path().filename()).string());
+			}
 		}
+	}
+	catch (std::filesystem::filesystem_error& e) {
+		// Illegal path, fail silent
+		std::cerr << "Failed to locate bundles in " << m_translator->token2fn("%base%/") + kFolderUserBackgrounds<<std::endl;
 	}
 	return new_list;
 }
@@ -198,10 +210,16 @@ std::list<std::string> FolderAssetBundle::listBackgrounds()
 std::list<std::string> FolderAssetBundle::listSfx()
 {
 	std::list<std::string> new_list;
-	for (auto folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%/") + kFolderUserSounds)) {
-		if (folder.is_directory()) {
-			new_list.push_back((folder.path().filename()).string());
+	try {
+		for (auto folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%/") + kFolderUserSounds)) {
+			if (folder.is_directory()) {
+				new_list.push_back((folder.path().filename()).string());
+			}
 		}
+	}
+	catch (std::filesystem::filesystem_error& e) {
+		// Illegal path, fail silent
+		std::cerr << "Failed to locate bundles in " << m_translator->token2fn("%base%/") + kFolderUserSounds<<std::endl;
 	}
 	return new_list;
 }
@@ -209,10 +227,16 @@ std::list<std::string> FolderAssetBundle::listSfx()
 std::list<std::string> FolderAssetBundle::listCharacterSkins()
 {
 	std::list<std::string> new_list;
-	for (auto folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%/") + kFolderUserCharacter)) {
-		if (folder.is_directory()) {
-			new_list.push_back((folder.path().filename()).string());
+	try {
+		for (auto folder : std::filesystem::directory_iterator(m_translator->token2fn("%base%/") + kFolderUserCharacter)) {
+			if (folder.is_directory()) {
+				new_list.push_back((folder.path().filename()).string());
+			}
 		}
+	}
+	catch (std::filesystem::filesystem_error& e) {
+		// Illegal path, fail silent
+		std::cerr << "Failed to locate bundles in " << m_translator->token2fn("%base%/") + kFolderUserCharacter<<std::endl;
 	}
 	return new_list;
 }
