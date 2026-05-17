@@ -47,7 +47,7 @@ jobs:
 
   build-macos:
     name: Build (macOS)
-    runs-on: macos-15
+    runs-on: macos-15-intel
     steps:
     - name: Download Qt SDK
       run: curl -Lo "$HOME/qt.7z" "https://github.com/puyonexus/qt-sdk-builder/releases/download/v2/qt-macos-5.15.2-x86_64-static-release.7z"
