@@ -2799,6 +2799,8 @@ void Player::drawWin()
 		m_winSprite.setPosition(position.x, position.y + 10.f * sin(static_cast<float>(m_loseWinTimer) / 20.f));
 		m_winSprite.setScale(1.f);
 		m_winSprite.draw(m_data->front);
+		m_allClearSprite.setVisible(true);
+		m_allClearSprite.setTransparency(1);
 	}
 }
 
